@@ -1,0 +1,341 @@
+commit 1c96c4d1de44e59a783bb99dde7719d74cfd5692
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-12-03 02:42:16 +0300
+
+    Update README.md
+
+commit 04ca6cd00e8f6e30a41eef8966a5208c1af1c161
+Merge: 4168634 e33c8af
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-12-02 05:06:16 +0300
+
+    Merge pull request #18 from zedxxx/master
+    
+    fix compiling under XE3 and older
+
+commit e33c8afa5e489ffaebeb47987a88b7af1c303e88
+Author: zed <starmen@tut.by>
+Date:   2019-12-01 18:30:32 +0300
+
+    fix compiling under XE3 and older
+
+commit 4168634cda8f32ff36937366b9bca6f562987a83
+Merge: 07ab35a 70489ee
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-11-29 18:26:58 +0300
+
+    Merge pull request #17 from zedxxx/master
+    
+    fix a lot of warning under Delphi 10.3
+
+commit 70489ee3dc655b23d42b1279273a873d0baf796d
+Author: zed <starmen@tut.by>
+Date:   2019-11-29 14:58:55 +0300
+
+    fix a lot of warning under Delphi 10.3
+
+commit 07ab35ad3ee30ae2bec32ab918cef36db5b563bb
+Merge: f9a9552 95a169f
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-11-29 05:30:09 +0300
+
+    Merge pull request #16 from zedxxx/imglist
+    
+    Port TTBXImageList from TBX 2.2-alpha
+
+commit 95a169fe8072f502aea77bef14ae59ca2c48e0bd
+Author: zed <starmen@tut.by>
+Date:   2019-11-28 12:24:57 +0300
+
+    Port TTBXImageList from TBX 2.2-alpha
+
+commit f9a9552d86c54e0cb7f52818a92a0185c810e4d2
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-06-06 03:26:02 +0300
+
+    Add gitignore
+
+commit fc0a1a29f15ff618eda032c4c0fa8357f6eb77e7
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 11:01:04 +0300
+
+    Fix
+
+commit 45d9d42bfbb5e5df11de2af3da9429c0ec21f493
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 10:58:59 +0300
+
+    Fix copyrights, README, etc.
+
+commit bfc43165f842ea0a1edb87e43ddc9844a2ce247a
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 10:35:52 +0300
+
+    Add new packages
+
+commit 8347b01b6b41859ec118d032d53dab9da0af4a7b
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 10:30:07 +0300
+
+    Cleanup
+
+commit afcebd1909e74d9c92850ad62a75dd008094d02f
+Merge: 908f317 4982cf0
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2018-05-05 00:48:14 +0300
+
+    Merge pull request #11 from sharov-artem/master
+    
+    EAccessViolation exception and memory leak after exeception occured b…
+
+commit 4982cf02765672376ae887711b8820d63a0d71af
+Author: Sharov Artem <sharov-artem@list.ru>
+Date:   2018-05-03 13:05:06 +0300
+
+    EAccessViolation exception and memory leak after exeception occured before TTBPopupWindow.FView initialization.
+
+commit 908f317f71cb83cc516716f4e01a6cfdf8c104e0
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2017-03-20 15:57:15 +0600
+
+    Update README.md
+
+commit 04f40a7660e45c4da84f6c3ceb867158b36385de
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2017-03-20 15:56:07 +0600
+
+    Update README.md
+
+commit 420c54a44e0e43c1de253399522a4bee615b42a5
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2017-03-20 15:55:06 +0600
+
+    Update and rename LICENSE to LICENSE.md
+
+commit 433d318af477298d9721d229b852ed068a62eca3
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2014-02-09 17:35:54 +0700
+
+    Fix warnings in compilation
+
+commit 8071ac0050a842997573d3ba56dbbfd919324d2e
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-11-06 12:26:23 +0700
+
+    License info added to themes' headers
+
+commit 5085544162b44f60988faa53c694a9cddda909bb
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-11-05 18:20:21 +0700
+
+    Update installation instructions
+
+commit a7cc7f0e69cd564f18415350fa97e2cc756d3c1b
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-11-05 18:17:45 +0700
+
+    Update installation instructions
+
+commit eaf1ec95b72c0762a1cb4617d4ff988b0420b850
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-11-05 18:12:34 +0700
+
+    Update installation instructions
+
+commit 5368c0fc0cbd1e96fe5203aceabebc09d61872b2
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-11-05 17:59:25 +0700
+
+    Update installation instructions
+
+commit ca6bc57ab91825216906a01d62acbd40e460f4de
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-11-05 17:56:31 +0700
+
+    Add installation instructions
+
+commit 1473e4cc552d0f73a2a0aa416195569f16c622f1
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-11-05 17:27:08 +0700
+
+    License info added
+
+commit 4e0c57f6197ce719571a74bc439b8ddd2dbf821c
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-11-05 15:31:56 +0700
+
+    Add Delphi XE3-XE5 packages
+
+commit 905c9e97f3cbba1ada2769e2fd5e1c23529642fd
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-11-05 15:12:44 +0700
+
+    Update TB2k patch (x64 changes)
+
+commit 1d3cbee5be94fb883356705433c1f9d19678f9de
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-16 13:48:55 +0700
+
+    Normalize line endings
+
+commit 6085944273d0c1d11fc7a46a295c3e75695d95a0
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-16 13:32:16 +0700
+
+    Rename diff.bin to diff.txt
+
+commit 7087633dabcd9dc026c01475e71800655cfcdc80
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-16 13:29:49 +0700
+
+    Rename diff.txt to diff.bin
+
+commit a703971d79bfea90ef80a1b36d6c26c51f0cc60e
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-11 17:57:14 +0700
+
+    Update README.md
+
+commit e45c8d5de1804f2ea1051a67391ab6d4f9ff8144
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-11 16:29:44 +0700
+
+    Complete revision, 64 bit support, XE5 support
+
+commit a456f5146e2aed986a967740dcaea7805b96660d
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-10 02:35:15 +0700
+
+    Categorize packages
+
+commit 23873ed836f34020811d54aea19fc672bb1f3f40
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-09 16:58:13 +0700
+
+    Update README.md
+
+commit 933e302a80457a4fafdf227752a6add5f8f40f6b
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-09 16:37:37 +0700
+
+    Update README.md
+
+commit 4c73d5983cd9c6e73f8795a787b66c0feeee9684
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-09 16:28:09 +0700
+
+    Add Roy Magne Klever's themes
+
+commit 24482d4bfb94ffe9a302a6f0f24f97345045a4a8
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-09 12:24:33 +0700
+
+    Update license
+
+commit b89261234c66f4ac1ea0f38212e6c0cb38eb5125
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-09 02:12:08 +0700
+
+    Update README.md
+
+commit 9afe18ca3a5eeb1f913b403327697a6d8ddb6185
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-09 02:09:28 +0700
+
+    Update README.md
+
+commit d60b6e5c5d0076bfcbc7cea0fd88916ee8ffd485
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-09 02:08:00 +0700
+
+    Readme edit
+
+commit fe76647833ad75191b1030bcb460fdbf0c64b991
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-09 00:09:00 +0700
+
+    Add Demo
+
+commit e18029ab723f49a76b21773ceb85ef92e24c64a1
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 23:14:31 +0700
+
+    Move CHM to Help subfolder
+
+commit 9394cf3b050d1e0782dbbe35085e1a2045bee914
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 23:02:05 +0700
+
+    Readme edit
+
+commit d5032c87e8b6ea7b6249d2836798cab53b0e3aa7
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 22:06:41 +0700
+
+    Add TBX Reference CHM file
+
+commit 5694b195a6d9ed821c566e243f3e3ceae8a0901a
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 22:01:25 +0700
+
+    Readme edit
+
+commit 7afddcbfd8487b7bca80515cd4eefbab736ac0d3
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 22:00:55 +0700
+
+    Readme edit
+
+commit 08b73fb341c188fb91b9f79701bd8b1f322acba9
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 21:59:31 +0700
+
+    Readme edit
+
+commit 4eb273147af8fa20e1bc670cdf5f57a894b73764
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 21:56:35 +0700
+
+    Readme edit
+
+commit 57a35e7cc6c5eeb087cecfacec7b3de468a51e0d
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 21:54:48 +0700
+
+    Edit Readme
+
+commit 1d6ccb77e3b496196d46e89ca9e802eb896ae8f1
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 21:43:45 +0700
+
+    Add Converter and TB2k patch icons
+
+commit 56530ba13115676d79e54ffb0b5b1a859e1ac498
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 21:35:12 +0700
+
+    Add Readme
+
+commit 2be9fdc8afcbd59f1e38a6bb7172db32b304f6f9
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 21:33:14 +0700
+
+    Add Converter and TB2k patch
+
+commit a5d721c7a1761951d359a09762767e393ec8e91e
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 21:31:54 +0700
+
+    Add Delphi packages
+
+commit 50f519734e760bdabe406edce1b9b959116452ec
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 21:30:25 +0700
+
+    Add TBX source
+
+commit fe326c30ca6b75cf73f039fbb89e95777e3a799d
+Author: Yury Plashenkov <plashenkov@gmail.com>
+Date:   2013-10-08 21:13:37 +0700
+
+    Add LICENSE
