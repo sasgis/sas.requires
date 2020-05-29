@@ -1,0 +1,53 @@
+commit 4cc28453aca1097bd018b9fd23cfd464fb652944
+Author: zed <starmen@tut.by>
+Date:   2016-12-21 12:06:45 +0300
+
+    Более свежий jedi.inc
+
+commit dad001e4f0e8764af9b30474c1f5e25e6a6e5060
+Author: zed <starmen@tut.by>
+Date:   2016-12-20 16:31:00 +0300
+
+    EmbeddedWB: Фикс варнингов про inline функции
+
+commit cf59100a379df890bade7bd3631ece3437da73c2
+Author: zed <starmen@tut.by>
+Date:   2016-12-20 16:23:08 +0300
+
+    EmbeddedWB: В Delphi 10 Seattle был пофикшен баг с подсчётом ссылок в Vcl.OleCtrls.pas https://marc.durdin.net/2012/07/understanding-and-correcting-interface-reference-leaks-in-delphis-vcl-olectrls-pas/
+
+commit 8ddb44d85fbfd2f494549513b6274bb76ec48b8f
+Author: zed <starmen@tut.by>
+Date:   2016-12-20 15:53:18 +0300
+
+    EmbeddedWB: Фиксы для совместимости с Delphi 10.1 Berlin
+
+commit 726b7660e50f933d5a3b77be0c50ceaf4c528e62
+Author: Aleksand Alekseev <randomclear@gmail.com>
+Date:   2015-07-21 08:38:20 +0300
+
+    Добавлена поддержка Delphi XE.
+
+commit 68668efb335266c6d8c7a449d1d01dba24e6eace
+Author: zed <starmen@tut.by>
+Date:   2012-08-15 17:32:14 +0300
+
+    Добавил условную компиляцию в EWB для совместимости с Delphi 2007
+
+commit 46ff808ace05ed36c49fdb7298c0fff4aa180648
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2012-08-15 10:49:20 +0300
+
+    Обновление EmbeddedWB для совместимости с XE2
+
+commit d11273bbe25321b8e21b7f22d044758feb02c811
+Author: zed <starmen@tut.by>
+Date:   2012-01-11 19:47:27 +0300
+
+    EmbeddedWB 14.70
+
+commit fd5dec5b84fc93503a72fdc4d8da4a3da51c6ddf
+Author: zed <starmen@tut.by>
+Date:   2011-12-22 12:47:15 +0200
+
+    Add EmbeddedWB
