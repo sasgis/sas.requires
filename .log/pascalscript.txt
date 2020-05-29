@@ -1,0 +1,3755 @@
+commit e893802668b52ccfed58592aee4a7315586fea76
+Author: santiagoIT <sburbano@itworks.ec>
+Date:   2019-04-30 23:40:02 -0500
+
+    64 bit builds now use the same VersionInfo as 32 bit builds. Previously the version for 64 bit builds was always 1.0.0.0. (#199)
+
+commit bcf0f1b1b718f52006d518866ed82e04760b79c7
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2019-02-03 14:06:51 +0100
+
+    Fix warnings. Again, don't know exactly which version introduced each warning, kept it at Tokyo.
+
+commit 5812d520e84175fd611dc7739ddee7e0a7a2bf32
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2019-02-03 14:04:52 +0100
+
+    Use TStream.Seek fix on Tokyo as well.
+
+commit 7b33a99b24c5753397779f568d50f83c44bcb048
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2019-01-29 20:19:15 +0100
+
+    Add support for TScrollBox/TForm.Constraints.
+
+commit c2ee410b06fc967890bab40a8add60d3d686764a
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2019-01-23 19:36:46 +0100
+
+    Fix the wrong TStream.Seek overload being called (at least in Rio) in the same way TStream.CopyFrom was fixed. Not sure what version introduced the problem so kept it at Rio. Also a cleanup for CopyFrom.
+
+commit d5aa9e1eede2ad9d6cedb3e8b71b63d986d1229b
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2019-01-21 13:14:14 +0300
+
+    0: avoid bug with safecall calls in delphi/linux
+
+commit 4ec845b79e46cd3831fde8f88b04944d70f10f4b
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2019-01-15 17:55:01 +0100
+
+    Fix PropertyToString wide and Unicode strings bug.
+
+commit 3ee6af752a1cb74f1d2b483bd97d3296175b4951
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2018-12-29 14:53:14 +0100
+
+    Fix TAnchorKind and add Anchors properties.
+
+commit 86b5b61f6542e6e5109ac65ef88fd1689ae8dbf7
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2018-12-23 19:56:11 +0100
+
+    Register TPanel.BevelKind as well.
+
+commit 94ffb4b6732eaf6603ff4fe72608c65a27a9c587
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2018-12-19 23:42:50 +0100
+
+    Rename ARM readme so it doesn't get picked up as the main Readme by GitHub.
+
+commit b624250b09c1ee450d109bcb64cea686133a018d
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2018-12-19 22:54:28 +0100
+
+    Added OnUseRegProc which is called once when a function added with Add(Delphi)Function is used by the script.
+
+commit e4f2e63a477f83009f6f9bab15b02c854599dc02
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2018-12-16 17:17:32 +0100
+
+    Add 'AnyMethod' type which can be used to declare functions accepting any type of procedure.
+
+commit 6549f2f4dd4ef8fa6b79b914b9caa3dce3ae06cc
+Author: João Antônio Duarte <joao.antonioduarte@hotmail.com>
+Date:   2018-11-22 03:55:59 -0200
+
+    Added functin GetVarValue returning the Pointer of variable (#186)
+
+commit fa51611c0dd1fb2413fa70163f92c6559429b74e
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2018-11-19 12:57:09 +0300
+
+    0: Delphi 10.3 Rio support was added
+
+commit 9c266bc6a0f97650f3b802dff1ba91e27436abb6
+Author: uschuster <github@bitcommander.de>
+Date:   2018-09-27 11:58:53 +0100
+
+    Fix for #183 (#184)
+    
+    * Fix for #180 (https://github.com/remobjects/pascalscript/issues/180)
+    
+    - enables VarArrayGet/-Set for Delphi 6 or higher
+    - since D5 VarArrayGet seems not to be accessible the best solution is to negate $IFNDEF DELPHI6UP into $IFDEF DELPHI6UP
+    
+    * Fix for #73 (https://github.com/remobjects/pascalscript/issues/73)
+    
+    Added an InputQuery wrapper because Delphi XE2 and higher have two additional versions of InputQuery, the pointer points to the wrong version and the execution fails with "Length of value array must be >= length of prompt array"
+    
+    * Fix for #183 (https://github.com/remobjects/pascalscript/issues/183)
+    
+    Added a wrapper for TStringStream.Create(const AString: string) because Unicode Delphi has multiple constructors and the pointer points to the wrong overload
+
+commit 7f3720701fc9467123e940c2f719543652b82109
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2018-09-03 20:59:24 +0200
+
+    Improved attribute support. Made GetString available outside the unit.
+
+commit 7ae032dbc9eda85b89542e2b628856b4c0004781
+Author: uschuster <github@bitcommander.de>
+Date:   2018-07-13 10:21:40 +0100
+
+    Fix for #73 (#182)
+    
+    * Fix for #180 (https://github.com/remobjects/pascalscript/issues/180)
+    
+    - enables VarArrayGet/-Set for Delphi 6 or higher
+    - since D5 VarArrayGet seems not to be accessible the best solution is to negate $IFNDEF DELPHI6UP into $IFDEF DELPHI6UP
+    
+    * Fix for #73 (https://github.com/remobjects/pascalscript/issues/73)
+    
+    Added an InputQuery wrapper because Delphi XE2 and higher have two additional versions of InputQuery, the pointer points to the wrong version and the execution fails with "Length of value array must be >= length of prompt array"
+
+commit bdf127534e37642a1ff0bb582afa4aed5454af5b
+Author: uschuster <github@bitcommander.de>
+Date:   2018-07-03 12:49:49 +0100
+
+    Fix for #180 (https://github.com/remobjects/pascalscript/issues/180) (#181)
+    
+    - enables VarArrayGet/-Set for Delphi 6 or higher
+    - since D5 VarArrayGet seems not to be accessible the best solution is to negate $IFNDEF DELPHI6UP into $IFDEF DELPHI6UP
+
+commit 76e377efa5fddc55b3a6a3a3d944317bdfde4a12
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2018-04-24 14:37:41 +0200
+
+    Add ProcessDllImportEx2 which gives more info back to caller.
+
+commit 4b310a0fe3905b8b1b6004a2891a8388a3fb3c1c
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2018-03-24 22:02:08 +0100
+
+    Fix CopyVariantContents' btwidechar support.
+
+commit 415353d8db93c58260b41d0f9747d1e7b4cd24ac
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2017-11-13 12:00:54 +0300
+
+    0: compatibility with latest RO/DA
+
+commit 90ed5ee62ad57c0dd09a5f2f7d909ea0bfd73269
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2017-11-13 11:31:12 +0300
+
+    D25 packages should use D25 folders
+
+commit fa55490db0bcbcfe68a22f14a97d65daa7addc32
+Author: Martin <User4martin@users.noreply.github.com>
+Date:   2017-10-28 16:12:13 +0100
+
+    Fix constructor 64bit (#167)
+    
+    * use 64bit variant
+    
+    * Fix registers for FPC constructor
+    
+    * fix only fpc 3.0.0 and up
+
+commit 627cf28b334cb77abe5d2f2af5cb8a59defa6383
+Author: Martin <User4martin@users.noreply.github.com>
+Date:   2017-10-26 16:59:39 +0100
+
+    Update test for 64 bit / fpc: No PS methods (#166)
+
+commit 2dee370c51d96e55ebbcd4891cc30c2934e27f9d
+Author: Martin <User4martin@users.noreply.github.com>
+Date:   2017-10-26 14:21:17 +0100
+
+    fix compile (#162)
+
+commit 01ca5c3f4ed29b66130b2c14e712c8d5ba82ab2b
+Author: Martin <User4martin@users.noreply.github.com>
+Date:   2017-10-26 06:05:08 +0100
+
+    spelling (#163)
+
+commit 21b4d44028ae7f10a289eb9d2a182cacb20d0e1d
+Author: Martin <User4martin@users.noreply.github.com>
+Date:   2017-10-26 06:04:54 +0100
+
+    lpk add encoding (#164)
+
+commit 502fe3b0ef2ab7d0ffaf54b89683c33d36eac210
+Author: Martin <User4martin@users.noreply.github.com>
+Date:   2017-10-26 06:04:41 +0100
+
+    fixes for tests (#165)
+
+commit 69281ba739620340d791aad5f23e075ce3dab4ec
+Author: Rey <levchenko.and@gmail.com>
+Date:   2017-10-01 23:53:15 +0300
+
+    Add support for 'array of _Enum_Type_'  types for registered methods. (#160)
+    
+    This will also add support for 'array of Boolean' type, as Boolean considered as enum in pascal script.
+
+commit 8bd6ea180f100af617a7eeee54a9fa02c051f9cf
+Author: Pierre le Riche <github@pleasedontspam.me>
+Date:   2017-06-12 14:45:29 +0200
+
+    The TPSTypeRec.CalcSize calculated the element size for base types btProcPtr and btPointer as 20 bytes under 64-bit, however it was assumed to be 24 bytes in several other places, thus leading to buffer overruns. This fix supersedes the patch for issue #150, changing the element size for both base types to 24 bytes and adjusting the code that previously assumed a size of 20 bytes. 32-bit code is not affected, since the element size was (and still is) 12 bytes in all cases. (#152)
+    
+    An alternative approach would have been to fix all the places that previously treated the element size as 24 (as in the patch for issue #150), however an element size of 20 leads to misaligned pointers in array entries.
+    
+    Signed-off-by: Pierre le Riche <git@pleasedontspam.me>
+
+commit d428ecc59f808530bbf61d7991d4cf4334a53716
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2017-06-12 11:15:17 +0300
+
+    CPUX64 not implemented MyAllMethodsHandler
+
+commit 68f93567042029319c090d1098aee008af922ca5
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2017-05-24 12:37:06 +0300
+
+    X64 Windows Open Array Buffer Overrun
+
+commit 5814bd027db6fee3243b434da96661d7b3e8f718
+Author: SungDong Kim <acroedit@gmail.com>
+Date:   2017-02-21 17:42:18 +0900
+
+    Fixed a character encoding problem of Application.MessageBox method in Unicode Delphi (#146)
+
+commit f4a25206cef37b0810527cf8a3f7212f17f372b0
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2017-02-09 19:33:11 +0300
+
+    eDefines.inc was updated
+
+commit d2b23c5e6b7e12926d361e241a6d7ba3cdc2a468
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2017-01-11 14:22:13 +0300
+
+    fix for prev
+
+commit ac6adc571e656625ad475245e4fed53e167805df
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2017-01-10 17:24:09 +0300
+
+    PS: port to Delphi 10.2
+
+commit dded578698e1d4485b95a023715e1fba40157484
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2017-01-04 12:46:43 +0100
+
+    Fix InnerfuseCall memory leak for functions which return a string and use a calling convention other than register.
+
+commit 7f43c665016886392170b02cce2700213b2a336a
+Author: iferoc <ondrej.cerny@ifer.cz>
+Date:   2016-11-01 13:11:01 +0100
+
+    Pull request for #141 (#142)
+    
+    Pull request for issue #141 - division of variant variables should return real (with PS_DELHIDIV compiler option)
+
+commit 40efb694c141774cb292c97ffe98a288d111c3d0
+Author: Chee-Yang, Chau <cychau@gmail.com>
+Date:   2016-05-24 22:43:06 +0800
+
+    Re-align PascalScript_Core_D24.dpk and PascalScript_Core_D24.dproj compiler directives (#138)
+
+commit 4867683ff4276a4b6f57e806a893ac7344f95dfc
+Author: Chee-Yang, Chau <cychau@gmail.com>
+Date:   2016-05-24 17:19:18 +0800
+
+    Fix compiling error: "E2056 String literals may have at most 255 elements" in unit uPSI_Dialogs.pas line 163. (#137)
+
+commit 19470174dd2de14c6a2ee5defeaf6a30c9092aa1
+Merge: c56385e 57d7291
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2016-05-13 14:51:16 +0200
+
+    Merge pull request #135 from uschuster/master
+    
+    Pull request for #122
+
+commit 57d7291d92e27127a6426f05e2fdbdb71a42ba91
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-05-13 14:34:11 +0200
+
+    Fix for #122
+    
+    - Fixed case of registered symbols using the case in Delphi sources
+    - Fixed formatting in method signatures
+    - put registration across multiple lines onto one line
+    
+        "...GAMONSERV'
+         +'ER )');"
+    
+        -> "...gamOnServer)');"
+
+commit 8416d44d61de0fe16bb11ef29db047956664df68
+Merge: 971dc95 c56385e
+Author: uschuster <github@bitcommander.de>
+Date:   2016-05-13 14:02:24 +0200
+
+    Merge pull request #1 from remobjects/master
+    
+    Update from master
+
+commit c56385ecc03eceaa86ed08dace2c371feca37754
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2016-04-22 12:39:06 +0300
+
+    fix for delphi7
+
+commit 4d5adcd119e8d63f8bb3085b2b07fe6ace0df2b0
+Merge: dd56475 6eaef32
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2016-04-17 15:37:40 +0200
+
+    Merge pull request #134 from Falcon0/FPC3Fixes
+    
+    Fixed FPC3 compatibility
+
+commit 6eaef325fb9fbeb677a8efd6793dbce151ce2227
+Author: Tomek Kołosowski <tomek@kolosowscy.pl>
+Date:   2016-04-17 00:18:22 +0200
+
+    Fixed FPC3 compatibility
+
+commit dd56475f061255bb45950d8a1255716d30b03a91
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2016-04-15 13:16:26 +0300
+
+    Support for Delphi Seattle 10.1 was added
+
+commit 2c6e487e30a157d05798903c41e57bebcf30a3f2
+Merge: 2c0bde1 d06ea36
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2016-03-01 08:41:29 +0100
+
+    Merge pull request #130 from Falcon0/master
+    
+    Fixed function VarType not exported in runtine in FPC
+
+commit d06ea36c61d0f04123067842ed2f91f9b2b64b25
+Author: Tomek Kołosowski <tomek@kolosowscy.pl>
+Date:   2016-02-09 21:27:57 +0100
+
+    Fixed function VarType not exported in runtine in FPC
+
+commit 2c0bde188afc35c2592e763c66a850041b4f99b1
+Merge: 2fdeb7e 1cf322d
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-12-13 17:59:07 +0100
+
+    Merge pull request #127 from mariuszekpl/master
+    
+    fix single and double result in fpc x64 linux (replace movd by movq)
+
+commit 1cf322d8c6755dcaec746e1315c4b4efe534a295
+Author: marius maximus <mariusz.maximus@gmail.com>
+Date:   2015-12-12 22:50:57 +0100
+
+    fix single and double result in fpc x64 linux (replace movd by movq)
+
+commit 2fdeb7ee7d48620eb36f235db6c502c2c624daca
+Merge: 883cd30 db3b374
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-12-11 22:53:32 +0100
+
+    Merge pull request #126 from mariuszekpl/master
+    
+    replace movd to movq for move data into xmmX registers (lazarus 64bit linux)
+
+commit db3b37491504a09542b7e9fe723f660a5fd0ef30
+Author: marius maximus <mariusz.maximus@gmail.com>
+Date:   2015-12-11 22:23:35 +0100
+
+    replace movd to movq for move data into xmmX registers
+
+commit 883cd305ac742be8caa23c97d16262abfe6635bc
+Merge: 971dc95 8b9ce7a
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-12-11 20:22:19 +0100
+
+    Merge pull request #125 from mariuszekpl/master
+    
+    Fix exception when function return single for lazarus and delphi x64
+
+commit 8b9ce7a0f31e19e0e4e18c3ccfef7ce971ebe8fd
+Author: marius maximus <mariusz.maximus@gmail.com>
+Date:   2015-12-11 19:58:58 +0100
+
+    Fix exception when function return single and return correct value
+
+commit 971dc958fcf30e2603c4999275921ef13b65167e
+Merge: 69fe88d 3eda965
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-10-28 13:13:45 +0100
+
+    Merge pull request #119 from eferley/ef_fix_upsx_classes_tstrings_props
+    
+    Additional property helpers for TStrings and TStringList
+
+commit 3eda9658f704279886d920cefe922a9a5cc511d8
+Author: Eric Ferley <eferley@users.noreply.github.com>
+Date:   2015-10-28 12:41:29 +0100
+
+    TStrings.StrictDelimiter only for D2006+
+
+commit 5efc340f8979770d6fa06a001b3e8c428939ff54
+Author: Eric Ferley <eferley@users.noreply.github.com>
+Date:   2015-10-28 12:38:17 +0100
+
+    TStrings.StrictDelimiter only for D2006+
+
+commit 69fe88d5590371e8c0030bc9c75bd1518069b949
+Merge: b4e22a5 ccf7630
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-10-27 17:13:46 +0100
+
+    Merge pull request #115 from eferley/ef_fix_upscompiler_addclass
+    
+    Allow TPSPascalCompiler.AddClass to adjust InheritsFrom
+
+commit b4e22a5c468197b2370671889ac5baf894f88c51
+Merge: 7a704b5 da476ac
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-10-27 17:13:32 +0100
+
+    Merge pull request #118 from eferley/ef_fix_upscompiler_setdefprop_errmsg
+    
+    Make Exception messsages more useful for TPSCompileTimeClass.SetDefau…
+
+commit 7a704b55debee16303868bd44909caac1b3e6bf8
+Merge: 615f46f a3bcee5
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2015-10-27 16:32:35 +0100
+
+    Merge pull request #117 from eferley/ef_fix_upsruntime_regfuncname
+    
+    Bug in TPSExec.RegisterFunctionName
+
+commit 615f46ff79bec9f7711753d129cef0463c462e58
+Merge: 4307114 902f43c
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2015-10-27 16:32:14 +0100
+
+    Merge pull request #116 from eferley/ef_fix_upscomponent_execimport2
+    
+    TPSCustomPlugin.ExecImport2 typo (calling FOnExecImport1)
+
+commit da476ac4caac6e84d91740840334ba1805b729f3
+Author: eferley <eferley@users.noreply.github.com>
+Date:   2015-10-26 15:13:28 +0100
+
+    Make Exception messsages more useful for TPSCompileTimeClass.SetDefaultPropery
+
+commit 11bf95bfb6d6f43a21b9d262aa7679b63cfad14e
+Author: eferley <eferley@users.noreply.github.com>
+Date:   2015-10-26 15:08:10 +0100
+
+    Additional property helpers for TStrings and TStringList
+
+commit a3bcee5ecbb725b37cc2771bc49364f534c4b57b
+Author: eferley <eferley@users.noreply.github.com>
+Date:   2015-10-26 14:54:39 +0100
+
+    Bug in TPSExec.RegisterFunctionName
+
+commit 902f43c6a31afdfe504a7799be2d2401f71f5b87
+Author: eferley <eferley@users.noreply.github.com>
+Date:   2015-10-26 14:41:44 +0100
+
+    TPSCustomPlugin.ExecImport2 typo (calling FOnExecImport1)
+
+commit ccf76308bdf20852e2e3e8c66d402f62fe45afa6
+Author: eferley <eferley@users.noreply.github.com>
+Date:   2015-10-26 14:30:57 +0100
+
+    Allow TPSPascalCompiler.AddClass re-registration of a class (if AllowDuplicateRegister) to adjust InheritsFrom instead of adding duplicate class registration
+
+commit 43071141397fb9270cb9f4d0fc949acd7e94c305
+Merge: 6805e7b ea5a1fd
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-10-19 09:00:02 +0200
+
+    Merge pull request #114 from ccy/master
+    
+    Fix Win64 platform compile error for PascalScript_Core_D23 package
+
+commit ea5a1fd6f243031e27b4166e5b474e9ca63893eb
+Author: Chau Chee Yang <ccy@sql.com.my>
+Date:   2015-10-19 12:03:26 +0800
+
+    Fix Win64 platform compile error for PascalScript_Core_D23 package
+
+commit 6805e7be10c11b986520f095e89859a9097b3242
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2015-10-16 20:55:58 +0300
+
+    eDefines.inc was updated
+
+commit 216ec33518998b0777f936b549572c261ca7e0a9
+Merge: 630444b 4a2a43c
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-09-13 21:16:52 +0200
+
+    Merge pull request #113 from modulo7/master
+    
+    EABI
+
+commit 4a2a43c8ba063a34ef9b54db79e9a2e1fb0d7c10
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-09-13 18:46:37 +0000
+
+    Remove commented out code
+
+commit ed095d93b5dc6a7c5ce78fc6f9410b77f216bdda
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-09-13 18:19:35 +0000
+
+    Initialise sindex
+    Add copyright/contact details for us.
+
+commit 0ede149fa69d3927d357fde0aba54b5b4058a5da
+Merge: 7898234 630444b
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-08-15 21:15:41 +0000
+
+    Merge branch 'master' of https://github.com/remobjects/pascalscript
+
+commit 7898234ad78168aeac2fcae378a3a3209da5e449
+Merge: aa59bb1 b31757f
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-08-15 21:05:25 +0000
+
+    Merge branch 'master' of https://github.com/modulo7/pascalscript
+
+commit aa59bb1260b331563c09c5ec2578bfce4e76568b
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-08-15 21:04:32 +0000
+
+    initial dynamic array return values implementation
+
+commit b31757f1e80dba304c033adddd65259719918008
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-08-15 21:40:13 +0100
+
+    fill in asm implementation for old abi FPA return values in new return value
+    code.
+
+commit 630444be8e18574ca2994470651114518ed6bc60
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2015-08-05 15:17:09 +0300
+
+    XE9 support was added
+
+commit cf649e8ad9f9d4e3de179e141a2bb4cd71169afc
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-07-25 16:51:11 +0000
+
+    freepascal seems to handle ansistring returns as var parameters
+    (tested on eabihf)
+
+commit 4e9767f0e4aee1f0c09c0f4982e49d72776865a2
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-07-19 20:48:32 +0000
+
+    add readme
+
+commit aab3f1320ad978590b3fa2f40cc6458179230d22
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-07-19 20:34:25 +0000
+
+    Improve return type handling.
+
+commit 4563cb254822fe94f645018cdca4bdbde5a53137
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-07-19 20:33:35 +0000
+
+    cleanup trailing whitespace
+
+commit e1fe97499e9c3614bbee6d1dd58527aaffe2fd70
+Author: modulo7 <modulo7@users.noreply.github.com>
+Date:   2015-07-19 20:10:58 +0000
+
+    initial eabi port
+
+commit bfc1255636eb959f102d0279721b05ba85fbe7da
+Merge: 4693d97 c54ecff
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-04-14 20:08:47 +0200
+
+    Merge pull request #105 from User4martin/master
+    
+    alternative png images, new TPSCustomPlugin.png and updated lrs for Lazarus
+
+commit c54ecffca093f76ad813878df5b01505b56ef512
+Author: User4martin <n>
+Date:   2015-04-14 18:49:53 +0100
+
+    alternative png images, new TPSCustomPlugin.png and updated lrs for Lazarus
+
+commit 4693d9798ffb35aadf72bab4c242aaffe303ac1f
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2015-04-01 17:03:31 +0300
+
+    XE8 packages were added
+
+commit 47ec9e6f048ce99f5d847f6890fe73fcede8185d
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-03-20 13:24:59 +0100
+
+    Update uPSRuntime.pas
+    
+    0: Fix for delphi 7
+
+commit 7ef4d7324ba30967db8b1364df043a8feeeb9297
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-03-04 21:11:58 +0100
+
+    Update readme.txt
+
+commit c58ddc80f1408f9216c2d3210302d191bd8c8c5d
+Merge: 0b037be 3f59939
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-03-04 21:11:30 +0100
+
+    Merge pull request #103 from User4martin/master
+    
+    Fixed spelling for Successfully
+
+commit 3f599390fe0473a1072bbab471d2b3dbce09c356
+Author: User4martin <n>
+Date:   2015-02-15 22:46:54 +0000
+
+    Spelling
+
+commit 0b037bef7a68a58237ac25adf08d787db8ecd3be
+Merge: a565694 c3ee8c9
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-01-29 13:16:33 +0100
+
+    Merge pull request #101 from pier2013/fix_length
+    
+    fixed length('a') failure
+
+commit c3ee8c9ec08fda78eb5e4a1d74e3370b5a6a3431
+Author: pier <nomail@nomail.com>
+Date:   2015-01-29 11:19:57 +0100
+
+    fixed length('a') failure
+    
+    fixed incorrect character handling when dealing with the function
+    "length". see #91
+
+commit a565694e0e42b2668be4994708c5d6f076027ee6
+Merge: f3cf602 2034139
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-01-28 16:51:21 +0100
+
+    Merge pull request #99 from pier2013/x64_double
+    
+    Fixed incorrect double return values
+
+commit 2034139ba6ff7b56e5e5563106874346d4391fc1
+Author: pier <nomail@nomail.com>
+Date:   2015-01-28 16:48:21 +0100
+
+    Fixed incorrect double return values
+    
+    Fixed doubles returned by a function. see #92.
+
+commit f3cf602541b5e73ff93d583adae3b98e314dcd6f
+Merge: 466ab97 40f888b
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-01-14 21:07:19 +0100
+
+    Merge pull request #98 from User4martin/master
+    
+    Fix calling constructors on 64 bit
+
+commit 40f888be2a94fa0078d8f77afdf6c8a0bd6dfd5d
+Author: User4martin <n>
+Date:   2015-01-14 19:49:21 +0000
+
+    Fix calling constructors on 64 bit
+
+commit 466ab97b370687e7053a945d0a55aef7f260e7f3
+Merge: 64bc640 a118089
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-01-12 15:16:32 +0100
+
+    Merge pull request #97 from pchev/master
+    
+    Fix defines for FPC 3.0
+
+commit a118089ad314f81e57c0a297bc9ba2cc8a6f96fa
+Author: pchev <pch@ap-i.net>
+Date:   2015-01-12 15:10:32 +0100
+
+    Fix defines for FPC 3.0
+
+commit 64bc64088e63e7fc31d8f98e4e6c9738f16215a6
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2015-01-07 14:38:37 +0100
+
+    Update uPSRuntime.pas
+    
+    fixes  FPC an define CPUX64 #96
+
+commit fec9aa03c8e52b0ba8feee76941b8d3ce3bbe7b8
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2014-12-17 10:15:04 +0300
+
+    PS should reflect latest changes in RO/DA sources
+
+commit a9bc6508bf5efeb8d98564e5eff917bc51c3439d
+Merge: e2f657e 224dcdb
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-12-13 15:01:15 +0100
+
+    Merge pull request #95 from blikblum/fix-memoryleak-issue61
+    
+    Fix memory leak TPSExec.InnerfuseCall in fpc
+
+commit 224dcdb5de57f842d8369d9a9df5befc80036707
+Author: Luiz Américo <brandkarl@gmail.com>
+Date:   2014-12-13 10:57:12 -0300
+
+    Fix memory leak TPSExec.InnerfuseCall in fpc
+
+commit e2f657e2c1dd3b7cf52e07e1f295990f9d660535
+Author: marc hoffman <mh@remobjects.com>
+Date:   2014-12-08 11:20:32 +0100
+
+    Moved & updated license.
+
+commit abc32923f44d34318240c7108130100185b3780e
+Author: marc hoffman <mh@remobjects.com>
+Date:   2014-12-08 09:22:16 +0100
+
+    Moved & updated license.
+
+commit 7412eb9a662a2e3de7c2b892796171a0d15b304f
+Author: marc hoffman <mh@remobjects.com>
+Date:   2014-12-08 09:20:51 +0100
+
+    Moved & updated license.
+
+commit db0d6f521113a31b34a76aeefd79fb148a9c4bfd
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2014-11-12 14:52:49 +0100
+
+    Added VarIsClear on Delphi 7 and up. Might also be available under Delphi 6 but not sure.
+
+commit 8f72c06007097fec8c86d785a23235e3db7e8338
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2014-09-11 19:09:04 +0400
+
+    fix for #87
+
+commit 504f91e45432f0c4ad5efe9a03948e10bed1a847
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2014-09-04 18:14:29 +0400
+
+    69440: PS: add XE7 support
+
+commit 40d960bef902542140db4c59ccb9b5dae46dd469
+Merge: 14dcc51 d4f64bb
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-08-12 07:51:25 +0200
+
+    Merge pull request #89 from ccy/master
+    
+    Fix procedure CheckPackagePtr doesn't work in Win64 application built wi...
+
+commit d4f64bb62c8ddf64b3f6affd5ceda46f15d982c6
+Author: Chau Chee Yang <ccy@sql.com.my>
+Date:   2014-08-12 12:04:56 +0800
+
+    Fix procedure CheckPackagePtr doesn't work in Win64 application built with runtime packages
+
+commit 14dcc5133d4b0b4750ec27f8d0e57204fd827666
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2014-07-28 23:03:36 +0200
+
+    0: Small regression in parameters that go on the stack
+
+commit 2d5975afe8f341637d147b8828eb0c7f915fd25f
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2014-07-24 16:55:05 +0200
+
+    #87 fixes single and doubles not handled for Lazarus x86-64 Windows
+
+commit 97eefc260b41ba51328d95b4ed43669f38655720
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2014-07-08 15:49:48 +0200
+
+    Actually use MemDelta on TPSStack.AdjustLength.
+
+commit 0f3d4a14d0eb5bbc7458230b709712b251ca0763
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2014-07-08 15:47:14 +0200
+
+    Add TStringStream and TStrings.ValueFromIndex.
+
+commit 5e9416fd41323cd58c089546345703db1ea62318
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2014-07-08 15:21:56 +0200
+
+    Fix lowered visibility warnings.
+
+commit 28416e5e64a601f73e559ff9cd94e6b15318c0e6
+Merge: d30f5e9 0386f8f
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-07-06 21:46:00 +0200
+
+    Merge pull request #86 from lewinjh/master
+    
+    Fixed warnings showing row/column number as zero in some cases
+
+commit 0386f8f05a43665c591c6e2bd3b55e3246e34390
+Author: Lewin <lewin.hodgman@anu.edu.au>
+Date:   2014-07-07 02:18:44 +1000
+
+    Fixed warnings showing row/column number as zero in some cases
+
+commit d30f5e9e4d7e20696bbe6041df21f5d0157688d8
+Merge: c63e53a 70b4e1a
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2014-06-26 16:47:55 +0300
+
+    Merge branch 'master' of github.com:remobjects/pascalscript
+
+commit c63e53aeb8252953ddf57aa4238a883b73f870c7
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2014-06-26 16:47:35 +0300
+
+    68543: Missing reference in  PascalScriptRO package
+
+commit 70b4e1a85199a5fbbab15bb0edd3f9d0b971750d
+Merge: 390ee15 9dd1dd0
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-06-25 18:17:31 +0200
+
+    Merge pull request #81 from velter/patch-9
+    
+    Compiler bug in const arrays
+
+commit 390ee15ad168ea5a12a29b6e6cf6f8f3265b8021
+Merge: 5d00e6c 5967ab1
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-06-25 18:16:54 +0200
+
+    Merge pull request #82 from velter/patch-8
+    
+    Proposal to prevent duplicate definition
+
+commit 5d00e6cfb950a3c898d2d6813862199e5c5142c6
+Merge: 4781459 df155c4
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-06-11 20:39:55 +0200
+
+    Merge pull request #83 from FHannes/master
+    
+    Some minor changes
+
+commit df155c46405fae63b3d65a6d637b06a525bbeef9
+Author: Frédéric Hannes <freddy1990@gmail.com>
+Date:   2014-06-11 19:47:12 +0200
+
+    Minor tweak in compiler
+
+commit 8d2286385f29fb6f515575db4f109321d62f30b0
+Author: Frédéric Hannes <freddy1990@gmail.com>
+Date:   2014-06-11 19:47:01 +0200
+
+    Added __history to gitignore
+
+commit 4781459e35984327d19036f321813d09acab4661
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2014-05-28 12:17:27 +0200
+
+    Added static array support to GetArrayLength.
+
+commit 5967ab113b5f4b93b6d294d1f5755181e8417cf7
+Author: velter <velter@users.noreply.github.com>
+Date:   2014-05-27 16:05:00 +0200
+
+    Update Duplicate definition change
+
+commit 9dd1dd0111424c1a715785d3ac86ed261795b945
+Author: velter <velter@users.noreply.github.com>
+Date:   2014-05-27 14:51:17 +0200
+
+    Compiler bug in const arrays
+    
+    There a compiler bug in array constants. A construct like
+    
+    procedure B(eType : TObject);
+    begin
+            if eType is TObject then ;
+    end;
+    
+    function A(eVal : int32) : booleen;
+    begin
+            result:=not(eVal in [1,2]);
+    end;
+    
+    begin
+            A(1);
+            A(2);
+            A(3);
+    end;
+    
+    
+    Cause an AV in UpsCompiler line 6185. The root cause is the use of FindAndAddType with no name. The function return the last created anonymous type. In the previous sample it's a Type created by the "is" operator which is not an array. Casting it to TPSArrayType lead to the AV.
+
+commit b0c5d5fece89a00fa5ab0a7ce5eb4441eaa9d672
+Merge: b015e25 8ce29b3
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-05-19 10:43:18 +0200
+
+    Merge pull request #80 from pchev/master
+    
+    Comobj support for FPC
+
+commit 8ce29b39c5604c44bc719a15f801ac7146c40f3e
+Author: pchev <pch@ap-i.net>
+Date:   2014-05-19 10:11:51 +0200
+
+    Comobj support for FPC
+
+commit 98145c07a1b3e4f65f5637c3bbee59a8722da5c8
+Author: velter <velter@users.noreply.github.com>
+Date:   2014-05-07 11:36:31 +0200
+
+    Allow forward declaration
+
+commit 980d731d322f559fad4cb26bd210d0f5e93d57fb
+Author: velter <velter@users.noreply.github.com>
+Date:   2014-05-07 09:59:55 +0200
+
+    Proposal to prevent duplicate register
+    
+    Add a new property to control the behavior. By default, the behavior is not changed. Setting AllowDuplicateRegsiter to false will raise an exception each time a class/interface/function register a name already known.
+
+commit b015e2522a4a99796b956cf6ad8415b942db298d
+Merge: fce4394 08d2743
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-05-07 08:47:55 +0200
+
+    Merge pull request #79 from velter/patch-6
+    
+    Yet another x64 bug fix
+
+commit 08d2743af91b4586b411ec217b1c6687d393d9ca
+Author: velter <velter@users.noreply.github.com>
+Date:   2014-05-07 08:38:16 +0200
+
+    Yet another x64 bug fix
+    
+    Currency type is internally an int64. Casting its binary representation in RAX to an an int64 and affecting it to a currency will result in a *10000 multiplication.
+
+commit fce4394925302b32b84044b24d5b9059c435c58d
+Merge: bfe6ebd c68d42b
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-05-04 10:09:52 +0200
+
+    Merge pull request #76 from lewinjh/master
+    
+    Defining a "set of byte" no longer requires casting each element to byte
+
+commit c68d42b839fc54b93bac2bad96eb680799ec5767
+Merge: 2c9dc54 bfe6ebd
+Author: Lewin <lewin.hodgman@anu.edu.au>
+Date:   2014-05-04 18:06:17 +1000
+
+    Merge branch 'master' of https://github.com/remobjects/pascalscript
+
+commit bfe6ebdfbe10746666408a4cc4cada2751aa300a
+Merge: 8f849ea 561066d
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-05-04 09:44:59 +0200
+
+    Merge pull request #75 from velter/patch-5
+    
+    x64 fix + warnings remove
+
+commit 8f849ea3f88cc4b47bf680fecc48651da6d05cfd
+Merge: 853f9ec 3ef8cb4
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-05-04 09:44:30 +0200
+
+    Merge pull request #77 from velter/patch-6
+    
+    Fix FPC regression
+
+commit 3ef8cb458c871870c313da50dbe8f5ce14604751
+Author: velter <velter@users.noreply.github.com>
+Date:   2014-05-03 08:44:00 +0200
+
+    Try to fix FPC failure
+
+commit 2c9dc5455c66625276ad9c83b60c162e1573cd6d
+Author: Lewin <lewin.hodgman@anu.edu.au>
+Date:   2014-04-26 20:06:44 +1000
+
+    Defining a "set of byte" no longer requires casting each element to byte
+
+commit 853f9ec0a63e48420bd67f3b37cacc279e788748
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2014-04-16 13:09:14 +0300
+
+    XE6 support was added
+
+commit 561066d5cd971df124908851fc4c1ae6f03947f6
+Author: velter <velter@users.noreply.github.com>
+Date:   2014-04-08 17:35:29 +0200
+
+    Remove warnings
+    
+    Implicit conversion from Ansi to Unicode
+
+commit db15d67e76ebe72cdc1b1b660431d42a9496b06c
+Author: velter <velter@users.noreply.github.com>
+Date:   2014-04-08 17:33:30 +0200
+
+    Remove warnings
+    
+    Implicit conversion from ansi to unicode
+
+commit af0f3e069f4277d7f3cfd57990846734a9803692
+Author: velter <velter@users.noreply.github.com>
+Date:   2014-04-08 17:29:17 +0200
+
+    Record returning functions x64
+    
+    Make them work. Currently, the result is not passed on the stack leading to stack corruption
+
+commit efa39a728e58f19f78d94f5023c0b2bc70d12dbd
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2014-03-11 10:18:28 +0200
+
+    #46 and #47 were removed.
+
+commit 17250fabde323469c4125fd60fdb50ccbb44a452
+Merge: 010d4c3 aeeb913
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-03-11 08:05:03 +0100
+
+    Merge pull request #45 from VietSmall/patch-3
+    
+    Update uPSRuntime.pas
+
+commit 010d4c320f5f957bebdd9c1d4be88d5c1e6cbffc
+Merge: ffd96a5 c6fac36
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-03-11 08:04:46 +0100
+
+    Merge pull request #46 from VietSmall/patch-4
+    
+    Create PascalScript_Core_DXe4.dpk
+
+commit ffd96a5ee7711dde67af742b7f4c13e59a497185
+Merge: 96b415f b31f8fe
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-03-11 08:04:32 +0100
+
+    Merge pull request #47 from VietSmall/patch-5
+    
+    Create PascalScript_Core_DXe4.dproj
+
+commit 96b415f19055cddd6029fd5163574b02da6e496e
+Merge: 1b6d5ac 3cbd7e5
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-03-11 08:04:15 +0100
+
+    Merge pull request #66 from geby/master
+    
+    Removed undesirable typecast to WideString
+
+commit 1b6d5ac13b6fa2549331d6b04075c5f73273ec43
+Merge: 2f5e0ce 36f007a
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-03-11 08:03:34 +0100
+
+    Merge pull request #70 from velter/patch-3
+    
+    Remove warnings
+
+commit 2f5e0ceae1b2531fcf3ca428979ca8636606b867
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2014-01-28 13:18:17 +0200
+
+    0: D7: problem with compiling
+
+commit 9c79114c8440696a366b41d93f08ad7bfef90128
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-01-26 16:05:34 +0100
+
+    Update uPSUtils.pas
+
+commit c2537de286252b2edb8b9ec8f701101da97ad596
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2014-01-26 16:03:56 +0100
+
+    Update uPSUtils.pas
+
+commit 0436da194fb80410c8edb576b6b6b7f077d6993a
+Author: vovanl <vovanl@remobjects.com>
+Date:   2014-01-16 16:55:26 +0200
+
+    65875: PS: AV when we use String result for x64
+
+commit 8f304011aa7ec2cf7a0a90132df0919a6ccea9e2
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-12-26 18:21:48 +0200
+
+    {$I PascalScript.inc} was removed
+
+commit 34982c8362860cbdc6f18144880a3b4f1630b76d
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-12-26 10:17:37 +0200
+
+    BuildPackages were removed
+
+commit 94c5198fd17f775672af0cd959adf46ff89bee1f
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2013-12-03 12:42:38 +0100
+
+    0: Cast to IPointer instead of Cardinal for 64bits Pascal SCript
+
+commit 4f0682d51808df59f043c00d94b56c441e2fb2e9
+Merge: 8ec03b8 9770856
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2013-11-18 08:50:41 -0800
+
+    Merge pull request #69 from velter/patch-2
+    
+    Dynamic array handling
+
+commit 36f007a7f28f9b13fa3a4f653854069c616fe333
+Author: velter <cyril.velter@metadys.com>
+Date:   2013-11-18 17:34:49 +0100
+
+    Remove a warning
+
+commit 986be14bfd4179d0240c2fb7181f54b80ea0d9fe
+Author: velter <cyril.velter@metadys.com>
+Date:   2013-11-18 17:31:22 +0100
+
+    Cosmetic change
+    
+    It's better to use the VUnicodeString when casting to UnicodeString. This does not change anything in the result, but make the code clearer.
+
+commit 6b3c6ae3adcdf0948bf291cd4ede33bd855573a7
+Author: velter <cyril.velter@metadys.com>
+Date:   2013-11-18 17:27:44 +0100
+
+    Remove a warning
+
+commit 97708562847a4e4fe37a93c5bccf4982c5966322
+Author: velter <cyril.velter@metadys.com>
+Date:   2013-11-18 17:18:38 +0100
+
+    Dynmaic array handling
+    
+    Dynamic array handling is severely broken on delphi x64 because the array header layout is different from 32bit (related to issue #63).
+    
+    This patch refactor the handling by defining the header structure as a record to access refcount and length. I have done basic testing on x32 and x64 (Delphi XE2) and this works for the tests I have done. The header definition I have found for FPC include a function to get the length (the old code ignore this). I'm not familiar enough with FPC and someone will need to check if this patch need some adjustment for FPC.
+
+commit 8ec03b8cfb7a3b6c292b3a7df53f6a49388726f2
+Merge: b06a4e3 3c81406
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2013-11-18 07:54:07 -0800
+
+    Merge pull request #68 from velter/patch-1
+    
+    Patch for issue #67
+
+commit 3c81406c02d178988c6cfac9614a314aa33aaf5a
+Author: velter <cyril.velter@metadys.com>
+Date:   2013-11-18 16:52:26 +0100
+
+    Patch for issue #67
+
+commit b06a4e397085212bd0edc32c19373f901654cfd7
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-11-18 13:47:18 +0200
+
+    uXMLToRODL is added to uses section
+
+commit e5817ea7d60a6a191dde22072d6834e78723dfd3
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-11-11 12:57:12 +0200
+
+    DataAbstract integration was added
+
+commit d89a458e0a3c9947781f2168afc1999724b86901
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-11-08 13:00:14 +0200
+
+    DataAbstract integration was added
+
+commit 85a15f6c032b54a2531cec6c3f048079b46461f0
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-11-08 11:12:36 +0200
+
+    DataAbstract integration was added
+
+commit c0494c15646b95488cacfe6b98259dfceacaa55f
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-11-08 11:10:42 +0200
+
+    RO SDK integration was moved to Addon\RemObjects SDK
+
+commit 3cbd7e5628a770253e1a8c43968736d734453466
+Author: geby <gebauerl@mlp.cz>
+Date:   2013-11-07 14:30:46 +0100
+
+    - GetUnicodeString was same as GetWideString before. Improved to faster default conversions.
+    - Corrected result of 'plus' string operation to UnicodeString.
+
+commit b465a0cc9a13ab7f5d7aa23b744192fb47baa994
+Author: geby <gebauerl@mlp.cz>
+Date:   2013-11-07 14:11:34 +0100
+
+    PSGetUnicodeString was same as PSGetWideString. Removed undesirable typecast to WideString. Runtime is much faster now!
+
+commit c92d51ca9819dcbefc8894d1664865491b684e64
+Merge: 3c93994 8109ae5
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2013-11-07 04:25:00 -0800
+
+    Merge pull request #65 from geby/master
+    
+    Missing types in BT2S function.
+
+commit 8109ae5384fd83f691aff3a7b0d58323eb30951a
+Author: geby <gebauerl@mlp.cz>
+Date:   2013-11-07 13:17:47 +0100
+
+    Missing types in BT2S function.
+
+commit 3c939945019865a3545953e05c8bcf9fb22ecaec
+Merge: 555cc40 d7c5abb
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2013-11-07 03:47:43 -0800
+
+    Merge pull request #37 from Shoozza/kylix-compatibility-fix
+    
+    Fix Kylix compilation errors
+
+commit d7c5abb24fcd9fe9d5e85753c2e7a23a7922297e
+Author: Gregor A. Cieslak <gregor.a.cieslak@gmail.com>
+Date:   2013-11-07 09:49:35 +0100
+
+    Fix IF/IFEND breaking Delphi2/Delphi3 support
+
+commit 555cc40c27083989fdbe80e30cb8d01ed5e50c93
+Merge: 5389059 bae521b
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2013-11-04 12:22:15 -0800
+
+    Merge pull request #64 from pier2013/patch-1
+    
+    Update x64.inc
+
+commit bae521b2936f66b9fc8d0c6b5ea8b86580ae813a
+Author: pier <cpier83@gmail.com>
+Date:   2013-11-04 17:08:20 +0100
+
+    Update x64.inc
+    
+    fixed x64 floating point argument passing. see #29 and #32
+
+commit 538905910852bcbeef646f26592a973d15d3d5ec
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2013-10-13 10:11:41 +0200
+
+    Fix compiler warnings introduced by #39.
+
+commit 4f0c868f31ef2d4a476717db7def89300ded53bc
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-09-13 17:00:32 +0300
+
+    XE4,XE5 support
+
+commit 60d39dc0ecac024f866512d2fd17d32c125be48f
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-08-21 13:51:20 +0300
+
+    #53: FCL(runtime) and LCL(designtime)
+
+commit 0a1dd69b3167cf04f4fa36202147bbb494d063c5
+Merge: 29944c0 ff9f866
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2013-08-21 00:24:54 -0700
+
+    Merge pull request #55 from vdemidov/master
+    
+    Add support of interface-variable to Assigned function
+
+commit ff9f866b9f2588af17a5372ae52124a6ae15e044
+Author: vdemidov <vdemidov@gmail.com>
+Date:   2013-08-21 10:02:34 +0300
+
+    Add support of interface-variable to Assigned function
+    
+    Assign function was compatible with classe, PChar and string but not compatible with interface.
+
+commit 29944c0f5ffa14056ffd87a34d7698841e605041
+Merge: 4d34ea9 976b80b
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2013-08-14 04:43:06 -0700
+
+    Merge pull request #42 from JohnPeel/GetArrayLength-fix
+    
+    GetArrayLength, First parameter doesn't need to be a variable.
+
+commit 4d34ea9ea2083e85f62112685e5001811bb451ea
+Merge: be06654 f8e612c
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2013-08-08 11:54:39 -0700
+
+    Merge pull request #39 from lewinjh/master
+    
+    Fixes to sets and enumerations
+
+commit b31f8fe13e3e73ff7f73b9599559080b90460cbb
+Author: VietSmall <vietsmall@gmail.com>
+Date:   2013-06-25 15:20:49 +0700
+
+    Create PascalScript_Core_DXe4.dproj
+    
+    building script in osx
+
+commit c6fac360fef49492bb8dbb45d6fed6152fe7fcce
+Author: VietSmall <vietsmall@gmail.com>
+Date:   2013-06-25 15:19:58 +0700
+
+    Create PascalScript_Core_DXe4.dpk
+    
+    building script in osx
+
+commit aeeb913dc8b3197ab4a7d0fa2a9f628abb54402c
+Author: VietSmall <vietsmall@gmail.com>
+Date:   2013-06-25 15:18:01 +0700
+
+    Update uPSRuntime.pas
+    
+    building script in osx
+
+commit 976b80b833bb7dc181906706b2ec83159f5a1e18
+Author: John Peel <john@dgby.org>
+Date:   2013-06-08 00:02:15 -0400
+
+    GetArrayLength, First parameter doesn't need to be a variable.
+
+commit f8e612ceea5f0a07f4d04e5a7fe3a44112405770
+Author: lewinjh <lewinjh@gmail.com>
+Date:   2013-06-05 18:31:39 +1000
+
+     - It is now possible to iterate over enumerations
+     - Added set functions Include and Exclude
+
+commit 85e8d5032b5a6fe201f789da7c78aa5e6596a1c0
+Author: Gregor A. Cieslak <gregor.a.cieslak@gmail.com>
+Date:   2013-05-28 07:17:59 +0200
+
+    Fix Kylix compilation errors
+
+commit be06654c13f65032d92fe3abfe331b4c02b60c5e
+Merge: db38ab6 c623130
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2013-05-13 07:47:45 -0700
+
+    Merge pull request #36 from mologie/fpc-property-helpers
+    
+    Fix crash when using class property write helpers with FPC
+
+commit c6231301efed615e79a127f2a10e7224264dbe51
+Author: Oliver Kuckertz <oliver.kuckertz@mologie.de>
+Date:   2013-05-09 22:23:01 +0200
+
+    Formatting
+
+commit c8995a04db902b3def293f1d6b16d6250bf02fdb
+Author: Oliver Kuckertz <oliver.kuckertz@mologie.de>
+Date:   2013-05-09 21:45:01 +0200
+
+    Fixed EOL woops
+
+commit bb0fa50fe682112af86feb96481f181ca18eeb7d
+Author: Oliver Kuckertz <oliver.kuckertz@mologie.de>
+Date:   2013-05-09 21:37:37 +0200
+
+    Fixed passing procedure pointers from scripts to native code on FPC (now passes a pointer via EDX, previously copied the raw data onto the stack)
+    Fixed destroying non-existent heap variant after calling a class property write helper
+
+commit db38ab6e430b1b49c420a1b017f2bdeb25095532
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-04-09 11:51:28 +0300
+
+    typo in eDefines.inc
+
+commit 81e73f1ef13ea0304ec58c339ec256b651b2b122
+Merge: 406a360 e7f0d10
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-04-01 11:56:48 +0300
+
+    Merge branch 'master' of github.com:remobjects/pascalscript
+
+commit 406a3606b06fa8f71d86c93fd1ba85e8bac09e66
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-04-01 11:56:09 +0300
+
+    fix for prev
+
+commit e7f0d10e2dfeed049560ecf4960e64be07bab423
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2013-03-29 13:52:12 +0100
+
+    Fix compiler directive. Closes #34.
+
+commit 95ad648e97a191258f50d565c4cb0c104bbfbb08
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-03-28 17:20:31 +0200
+
+    XE4 packages
+
+commit d7f14dfc4c5fd1a5b01db3d210ed563b92b7c84c
+Merge: 5055e84 31abd29
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-01-18 17:07:43 +0200
+
+    Merge branch 'master' of github.com:remobjects/pascalscript
+
+commit 31abd2925837d85a6965b5325e8fb7835ca73ea8
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2013-01-18 15:25:34 +0100
+
+    Fix Low/High/Inc/Dec's Int64 support.
+
+commit ccad499426c347d75331567adecaac418d41175b
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2013-01-15 21:28:21 +0100
+
+    Add StrToInt64Def.
+    Add comment pointing to the places where the standard funtions are defined.
+
+commit cb79673bc502c260cd7e2291b5571ae6f5017383
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2013-01-15 14:33:45 +0100
+
+    The code for IntToStr on a Int64 doesn't actually work, fix it. Based on existing Int64ToStr implementation which does work.
+
+commit 5055e84d18b0c858a4be1b5cfd56a27d95e39a2f
+Merge: ecf989d 3e720be
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-01-15 13:50:08 +0200
+
+    Merge branch 'master' of github.com:remobjects/pascalscript
+
+commit ecf989d73ef9c5bdbfa9acb168c99908f2ab2106
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2013-01-15 13:48:00 +0200
+
+    0:PS_Core_D17 contains D16 paths
+
+commit 3e720bee8a5587c9f933d2bd48a535013177b113
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2013-01-12 16:20:47 +0100
+
+    Fix compiler errors introduced by commit 54a4cf632ae16214fcfcee982e4cf98b04f516b6.
+
+commit 03c9815d521d0ca1aa1952d29d2f8e148518e4a6
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2013-01-12 15:50:53 +0100
+
+    Add a .gitignore for *.dcu
+
+commit 9a4799fa0e39fe176cc69ddb934f833f5b697559
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2012-12-19 19:55:14 +0100
+
+    * Patch by Martin Friebe for PowerPC: 1/2 byte sets; string return types
+
+commit eacb3381742662b55622bec6c377edd2bbd23fca
+Merge: 007028e 93f63f3
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2012-12-13 10:03:25 +0100
+
+    Merge branch 'master' of github.com:remobjects/pascalscript
+
+commit 007028ec836610867186566c8f4deb2c4c105ed0
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2012-12-13 10:03:08 +0100
+
+    Patch by Martin Friebe for PowerPC: power pc alignment.
+
+commit 93f63f33695ba722f75c7b80f01bd9fd305e4a55
+Merge: b0f3b0e 91190cf
+Author: Carlo Kok <ck@carlo-kok.com>
+Date:   2012-12-10 00:42:40 -0800
+
+    Merge pull request #26 from Falcon0/master
+    
+    preprocessor fix
+
+commit b0f3b0e8f293c5a5ecea03d12dfe55952b1fc63d
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2012-12-10 09:38:17 +0100
+
+    Patch by Martin Friebe for PowerPC: allow passing self
+
+commit 557cf0038d410247d6aa25f227f9caa25ac89052
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2012-12-10 09:36:48 +0100
+
+    Patch by Martin Friebe for issue #22.
+
+commit 54a4cf632ae16214fcfcee982e4cf98b04f516b6
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2012-12-10 09:34:45 +0100
+
+    Patch by Martin Friebe to make sure 64bits pointers are never truncated
+
+commit 0a965adcfda6ed868f8ba5a1c5be6a7e321ffe28
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2012-12-10 09:32:51 +0100
+
+    Patch by Martin Friebe to align the stack properly on 64bits.
+
+commit cc04fde37ed9d10e4dfaae6b1d4c9a0024cf2bc7
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2012-12-10 09:29:12 +0100
+
+    Patch by Martin Friebe to align the stack properly on Darwin(OSX)/32bits.
+
+commit e862929a3498ead3bf96729410dc18859c87c9a6
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2012-11-30 17:35:09 +0200
+
+    .res should have PLATFORMTARGETS
+
+commit 3889508aa801dea1bf6c8e255cec35b10fc63e0c
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2012-11-28 11:46:10 +0200
+
+    0: FPC: eDefines.inc should have the same timestamp in all products (EW, RO, DA, PS)
+
+commit b7544fcaf7716923087149ed4b109cfd137bef45
+Author: vovanl <vovanl@remobjects.com>
+Date:   2012-11-23 16:38:37 +0200
+
+    19:PascalScript isn't compiled with FPC 2.6.1+Win x64
+
+commit 7572fb075d9fdcca05a7e658d31bb1ce881136b3
+Author: vovanl <vovanl@remobjects.com>
+Date:   2012-11-23 16:37:36 +0200
+
+    19:PascalScript isn't compiled with FPC 2.6.1+Win x64
+
+commit 91190cf5256bbc349fc7947ab63e7bc767515651
+Author: Falcon <ffalconpl@gmail.com>
+Date:   2012-09-21 23:10:19 +0200
+
+    Added ifdef
+
+commit c6d7c59ba83e892dda8093fce3777e8f876733b1
+Author: Falcon <ffalconpl@gmail.com>
+Date:   2012-09-21 23:06:56 +0200
+
+    Fixed pre processor not working under lazarus. Note that this fix is not mine, it comes from RemObject's bugtracker report which url i cannot find
+
+commit 52291ffbfc14f3cf1a445f3e88c6902e13fbdf78
+Merge: c7be088 a9e5df8
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2012-08-15 13:53:07 +0300
+
+    Merge branch 'master' of https://github.com/remobjects/pascalscript
+
+commit c7be08894685f47e8dbba584fdb6654e05682733
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2012-08-15 13:51:39 +0300
+
+    eDefines.inc should be updated
+
+commit a9e5df8d039297a19f36e3a19eb3251dd845b5a4
+Author: Carlo Kok <ck@remobjects.com>
+Date:   2012-07-31 15:04:29 +0200
+
+    0: quick typo fix
+
+commit c101b265422150d347773f0756eb3106f51b5d04
+Author: evgenyk <evgenyk@remobjects.com>
+Date:   2012-06-26 15:35:33 +0300
+
+    articles were added
+
+commit 86ecb1db1b3902da41559f7b3fdc357b7211000e
+Author: Evgeny Karpov <evgenyk@remobjects.com>
+Date:   2012-06-08 18:13:50 +0300
+
+    D17 packages
+
+commit e5a93a963f785e89810e61e3eb5e2b6ee3efd3e7
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2012-03-22 19:04:55 +0000
+
+    Fix classname case sensitivity
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@262 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ee3749e7b794ad8b3d7fc90865d8a1c06ee00c5f
+Author: vyacheslavd <vyacheslavd@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2012-02-17 09:30:56 +0000
+
+    46955: PascalScript: Warning shows wrong row,col number in some constructions
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@261 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 521e58c0433fc3c6cb7b587a2fff1abd822638fe
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2012-01-17 16:06:08 +0000
+
+    x64 settings were added
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@260 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 5c618f564248bfcdfaba7748eb527b40779dd72b
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-12-14 12:37:49 +0000
+
+    52008: PascalScript doesn't compile on Delphi XE2 Win64 platform.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@259 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 30e34f56df4a0e8a5fb6b264bd65419aa025d19e
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-10-20 12:53:54 +0000
+
+    97: OSX crashes on single/floats (alignment)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@258 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 6974813ee5de400ae4384e880296f8bb4312eaea
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-09-12 20:28:59 +0000
+
+    D16 packages were updated
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@257 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3e99ef3bf031192696b12f8b1fdd9d157aecb044
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-09-07 12:14:46 +0000
+
+    D16 packages are updated
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@256 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ab892112162148030849dee01b7bc309fa18b77d
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-08-25 13:46:43 +0000
+
+    0: PascalScript_Core_D16.dproj was updated
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@255 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit f1a5a4a3c7f27d892a652b09b18b0a2788ff8eaa
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-08-25 13:37:39 +0000
+
+    0: PascalScript_Core_D16.dproj was updated
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@254 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit fd2615dbaa5825287a12aef34c6beb92f26084dc
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-08-19 11:56:43 +0000
+
+    0: PascalScript_Core_D16.dproj was updated
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@253 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 96a347d74b1f0a9ce2e8c2b943729e1e4a660043
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-07-01 12:33:09 +0000
+
+    0: definitions for XE2 are fixed
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@252 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 4df723350704985f08ed033cd8b8e910bf86da7e
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-04-11 06:16:47 +0000
+
+    0: set the default prop for TDataset.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@251 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 39907293450bd54bf609787b31b44728b1113c9c
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-04-05 12:08:33 +0000
+
+    0: fix from Max Kleiner for default properties in db
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@250 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 033f6bb2fc2490f0e10c77357e53e228e0ee030b
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-03-03 14:31:43 +0000
+
+    D16 packages
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@249 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit d7571d7ef9ec5236993d9e74ea468610893f1371
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-03-02 07:10:05 +0000
+
+    make exportname = true the default.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@248 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b276c09909ddae1f7869970ad0f600b773a99ef7
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-02-25 12:49:45 +0000
+
+    0: tweak for menuitem
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@247 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ab7b319f4877770560a75a059a3ebc3bcd649bdc
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-01-25 13:49:37 +0000
+
+    0: better compatibility with Lazarus/FPC
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@246 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ebefbfc69f5f82c2f53522749d174a80b5c896f5
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-01-10 11:25:09 +0000
+
+    Changes from Jordan Russell:
+    -Make it possible to LoadDll from a path which contains Unicode characters
+    -Make it possible to reimplement and reuse UnloadDll.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@245 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2b835cb1ebaded74c29bc23362782fd2279d79db
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2011-01-05 08:04:51 +0000
+
+    0: Sample fixes
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@244 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 875121c9c71a57cecad08d2175800bd84052b640
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-12-14 08:17:04 +0000
+
+    Issue 132: "Unknown indentifier" inside unit (fixed by Lukas Gebauer)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@243 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 8414bbac43e08fa1eddd42d4b3e6e8052a67c263
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-12-08 12:19:49 +0000
+
+    Patches for the unit importer by Alexander Federyakov.
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@242 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 69b6a9418e961b9e0872d24ab0b0fba1f3a297d3
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-11-26 07:31:24 +0000
+
+    0: fix by max kleiner to register the Draw() api properly.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@241 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b8e4be8b0c7423bc54894fb214f42bf8d690f83c
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-10-14 09:13:59 +0000
+
+    Fix UnitName warning just like the fix for uPSCompiler.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@240 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 73bb743fe1dfbe0a9c9e9b295342b31e1b70847d
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-10-14 08:49:17 +0000
+
+    Fixed DELPHI4UP vs. PS_NOINT64 vs. TStream.CopyFrom.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@239 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 86ec58bebdda06d9ef32dbfd0c195a55304f7167
+Author: andreyt <andreyt@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-09-28 11:54:20 +0000
+
+    0:fixed bug with Unit_Name property. Revert changes.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@238 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit d68fee08b325d25afac657e34a8cad775e3a3c46
+Author: andreyt <andreyt@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-09-28 11:52:45 +0000
+
+    0:fixed bug with Unit_Name property.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@237 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 911bc3b7aa39b0cece44669de08f4148e21203f6
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-09-27 14:03:39 +0000
+
+    0: Dropped all warnings in 2007+
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@236 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 23e041fb9b0e4e66a1bbfba384a9c6e92ed4f7fe
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-09-08 06:47:22 +0000
+
+    TStringList didn't have a constructor (thanks to Thorsten Engler/NexusDB)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@235 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0a9ac8567304e1e295d400dd038c726ec8d7caa1
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-08-26 06:41:03 +0000
+
+    Patch from Frédéric Hannes for PS_NOWIDESTRING support.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@234 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 5bc0220ef86e8699d4149e64a125c92a49337c4d
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-08-20 07:49:36 +0000
+
+    Added a TPSExec.LastExObject (code by Jordan Russell).
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@233 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 33b59e8b6c2fe94aef833b302b03757c7bb4c444
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-08-09 07:35:28 +0000
+
+    Changes from Frederic Hannes to improve unicode support.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@232 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 65cb49fc68afc84fec8569a22b7216a81352832c
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-07-22 11:23:35 +0000
+
+    0: tweak for fpc
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@231 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 9675b8b9de6a34a2b95d0ac142078309af3559bf
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-07-08 09:28:01 +0000
+
+    Tweaks for d5 support from Eric Jansen eric.thuisremovethis@planet.nl
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@230 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit f107c608219620ea27e5f55251344656b7c1eaec
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-06-11 06:44:55 +0000
+
+    wrong define in uPSDisassembly.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@229 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3e9bd507d9c17a8c740ece9a32885ca8f47fd4bd
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-05-19 10:18:57 +0000
+
+    The OnProcessUnknownDirective and OnProcessDirective
+    we're switched when using them in TPSScript. (Raymond van Venentie)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@228 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0c720187dce468d33ebbd9b095041d0c303c0633
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-05-19 06:24:27 +0000
+
+    0: New "TPicture" support; better FPC support (Thanks Raymond van Venetie)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@227 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 8202c959107db6be5d180662a894031479cfece6
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-05-18 13:30:53 +0000
+
+    Unicode fixes.
+    Trim comments fix.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@226 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit c04e9eff0be3a924d50ef5dfcdb69c5de74a0fe9
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-05-18 10:44:47 +0000
+
+    0: memory leak
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@225 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit eb5569ba841dc97d908e0a391dfb923bc7674cd6
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-05-18 08:14:09 +0000
+
+    0: memory leak
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@224 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit a4670a3342f878b157db54c6ae2981316241435c
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-05-11 15:08:04 +0000
+
+    packages for D15
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@223 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 00c20b1bb5dae275083ef4e283e64fa8180d813b
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-04-19 07:52:55 +0000
+
+    0: Proper type name for events.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@222 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit c681710031a0885d1e8609807463fe64d60bab5d
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-04-15 12:42:02 +0000
+
+    0: MaskUtils in uses
+    0: Custum to Custom
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@221 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 380f48c962eb04374f2baf99246c216d04dd8763
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-04-08 06:09:42 +0000
+
+    Issue 100: function's not resulting right in PascalScript (using FPC + 32-bit windows) (Fix by Raymond van Venentie)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@220 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit df25ea9efe124583b0812a02dcd2e33ebc8bc21f
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-03-29 09:02:34 +0000
+
+    Fixed compile time type freeing bug.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@219 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 358ec2d054146dcb4302104605036a462aad012d
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-03-29 07:29:09 +0000
+
+    Issue 111: Trim function doesn't work like in Delphi
+    Issue 112: PS_NOWIDESTRING flag
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@218 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 23aa1595e47f62aee5898060ae4fab63179b3113
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-03-18 22:30:30 +0000
+
+    packages for D15
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@217 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 5ace34133e3856b0ab8096fcf19b2ab800606a31
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-03-09 10:23:29 +0000
+
+    < 2009 support.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@216 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 1356caab72228ff5d2f2b535b45bccc8b7dcb5b4
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-03-08 15:24:06 +0000
+
+    Issue 107: RegisterPublishedProperties can't support tkUString type in D2009 and UP
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@215 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 56908dff7e75c1ec6407f8c44f1dd3bc80019504
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-03-08 15:21:35 +0000
+
+    Issue 108: A bug of TPSScript.Notification
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@214 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 5a2059bf2d20a89d43b06a62337354837acb5b04
+Author: ck <ck@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-03-02 08:00:16 +0000
+
+    Issue 105: LCLIntf dont needed in uPSR_dll.pas (FPC 2.5.1 + Debian)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@213 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit f1540591c9fda85887a068143ea1cf20ce931b32
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-02-16 09:09:08 +0000
+
+    Issue 50: Exception message issue
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@212 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3aea5a40f7bd4c6c26419af071dff92cae240caf
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-02-16 09:00:28 +0000
+
+    0: small fix for previous checkin.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@211 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit db2ee5aa650f41e6143528969d054074930a1938
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-02-16 08:53:51 +0000
+
+    Issue 98: pascalscript does not compile on OSX
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@210 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit a47fb1ac941974ac3c7a49a7dd5bac7e982f880a
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-02-16 08:49:12 +0000
+
+    Issue 104: FPC ~ >=2.4.0 function calling convention incompatibility in new FPC versions for external functions
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@209 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit c9a24523c19c1580e6870bf5666d40082cf451ff
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-02-16 08:46:09 +0000
+
+    Issue 73: Using VarArrayCreate: Proper single dim variant array support
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@208 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 35bbbc3267d1f6ec5a3205e313a5958836eef57f
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-02-11 17:40:08 +0000
+
+    Fix from the newsgroup for unit support
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@207 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2f2fffc3cb6549ec41b8d94518ce85889981c5f7
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-02-02 12:13:14 +0000
+
+    packages for D15
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@206 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit c651034275aad09da803145a04cb3ae5fec0075d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-01-26 09:20:01 +0000
+
+    0: Fix by Nando Dessena.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@205 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 02441692f7670b1dddbb9c5ae14896d6cc8b7f8c
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-01-18 10:41:11 +0000
+
+    float fix
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@204 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7a115d59f0011378aeb025688e5a9b52b2c72f9f
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-01-13 15:01:15 +0000
+
+    array fix for 2.4
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@203 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 18c992471f601fb7d92ca0fd73c79ab363a6e1da
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-01-13 14:46:49 +0000
+
+    Fix  for string passing on x64/linux.
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@202 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7e1cacc456d5e64393dd461065a1cfaad43b7b86
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-01-13 11:56:00 +0000
+
+    64bits tweaks
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@201 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 852687a79c596c792ceafbb039831350f8274cc4
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-01-13 10:43:03 +0000
+
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@200 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 78e34c2eee75a7182adb19a3ae8d620e3ebb1d1e
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-01-13 10:42:46 +0000
+
+    Fix for FPC2.2.4/2.4
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@199 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 778c87859aa2fce872559cf4396fddc5495d4a62
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2010-01-11 09:38:09 +0000
+
+    0: fix for 2009/2010.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@198 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 32ac6ae0480b9a90f93a462eebab459daceb2340
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-12-22 15:12:43 +0000
+
+    Fix Slavomir Skopalik code for D2009+ (committed by ck rev 189)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@197 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit e001c2ed3094805515fa4d1777e7e28043a590e6
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-12-18 09:48:32 +0000
+
+    0: Make it work for non-unit support too
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@196 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 74f19ac84e10c14f61f060e70c6df2f8a008e212
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-12-18 09:30:29 +0000
+
+    (code Review 1): patch for unit support http://code.remobjects.com/p/pascalscript/review/1/
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@195 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit abe195487f4f01227b1c44cfe722a2e49bb3ff4b
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-12-18 09:26:11 +0000
+
+    (code review 2): fix for ProcessFor (Problem with Int64)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@194 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 997b869e43d2bd9818f9efbc7ed133595af72025
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-12-07 16:49:49 +0000
+
+    2009 cc broke things for 7
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@193 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 46a475884e39d7b499118bafc7256e3d82c13c7e
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-12-07 16:22:32 +0000
+
+    Issue 58: Division with integer constants
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@192 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3a20e222233f378ec336af40face0c9ee341fbc8
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-12-07 15:52:26 +0000
+
+    Issue 57: Comparison error
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@191 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit e549a9a978610be327e9c9edbf19accc621aa37a
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-12-07 15:42:57 +0000
+
+    Issue 48: Compiler validates as-casts incorrectly
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@190 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3859acd390c5418f5dfc4e881f2511ac452ab781
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-10-19 06:23:24 +0000
+
+    0: Improvement by Slavomir Skopalik to raise failures when a duplicate variable occurs
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@189 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit c1a5a2f0a3e1c9c9a2362565324c579acf4b6900
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-10-06 10:12:34 +0000
+
+    Fix.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@188 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit fbeb54e02e20d88c4716155c2864df14823ddb7d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-10-06 07:04:39 +0000
+
+    0: Findfield fix
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@187 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 436967ea81f1554974cd6676fe001d0c8a303479
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-10-05 15:06:10 +0000
+
+    Mini clean up.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@186 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 19e10ba511cdb5f140dd27ca3b57911d9aad0447
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-10-05 13:58:44 +0000
+
+    Added MakeError calls for ParseMethod's with a custom parser.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@185 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 9bef85ebc573a65ae148ce8fd228fae70f04c1be
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-25 13:47:54 +0000
+
+    Added OleCheck function.
+    Added HResult, TCLSID, and TIID types.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@184 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit e90a662b16a79b16058613b20875b168ad33b407
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-25 07:52:31 +0000
+
+    RegisterMethod fix for proper end parser position on functions.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@183 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 37ca375cb1de799b0622dafa0bf0264faee95757
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-24 19:17:38 +0000
+
+    safecall -> stdcall
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@182 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 8194cb6504085e1d11c7386b05754f3819d3083e
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-24 19:13:45 +0000
+
+    Added TGUID.
+    Added StringToGUID and CreateComObject (D3+).
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@181 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ab5c795e2a37770352a7bef339fcbbab7307323f
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-24 19:13:04 +0000
+
+    Added basic parsing for interfaces so one can add IUnknown descendants from the script too.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@180 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit a961ed9204f6325ca3ac04ca428a0167fc52f2d2
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-24 19:07:27 +0000
+
+    Fixed some warnings. Still a whole bunch left related to mixed signed/unsigned pointer arithmetics. Boo!
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@179 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 1889a03727949e53c8157d04e5f9002f64a523db
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-22 12:58:35 +0000
+
+    Fixed Unicode strings vs. Copy() and other functions accepting or returing AnyString type values.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@178 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 128c9f5d239f1ac1e642d95c2a61612e984b6846
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-22 11:39:40 +0000
+
+    0: Delphi5 define was set wrong
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@177 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 728eb936e61b5bb290d4bcd8a9a37ecf365fac8d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-22 08:06:27 +0000
+
+    0: Remove libc from uses; it's not needed
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@176 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 20c06e1b0538cfee568a6ae0e0ba33388dc8b1f8
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-14 16:17:42 +0000
+
+    0: Fix from Raymond van Veneti for Free Pascal arrays
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@175 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 340ddb85288a111bd2254db32c265705e0b4f99a
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-14 12:21:12 +0000
+
+    0: Fix from Raymond van Venetie for Free Pascal arrays
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@174 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0a68d2cdeb7b29ed2ff5ead6f338621375fc7471
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-14 07:50:21 +0000
+
+    Support for Linux/64 support (preliminary!)
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@173 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3a2d8f6bd81da00051f27bd02193edc77f308649
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-11 09:07:24 +0000
+
+     Issue 61: 64bits support (Linux; untested)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@172 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 84f4572344ac845a52b0c3166a3132a5449bfa09
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-11 06:20:04 +0000
+
+     Issue 61: 64bits support (windows done!)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@171 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b49892bb5880c1e2f97dda29ac5180a8f6080fb6
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-10 11:47:47 +0000
+
+    d2009 fixes
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@170 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 71e743ff03dcd1415c35aaffab8c46555fc80a4e
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-10 11:47:37 +0000
+
+    < d2009 sample fixes
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@169 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit d7c075f6a6366d98d5f9bd5091d1a49724018c41
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-10 11:43:25 +0000
+
+    Delphi 2009 fix
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@168 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3898d2d68c13a4ff29edd63a5072614301415c51
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-09-10 10:03:29 +0000
+
+    0: MegaDemo.RODL was updated from RO sample
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@167 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b736bd57e57add270dbd9819591b5b9fd05a2e9d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-08-27 12:05:25 +0000
+
+    0007409: Fix Lazarus package
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@166 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ca000215d7b04d897ea488d30505bcff197ad445
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-08-14 16:16:58 +0000
+
+    0: Morefixes
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@165 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 835f6a8d4411a5e5c9ac4f6ff5f01a44f955bb7a
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-08-14 13:47:28 +0000
+
+    more tweaks for win64.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@164 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3a360d98aa98980109862e4885a7e10463a0c299
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-08-14 08:15:53 +0000
+
+    62: dynamic arrays crash on FPC
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@163 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ac92e2fd00825e86bcd1e4277725617590e43efb
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-08-13 18:53:50 +0000
+
+    61: 64bits support
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@162 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 198b4b3586a44cc17f6f23acb9087b57e65ddf61
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-08-13 12:46:17 +0000
+
+    61: 64bits support (far from done)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@161 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b43ddc6a576b8cd3419d14bd31a697f57b6fdba3
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-08-04 11:17:07 +0000
+
+    Register varUString.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@160 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit cc98bb2326077c196a9b77242965c15bcdb0c905
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-08-04 11:16:55 +0000
+
+    Fixed strings & COM under D2009, varUString wasnt handled.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@159 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 6e0201ed9fe82d81f0cd53109e757915e0d5beda
+Author: evgenyk <evgenyk@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-07-22 14:04:29 +0000
+
+    0: Weaver files
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@158 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 5635d4391697b1436cc5ad6e64a0b9ac4ec87b8a
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-07-10 06:18:45 +0000
+
+    Overflow exception
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@157 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3e690e474a16285b595a46f63cc25163a8a5bf21
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-07-09 05:57:43 +0000
+
+    fix for unit support
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@156 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 4cb08cf428f38b585213cde2e5a94dbfda66d5ba
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-07-01 15:56:43 +0000
+
+    ps-svn fixed.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@155 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 6d347c5683a9e4ebe40f339c0fada04b63fe1c8d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-06-29 07:37:23 +0000
+
+    Issue 49: unexpected end of file instead of missing '
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@154 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit faf8423b5039cce6a6f54e94aa380c74e8fcca59
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-06-10 08:28:32 +0000
+
+    samples fix.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@153 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 666c4e506904902f84724f8bb77c9ae658690f81
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-06-10 08:26:53 +0000
+
+    rename
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@152 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 312e38216a4a697c1dd09296fbcf2492b32841e5
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-06-10 08:23:52 +0000
+
+    missing d12 pkg.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@151 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b04b9e30f5f656a999cbbc0fcb15dddf1f155d49
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-06-08 08:26:11 +0000
+
+    issue 22 fix.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@150 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3bde809062ef5bb2156b1c23ccd75c6868c1cd9d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-06-02 09:11:39 +0000
+
+    merged changes from private repository.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@149 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 09a93b6abe5c2fae57581d3b8e1615ab81444adf
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-28 05:45:38 +0000
+
+    fpc fix
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@148 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7542b22042468998307e70e3d181432ceeb2d1a5
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-25 08:26:38 +0000
+
+    FPC issue
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@147 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit e1e2447ab5b1d6286ba9dd56628e058130be389e
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-18 08:37:40 +0000
+
+    fix for FPC support ifdefs
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@146 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 6e9ec292d923e79767f39f8ad16a6763017a006a
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-18 08:33:07 +0000
+
+    Fix for Darwin support
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@145 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b88b9dd56f3c85b54a89552324cb6a58f23faa16
+Author: blindahl <blindahl@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-15 21:25:09 +0000
+
+    fix string end handling - s[Length(s)] was broken
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@144 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 44f2182bf0d63a8d080945ab54fb47eab97a4a76
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-13 15:28:17 +0000
+
+    0006218: Possible Bug? #2
+    20: Bug in record assignment
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@143 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b52b161ec40194f06a6dc729f9950e38ad287d8e
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-13 15:20:55 +0000
+
+    46: Variable redeclaration
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@142 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 1f1f21d3247237f016ef2eb2c00396238e95319d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-13 15:18:46 +0000
+
+    18: Code gives AV in runtime0006167: strong explicity
+    #18: Code gives AV in runtime
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@141 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 06f5d8a92b65d727b3d6fdd12202f75252374294
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-12 18:25:52 +0000
+
+    safecall support for RegisterDelphiFunction
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@140 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 268895f10267291ba9f7dcc80b7f0d3bea7c75c5
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-12 09:52:23 +0000
+
+    Fix more D2009 warnings.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@139 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ea5b34bc0fa032ac3855c4f6197e64e31ac8638a
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-12 09:48:27 +0000
+
+    Fix D2009 warning spam.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@138 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 65c087972f82cf1ed37fa3302b2a099febd0daa9
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-12 09:41:16 +0000
+
+    Fixed PS_NOINT64 compilation.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@137 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ae9dd239bbd817c846f3ba49f96aea7380ad0bdc
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-12 09:38:54 +0000
+
+    Fix for issue Martijn found, InvokeExternalMethod did not work in some cases
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@136 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 250d2bd25fe3350aff7f9d0b5bd05eb88f5fba25
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-12 09:37:31 +0000
+
+    Undid bad fix from commit 57.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@135 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ca29fd760078b2d7a98cdf0f031b7c4f0338bf92
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-12 06:28:26 +0000
+
+    fix for defines
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@134 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit c1eca8c038f0dccc2db0c4e702b3af86085c18ab
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-08 05:58:40 +0000
+
+     17: FPC function parameter passing bug
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@133 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2a2089ce995952ad87fb15bb668cf735e047ed6d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-04 10:26:45 +0000
+
+    19: Bug in integer assignemnt
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@132 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ab7dd49e4fb6fedc049c170a877ea4cf03186e8d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-05-04 10:21:30 +0000
+
+    38: Concatenation of string not get the correct value
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@131 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 49075fe0de0cb6a39d044bc293373805e8591298
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-04-10 09:46:32 +0000
+
+    Fix for missing exception on missing delayloaded dlls.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@130 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit dd1fa21ef2e1ee7f10c9af3ba3113c7e91ceda03
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-04-07 16:48:53 +0000
+
+    Changed 2 UNICODE IFDEFs to PS_PANSICHAR IFDEFs to make Carlo happy :)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@129 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2168259acf6744c3a9273e5e4d448109ae21ee92
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-04-07 16:37:45 +0000
+
+    Fixed Unicode Char issue in better way: do add Char under Unicode, but as btWidechar.
+    TPSConstant.SetString needed a fix for this, it didnt handle btWidechar.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@128 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0a31462fe572deb9ca84f5e6ff5da45ead988b65
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-04-07 15:30:09 +0000
+
+    Fix for indexing Unicode strings.
+    Char -> AnsiChar on PS_PANSICHAR.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@127 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 4394f62a26981a2406a66eb4721de0db3d6d701d
+Author: mlaan <mlaan@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-04-07 15:28:59 +0000
+
+    Fix Unicode TKeyPressEvent prototype.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@126 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit a91ec295988e4fda04e7280a9989cd7832986ae6
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-04-07 05:37:38 +0000
+
+    Fix by Martijn for nested record
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@125 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 753bd25689109d6385f161705e11bb0291a811c5
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-04-02 15:31:48 +0000
+
+    Compiler changes van Martijn
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@124 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2d3fc3cb5003b8b2ba953f5f58e96488c8d72a60
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-04-01 14:06:58 +0000
+
+    More tweaks from Martijn
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@123 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2e9e2eb1281d6f8e4d1aae7d2ac62f8c5c916349
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-04-01 13:52:55 +0000
+
+    string tweaks from martijn
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@122 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit e5c37c48aeb686a4e3c3c4fd4441d97832c1c422
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-30 07:03:27 +0000
+
+    more ps rodl likn fixes.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@121 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 14ecd84fe159c23e7c384c5f0e71601f309b23e3
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-30 07:00:38 +0000
+
+    Fix for nested ifdef.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@120 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7a62fb048b075d62dc473ccbd18bc9f25d042ed6
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-30 06:56:49 +0000
+
+    tweaks for ps->rodl link
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@119 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 127b0d2f9759ea684140f0d6f513e70685e6b0a9
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-25 09:44:49 +0000
+
+    Patch from Martijn Laan for LoadAlternativeSearchPath.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@118 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit a28cd9893b6f515c898c77332a22b2af1153c958
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-20 09:25:58 +0000
+
+    Another slight fix for strings
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@117 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 149c9ab47898940dbae8db52d60989d7d1b18bb5
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-20 09:13:24 +0000
+
+    fix for unicode = string comparison
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@116 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit e35a74cbd89e221b7c576a91273a329cbf893cf0
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-20 09:08:29 +0000
+
+    constant fix.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@115 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3519661c2ff7752a9d9cbaf83f0559c325a63bcc
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-20 08:40:05 +0000
+
+    Typo
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@114 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 077acc238b2663f82fac0b6ef010ec24883e3e08
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-20 08:33:29 +0000
+
+    0006570: PS unicodestring vs widestring support broken
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@113 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 58ae6d63803391726fb09b938c16822688b14051
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-19 11:02:21 +0000
+
+    0006564: Using an array type in a struct fails with RODL import in PASCALSCRIPT
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@112 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 20d6649671f3242a7176f642b9fb355a83a0863d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-19 08:48:53 +0000
+
+    Allow public access to CompImport1 and co.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@111 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 767e490ebf05230c706792eb52ed838d1d60c611
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-17 09:19:05 +0000
+
+    0006216: Bug using array
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@110 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 61af62db0537bdbeb928d6d6c1c8ffb786ab1984
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-03-11 08:16:42 +0000
+
+    Changes by Hannes (NexusDB)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@109 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2689d03187d5b7d59420550d8b656c6b052dfb80
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-02-20 07:30:49 +0000
+
+    Patch for 2009 by Lee.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@108 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 1c0e32c3ec435607bd3cdff4579e4e2fd06f075b
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-02-16 08:11:45 +0000
+
+    0006217: minor patch
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@107 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 890d50221468ee9096c336e2261e3cfbf66c59b0
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-02-16 08:05:14 +0000
+
+    0004919: Problem with IN operator
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@106 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2f61791b9f5ed581607b52cdd68d807003d944a9
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-02-16 07:50:17 +0000
+
+    0006288: Comparing integer with real does not work
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@105 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0ad049c53e2b1680685fe2f91e6a23b4fccb9b6d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-02-16 07:47:52 +0000
+
+    0006219: [BUG] Rev#99 - uPSC_classes.pas
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@104 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0e34b8b3b9b425a4179dc58f146417c1ab231713
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-02-16 07:46:52 +0000
+
+    0006380: PascalScript error message update required
+    0006163: PS does not check types on the for end counter
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@103 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 6e0b9d7299e146bafd03591c6ef3409575e53591
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-02-11 07:32:23 +0000
+
+    When resizing the stack, fix the pointers properly.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@102 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7d88cae7a6a6259bc257de528b815137b3daac84
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-01-27 07:35:42 +0000
+
+    0006291: D2009 compatibility again
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@101 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 8f6259065eca7ed8473625771fc97866ee9094d9
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2009-01-09 07:23:36 +0000
+
+    0006232: d5 compatibility patch
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@100 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ae0533b9d8d662da8a5dbb1202a622e121fefa3c
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-12-18 06:22:27 +0000
+
+    Fix for unit support
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@99 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3f993ad572d5759e25adfd7036bd052186887e0b
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-12-09 10:47:02 +0000
+
+    typo
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@98 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 549611d5a0d13456a922cf1bb8af59e587230b4a
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-12-05 12:15:22 +0000
+
+    Patch from jkomorowski for proper casing
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@97 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 549b689e5478ddd22047dfbbb8b373319aa20cb0
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-12-04 07:27:23 +0000
+
+    Another ARM patch by Henry Vermaak
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@96 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7bee4e5af4e8f55841c8f3673642ae9570cbf374
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-12-04 07:25:01 +0000
+
+    bytebool/wordbool support (Leonov Alexander)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@95 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit a534ce1c0336b49b78703a05f7fa3dca951790cc
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-11-28 06:21:28 +0000
+
+    Arm support for PS by Henry Vermaak (henry.vermaak@gmail.com)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@94 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 9f1202dc26a6d7b147da288d231c74c7f2623a3a
+Author: ek <ek@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-11-18 00:32:11 +0000
+
+    removing Implicit/Explicit string cast errors
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@93 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 65100d2418a8569496a033b2b9f8823c8408c762
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-11-14 13:27:42 +0000
+
+    fix for 2009
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@92 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit fb56c87fdcd08f464be98bbed1a9650f458b3d5d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-11-03 10:25:43 +0000
+
+    0006021: minor incoherence
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@91 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit d7899e7301f2e037e9d12fb8deabd17ff1c46196
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-10-21 05:28:50 +0000
+
+    Fix for SetArrayLength.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@90 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 22fb99e51d4f65d4c0347f2af94a90021af3e41d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-10-16 08:35:57 +0000
+
+    forgotten checkin
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@89 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 75f0e3a11fa5134ff443857c2deec2f3656eb15a
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-10-13 18:48:27 +0000
+
+    more unicode changes
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@88 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 640e718d383442bfb43bc3b8b324f2b6085d77f9
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-10-09 19:03:33 +0000
+
+    string = native string on 2009 now
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@87 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7dbbcfeab827506a9dcad78880678f11670025b4
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-10-09 14:53:36 +0000
+
+    fix for openarrays
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@86 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 41120ccfc9aadd043e5b8a12abfcd60824d3004b
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-10-09 13:12:11 +0000
+
+    typo
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@85 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 47f63f876204cc1bf8f7853b786359c582f37e01
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-10-09 10:52:33 +0000
+
+    0005187: runtime issue
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@84 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 8d25f7b966940cafc86be7b9ef8fd83f9e9697a1
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-10-09 07:38:16 +0000
+
+    nativestring type
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@83 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 98ee89a416f2ac61c82ce36fd64f67445073cf1d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-10-08 07:43:32 +0000
+
+    2009 packages
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@82 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 70d45a261fef838ca86803d84f0efab56de839d7
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-10-02 05:37:43 +0000
+
+    Patch to support OnFunctionStart and OnFunctionEnd. (Mason Wheeler)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@81 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 1886090a839e4c8e3a64d4f9aca4eec6cd8afd6e
+Author: ek <ek@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-30 07:40:14 +0000
+
+    changes for bds2009
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@80 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 38e4616033c7ab433b2ab8dbfe00b7f22a4d4a31
+Author: ek <ek@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-30 07:29:33 +0000
+
+    fix for prev revision
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@79 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7e2eca228060fab5a3d36382c9b83ed80386b9fe
+Author: ek <ek@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-29 09:54:44 +0000
+
+    changes for bds2009
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@78 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit d036e1dca1c231dc7640301dab5f1289a12bf516
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-22 06:30:56 +0000
+
+    0005929: Patch: Conversion of empty set constants
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@77 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 6e66e34080d920b6e87572288e285fa5596290c6
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-22 06:22:49 +0000
+
+    0005898: Bug in compile errors report
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@76 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ddd9263652a69e1f4cbde0df4adb27756c503721
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-12 15:02:40 +0000
+
+    empty statement fix
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@75 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ca4a7b99005f903398f6027e021846c9a7e0a431
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-12 14:52:54 +0000
+
+    Fix results of event methods
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@74 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit f25cf4940bc28b807be69215198f5c532bf6425c
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-12 14:31:57 +0000
+
+    Lazarus fix
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@73 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 63a285b23ea224eaac2bae6e7f0c6723930da447
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-10 09:58:59 +0000
+
+    0003901: uPSComponentExt, intellisense in classes (includes patch)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@72 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 5e608c325bbbc50fbec88c773a5cd4dd6d38bca9
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-10 07:31:01 +0000
+
+    Workaround for < d6
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@71 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit cfb0818942689d3334c3379f8444b1305f886fd9
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-10 07:22:18 +0000
+
+    Bug fix from user Faust in PS newsgroups
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@70 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 23481d25077d5617f06fbcfe36e2588c76998826
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-09-10 07:19:08 +0000
+
+    typos
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@69 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit c04dd0114eadbb30c5a6ff5bf2acf98d7b96cd5a
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-08-14 12:36:07 +0000
+
+    0005796: DoAfterExecute not called after executing a procedure
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@68 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0421d728123dc86ccd40d4fd4d06ee5be93ad22a
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-08-14 09:09:09 +0000
+
+    more string renames
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@67 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 6bc21c4d3d12dd6e188e2027102a2cfb2ae54643
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-08-01 11:23:09 +0000
+
+    first preparation for new Delphi
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@66 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2e51c2669c9951bda4054ce92dabfe65903d986e
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-07-07 09:00:54 +0000
+
+    0004263: Int64 issue in PS
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@65 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit d695b925e9b92e33546ea02a9625cefe13ce4da9
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-06-09 08:42:51 +0000
+
+    memory leak
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@64 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2f11f10c3c2d941b8912ba4e2afce01b6819d809
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-06-05 13:49:06 +0000
+
+    0005265: Memory leak
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@63 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0d7ccb13d22093d3f3dc476a155abb851381dbab
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-06-05 13:34:26 +0000
+
+    0005255: Suggestion/Question about Var Parameters
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@62 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 07a02ca0582133c77c37bd0392b961efcdd4df72
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-06-05 10:46:21 +0000
+
+    0005342: Bug fixes
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@61 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 24dca6201db1969b5324ce6cbeebf5b14d21f5de
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-04-02 09:24:38 +0000
+
+    memory leak fix.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@60 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 91bbdf94791cec0c11024acbf0456ae1976d918c
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-03-31 06:36:36 +0000
+
+    0005235: Re: Error in compile error report
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@59 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 20a72b174ea23c538ac48ba7ef22c5b2483091e4
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-02-11 14:52:01 +0000
+
+    0005122: uPSCompiler bug report
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@58 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit cc2bffd3de54a7032ac194978dc56a4d684a8034
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-02-11 09:38:46 +0000
+
+    0005025: InvokeExternalMethod possible bug
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@57 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 90684660268aa80822993689f905fb4c88e2387c
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-02-04 09:37:16 +0000
+
+    0003016: ranges .. in case statement not working
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@56 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 5ed48a5f5ac29a9c47962a5470801303795ed320
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-02-04 09:25:42 +0000
+
+    missing properties on FCP
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@55 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 5390026d9cdc8fdda6983f41b0228a8d9e35de18
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-01-25 08:17:29 +0000
+
+    Fix by arxange1 for possible stack curruption
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@54 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0101db61c8a59eccb505840aad7bb8fcfffb8411
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-01-22 12:12:14 +0000
+
+    0004974: TPSScriptExtension: trivial bug
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@53 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7cc014093775199fb96741179cff39eb50178cd1
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-01-22 11:24:48 +0000
+
+    0004975: bug fixed uPSRuntime.pas
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@52 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 8b2822e52019a9e129b9362a3e84eb434af60446
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-01-07 08:42:32 +0000
+
+    0004862: FPC/Lazarus please check.
+    0004870: Re: fixed bug
+    0004905: Duplicate Identifiers with constants
+    0004906: strange issue
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@51 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 9eab9f34c4cc009636d1542206a52f7bbab32b7b
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-01-07 08:42:20 +0000
+
+    0004862: FPC/Lazarus please check.
+    0004870: Re: fixed bug
+    0004905: Duplicate Identifiers with constants
+    0004906: strange issue
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@50 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ad0a6971d0c80721b8aaa3a2cf5a4791b3c6b1a7
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-01-07 08:42:14 +0000
+
+    0004862: FPC/Lazarus please check.
+    0004870: Re: fixed bug
+    0004905: Duplicate Identifiers with constants
+    0004906: strange issue
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@49 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit d81454dd7a16dd3a955d902adb3dec4ad2f5d508
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-01-07 08:42:03 +0000
+
+    0004862: FPC/Lazarus please check.
+    0004870: Re: fixed bug
+    0004905: Duplicate Identifiers with constants
+    0004906: strange issue
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@48 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit fce6f901dfe84221e85d76bc99d893c42f2b0507
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2008-01-04 15:00:26 +0000
+
+    typo for FPC
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@47 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 9692ad7e0f5dbe391589ba0c513de7027434bff0
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-12-20 12:06:35 +0000
+
+    0004927: PS can't determine the length of a variant type anymore
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@46 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 63a31f99954bad98ec8c9afe5eb1ad3d2480cc96
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-12-20 12:06:22 +0000
+
+    0004927: PS can't determine the length of a variant type anymore
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@45 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b5698e131a5826f1619a1a3c98d9d8c1391a9602
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-12-05 08:38:59 +0000
+
+    0004836: Semicolon bug
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@44 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 13a5d923bee67cfa622a563ecd79a3d063db3873
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-12-03 09:16:49 +0000
+
+    0004716: uPSCompiler patch for Goto, Continue and Break
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@43 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 83c119ba0d8c77bf752821bad86dacd05e28b852
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-11-30 14:06:07 +0000
+
+    - 0004797: [Hint] issue with modules
+    - 0004786: CreateOpenArray function issue
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@42 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 04eb8eb42821f1d6547db07f4ee3192289f2243e
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-11-20 10:43:19 +0000
+
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@41 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 3cf2d55ec7e5e09e1d52ead7606b692f4f02d04b
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-11-09 07:42:56 +0000
+
+    0004558: Re: Exception problem
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@40 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 4f2340eba99fb5b4a7ecf6ec0e57b2c85b3f9e49
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-10-26 12:49:59 +0000
+
+    Moved the Ext component to another package to keep in sync with RO that doesn't need that component.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@39 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 5d432c2153203596fc95447cd890aa5369424948
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-10-22 09:13:21 +0000
+
+    - 0004504: Getting characters at a given position
+    - 0004404: PreProcessor issue
+    - 0004503: Pascalscript error position for var params
+    - "With" on record
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@38 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 4c5167a3f50100db07861115f2d293bc0cd02611
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-09-26 08:09:45 +0000
+
+    0003488: breakpoints in unit support
+    0003535: byref/ open arrays of string give runtime type mismatch
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@37 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b3bfbf945d5316a2068d2bfbb6198d76b137bccc
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-09-17 09:27:13 +0000
+
+    0004434: Re: Exception Support broken
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@36 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit c9afc33bdfcebc248a20f336704c8f5a7bfc6bf8
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-09-13 15:53:58 +0000
+
+    0004176: Duplicate local with diff caps don't show errors
+    0004192: Fix for ErTypeMismatch in TPSExec.DoBooleanCalc
+    0004443: public.pascalscript: uPSComponentExt.pas issue
+    0003310: bugfix for PascalScript
+    fix for casing of dll exports
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@35 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 6ecd1680dcb3d1a0c1ecbc9c5979ddee8b2b79fe
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-04-05 11:17:38 +0000
+
+    0003274: Finally inside except block does not reset exception  (reported by Martijn Laan)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@34 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit b75b8f08e67fd037744cb0e9ab09728381e0684b
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-04-05 09:49:22 +0000
+
+    fix from Fabio Lindner: comparing notification variants with bool
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@33 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 006e13f9fe8da704ed29a95a8c49209fde798ef5
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-03-16 09:59:59 +0000
+
+    FPC compilation issues
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@32 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 8691cd91cc67f83c48d0619db76b5694ff7096a9
+Author: jr <jr@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-03-12 00:32:41 +0000
+
+    Fix crash when PSVariantToString was called on a btPChar type.
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@31 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0483833f758fa782e29d1fa188172401dc137385
+Author: jr <jr@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-03-12 00:01:32 +0000
+
+    Support PChar 'var' parameters.
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@30 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2c053e9c876feafebdaf0ca7f70dc00097bd574d
+Author: jr <jr@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-03-11 23:38:47 +0000
+
+    Fix compiler errors when PS_NOINT64 and/or PS_NOWIDESTRING were defined.
+    
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@29 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 53e9c8656615542b9d27ff221ae711297b16982f
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-03-02 14:44:18 +0000
+
+    0003179: strange assignment result
+    0003180: Type mismatch with currency
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@28 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit ce6fcc7d1010014870f898684b25e1e533e8f511
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-02-22 13:17:31 +0000
+
+    - 22 feb: 0003033: string results are returned wrong on FreePascal
+     - 22 feb: fix for parameter type of TStream.CopyFRom
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@27 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit fe59d9da1ecd65e4129faa78c872b9f0f2369405
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-02-19 16:47:11 +0000
+
+    - 19 feb: 0002735: Problem with function returning record; Give an error when calling record members on a funtion instead of an AV
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@26 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 11293526fbf412946880328b5c1305697c85c5ec
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-02-06 09:46:13 +0000
+
+    fix in package. Removed the EXT unit from it
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@25 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 5da8cce9e2607a5e3cb7f13321342cfa27477b68
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-02-02 15:14:46 +0000
+
+    allow converting variant back to array of variant.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@24 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit a8dcaa46de830f01462920b14fd7494bf8adf0ba
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-01-26 16:52:03 +0000
+
+    0003048: Complication errors for Length() and SetLength() function when performed on arrays or widestrings
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@23 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit a84dda7c5bf31041924e9b22514d43a1707886a4
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-01-19 14:49:44 +0000
+
+    Changes by Thomas Nitzschke to support Length/SetLength on arrays and low and high.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@22 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit e3c8f24d55d873d0c82e68fe85ab23331f0cfcc0
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2007-01-19 14:48:53 +0000
+
+    Changes by Thomas Nitzschke to support Length/SetLength on arrays and low and high.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@21 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 631352c8bf66f7236f823055b11ae71650ed13fc
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-11-02 08:06:38 +0000
+
+    U0000879: Subject: PascalScript - uPSRuntime
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@20 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 19a4ca3bdf819349886e2fa189aa18586a919afd
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-10-31 07:47:33 +0000
+
+    Patch by
+    Jesus Reyes A. for freepascal support.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@19 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit a104f73336d5bed3da58d87dfa267ddbfe677aae
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-10-17 09:37:04 +0000
+
+    compilation fix for ps
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@18 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 003ad1ec9e4b156aebeafeb8434f3ba8422891f6
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-10-17 09:26:54 +0000
+
+    memory leak fix
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@17 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 9c76406f18de7fb512252df4dab66a540d5adcf4
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-10-06 08:05:47 +0000
+
+    Reversed the Error var parameter.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@16 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 27e161988bb420e0a61f8188a1ddefd912addcb5
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-10-04 08:02:54 +0000
+
+    0002220: Expose Table.State to scripts. Declaration of TDataSetState is added
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@15 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7be021df9baf6444cdbec7dc74bb260e5a93253e
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-09-19 09:53:35 +0000
+
+    0002353: Improvement of TPSScript
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@14 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit e76d50dfd3e7dcba3fa43c5124daba6a9c059faf
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-09-15 12:46:14 +0000
+
+    Put float event callback result in ST(0) instead of stack
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@13 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 0012a67f385d5135bed00d67b3ef03ac174b5826
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-09-12 15:07:27 +0000
+
+    Added a define to not register default types and methods.
+    set plugins to nil before calling inherited.
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@12 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 4296cc05a4ac414cc312b768089c749389f22ad1
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-08-18 10:50:05 +0000
+
+    fixes for FreePascal
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@11 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 64d27650f9b88d8a98cefe80b0778421e94d8636
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-08-18 10:13:43 +0000
+
+    added include
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@10 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit d98e960cc21324b8f349beefe1ccfe3b1d57fe8f
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-08-18 09:09:48 +0000
+
+    memory leak fix
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@9 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit df8cb2ec2bdf65760cbeefa8a260b11cc6893a77
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-08-18 08:49:13 +0000
+
+    static array result types (issue reported on the newsgroups)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@8 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit d7856441ed35d0776db5da6922f806bf4f30d29d
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-08-18 08:40:20 +0000
+
+    borland changed a parameter type in d2006 for FindField. (string -> widestring)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@7 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 7a98d7f8e0a7b6ca268143888a57cce93de814c8
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-08-18 08:34:39 +0000
+
+    Unit support (update: Allow initialization sections and all) from Niels (Lumensoft)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@6 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 89cf62b067638e79cbfe1766647e7edc51e27bf5
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-06-23 11:02:10 +0000
+
+    two typos (which didn't have effect on the reslt)
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@5 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit c13dc29ea389ecc251440aa0f287d757b691cc91
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-06-16 12:49:02 +0000
+
+    0001782: negative const values don't compile
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@4 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit a20beb13cf07d1788df917307fe29167eef06023
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-06-02 09:39:32 +0000
+
+    call onexecute for Executefunction
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@3 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit 2afa8b0c4620de2dc23216964e80c6e34f4b3bcd
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-06-02 09:02:57 +0000
+
+    fix for negative int64
+    first in list fix for properties
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@2 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
+
+commit afe3fdfd770647f8bec4f56e2237a5d42c7644a4
+Author: carlokok <carlokok@5c9d2617-0215-0410-a2ee-e80e04d1c6d8>
+Date:   2006-05-30 14:23:25 +0000
+
+    re-checkin
+    
+    git-svn-id: http://code.remobjects.com/svn/pascalscript@1 5c9d2617-0215-0410-a2ee-e80e04d1c6d8
