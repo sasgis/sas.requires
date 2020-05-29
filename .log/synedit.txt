@@ -1,0 +1,2070 @@
+commit 4ed62d8daf6d9ebd82a0558e14b7e854ef712a08
+Author: Stefan Glienke <sglienke@aagon.com>
+Date:   2019-09-24 11:05:27 +0200
+
+    removed unused variable
+
+commit 188e6b36a6f99168b094e5c5e6b00845f16e0fa1
+Author: Stefan Glienke <sglienke@aagon.com>
+Date:   2019-08-30 13:30:25 +0200
+
+    fixed project files
+
+commit 7be1c95135980422b4e90e894e11b5b045c48ef4
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-08-11 00:28:17 +0200
+
+    Minor fixes (also addresses #129)
+
+commit b73c6d37b7a346411045d7264159f7093cef22c6
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-08-10 23:49:56 +0200
+
+    Added GLSL syntax highlighter
+
+commit eb1e65288b6c09b30ed06db47d7cc42fd8373b39
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-08-10 21:36:25 +0200
+
+    Removed leftovers from Kylix removal
+
+commit ff80c787e9d682a94bb296131a0fbb95383764bd
+Merge: f6f35c3 021072a
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2019-07-19 21:56:22 +0200
+
+    Merge pull request #128 from ase379/127-EnumUserSettings_WOW6432Node
+    
+    #127: Keys for the delphi IDE are stored in the 32 bit section of reg…
+
+commit 021072a1caf95e1f74a5ee3b09cb4cfa95a1046c
+Author: Andreas Seehusen <seehusen@medienpunkt.com>
+Date:   2019-07-19 21:43:26 +0200
+
+    127:
+    
+    + using define instead of default InitIdent
+    + indent
+
+commit a3e4aa57cb0bdfc705fe2ba5f0498dc0df1d692b
+Author: Andreas Seehusen <seehusen@medienpunkt.com>
+Date:   2019-07-19 21:36:43 +0200
+
+    #127: Keys for the delphi IDE are stored in the 32 bit section of regedit. Use WOW6432Node for 64 bit to be able to find the 32 bit node.
+    
+    see https://support.microsoft.com/de-de/help/305097/how-to-view-the-system-registry-by-using-64-bit-versions-of-windows for more info
+
+commit f6f35c332c196f7a59d3bb96505fccb6d7310558
+Merge: e451ebb 6e8b066
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2019-07-19 17:11:28 +0200
+
+    Merge pull request #114 from ghost/patch-1
+    
+    Update SynHighlighterSQL.pas
+
+commit e451ebbab91c72b9b4c09dde656bb9d5a614eb49
+Merge: cdb03a1 9ca7033
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2019-07-19 17:07:15 +0200
+
+    Merge pull request #120 from Lajos-Juhasz/master
+    
+    Issue #87: LineModifications: marked as saved is never reset to Modified
+
+commit cdb03a129c2ca5925bcc0011322c58bbc9c1c957
+Merge: ec61510 3357855
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2019-07-19 17:06:03 +0200
+
+    Merge pull request #101 from Gitek/master
+    
+    Changes to compile in D6.
+
+commit ec615106ec8af5f79ac4e53149f971b2ea4e7151
+Merge: 6394f8f 1bba4d5
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2019-07-19 17:04:51 +0200
+
+    Merge pull request #125 from mbomb007/master
+    
+    SQL: Detect successive backslashes. Fixes issue #53.
+
+commit 1bba4d5a8e36f1e4b02dafc270146fde98328d2c
+Author: mbomb007 <22807401+mbomb007@users.noreply.github.com>
+Date:   2019-06-06 10:40:50 -0500
+
+    SQL: Detect successive backslashes. Fixes issue #53.
+    
+    Detect as escape chars so '\\' does not display text right besides that as string.
+    
+    Copied fix from here: https://github.com/HeidiSQL/HeidiSQL/commit/2436cdf388bfcf71310b97cc503d303730fd0b06
+
+commit 6394f8f847ea821e3a6f50bb3fcd2942b152f2a0
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-04-02 21:50:37 +0200
+
+    Fixed path links in CBuilder project
+
+commit 7b67fb4318df6caa9b460350f728e24d1815f1cc
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-04-02 19:41:35 +0200
+
+    Added CBuilder project files
+
+commit 9ca7033fb7048dce4f3ba363aac5072fd3349d15
+Author: Lajos-Juhasz <juhasz.lajos@gmail.com>
+Date:   2019-01-15 15:51:43 +0100
+
+    The status of the line was invalid when the user modifies the line, saves the file and then modifies it again. Visually the line was still marked as saved instead of modified.
+
+commit 335785527d1c59b56b928705f481927da4b12e98
+Author: Tor Helland <th@gitek.no>
+Date:   2019-01-14 14:19:06 +0100
+
+    Define WS_EX_COMPOSITED for D6 and below.
+
+commit 18c5888ec586e8dc2f51064a57069baf62a55889
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-01-05 18:00:09 +0100
+
+    Minor changes (removal of Q* stubs, typo and comment formatting)
+
+commit 0a2b6beae472974e33c84325dde788111f9b610d
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-01-05 17:19:24 +0100
+
+    Minor changes towards Delphi7 compatibility
+
+commit 23df006b4d15f9c3151ce5e3bfdc9e9b0d3a0a71
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-01-04 16:36:36 +0100
+
+    Fixed SynEditCodeFolding issue #118 (thanks to stbie and pyscripter)
+
+commit 4077f9126004a772f5118ec9910e62e3456e3742
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-01-04 16:22:29 +0100
+
+    Removed yet uncompleted DirectWrite from the master branch
+
+commit 72797cc062fd6a31c0b4c095578d5b23377a5c8e
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-01-04 16:04:16 +0100
+
+    Removed Kylix compatibility. Please use branch 'Kylix' if you still rely on Kylix compatibility. Also, please contact us to ensure that the branch will include the latest bug fixes.
+
+commit fd023a8e4087661d0c971cdfb2e239d4b3682ae5
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2018-11-23 18:12:49 +0100
+
+    packages and compilation fix for 10.3 Rio
+
+commit 6e8b0667c9bb2e74b53a7e18a802345a319b19c3
+Author: NilsHoyer <NilsHoyer@users.noreply.github.com>
+Date:   2018-09-15 07:12:29 +0200
+
+    Update SynHighlighterSQL.pas
+    
+    MySQL Keywords updated
+
+commit f1b1d7be2c2a0caf5b180720e933b409233613d1
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2018-09-09 00:58:46 +0200
+
+    Fixed issue #100 ("eoAutoIndent doesn't work")
+
+commit df849fd4aae401690c697a433a5e2b3e294cd0cc
+Merge: 0577cac ee3ff59
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2018-09-09 00:25:10 +0200
+
+    Merge remote-tracking branch 'sglienke/master'
+
+commit 0577cac18c0482b2821161408d0df8d28ccef6c3
+Merge: de829f6 30a5391
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2018-09-09 00:15:47 +0200
+
+    Merge commit '30a5391598ce5498769efbd09f581cef342e2dbf'
+
+commit de829f695ec770c4b2be363903cf2fced800ffc3
+Merge: 291f0b6 6f4c81b
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2018-09-09 00:05:41 +0200
+
+    Merge remote-tracking branch 'KametaTech/master'
+
+commit 291f0b6ed912692a9e02b0678ebc339de5070b47
+Merge: d379aa6 cddd212
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2018-09-09 00:03:30 +0200
+
+    Merge remote-tracking branch 'tondrej/master'
+
+commit d379aa6930a4f4640b24296e1e59e1abd9703ba2
+Merge: b1a61f3 8073d30
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2018-09-08 23:56:25 +0200
+
+    Merge pull request #104 from jarto/master
+    
+    Prevent Synedit from painting contents while doing vertical scroll.
+
+commit b1a61f31e95ff092991a94f011c3552bee80a379
+Merge: 7d2b2b7 edca28f
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2018-09-08 23:54:13 +0200
+
+    Merge pull request #106 from Akhi1/patch-1
+    
+    Update Readme.md
+
+commit 7d2b2b7999902e9de0757b9ab2430cbfe267bb1d
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2018-09-08 23:48:49 +0200
+
+    Fixed issue #112 (wrong key attribute name)
+
+commit edca28f392e7f3089bcefec96d5cc5d3eee1494e
+Author: Akhil <Akhi1@users.noreply.github.com>
+Date:   2018-08-03 06:04:05 +0530
+
+    Update Readme.md
+
+commit 8073d30f52c0f7379f61bbc26735f0fd84bb8d8c
+Author: Jarto Tarpio <jarto.tarpio@hotmail.com>
+Date:   2018-07-15 13:26:33 +0300
+
+    Prevent Synedit from painting contents while doing vertical scroll.
+
+commit cddd2121ccf9bef070601a6fcbfa2bc114f17d1c
+Author: Ondrej Kelle <tondrej@gmail.com>
+Date:   2018-06-01 19:09:44 +0200
+
+    Fix W1044 Suspicious typecast of string to PWideChar (pre-Unicode Delphi versions)
+
+commit d577f5a58336aa3aea3a06e92d6ddeeb5ac06a46
+Author: Ondrej Kelle <tondrej@gmail.com>
+Date:   2018-05-31 17:18:05 +0200
+
+    Compile with Delphi 7
+
+commit 6f4c81b2b8eeaf7c2fa9bab47376c56f6cbd3802
+Author: Kameta <djarikov91@gmail.com>
+Date:   2018-04-07 03:37:37 +0300
+
+    [Fix] Freezing TSynCssSyn
+    
+    The following code freezes TSynCssSyn
+    div[class*="test"] {
+        background: #ffff00;
+    }
+
+commit 696f5a3b245c77015b5125d5d6117819754f81e3
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2018-02-01 08:06:01 +0100
+
+    Added missing SynEdit.Inc that makes it compile again with XE3 till 10.2
+
+commit 30d06a67a87d8fc7589381d682adf59acd896ee2
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2018-01-27 15:24:09 +0100
+
+    Added SynEditCodeFolding that is now required due to the XE/XE2 code folding fix in the last commit
+
+commit 726faf860cf53e4bb6ad44989c44e4d2e5ca7873
+Author: Stefan Glienke <sglienke@aagon.com>
+Date:   2018-01-17 16:45:45 +0100
+
+    fixed codefolding for XE
+
+commit e6dc0fdd79b84a3886bdc5cd7024a2babe03deec
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2018-01-27 14:52:54 +0100
+
+    Fix memory leak in Pascal highlighters
+    
+    The created regular expressions were not freed.
+
+commit ee3ff59f3dc45c3b79ac30fbd50d2d3bc22dc94e
+Author: Stefan Glienke <sglienke@aagon.com>
+Date:   2018-01-17 16:49:23 +0100
+
+    added .gitattributes and normalized line endings
+
+commit 30a5391598ce5498769efbd09f581cef342e2dbf
+Author: Stefan Glienke <sglienke@aagon.com>
+Date:   2018-01-17 16:45:45 +0100
+
+    fixed codefolding for XE
+
+commit 0e049560cfc02609bcced768ebb64f7583c01831
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-12-30 18:43:52 +0100
+
+    Fixed D2010 till XE7 design time package compilation (added missing SynHighlighterGo to runtime package)
+
+commit 55d73e8d3deb83a088e74636a4602a8d7417f28e
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-12-30 18:34:07 +0100
+
+    Fixed D2009 design time package compilation (SynHighlighterAsmMASM requires IOUtils that is available for D2010++)
+
+commit 8ef879dd4ce1de811e4fefc82f4ce1271d4c4bab
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-12-30 11:37:17 +0100
+
+    Removed namespaces for OleCheck in TCustomSynEdit.CreateD2DCanvas, because they are not required and TCustomSynEdit.PaintGutterD2D does already OleCheck without namespaces
+
+commit deb77aaf1451e72905e7e8ab9cea346e779e58a4
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-12-30 11:33:29 +0100
+
+    Removed Win64 references in D2010 and XE DPROJ files as suggested in pull request #84
+
+commit 193d49748f06aadb3df77571965c63ea4610dfea
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-12-23 15:24:46 +0100
+
+    Code Folding: Added initial support for Pascal (TSynPasSyn) using the DWS changes
+
+commit 525c3044a49a597526173eca3fb61d50f46e6f73
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-12-23 11:24:51 +0100
+
+    Code Folding: removed excluded packages from demo DPROJ as excluding the SynEdit package is counterproductive for a SynEdit demo and anyway the projects should be free of any personal settings
+
+commit 23836b9e2f8d6eafddf20e37c7ef8d2acffed3d4
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-12-23 10:58:34 +0100
+
+    Disabled DirectWrite for XE and lower, because it requires XE2+ TRect extensions and requires XE+ LCIDToLocaleName
+
+commit ec177dbb464a00b54b758b4e7deb93129b3190b7
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-12-23 10:47:11 +0100
+
+    Code Folding clean up: Disabled Code Folding for XE2 and lower, because so far SynEditCodeFolding.pas requires at least XE3+ Generics.Collections
+
+commit 8224b958a4a428583896fa7bbe45e8829a6c8c54
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-12-23 10:45:42 +0100
+
+    Fixed hints in TCustomSynEdit.PaintGutterD2D
+
+commit 8395563d472347596263ec7df5ccb65b6c548ec2
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-12-23 10:44:47 +0100
+
+    Code Folding clean up: Fixed runtime package compilation for XE3 till 10.2
+
+commit 6f07a0d12e04943f8a864b46a881e27a44c5254a
+Merge: 2ce64b5 d94526b
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-12-08 01:03:36 +0100
+
+    Merge pull request #81 from pyscripter/master
+    
+    Minor adjustment to DWS Highlighter
+
+commit d94526b4c602ed03f674ae2345d379d4a3124e79
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-08 01:29:29 +0200
+
+    Call InvalidateGutterLines in ListPutted
+
+commit 898bb9e5576c03a8965a7c63c82bd09a8e46fdce
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-07 01:49:17 +0200
+
+    Overloaded methods added to TSynFoldRanges
+
+commit 92a96a7f082a680744b3e136fc81471f9f41e538
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-06 06:49:07 +0200
+
+    Minor bug fixes
+
+commit a9c520753886e3281ad609f3476121c8521098e3
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-06 04:34:47 +0200
+
+    TSynCodeFolding.Assign added
+
+commit 06388caa8b17e8799a3b28b3c43c08eef069fb7c
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-05 13:34:42 +0200
+
+    Minor adjustment to DWS Highlighter
+
+commit 2ce64b56a6ae8d05bdc69a4626875dfb512a7a16
+Merge: e39ecfe 3f8e0ba
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-12-05 09:17:05 +0100
+
+    Merge pull request #80 from pyscripter/master
+    
+    Improved DWS (pascal) highlighter
+
+commit 3f8e0ba8fbde60c2c4f06fe51cd5baef3565c795
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-05 04:56:42 +0200
+
+    Further improvements to DWS
+    
+    Should be almost perfect now.
+
+commit e0cc67c4457127005917511b344b854d58adcfc3
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-04 23:24:03 +0200
+
+    Add demo.pas
+
+commit 6a8093cd5507a449496adf2079fb3c6b766e7e1e
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-04 23:23:17 +0200
+
+    Improved DWS Highlighter
+    
+    Almost complete
+
+commit a8721430ebb83957cdc8023ffdd8031b4846cf1c
+Merge: 496a759 e39ecfe
+Author: pyscripter <pyscripter@gmail.com>
+Date:   2017-12-04 23:13:54 +0200
+
+    Merge pull request #4 from SynEdit/master
+    
+    Improved code folding for DWS syntax highlighter and some cleanup
+
+commit 496a759ca621816937ada045f902c6a8013fec65
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-04 23:11:05 +0200
+
+    Trying to resyncy with SynEdit\Synedit
+
+commit 16a0c1ec935d04974d58af94948a1056bbf00323
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-04 22:35:53 +0200
+
+    DWS (pascal) highlighter
+
+commit e39ecfe67dd792643339d05b5c054f5ad9035cd0
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-12-04 13:54:11 +0100
+
+    Improved code folding for DWS syntax highlighter and some cleanup
+
+commit a04e94c13b882809cd05ac01d40471156af80819
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-04 13:17:27 +0200
+
+    Delete duplicate file
+
+commit ff2120f71c9d10479368991db84aafef2dce40b4
+Merge: 7dc04b0 28dde1f
+Author: pyscripter <pyscripter@gmail.com>
+Date:   2017-12-04 13:01:21 +0200
+
+    Merge pull request #2 from SynEdit/master
+    
+    Sync with Synedit/Synedit
+
+commit 28dde1f0e2291e6258c4d1d10c6ecfe827334116
+Merge: dca08ec a680a3a
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-12-04 09:55:41 +0100
+
+    Merge branch 'master' of github.com:SynEdit/SynEdit, with some cleanup
+
+commit a680a3a5f04cb242d284d95e84435b3f653f38d2
+Merge: 691ef09 7dc04b0
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-12-04 08:56:48 +0100
+
+    Merge pull request #79 from pyscripter/master
+    
+    Code Folding Improvements
+
+commit 7dc04b034f8c9f1a7a1ec27cb94801744944cb4c
+Author: pyscripter <pyscripter@gmail.com>
+Date:   2017-12-04 05:12:01 +0200
+
+    Update CodeFolding.md
+
+commit 6ad58fdd3a713270b089c53d8e9d2982db7965ad
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-04 05:09:22 +0200
+
+    Added Code Folding overview
+
+commit 79ccf223f2ade46b8e53dea521edf252e3bae0e6
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-04 04:53:04 +0200
+
+    Removed duplicate file
+
+commit 27b4c13d6d203323f6e50149b1023b81470fc3d6
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-12-04 04:50:27 +0200
+
+    Code Folding Improvements
+    
+    Painting fold hints
+    Customisation options
+    Improved painting
+    Updated demo
+
+commit dca08ecd89b47955f6d5366ceecfc70d306e52ad
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-11-30 14:48:27 +0100
+
+    Basic code folding support for the DWScript syntax highlighter
+
+commit 691ef090de886287b8b0e03ae1ef826ee1e7cd95
+Merge: 7022c0b 3d0e064
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-11-30 14:27:01 +0100
+
+    Merge pull request #78 from pyscripter/master
+    
+    Code Folding Support
+
+commit 3d0e064933cd9bf8a7c5f9a4a2e7c1c5df229302
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-11-29 20:06:34 +0200
+
+    Revert "Revert "Added SynEditCodeFolding.pas""
+    
+    This reverts commit e6457ee59a999bc59efcee7136ca12ebb188f8aa.
+
+commit e6457ee59a999bc59efcee7136ca12ebb188f8aa
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-11-29 20:05:36 +0200
+
+    Revert "Added SynEditCodeFolding.pas"
+    
+    This reverts commit 282ea4b8632ea7e538de5cf21c8ca65175ff721a.
+
+commit 282ea4b8632ea7e538de5cf21c8ca65175ff721a
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-11-29 19:53:51 +0200
+
+    Added SynEditCodeFolding.pas
+    
+    Forgot to include this
+
+commit d1aaade22865c54354b8190ebde69e359dacfe35
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-11-29 15:13:54 +0200
+
+    Code folding support
+    
+    **Introduction**
+    
+    This pull request adds code folding support for SynEdit.  It blends well
+    with the Synedit highligting infrastructure and provides fast and
+    efficient code folding that can cope with files with tens of thousands
+    of lines without lags.
+    
+    **Converting existing highlighters**
+    
+    To support code folding a Highlighter must inherit from
+    TSynCustomCodeFoldingHighlighter and implement one abstact procedure
+    ```
+    ScanForFoldRanges(FoldRanges: TSynFoldRanges;
+    LinesToScan: TStrings; FromLine: Integer; ToLine: Integer);
+    ```
+    For each line, ScanForFoldRanges needs to call one of the following:
+    ```
+    FoldRanges.StartFoldRange
+    FoldRanges.StopFoldRange
+    FoldRanges.NoFoldInfo
+    ```
+    ScanForFoldRanges  is called after the standard highlighter scanning has
+    taken place so one can use the Range information stored inside
+    LinesToScan, which is a TSynEditStringList, to avoid duplicating effort.
+    
+    Initally two hightlighters have been converted SynHighlighterJScript and
+    SynHighlighterPython, to serve as examples of adding code folding
+    support to brace-based and indentation-based languagges.
+    
+    Alternatively, code folding support can be provided just by implementing
+    the SynEdit OnScanForFoldRangesEvent event.
+    
+    **Demo of Coding Folding**
+    
+    A Folding demo has been added that demonstrates the use of the JScript
+    and Python highlighters as well as the use of the
+    OnScanForFoldRangesEvent event to support code folding in C++ files.
+    
+    **Synedit Commants and Shortcuts**
+    
+    The following commands have been added:
+    ecFoldAll, ecUnfoldAll, ecFoldNearest, ecUnfoldNearest, ecFoldLevel1,
+    ecFoldLevel2, ecFoldLevel3,, ecUnfoldLevel1, ecUnfoldLevel2,
+    ecUnfoldLevel3, ecFoldRegions, ecUnfoldRegions.
+    
+    The default customisable shortcuts are:
+    ```
+    AddKey(ecFoldAll, VK_OEM_MINUS, [ssCtrl, ssShift]);   //- _
+    AddKey(ecUnfoldAll,  VK_OEM_PLUS, [ssCtrl, ssShift]); //= +
+    AddKey(ecFoldNearest, VK_OEM_2, [ssCtrl]);  // Divide //'/'
+    AddKey(ecUnfoldNearest, VK_OEM_2, [ssCtrl, ssShift]);
+    AddKey(ecFoldLevel1, ord('K'), [ssCtrl], Ord('1'), [ssCtrl]);
+    AddKey(ecFoldLevel2, ord('K'), [ssCtrl], Ord('2'), [ssCtrl]);
+    AddKey(ecFoldLevel3, ord('K'), [ssCtrl], Ord('3'), [ssCtrl]);
+    AddKey(ecUnfoldLevel1, ord('K'), [ssCtrl, ssShift], Ord('1'), [ssCtrl,
+    ssShift]);
+    AddKey(ecUnfoldLevel2, ord('K'), [ssCtrl, ssShift], Ord('2'), [ssCtrl,
+    ssShift]);
+    AddKey(ecUnfoldLevel3, ord('K'), [ssCtrl, ssShift], Ord('3'), [ssCtrl,
+    ssShift]);
+    ```
+    
+    **Limitations**
+    
+    - Code folding can not be used simultaneously with Wordwrap.  Synedit
+    takes care of that.
+    
+    - The code uses generic collections, so it cannot be used with Delphi
+    versions prior to Delphi 2009.
+    
+    **Improvements**
+    
+    Although the code folding infrastructure is fairly complete,
+    improvements can be made in providing the user with more painting
+    options (folding hints etc.)
+    
+    **Technical details**
+    
+    The main code folding structure is TSynFoldRanges in
+    SynEditCodefolding.pas.  It contains a public
+    `TList<TSynFoldRange>` (sorted by starting line numbers).  This list is
+    used by Synedit to paint the gutter and lines, fold and unfold ranges
+    etc. Internally, TSynFoldRange maintains a `TList<TLineFoldInfo>` that
+    is
+    modified during scanning.  The `TList<TSynFoldRange>` is reconstructed
+    from the
+    `TList<TLineFoldInfo>` only when it is necessary.
+    
+    **Code changes**
+    All code changes are marked with one of the following
+    - Code folding related changes
+    ```
+    //++ CodeFolding
+    ...
+    //-- CodeFolding
+    ```
+    - Further changes to reduce flicker (could be applied independently of
+    code folding changes)
+    ```
+    //++ Flicker Reduction
+    ...
+    //-- Flicker Reduction
+    ```
+    
+    - Further changes to allow Synedit to be used in DPI-aware applications
+    (could be applied independently of code folding changes)
+    
+    ```
+    //++ DPI-Aware
+    ...
+    //-- DPI-Aware
+    ```
+
+commit 7f222499ee8e1354fc8273b4069526845c62c93a
+Merge: 7022c0b 2a2e939
+Author: pyscripter <pyscripter@gmail.com>
+Date:   2017-11-21 05:22:10 +0200
+
+    Merge pull request #1 from pyscripter/flickerreduction
+    
+    Reduce Flicker
+
+commit 2a2e939681a9a75b67181e80acff9e514929f1ec
+Author: PyScripter <pyscripter@gmail.com>
+Date:   2017-11-21 05:04:58 +0200
+
+    Reduce Flicker
+    
+    Removed unnecessary invalidations
+    UpdateScrollbars calls Invalidate causing full repaint.
+    As it stands moving the cursor eg. left or rigth and typing one
+    character results in a full repaint and flicker.
+    
+    Three changes were made that resolve the issue.
+    a) In SetCaretXYEx I removed the line
+    Include(fStateFlags, sfScrollbarChanged);
+    since it is not needed.  Scrollbars are updated when TopLine or LeftChar
+    get changed.
+    b)   I removed UpdateScrollbars for LinesChanged and added
+    Include(fStateFlags, sfScrollbarChanged);
+    to ListInserted, ListDeleted.  Thus when the user types code in one line
+    this does not result in a full repaint.
+    b) In LinesInserted I changed the line
+    UnionRect(fInvalidateRect, fInvalidateRect, rcInval)
+    to
+    UnionRect(fInvalidateRect, rcInval, fInvalidateRect)
+    This subtle change prevents the invalidate of the lines above the line
+    you are typing when fInvalidateRect is empty.
+
+commit 7022c0b6ad9a43706a9d2b0970aedf4fd1ffe8c8
+Merge: 163d228 d702a19
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-11-10 14:19:03 +0100
+
+    Merge pull request #76 from coassoftwaresystems/master
+    
+    Mark inserted empty lines as modified lines
+
+commit d702a191d48483ba4ffd23f9b385bd1eb40d836d
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-10-23 14:00:13 +0200
+
+    Mark inserted empty lines as modified lines
+
+commit 163d228beab7bd457d1807fed7fc25bfc7c852d8
+Merge: 5fe11a5 4068f2f
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-10-20 16:16:28 +0200
+
+    Merge pull request #75 from mLamneck/master
+    
+    synGen: creating a case-sensitive highlighter didn´t work
+
+commit 4068f2f2b9097ee2d48060653bfffc11b8f31bb7
+Author: mLamneck <32937082+mLamneck@users.noreply.github.com>
+Date:   2017-10-19 21:00:30 +0200
+
+    synGen:
+    #BUGFIX
+    
+    creating a case-sensitive highlighter didn´t work
+
+commit 5fe11a5875464d32fae0a882b3dcd4413ad61f79
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-10-10 15:54:21 +0200
+
+    Move all subdirectories for Delphinus as suggested by Mamnarch (issue #70)
+
+commit 6086f489e2304a671ad8219e0b4e1dc7d7e4934d
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-10-10 15:40:57 +0200
+
+    Updated paths for Delphinus (see issue #70)
+
+commit 4a7e735da7a7d93936643c18999ba65586708a96
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-10-10 15:27:05 +0200
+
+    Updated Delphinus.Install.json
+
+commit 0f29816064224c97c6589ef6bc62398040d8a8f8
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-10-10 15:10:17 +0200
+
+    Another attempt to solve issue #47
+
+commit b7f93b017b7d13404bc3f3e5963765aa9306ea3a
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-09-22 13:05:23 +0200
+
+    Added {$HIGHCHARUNICODE ON} for Delphi 10.3 aka Tokyo (issue #47)
+
+commit d35c0fe9a306cec76948b5aa7afaf49a7726e59f
+Merge: e7931d5 231f5f7
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-09-08 11:46:27 +0200
+
+    Merge pull request #72 from coassoftwaresystems/master
+    
+    SynhighlighterGo unit is missing in some runtime packages
+
+commit 231f5f796f3315c4328bf826dff5df941ba6e707
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-09-04 10:44:44 +0200
+
+    Add missing SynhighlighterGo unit in several runtime packages
+
+commit e67737140af2966aa9edd659a305866c984fd975
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-08-22 09:03:11 +0200
+
+    Add missing unit in package for Delphi 10.2 Tokyo
+
+commit e7931d5e410ddf06864a9f5299b6cb9d7837b55a
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-07-16 12:07:07 +0200
+
+    Removed BOM (necessary to fix issue 63)
+
+commit 30c35ec431967d07a36a947f5439bad48fcb1287
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-07-16 12:04:21 +0200
+
+    Some DirectWrite / Direct2D improvements, but not yet ready to replace GDI so far
+
+commit 2387f62b612f25f0fa4330c0dff573f8b8ac68b0
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-17 23:53:33 +0200
+
+    Some more changes towards a better rendering with DirectWrite (still glitchy though)
+
+commit 4cedd64bc46637aa531d69c669e86f19806e6289
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-17 13:16:53 +0200
+
+    Cleaned up experimental DirectWrite / Direct2D drawing a bit
+
+commit 08c6be28b646c0eef374b70fb9a99efe817b8db3
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-17 00:25:44 +0200
+
+    Completed adding experimental support for DirectWrite (currently disabled to make it compatible with older Delphi versions). What's missing so far is a cure against the character dancing when text is selected. In fact the whole text selection code would need a makeover for DirectWrite (with Direct2D) as it works different to GDI in this regards.
+
+commit 84a3fdd3c73ef93ac83e8afcd59e6adfe6a6e12b
+Merge: ae47e3b 8882971
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-15 15:36:15 +0200
+
+    Merge branch 'master' of github.com:SynEdit/SynEdit
+
+commit ae47e3bb1d959ebf2e63b6fc8c9977eb2b2e995e
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-15 15:35:56 +0200
+
+    Added experimental support for DirectWrite (might not compile in older Delphi versions, but this will be fixed soon)
+
+commit ac9c8cffafcfc2f0825a3aa1130c71cd173e7036
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-15 15:35:37 +0200
+
+    Minor changes
+
+commit 2e42bbf905d7bff46f91c03dd163ed8717b2e2b9
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-15 15:33:12 +0200
+
+    Make current settings visible
+
+commit 88829719183647ec1f6556cc5e0f3880d711f0e0
+Merge: aa8c466 30ae045
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-06-14 22:59:38 +0200
+
+    Merge pull request #69 from coassoftwaresystems/master
+    
+    Preserve gutter background color when drawing modified lines when gra…
+
+commit 30ae045fc0466bee55f2d3012395d3a802857b2b
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-06-13 15:54:36 +0200
+
+    Preserve gutter background color when drawing modified lines when gradient is off
+
+commit aa8c466cd1afbf4f5f2318703b937963e3a07836
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-11 02:57:14 +0200
+
+    Final changes to sync capitalization
+
+commit 96f995e877fcad2a8e453ece80f22f9b52db2563
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-10 18:16:23 +0200
+
+    Some more house keeping
+
+commit 447f202de8a56a8b3c0d4b8929d79bba444fdb70
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-09 22:27:56 +0200
+
+    More house keeping (capitalization of fields and types)
+
+commit 5ef7d1a8d858df8e74dcd39a600aaa9c95d64842
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-08 14:37:09 +0200
+
+    Minor fixes to the modification bar and some house keeping (capitalization)
+
+commit 1343e493b5dfa13b08e63db492eb2633869f6fa7
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-08 12:19:49 +0200
+
+    Even more support for older Delphi versions
+
+commit 1de1e4041f3a168cc41dbca6e19ffa8c0dc01c76
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-08 12:03:40 +0200
+
+    More support for older Delphi versions
+
+commit 6cb70e9bed85cb280a95ee212df86d223c0801a0
+Merge: facbab4 b0c548a
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-08 10:25:22 +0200
+
+    Merge branch 'master' of github.com:SynEdit/SynEdit
+
+commit facbab454c2f46752e9315d6f65ecb2bf5e92836
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-08 10:17:02 +0200
+
+    Moved Delphi 7 packages to subfolder
+
+commit b0c548a4d3689d46ec44d613381a778106caccbf
+Merge: 3ec4773 bec1cc3
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-06-08 09:45:01 +0200
+
+    Merge pull request #67 from coassoftwaresystems/master
+    
+    Add customization options for drawing modified line markers
+
+commit bec1cc332ac01263116cb60f6a3094592ccb3242
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-06-08 09:00:33 +0200
+
+    Add customization options for drawing modified line markers
+
+commit 3ec477370a01c12d488b1a6ce7da6af5d3583d1d
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-07 15:31:30 +0200
+
+    A few changes in particular to make it compile with D7 again
+
+commit 74e67d856095480de1ac5a3ab4293e942545fa86
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-06 17:33:51 +0200
+
+    Some house keeping
+
+commit f540669a316b478b23289a54b8d2b58d955b8147
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-03 23:27:07 +0200
+
+    Some house keeping
+
+commit 6458d9f4c9fb749d2fb0456a192bdb0f805f789c
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-03 15:28:11 +0200
+
+    Minor changes
+
+commit 9b13a190b740ab094c988b16baac8a5a25a777d9
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-03 13:06:45 +0200
+
+    Added procedures to alter the modification flags
+
+commit 03b3d5e05f5a7453112c852d95a4ec70cd46d882
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-03 12:41:19 +0200
+
+    Added modification bar to show whether a line has been modified
+
+commit d50bdc142c235da9ad3ec40c3f98c4049478bdc8
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-02 18:02:21 +0200
+
+    Implemented and published missing StringMultiLine property of the TSynGeneralSyn highlighter in order to fix issue #64
+
+commit a7619280e591db86e1cd09aa958d29c33f404971
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-02 15:44:34 +0200
+
+    Added simple gutter demo
+
+commit a2b1b6eac8572c0a5c741cdfef417573ad272d98
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-02 13:19:52 +0200
+
+    Removed unused range states
+
+commit 3640ffcb4bb940af6aa1c99ddcee5caa7c0bed0d
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-02 13:16:24 +0200
+
+    Improved go syntax highlighter
+
+commit 78b75ff42f2dad8bc03651368c38bd0558a2ebe1
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-02 07:09:07 +0200
+
+    Added icon for go syntax highlighter
+
+commit adf7e7bd0464e088a149b067b8041e59c69b3928
+Merge: 1212350 a0e176a
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-01 16:04:01 +0200
+
+    Merge branch 'master' of github.com:SynEdit/SynEdit
+
+commit 1212350404ae08500a6d23b31595a88048b746a6
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-06-01 16:03:39 +0200
+
+    Added new rudimental go syntax highlighter to address issue #60
+
+commit a0e176a6cc4a64d0f83e5e1feb398f2c833d41ac
+Merge: a32c1b6 2ea216e
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-05-31 21:54:06 +0200
+
+    Merge pull request #62 from coassoftwaresystems/master
+    
+    Add missing Oracle datatype and system package
+
+commit 2ea216e1af750ea6775852b67cff659b33b05668
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-04-21 09:23:55 +0200
+
+    Add missing Oracle datatype and system package
+
+commit a32c1b69a82ee629fe93aaad155b7d47137c243a
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-03-29 23:14:58 +0200
+
+    Fixed design time package compilation for D2010 - 10.1 Berlin because of missing SynHighlighterAsmMASM in runtime package (XE7 and 10.2 Tokyo did contain it already)
+
+commit a802343ae3cf59700a520e9ca31b4f3c2dc7bc72
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2017-03-29 22:40:28 +0200
+
+    Fixed H2077 for 10.2 Tokyo
+
+commit e10b3650bf84d76b669ae9952c4526b8cf1457a0
+Merge: 6a6ffce 0a651a7
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-03-28 09:28:25 +0200
+
+    Merge pull request #59 from coassoftwaresystems/master
+    
+    Add packages for Delphi 10.2 Tokyo
+
+commit 0a651a7c99afc7b7f335b7fcc3c7f06129d70948
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-03-28 09:10:17 +0200
+
+    Add packages for Delphi 10.2 Tokyo
+
+commit ad41ad8531a7fc4aeaf0bcdadabc63d7617266bf
+Merge: b0060f5 6a6ffce
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-03-28 09:09:16 +0200
+
+    Merge branch 'master' of https://github.com/SynEdit/SynEdit
+
+commit 6a6ffceec80feed5ca8f38742059df7d57ca6a52
+Merge: 41c4e52 9fb0973
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-03-27 13:07:55 +0200
+
+    Merge pull request #58 from zedxxx/master
+    
+    Add support Delphi 10.2 Tokyo
+
+commit 9fb09735a7ae9f8f19f3eed55da404ea8a65440b
+Author: zed <starmen@tut.by>
+Date:   2017-03-27 12:18:27 +0300
+
+    Add support Delphi 10.2 Tokyo
+
+commit b0060f5f4253333736ec9ddf6dc5edc1fda66999
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-03-27 11:13:31 +0200
+
+    Fix Oracle console output statements
+
+commit 41c4e52c6d47bee61ff79d70e920c69927766c2f
+Merge: 8948169 1313e5d
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-03-23 14:47:54 +0100
+
+    Merge pull request #57 from coassoftwaresystems/master
+    
+    Add missing Oracle keywords, exceptions and datatypes to SQL highlighter
+
+commit 1313e5d01be647b5f51ec945937a85a0d72f30c4
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-03-23 14:28:42 +0100
+
+    Add missing Oracle keywords, exceptions and datatypes to SQL highlighter
+
+commit 89481697dc998bf874f5a869980eaef257c1f437
+Merge: 54e12c4 45d1f15
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-03-14 10:01:52 +0100
+
+    Merge branch 'master' of github.com:SynEdit/SynEdit
+
+commit 54e12c4f10af39ef36af447d2800f53b57f52c80
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-03-14 10:01:32 +0100
+
+    Fixed RTF export for non-common locale settings
+
+commit 45d1f153d299d5120b4593de63243b1cd4c02b49
+Merge: ae37152 8980ff3
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-03-13 12:52:53 +0100
+
+    Merge pull request #56 from coassoftwaresystems/master
+    
+    Improvements for SQL highlighter on Oracle db
+
+commit 8980ff3699216b48b2550b3220b22df2a544197b
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-03-13 12:29:33 +0100
+
+    Add new highlighter attribute for console output
+
+commit c36fb25dc3491606e548bb84d61a678d19100d48
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2017-03-13 12:29:16 +0100
+
+    Add missing Oracle keywords
+
+commit ae37152dbc6e6f567f8daa19ce282acdf85ffbce
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-03-12 12:01:18 +0100
+
+    Applied suggested fix (from issue #47) to SynEditHighlighter and SynEditSearch
+
+commit b233cd52157cbfdf56ce3bee9214afe7b1ad7d24
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-03-12 11:26:28 +0100
+
+    Added a backport of the MASM highlighter by ThomasJaeger (https://github.com/ThomasJaeger). It doesn't (yet) contain all the modifications he made, but considering the look of his Visual MASM IDE (see http://www.visualmasm.com) it's likely that these modifications will be added as well sooner or later.
+
+commit e89d73d2c522ca26de457a73c59aaeab899d6bd7
+Merge: 13a79de 546e1f3
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-03-12 11:06:48 +0100
+
+    Merge pull request #50 from NilsHoyer/patch-1
+    
+    Update SynHighlighterSQL.pas - Keywords for MySQL
+
+commit 13a79de3b49b5ebaa468385f4453657416466e5d
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-03-12 11:03:00 +0100
+
+    Manual merge of push request #55 (Extend MatchText property by MatchTextAnywhere), due to code style issues
+    Additional cleanup for the entire unit
+
+commit 8bba8c6b0d0f8949246274d3ea60f9d05bd21a2d
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-03-12 10:59:08 +0100
+
+    Fixed the unicode mess in unit SynHighlighterJava.pas as explained in depth in issue #47
+
+commit 887e21692d84f7630db89ddeba563cbd4101d9f9
+Author: Karol Bieniaszewski <liviuslivius@poczta.onet.pl>
+Date:   2017-03-06 13:45:09 +0100
+
+    Extend MatchText property by MatchTextAnywhere
+    
+    Add MatchTextAnywhere attribute to filter list with text anywhere in list
+    But Select first with lower index matching
+
+commit 546e1f358de3df3bea518238979514bf28e5e171
+Author: NilsHoyer <github@mysqlfront.de>
+Date:   2016-11-26 19:01:32 +0100
+
+    Update SynHighlighterSQL.pas
+
+commit 08c99a7db1056af36e13bb1ed131270a4bece836
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2016-11-12 16:28:56 +0100
+
+    Added overload to simplify the manual creation of TSynHighlighterAttributes
+
+commit 1832ac14a0649581da64f7d69203f9af4ae6eac9
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-10-25 19:12:10 +0200
+
+    Fix for #48: Fixed ERangeError in HashKey in 64-bit mode
+
+commit d100744eba69c8458b31a06caf691535dde21169
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2016-10-10 15:35:48 +0200
+
+    Replaced UTF-8 encoded chars by a char expression
+
+commit fb27a3dc616e854885f50e4a5cffdfce244e2a23
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2016-10-07 13:17:59 +0200
+
+    Added BOM to identify the files clearly as UTF-8
+
+commit 198de35f7a87f23aeee681ec833f6749dd717038
+Merge: 3947096 5ae483f
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2016-10-06 17:09:09 +0200
+
+    Merge branch 'master' of github.com:SynEdit/SynEdit
+
+commit 3947096a2febe7e0edff93a8afbd4bef4ccd49eb
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2016-10-06 17:08:53 +0200
+
+    Changed encoding (as requested in issue #47)
+
+commit 5ae483f22164938019629b58e77a4983a2658e69
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-09-18 09:58:45 +0200
+
+    Fix for #45: [Search highlighter demo] Highlighted text is the search text and not the original text
+    
+    Now the original text at each search result location is taken into account and the length of each search result. This makes the highlighter usable when using regular expressions.
+
+commit 981a63edec809ac878087ba42eb6ce74904b109d
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2016-09-17 00:03:31 +0200
+
+    Added 'Tab indent' option to the options dialog and performed some clean-up
+
+commit 9098b923482deb5ff58967aeeabe775d3b3f0895
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2016-09-09 23:01:10 +0200
+
+    Fixed crash (see issue #44) for certain CSS sources. While it's still not perfect (in particular for nested statements), it shouldn't crash anymore now.
+
+commit 117d937f695d24e20e1c223befd4e2dfca4abdbc
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2016-09-09 22:36:20 +0200
+
+    CSS syntax highlighter is now basically aware of so called @-rules (see https://developer.mozilla.org/en/docs/Web/CSS/At-rule)
+
+commit d8ac9c842f1e621f98c0383dc8c316834ae0febb
+Merge: a562f27 27db2e9
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-09-09 21:50:05 +0200
+
+    Merge branch 'master' of https://github.com/SynEdit/SynEdit
+
+commit a562f27147a0fde6b702b77b841101284916ef2a
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-09-09 21:48:38 +0200
+
+    Added support for token hints
+
+commit 27db2e94e0a08439e7f028704fb1b075b8bd1f6e
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2016-09-09 21:48:13 +0200
+
+    Added basic example for an additional mini map
+
+commit cbf6099ec2b56750e6233a171df356a40d76b98d
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-09-05 22:22:16 +0200
+
+    Fix for #43: Wrong Z-order when SynEdit is used in a modal dialog (was broken in 31f2bcdbea6f04f5b854bd83c2cb0ea39f6bebc4 )
+
+commit 7aef00690c4bd748d9b73f743b2243db9520d529
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2016-08-16 11:45:45 +0200
+
+    Add missing Oracle keyword 'RECYCLEBIN'
+
+commit f401f2b7f1b8e313e3a8304d860142202b42fa17
+Author: Pieter Polak <pieter.polak@coas.com>
+Date:   2016-08-09 11:17:08 +0200
+
+    Add missing Oracle reserved keywords for ANSI join syntax
+
+commit 0d1a78d155e840304f3d1ae69905a6b735ef32ab
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-08-18 23:18:13 +0200
+
+    Patch for #39: Added property ClBackgroundBorder
+
+commit 19b66fd71b809d544982969a1e7aeab01c3e5c43
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-08-14 22:25:19 +0200
+
+    Fix for #28: Use TDictionary<Key, Value> for D2009 and newer to increase the performance for adding a lot of table names
+    
+    the used hash table with a 8-bit bucket size seems not designed for thousands of entries
+
+commit 0916b6ab5cd92affb1f7572fc21c75b779adf397
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-07-23 13:25:59 +0200
+
+    Fix for #41: TCustomDBSynEdit.CMGetDataLink delivered wrong pointer in 64-bit mode
+
+commit 4b60184b0fd6c491d87ccbd9fcb15cc6b013d23a
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-07-23 12:56:58 +0200
+
+    Fix for #38: Control not visible at design time
+
+commit f83c7ded90bfcddf8a9c66b83c63ba411b0939c6
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-07-13 21:59:04 +0200
+
+    Disabled initial Mask assignment in TRegExpr.ParseModifiersStr for Delphi 10.1 Berlin to fix H2077
+    (that assignment is necessary till 10.0 Seattle to prevent W1035; the behavior change could be related to QC 96561 [private] in the 10.1 Berlin bug fix list)
+
+commit 4ab626d3e11029df2ebee6e060038778b7cb28cc
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-07-09 10:41:51 +0200
+
+    [Demos] Made more demos start with Unicode Delphi without EReadError
+    
+    (all demos, except URLDemoLinux.dpr of course, do now compile with Unicode Delphi and start without EReadError)
+
+commit 80bb76a034bcffa9ef482a875024628fe3cb577e
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-07-09 10:08:54 +0200
+
+    [Demos] Made more complex completion demos start with Unicode Delphi without EReadError
+
+commit 38fce1c71ce8583a0e54bc481fa79b94c8c49116
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-07-09 09:48:13 +0200
+
+    Fixed EStringListError (SDuplicateString) in TSynPythonSyn.GetKeywordIdentifiers that was introduced in commit 26e04beb903803a9a6555396dbb317f08f7dd645
+
+commit ed51ead400872d44d909e6e5c69183be570d3257
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-07-06 21:48:04 +0200
+
+    [Demos] Made basic completion demos compile and work with Unicode Delphi
+
+commit cff73f1aacf09e447a4793bf8622760d6ec3cfa2
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-07-03 11:14:13 +0200
+
+    Added packages for 10 Seattle and 10.1 Berlin
+
+commit e250cd82931cff374274855ea151b8e24e06c297
+Merge: 60baff2 2e7d54f
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-06-20 10:37:08 +0200
+
+    Merge pull request #35 from uschuster/master
+    
+    Fixed hints (mainly H2443)
+
+commit 2e7d54f9f74535fe933f1ec82e6d4f02fd4a296f
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-06-18 08:46:30 +0200
+
+    Fixed hints (mainly H2443)
+
+commit d2efe2b53eb53669c0f861ce33fa8f037d7d6d74
+Merge: 0e2a362 60baff2
+Author: uschuster <github@bitcommander.de>
+Date:   2016-06-18 08:32:49 +0200
+
+    Merge pull request #1 from SynEdit/master
+
+commit 60baff26d4013badc3e9e485adc80b6476f4749a
+Merge: 1a717c1 0e2a362
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-06-13 13:00:43 +0200
+
+    Merge pull request #33 from uschuster/master
+    
+    Fix for #30: Fix compilation for XE2 and lower
+
+commit 0e2a3628755dd480b1c9650b84c85143227a4393
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-06-08 20:20:19 +0200
+
+    Added event OnSpecialTokenAttributes to allow special token highlighting
+    
+    This feature can be used for example to achieve the following with additional user code:
+    - semantic highlighting
+    - highlight found or not found symbols
+
+commit 3496919248c4a032a75f7ad32a284ec0c8a01e08
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-06-08 19:44:49 +0200
+
+    Fix for #30: Fix compilation for XE2 and lower
+
+commit 1a717c14b3bd1370e70130c42f6d8281c52d113e
+Author: CWBudde <Christian@savioursofsoul.de>
+Date:   2016-06-03 15:23:31 +0200
+
+    Minor changes on Delphinus install script, still needs proper testing (no time for that at the moment)
+
+commit 88fef0ce9826dff91c5d6bfd1b72ad3237c756a2
+Merge: 31f2bcd 436937d
+Author: Pieter Polak <Pieter.Polak@coas.com>
+Date:   2016-06-02 12:46:59 +0200
+
+    Merge branch 'master' of https://github.com/SynEdit/SynEdit
+
+commit 436937d2ffca070c1ea471f4066ba0efc3e4264e
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-06-02 12:41:23 +0200
+
+    Removed OSX for Delphinus installation code (as it is not supported)
+
+commit 21b4710649a6964681fbd92ed0ec3c6630966a80
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-06-02 12:40:12 +0200
+
+    Updated Delphinus based on issue #20 ('Support for Delphinus Packagemanager')
+
+commit 31f2bcdbea6f04f5b854bd83c2cb0ea39f6bebc4
+Author: Pieter Polak <Pieter.Polak@coas.com>
+Date:   2016-06-02 11:33:11 +0200
+
+    Use application level 'stay on top' instead of windows global
+
+commit 5c7e37891b93a938f11dda7aa75301c84dc79fd0
+Author: Pieter Polak <Pieter.Polak@coas.com>
+Date:   2016-06-02 10:23:18 +0200
+
+    Add option to completion proposal list to wrap around the list when using arrow up/down for navigation
+
+commit f7b90d2631150a1de884bcb9001eb5247439cbda
+Author: CWBudde <Christian@savioursofsoul.de>
+Date:   2016-06-02 03:03:47 +0200
+
+    Fixed case 24 ('Declaration of TUnicodeStrings.SaveToFile missing')
+
+commit 14b3552c3b3125bc8732004d46c8e513e5b8e961
+Author: CWBudde <Christian@savioursofsoul.de>
+Date:   2016-06-02 02:56:18 +0200
+
+    Backported a few fixes from https://github.com/TurboPack/SynEdit
+
+commit d98f1836efdc24f255515783ef60348f5dae20c2
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2016-06-02 02:42:12 +0200
+
+    Improved Delphinus support
+
+commit f51dbff8994609fb14e42e050abf1cc5c52cabd7
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2016-06-02 02:35:59 +0200
+
+    Added basic Delphinus support
+
+commit 9b4dc23d51917ddc7f047ab5ce354655e69c7d4e
+Merge: 8d205f5 56a0dd3
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2016-06-02 02:33:44 +0200
+
+    Merge branch 'master' of https://github.com/SynEdit/SynEdit
+
+commit 8d205f5db601b75183b2f503ae77c87693aabc6c
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2016-06-02 02:33:08 +0200
+
+    Properly consider paint lock
+
+commit 56a0dd3ac60a1f649e6ce3afe517f4d889d0b1d3
+Merge: ab40818 173ea68
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-06-02 02:21:59 +0200
+
+    Merge pull request #32 from coassoftwaresystems/master
+    
+    Several small changes
+
+commit 173ea6819126714c791b79d2b6d73d0dc64c540c
+Author: Pieter Polak <Pieter.Polak@coas.com>
+Date:   2016-06-01 10:39:51 +0200
+
+    Add attribute in SQL editor to highlight procedure names
+
+commit 7463027233c0390b45dfd57b260ce38c339540d5
+Author: Pieter Polak <Pieter.Polak@coas.com>
+Date:   2016-06-01 10:39:12 +0200
+
+    Prevent highlighter attribute read from registry when key does not exist
+
+commit 2db9ee1d23958cac0b3d9cd1bea29d3325477024
+Author: Pieter Polak <Pieter.Polak@coas.com>
+Date:   2016-06-01 10:38:44 +0200
+
+    Compatibility for Delphi 10.0 Seattle and 10.1 Berlin
+
+commit ab4081840f3f86edb0ca35ad9986f8e5583364a1
+Merge: b1a66e9 5a85de3
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-05-30 15:05:28 +0200
+
+    Merge pull request #26 from obones/Deprecated_seek
+    
+    The (int64, word) version of Seek has been deprecated in XE4
+
+commit b1a66e9973d9c0b78fba0ca3f83c3646b261ec6a
+Merge: 593bfb2 2ffbd41
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-05-30 12:06:09 +0200
+
+    Merge pull request #31 from uschuster/master
+    
+    Fix for #29: avoid flicker while scrolling or resizing
+
+commit 2ffbd4194a8671ccb9a24c9508bdc278ba50a5bc
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2016-05-30 11:54:24 +0200
+
+    Fix for #29: avoid flicker while scrolling or resizing
+
+commit 5a85de36b0d99b0fafd0fe514fc4b0f4195d90d2
+Author: obones <obones@free.fr>
+Date:   2016-04-14 14:55:18 +0200
+
+    The (int64, word) version of Seek has been deprecated in XE4
+
+commit 593bfb21105d7837f08575cd381a85ad21f8417a
+Merge: d1bee76 158202b
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-03-10 22:32:51 +0100
+
+    Merge pull request #25 from cakeplus/master
+    
+    Fix: Out-of-bounds access in TCustomSynEdit.GetWordAtRowCol
+
+commit 158202b08753e0d16918d73e1563f992fef926cb
+Author: Max Mouratov <mmouratov@gmail.com>
+Date:   2016-03-10 09:24:58 +0500
+
+    Fix: Out-of-bounds access in TCustomSynEdit.GetWordAtRowCol
+
+commit d1bee760adc88e5de314ea2a82102d252c0eb964
+Merge: d69941a 08ad319
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-01-12 12:14:52 +0100
+
+    Merge pull request #23 from GDKsoftware/master
+    
+    missing ifdef list_clear_not_virtual
+
+commit 08ad319d85bf00ff1c132a1993d9993003fbdb7e
+Author: partouf <partouf@gmail.com>
+Date:   2016-01-12 12:11:46 +0100
+
+    missing ifdef list_clear_not_virtual
+
+commit d69941a7d2d0ed0ef453a0da074c2d6a77a5174e
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2016-01-12 02:20:28 +0100
+
+    Fixed memory leak issue in SynHighlighterSQL.pas reported by nanocfw
+
+commit 9e6284366c276787e70e5b7a36527715fb33022e
+Merge: ea0580b 124bd02
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2016-01-12 02:17:27 +0100
+
+    Merge branch 'master' of https://github.com/SynEdit/SynEdit
+
+commit ea0580bb1e8c01b305cb53fa174065351586f51d
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2016-01-12 02:17:03 +0100
+
+    Fixed error in SynHighlighterSQL.pas reported by marcieldeg (see issue #19)
+
+commit 124bd02a1f486ac5ad20ba359f9abc69f3ee3136
+Merge: 0c30fd6 9bf9d2a
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-01-12 02:09:20 +0100
+
+    Merge pull request #11 from cfarl/patch-1
+    
+    File to compile SynEdit in C++ Builder XE6
+
+commit 0c30fd659a4b99ad78870fd116d7d46d88f8cfbd
+Merge: 3d1b4df 5b3159f
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-01-12 02:08:56 +0100
+
+    Merge pull request #12 from cfarl/patch-2
+    
+    File to compile SynEdit in C++ Builder XE6
+
+commit 3d1b4dfe1baf5fa8968bb97a4bcdf31df4c98800
+Merge: b618fb2 661cb70
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2016-01-12 02:08:22 +0100
+
+    Merge pull request #22 from Arvur/master
+    
+    Wrong path to SynEditReg.dcr in design packages for Delphi 2010 and up
+
+commit b618fb289e2c3ae89f221c4db0b010f5c9d9536c
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2016-01-12 02:07:08 +0100
+
+    Fixed an issue in 'DoDeleteLines' (was called with no lines to delete -> count = 0)
+
+commit 51c261e858f5d6103c010f6a180e37de3f4cbc96
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-12-20 16:39:24 +0100
+
+    Fixed escaping error for some keywords in the DWS syntax highlighter
+
+commit 661cb70c3935aa2fc46d1c49e8ef28df3bc8fa94
+Author: Denis Grinyuk <denis.grinyuk@gmail.com>
+Date:   2015-11-20 16:02:02 +0300
+
+    Wrong path to SynEditReg.dcr in design packages for Delphi 2010 and up
+
+commit 0470dcbf161c0d154002acbb654f1d6f7494ba91
+Author: Renato Oda <oda2@hotmail.com.br>
+Date:   2015-09-09 09:43:42 -0300
+
+    XE8 compilation adjustment
+    
+    Added {$ *.res} policy (included automatically by Delphi)
+
+commit 34adcff5cb9d35788761b7c693c48fc20db4a10e
+Author: Renato Oda <oda2@hotmail.com.br>
+Date:   2015-09-09 09:33:37 -0300
+
+    Set in DX8 package, source file directory wrong
+    
+    Set in DX8 package, source file directory wrong
+
+commit 16cbd030e5c9406ac32a7a288cc6951c94da00da
+Author: Renato Oda <oda2@hotmail.com.br>
+Date:   2015-09-09 09:01:41 -0300
+
+    Delphi compiler directives XE8
+    
+    The compiler directive had been created for Delphi XE 8
+
+commit 9129e2f9b5b40790206609df62e59c18bc4af1f2
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-07-26 18:23:17 +0200
+
+    Updated packages and support for XE8
+
+commit 7df26c506178eded74cc68f65f40cea8522caf3a
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-07-21 14:03:17 +0200
+
+    * Updated DWS syntax highlighter (removed yet unused 'contains' and added contextual highlighter for 'flag' and 'enum')
+
+commit 791bceff1441b614615303fb61c0a0b9af04fece
+Merge: aac28ab 56773a5
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-27 22:22:35 +0200
+
+    Merge branch 'master' of https://github.com/SynEdit/SynEdit
+
+commit 56773a5015c73f9192ae3cfc1b69da65289e5287
+Merge: c303639 cec195b
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2015-06-19 11:04:18 +0200
+
+    Merge pull request #16 from atlant2011/master
+    
+    D7 not found function SameStr
+
+commit cec195b6878cf70c96f07a6191009bfd095f917e
+Author: atlant2011 <atlantida@meteo.krasnoyarsk.ru>
+Date:   2015-06-19 15:35:43 +0700
+
+    D7 not found function SameStr
+    
+    Function SameStr replaced by WideCompareStr //Delphi 7 compatible
+
+commit aac28ab8b5597312a0f7b73bee3c7901d309e1fa
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-05 16:33:57 +0200
+
+    Added preliminary XE8 packages
+
+commit c303639f31816c4edbe7a537444a9c0d6b23353d
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-05 16:31:39 +0200
+
+    Removed unused files
+
+commit 6ebb4251ac723ce97637022240f09534522c8fbc
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-05 16:29:11 +0200
+
+    Changed Readme.txt to Readme.md and updated its content.
+
+commit 5384ba7cb452ca7486e05143ef997075fd07bed6
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-05 16:16:43 +0200
+
+    Used 'libsuffix' to distinguish between differend IDE versions. This is necessary to use this package in other packages without the need to specify each package separately by version
+
+commit 434d1998d1850044b76fd2cc67820a94b577cc60
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-04 14:53:31 +0200
+
+    * Reverted non-working merges
+
+commit 66cc288042c80f9667996c8decd88fb503cca716
+Merge: 88c4e6f 66a7b18
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-04 14:32:10 +0200
+
+    Merge branch 'vsoft-changes' of git://github.com/VSoftTechnologies/SynEdit
+
+commit 88c4e6f4780cb94d815d9c764aeb8904e2d09eed
+Merge: 022685a 09352e1
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-04 14:31:44 +0200
+
+    Merge branch 'document-manager' of git://github.com/VSoftTechnologies/SynEdit
+
+commit 022685a210af59e5ea694b19ca14801b64f267a5
+Merge: d0c5fa4 05d7985
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-04 14:31:13 +0200
+
+    Merge branch 'proposal-form-height' of git://github.com/VSoftTechnologies/SynEdit
+
+commit d0c5fa49025858ee227438ed409c64f2e7ee8990
+Merge: 9fe494f 15690ad
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-04 14:30:45 +0200
+
+    Merge branch 'vcl-themes' of git://github.com/VSoftTechnologies/SynEdit
+
+commit 9fe494ffbe0b6110a932f501e0b24b6acdeeb6c3
+Merge: 0d9f183 040ca49
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-04 14:29:35 +0200
+
+    Merge branch 'XE7-Support' of git://github.com/VSoftTechnologies/SynEdit
+
+commit 0d9f183f0a6d4dbb2ea6934070dda8f0f86a4147
+Merge: 496fda1 2a03599
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-04 14:24:16 +0200
+
+    Merge branch 'master' of https://github.com/vshoolgin/SynEdit
+    
+    (reverted highlighter changes)
+
+commit 496fda12a4e3073f80ff9c769248148088cb5776
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-04 14:08:57 +0200
+
+    * Applied preUnicode Delphi fix by vshoolgin
+
+commit ee650d91cd090f3304fd844467176f4a862d1ad8
+Merge: 93f487d 26e04be
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-04 14:02:55 +0200
+
+    Merge branch 'master' of git://github.com/miszellek/SynEdit
+
+commit 93f487dfae2705936c9d9fb2e94247760edaf585
+Merge: cb074af aff86da
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2015-06-04 14:00:42 +0200
+
+    Merge branch 'master' of https://github.com/SynEdit/SynEdit
+
+commit 26e04beb903803a9a6555396dbb317f08f7dd645
+Author: miszel <m>
+Date:   2015-02-27 20:46:48 +0100
+
+    fix python keywords highlighting
+    add python class and function names highlighting
+
+commit 5b3159f180b21e4adf56c34921bacb9d96fe1646
+Author: cfarl <lutitus@gmail.com>
+Date:   2015-02-27 16:46:25 -0300
+
+    File to compile SynEdit in C++ Builder XE6
+
+commit 9bf9d2a33fcc2542d79977880226d2daef5163fc
+Author: cfarl <lutitus@gmail.com>
+Date:   2015-02-27 16:44:10 -0300
+
+    File to compile SynEdit in C++ Builder XE6
+
+commit 2a0359958fa69a83e135c59ecf9617ae42c865ff
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-02-27 22:41:50 +0300
+
+    Add overloaded SaveToFile function, you can set need to write BOM or not.
+
+commit 1a4de1e8fc2ee05b600527f8fb69f0470aa4c2c0
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-02-26 16:26:39 +0300
+
+    Removed sample source for all highlighters
+
+commit 5914fc92e0731d61ba02b151f0906589d47322a4
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-02-26 16:11:12 +0300
+
+    Added resource files for Delphi 7 packages
+
+commit 4d7dc07e770df73abf8920a3ca1a9ed4aa62885d
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-02-26 16:09:56 +0300
+
+    Some fixes in JSONHighlighter for preUnicode Delphi
+
+commit b36e61eb2d3d76e37654cf3c3095239d6cdd643a
+Merge: 90f725a aff86da
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-02-26 15:55:56 +0300
+
+    Merge https://github.com/SynEdit/SynEdit
+
+commit 90f725a0077cad7a578aba4f4ad668909914d889
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-02-26 15:42:05 +0300
+
+    Added support for wide filenames in SaveToFile procedure
+
+commit c5d44c17216cc2205a7d14447d3caa08c07a4dbe
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-02-26 15:41:24 +0300
+
+    Added support for wide filenames in LoadFromFile procedure
+
+commit d1ac54a30ba5a11b051fa2a2c963c4d28128e8e1
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-02-26 15:19:37 +0300
+
+    Added TitleCaseBlock command (KeyStrokes)
+
+commit 66a7b18b90bd3f08d39b872abea23e8a04d2380b
+Merge: 29839a6 09352e1
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 16:09:23 +1100
+
+    Merge branch 'document-manager' into vsoft-changes
+
+commit 09352e127ae9883206d2e851940bdb92fb8e29a5
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 16:07:54 +1100
+
+    Fixed XE7 compile.. missing json highligher from runtime package.
+
+commit 29839a6d438c93dbf06200c5f5c5554e7ccbdf0f
+Merge: 021d31f 58e421b
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 15:53:32 +1100
+
+    Merge branch 'document-manager' into vsoft-changes
+
+commit 58e421bae730e389a6b63ea6c5115022e6f9a42b
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 15:52:24 +1100
+
+    Added SynEditDocumentManager - allows you use a single SynEdit control with multiple documents. Maintains document state when switching between documents. This component has been in production use for many years (in FinalBuilder) without issues.
+
+commit 021d31fe19206af1c80f7276fd28669881c95d39
+Merge: 6511a99 05d7985
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 15:32:49 +1100
+
+    Merge branch 'proposal-form-height' into vsoft-changes
+
+commit 05d798593e75f007850f95bc12f2f1eb287bdfa6
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 15:32:26 +1100
+
+    Proposal Form Height Growth
+    
+    Corrected proposal form height growth. On resizing the proposal form, can resize would re-calc the number of lines shown. The issue with this is that the height of the boarder was not being removed before calculation. This would mean the height would be increased if the boarder width could accommodate another  item. The growth would appear in the next show, and cause another resize. This would repeat.
+
+commit 6511a990d1a83b73696a4fc5218502613883e166
+Merge: e858843 15690ad
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 14:59:31 +1100
+
+    Merge branch 'vcl-themes' into vsoft-changes
+
+commit 15690ade956ae2a726f19272297e60b9d4edc933
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 14:58:37 +1100
+
+    Added VCL Scrollbar hook (based on VirtualTreeView's) that enables VCL Theme support on scrollbars. Seems to work ok, I just stripped out stuff that was VT specific.
+
+commit e858843bdd1aa981946fe3a5286a7e7717957fad
+Merge: cb074af 040ca49
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 14:41:40 +1100
+
+    Merge branch 'XE7-Support' into vsoft-changes
+
+commit 040ca4966bb441e8b1b229f1b6b37854da49d4d9
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 14:39:44 +1100
+
+    Added DelphiXE7.groupproj and also .gitignore to ignore dcus et.
+
+commit cb074af7e87f6cca402ef0fcdba33315e1383267
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 12:03:27 +1100
+
+    minor change to reg of SynEditDocumentManager.
+
+commit f16056dfb1d3579a7a546acc908eee53d53831f1
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2015-01-30 12:02:17 +1100
+
+    Added SynEditDocumentManager - allows you use a single SynEdit control with multiple documents. Maintains document state when switching between documents. This component has been in production use for many years (in FinalBuilder) without issues.
+
+commit aff86da4b15030b8d0cc33f4e5e08d461caf0a40
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2015-01-27 12:43:59 +0100
+
+    ! Added missing unit
+
+commit 6c1558bbd21bba8e2c4c21487c12c83ff907761d
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2015-01-26 15:29:35 +0100
+
+    ! Fixed issue with double quoted strings (patch written by Eric)
+
+commit 9ee88cca12fea8a9a82b3433c5ba6e3e228fcadd
+Merge: f06a427 cf1818f
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-01-24 01:22:05 +0300
+
+    Merge https://github.com/SynEdit/SynEdit
+
+commit 2783a5ffa58d92e57ee57a7e756ffb7b62056fac
+Author: Jason Duffy Smith <jason.nevar.smith@gmail.com>
+Date:   2015-01-21 15:12:21 +1100
+
+    Proposal Form Height Growth
+    
+    Corrected proposal form height growth. On resizing the proposal form,
+    can resize would re-calc the number of lines shown. The issue with this
+    is that the height of the boarder was not being removed before
+    calculation. This would mean the height would be increased if the
+    boarder width could accommodate another item. The growth would appear in
+    the next show, and cause another resize. This would repeat.
+
+commit cf1818f672898481644ed54ed7033dceb39b81ce
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2015-01-20 23:57:25 +0100
+
+    + Added designtime support for the JSON highlighter
+
+commit 8ca543c6d23637b7c15de42290fd862c6505a94c
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2015-01-20 17:53:48 +0100
+
+    + Added default properties for JSON syntax highlighter
+
+commit 75c22f9ed3cd21f6a8f1c60415fad964b4a46401
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2015-01-17 23:07:52 +0100
+
+    ! Fixed unknown token deadlock for JSON highlighter
+
+commit f06a427bae09e4b769146687a674c8885187841c
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-01-18 00:06:54 +0300
+
+    Added new unit uHighlighterProcs
+
+commit 26366246084e12b12a42a35bb60c240e2bc42f2c
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-01-17 23:29:20 +0300
+
+    Added custom caret type - ctVerticalLine2
+
+commit 09ead62e753f68732e7e5cb555eb19870dcc4b76
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-01-17 23:16:53 +0300
+
+    Without BOM the UTF8 File was read as ANSI.
+    Author: omata, 2010-02-07
+    http://sourceforge.net/p/synedit/bugs/409/
+
+commit 20967c1adde3f43972915a3ed7b2c395288ca57a
+Author: vshoolgin <vshoolgin@mail.ru>
+Date:   2015-01-17 19:47:51 +0300
+
+    Fixed word selection with double click. It started to work with all chars in the highlighter mode (not with only latin chars as it was before).
+
+commit 4be474a4c27426fe58f1881a3db71fe1ccb08c52
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2015-01-14 05:17:23 +0100
+
+    + Added search word highlighter plugin
+    * Cosmetic changes on demos
+
+commit 7169a4d93c4a088bdee17fe8694303c295c70ec5
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2015-01-14 05:16:27 +0100
+
+    + Added JSON highlighter
+    * Cosmetic changes on LLVM highlighter
+
+commit 506dc05d70c22097f4aaa5e33556a43a33ae2ad8
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2014-12-24 15:00:55 +0100
+
+    + Added XE7 compatibility
+
+commit 13f33296408557b63a293d2e1f0b54759cfa65f4
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2014-10-14 22:38:26 +0200
+
+    Updated CSS highlighter to support latest features of CSS (including the long missing functions).
+
+commit e8193eb3631d30accac1a7c33cca265b57a07091
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2014-10-13 13:50:48 +0200
+
+    Changed from 'BiggestWord' to column size specified by width (which itself can easily be calculated from a given word.
+
+commit 5ebbc77576da9a13944cfef2c4d694ca7915f87b
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2014-10-12 17:33:32 +0200
+
+    * Applied change from egrange: "Fixed DWS syntax-highlighting for some edge cases of multi-line strings"
+
+commit 6368d5b17f4bdda8e78113a4b5d3c2cf979a7df6
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2014-09-06 18:12:04 +0200
+
+    Added helper procedure to set both fore- and background color in a highlighter attribute at the same time
+
+commit 5d60602f86ea9f49b9a5c9e943f534b16b4fd93a
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2014-09-01 00:04:54 +0200
+
+    Added LineStr for TOnCheckMarker, as it is not possible to check the line string without knowing the editor instance
+
+commit ea4c8a09c17641f19ecf88a73450ee4cbe54e8cd
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2014-07-16 14:55:37 +0200
+
+    Fixed bug caused by some refactoring ages ago (already present on first commit). It didn't consider empty lines properly with eoSmartTabDelete (check for empty string has been refactored out of the loop as well, where it didn't make any sense any more). As a result a backspace should move the cursor to the beginning of the last block (regardless of empty lines in between).
+
+commit c6371ab485c1b7a8fa99ce8c13ebfda151730ac3
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2014-06-25 14:02:36 +0200
+
+    Added basic operator overloading for SynEditTypes.pas
+
+commit caebf856afcd249565b1f5b5d6ffc897b4ef3d98
+Author: Christian-W. Budde <Christian@savioursofsoul.de>
+Date:   2013-06-20 15:42:08 +0200
+
+    Converted TAB with white spaces
+
+commit 62e6c1fc464ae61ba544232de1fddd1ff4963ffd
+Author: EricGrange <eric@delphitools.info>
+Date:   2013-06-10 15:31:27 +0200
+
+    Initial trunk import from SF
+
+commit 75f3fd6445cfe5cc873a04521a1a3c9869f84673
+Author: Zarglu <zarglu@gmail.com>
+Date:   2013-06-09 23:36:17 -0700
+
+    Initial commit
