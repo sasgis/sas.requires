@@ -1,0 +1,185 @@
+commit fd5c9aa4b04bfe1746d169459b7dc9bfd265bc15
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-12-03 02:43:54 +0300
+
+    Update README.md
+
+commit 9dac1180a001b2f1315bc9a11056330065cafcff
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-12-03 02:43:43 +0300
+
+    Update README.md
+
+commit daa04fc5861335b59164049e851f44fea7d10615
+Merge: ba2e5ff c3206c3
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-12-02 05:12:29 +0300
+
+    Merge pull request #4 from zedxxx/master
+    
+    fix memory leak and enable LEGACYIFEND directive
+
+commit c3206c36b1b63a3057806196b21873cb1d956018
+Author: zed <starmen@tut.by>
+Date:   2019-12-01 18:32:46 +0300
+
+    Enable LEGACYIFEND directive to avoid errors with mixing $endif and $ifend
+
+commit 5d9a0fd82e7c18bf3e1271312945dffd78855f53
+Author: zed <starmen@tut.by>
+Date:   2019-12-01 18:19:53 +0300
+
+    fix wrong function declaration causing a memory leak
+
+commit ba2e5ff79165e29f4dffbc508b8f3c6295642e07
+Merge: a4c96c5 c46c49a
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-11-29 18:31:31 +0300
+
+    Merge pull request #3 from zedxxx/master
+    
+    fix a lot of warning under Delphi 10.3
+
+commit c46c49a954e91ac237f5cc04e28e3bd96c02799e
+Author: zed <starmen@tut.by>
+Date:   2019-11-29 14:43:21 +0300
+
+    fix a lot of warning under Delphi 10.3
+
+commit a4c96c58488c475211fedc9a2e302ce425290e3b
+Merge: 6964c42 3352ed3
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-11-29 05:43:53 +0300
+
+    Merge pull request #2 from zedxxx/fix
+    
+    Allow save positions for locked toolbars
+
+commit 6964c426112985296b9c7b09e58f797f5e75b29e
+Merge: 4a93ed4 3c6d9e9
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-11-29 05:40:54 +0300
+
+    Merge pull request #1 from zedxxx/master
+    
+    System.Actions available only for Delphi XE3 and newer
+
+commit 3352ed3c96b3ecad729f24245cb00711b4dce1b4
+Author: zed <starmen@tut.by>
+Date:   2019-11-28 12:56:57 +0300
+
+    Allow save positions for locked toolbars
+
+commit 3c6d9e9fd19693eefa471a8fd1a797bc40219bda
+Author: zed <starmen@tut.by>
+Date:   2019-11-28 12:35:01 +0300
+
+    System.Actions available only for Delphi XE3 and newer
+
+commit 4a93ed4c9e5baa0657347579bd1b6f35bda38bc6
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-06-06 03:03:18 +0300
+
+    HiDPI
+
+commit 476c64a110fe09897550710907c91470215e2fd2
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 11:05:08 +0300
+
+    Edit README.md
+
+commit c6544cd9ae0ff2f0f2ec83164a0481ea1934e005
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 10:03:33 +0300
+
+    Rename CHM file
+
+commit 250a7a7606dc81e7f8418facd97c82994684082e
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 10:03:07 +0300
+
+    Rename CHM file
+
+commit c2ba09aa4284f916198f20f83bededbb2f075325
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 10:00:09 +0300
+
+    Edit README.md
+
+commit db75da67c13752b852a0b4d6500cfc3f64037e82
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 09:48:52 +0300
+
+    Delete old binary DFMs
+
+commit 04f4b213cee58e5b4b8b001ee195e2ca942861c2
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 09:30:32 +0300
+
+    Remove some files from demo
+
+commit 388d8dfcc52666c233d30258ad5f21615ff41be9
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 09:28:06 +0300
+
+    Remove old packages
+
+commit 51254f0820b4a83ce52e722786d3e1bd5cb71dbb
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 09:03:10 +0300
+
+    Update README.md
+
+commit 8680249bb4859ee035689f1134a87d9702c01bd1
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 08:57:25 +0300
+
+    Update README.md
+
+commit f75db8ff4c5c7f619f5791d4944cdf946cd7f36e
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 08:57:14 +0300
+
+    Update README.md
+
+commit ba04a0d18aa8a7519646d2e220950797fac56f9b
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 08:47:15 +0300
+
+    Update README.md
+
+commit 1eb4da75a10643d4d26ee24c7ce63c9568a2dfe2
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 08:44:11 +0300
+
+    Update README.md
+
+commit 67c0410131aa0cec20ec62d00d3e5721d6306c73
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 08:41:43 +0300
+
+    New README
+
+commit 4589efc1ed6525af3574b6a0da6e75972bf978a6
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 06:55:35 +0300
+
+    TXT to MD
+
+commit ca87f704883a6cbad15858fd7c5c9891e4aee365
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 05:33:59 +0300
+
+    TXT to MD
+
+commit 544162f5a705823e630b6dd40db656a150dd35bf
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-03 05:05:01 +0300
+
+    Modify for TBX + refactoring
+
+commit be25083fc9210eac6a59e30ec324863b6f953f22
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2019-03-02 05:04:07 +0300
+
+    Original Toolbar2000
