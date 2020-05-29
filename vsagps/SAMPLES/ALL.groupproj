@@ -1,0 +1,44 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{5a6e5d0c-9ac8-4861-9ce5-70f954407800}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="..\DLL\VSAGPS.dproj" />
+    <Projects Include="garminusb_getinfo\garminusb_getinfo.dproj" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="VSAGPS">
+    <MSBuild Projects="..\DLL\VSAGPS.dproj" Targets="" />
+  </Target>
+  <Target Name="VSAGPS:Clean">
+    <MSBuild Projects="..\DLL\VSAGPS.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="VSAGPS:Make">
+    <MSBuild Projects="..\DLL\VSAGPS.dproj" Targets="Make" />
+  </Target>
+  <Target Name="garminusb_getinfo">
+    <MSBuild Projects="garminusb_getinfo\garminusb_getinfo.dproj" Targets="" />
+  </Target>
+  <Target Name="garminusb_getinfo:Clean">
+    <MSBuild Projects="garminusb_getinfo\garminusb_getinfo.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="garminusb_getinfo:Make">
+    <MSBuild Projects="garminusb_getinfo\garminusb_getinfo.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="VSAGPS;garminusb_getinfo" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="VSAGPS:Clean;garminusb_getinfo:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="VSAGPS:Make;garminusb_getinfo:Make" />
+  </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
+</Project>

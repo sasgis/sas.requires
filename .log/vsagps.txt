@@ -1,0 +1,359 @@
+commit 8febd10d92a956cc8d181cfbb7d1c8b31eb5b89b
+Author: zed <starmen@tut.by>
+Date:   2019-05-11 00:18:52 +0300
+
+    Исправление варнингов об использовании deprecated функции Resume
+
+commit 5e1e6161de4f1f52edf11f9fb1aca7fa1c280efc
+Author: zed <starmen@tut.by>
+Date:   2016-12-21 16:27:29 +0300
+
+    Что-то там ещё не доделано, для запуска на Berlin
+
+commit 1f370a38f9605dcc732557166759ddf1cd0b99b1
+Author: zed <starmen@tut.by>
+Date:   2016-12-21 14:55:19 +0300
+
+    В Delphi XE удалили поддержку xerses http://stackoverflow.com/questions/4541799/no-more-xercesxmldom-unit-in-delphi-xe
+
+commit f6e38c8c05a1a7f8613203b89d16bb4b53adde74
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2016-01-01 17:26:11 +0200
+
+    Без подписки на события мой приемник не работал. Поэтому добавлен фейковый подписчик.
+
+commit 59aeb8f25ab569c12fd1e3c7338871c7d0edca6f
+Author: Aleksand Alekseev <randomclear@gmail.com>
+Date:   2015-07-21 08:34:17 +0300
+
+    Добавлена поддержка Delphi XE.
+
+commit 4280f36409a59818763a69c3cf0cdee5d1155ebb
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-09-23 21:48:18 +0400
+
+    2181: неверный формат
+
+commit 34389b05823b53fdfc9096d37fc88145c6a02270
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-08-31 17:12:12 +0400
+
+    sasgis 1892: Location API
+
+commit 68f8165a45d55c1029f52932c54a500b281e3cb6
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-08-31 15:28:55 +0400
+
+    LocationApiLib_TLB для x32
+
+commit b0906ba5a4d09034aa2c2d8b17b352da1039e1cc
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-08-15 16:34:07 +0400
+
+    sasgis 2053: изменения для XE2
+
+commit d4a8254a91de3cf0cbee82ddea54659491d3862a
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-08-14 14:12:31 +0400
+
+    sasgis: импорт оформления BalloonStyle
+
+commit 14eded9bcb4ae334849cbf4026f7b2f72f7c8aeb
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-08-14 12:19:48 +0400
+
+    sasgis: импорт оформления из GPX и KML (кроме картинки)
+
+commit 4205cae645011d2e65debd2f2928558f5a2213a4
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-07-30 20:27:23 +0400
+
+    Изменения VSAGPS для XE2 (кроме сохранялки треков)
+
+commit 0a4ad9699fa2c2662627b54377dcf5b4004fed87
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-05-15 09:17:23 +0400
+
+    LocationApi (windows 7)
+
+commit eae19dbcb2aa8239ed0919492f759e66975fa25c
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-05-15 09:15:29 +0400
+
+    чтобы собиралось со старыми ревизиями
+
+commit dca7eeaac78c3f7b561b9c71b1f8a4a113d862da
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-01-30 21:53:49 +0400
+
+    добавлен тэг gx:MultiTrack для KML
+
+commit c31a75953cb43245018e48fe61c66b53023f9085
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2013-01-26 20:02:55 +0400
+
+    sasgis 1792: глубина и температура воды в датчиках
+
+commit 6cde4710c23e2214548734239b05809f9f33d457
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-09-05 16:03:00 +0400
+
+    sasgis 1528: добавлен парсинг gx:Track и gx:coord для KML
+
+commit 38fe718ead388edfb67955f5f0d32318d35376a7
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-16 19:12:16 +0400
+
+    sasgis 1502: сделал некий временный квазиустойчивый вариант
+
+commit d4617e5a60a323940e7a25a96a167713077a549f
+Author: zed <starmen@tut.by>
+Date:   2012-08-15 19:39:22 +0300
+
+    В XE2 нет поддержки xerses
+
+commit c005df04c31caf966a7b175687fa0826ca6c3517
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2012-08-15 11:01:09 +0300
+
+    Исправление для совместимости с XE2
+
+commit efa7b7cd0c2d2791ae850de23781f84cf9d7a9da
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-15 00:09:43 +0400
+
+    1502: переделана реализация ревизии 32, сделана отдельная CS и добавлена ещё к некоторым местам
+
+commit c521329ec5fc6d58dc6a135ba501d9ce1f29653f
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-14 22:13:08 +0400
+
+    sasgis 1502: дообавление отладочных сообщений
+
+commit 79c9d3b6d18cbe47beee47ed3dc40418ca96c95d
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-14 20:48:31 +0400
+
+    sasgis 1502: дообавление отладочных сообщений
+
+commit 249591e5505c6fa501c66a3cdfaaf288796f358d
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-14 12:16:03 +0400
+
+    добавлен PAnsiChar
+
+commit 32eabca4dd0d331ea12e74fa332d4dcc59b2f9f4
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-14 12:04:02 +0400
+
+    sasgis 1482: изменил возвращаемое значение для режима FIniReadOnly
+
+commit cc5be4c618b799e5d358997b655aa4a58e31c147
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-14 02:09:12 +0400
+
+    расставлены отладочные сообщения для VSAGPS_USE_DEBUG_STRING
+
+commit ed12f4dc4f9bfe57353bead32b745e18eb11643a
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-14 02:06:25 +0400
+
+    sasgis 1482 + 1498: Сделан режим незаписи в порт NMEA GPS + вправлены Ansi-строки + расставлены отладочные сообщения для VSAGPS_USE_DEBUG_STRING
+
+commit 56cfa26353b0b76015383fcf7402fe6f3b3cfde3
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-07 21:57:56 +0400
+
+    sasgis 1336: убийство FPacketThread обёрнуто в критическую секцию
+
+commit fbcb801ae4ed591ed1687535d1b68dac64262963
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-07 15:35:52 +0400
+
+    sasgis 1449: исправлена обработка RPC_E_CHANGED_MODE
+
+commit 557e92cb84a9c63959de5a0a10c0d83b16afe5ee
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-08-07 02:16:10 +0400
+
+    sasgis 492: включён парсер kml и kmz
+
+commit ec6af3775d38f3a62f4d8531482aa3f1b781ef81
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-07-02 22:47:18 +0400
+
+    sasgis 1296: добавлена забытая установка строковых значений тэгов для wpt
+
+commit f489b12919748a3e5a1e6633784184df449d7875
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-02-17 17:49:34 +0400
+
+    sasgis 1178: добавлено игнорирование ненужных ошибок при загрузке DLL для xerces
+
+commit e732a9714dcf1f1335b2661f244e30ab8486d6b3
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-02-15 23:10:47 +0400
+
+    вытащена функция в раздел interface
+
+commit 196d1d7ef7175b84d59e0185181012b8b123a1a9
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-02-06 12:32:00 +0400
+
+    для полёта по треку удалена проверка таймаута + delay уменьшен в 16 раз относительно номинального
+
+commit c23e11fd12c8565d2cbe4b039ec50b90f5ae913a
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-02-06 12:30:57 +0400
+
+    исправлена установка признака расчёта статистики по данным gps
+
+commit 9b2f1f991c9e68cdacf9971eacceb9953489de7b
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-02-06 12:30:09 +0400
+
+    Исправлен десятичный разделитель
+
+commit 6661cbcc3a9ef521bdbf1610ecb6c7ef7c75abc9
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-02-06 12:28:50 +0400
+
+    Добавлена возможность установки параметров COMM (через BuildCommDCB)
+
+commit e531a6ae06512035031e1b110dceaf502e421e0f
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-02-05 22:05:38 +0400
+
+    1157: для msxml отключен режим дополнительной проверки xml
+
+commit 5106ccbb2fea8d0294daaa659075f9ccfb6d3a57
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-02-05 21:40:11 +0400
+
+    1157: добавлен вывод сообщения об ошибке при загрузке xml
+
+commit 9bdf52499b91cb31595b62bb3138e7b6b2887ca7
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-01-15 03:57:42 +0400
+
+    Добавлена поддержка 11-го чипа BROADCOM-а (Samsung Galaxy Note) в частности и дубликатов xxGSA вообще, добавлена поддержка спутников QZSS
+
+commit ac646b480b76dfce3ff7de9c6f65138bfb5e07a3
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-01-14 01:41:38 +0400
+
+    сделана ini-шка для поддержки сырых девайсов криворуких гарминовцев
+
+commit 121dbfd9855d639b8cd306afc5d60886bddf09a4
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-01-14 01:23:10 +0400
+
+    создана ini-шка для учёта некоторых параметров для некоторых моделей приёмников garmin
+
+commit 0e11bf78428c19535eeb0c96d3526e64094b4307
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-01-13 22:09:01 +0400
+
+    исправление для более корректной работы
+
+commit 6ca1978e831760d2bb8c0f3ce379d2ccf3f9a58e
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2012-01-13 20:48:06 +0400
+
+    устранение зависания некоторых глюкавых гарминовских девайсов типа etrex30 на прошивке 2.50 при старте
+
+commit 11ebebad7807cf5a5070295b993fa9fad2fee08d
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-27 01:04:38 +0400
+
+    добавлена проверка на дублирование команды GSV протокола NMEA-0183
+
+commit 584c8b1d1ffc3481ac6555f59b88c4e916a0e35b
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-27 01:03:13 +0400
+
+    Изменения для сохранения ссылок в логе gpx
+
+commit 2f05de4bc39308a21d02e1e216ead82e31799dcf
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-22 20:48:53 +0400
+
+    реализовано отображение состояния спутников по сохранённым данным в gpx (для режима полёта по треку)
+
+commit 7aec138ab5a77b98a98cb8512a456cc175efc48d
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-22 12:48:41 +0400
+
+    выбор поставщика xml dom и загрузку xml из потока выделил отдельно
+
+commit e0fcc1ec4d937eb55483199b25cd7ef16b495081
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-21 19:22:04 +0400
+
+    если нет библиотеки xercesxmldom.dll - будет юзаться msxmldom.dll
+
+commit 9807751f715b5732d6efdc1384caa15264b87bf1
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-21 18:57:05 +0400
+
+    мелкие правки
+
+commit 0be999a474a49f4903e0f791f3e87e1ad30fb1d9
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-21 18:52:44 +0400
+
+    разрешено использовать msxmldom
+
+commit 04eae2ced47906f47f531492d694f2ffc9393bed
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-21 16:20:55 +0400
+
+    добавление DCU
+
+commit 81aa2d105540787e5c8e23db7d3dc9d12cb84b2d
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-21 16:20:33 +0400
+
+    изменение версии DLL
+
+commit 57db3c2b7d278034c4d9ffa29e346c0931194347
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-21 16:20:19 +0400
+
+    унификация Sleep
+
+commit 5bc69a0fa258f9cd8c98dbfc4110cae51911a7b0
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-21 16:16:29 +0400
+
+    полёт по треку и мелкие правки
+
+commit 4c3d91b83c1bcfd6dd5b2bf437ad0252f08a28bb
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-21 16:12:18 +0400
+
+    отключение парсера xml
+
+commit e9415cf8a20476fe6c6983324edaddccefc3bba8
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-21 16:11:55 +0400
+
+    парсеры gpx (для полёта по треку и простого импорта) и kml (пока отключен)
+
+commit a22449f647ba3bd7058c18b07f0533719e02bec4
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-21 16:10:46 +0400
+
+    для полёта по треку
+
+commit 361e6edd476a05cea1470a7a2606c4ab6aee699c
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-19 13:01:54 +0400
+
+    добавлено игнорирование __history
+
+commit 838116bdcd246aa7854770119467c42a0c8722c7
+Author: Sergey Vasketsov <vasketsov@mail.ru>
+Date:   2011-12-16 18:13:21 +0400
+
+    заливка версии 2.0
