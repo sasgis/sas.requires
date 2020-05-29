@@ -1,0 +1,1890 @@
+commit 69e31a6f5c99368e3b2a5ed239f41150702fed70
+Author: zed <starmen@tut.by>
+Date:   2020-05-29 12:14:30 +0300
+
+    Чистка от мусора (бинарники, примеры и прочий хлам)
+
+commit 6f649312fe9705c8d16a6ba432681e508e393356
+Author: zed <starmen@tut.by>
+Date:   2019-03-25 10:30:11 +0300
+
+    Синхронизация исходников компонента WinInet с alcinoe-code
+
+commit 10fc6cb0b424a59a8314a0d48165c844c301f030
+Author: zed <starmen@tut.by>
+Date:   2019-03-25 10:28:10 +0300
+
+    3425: Для того, чтобы запросы могли переиспользовать соединение, флаги
+    безопасности https надо устанавливать для соединения, а не запроса. Включение
+    HTTP/2 так же лучше производить один раз, для соединения
+
+commit bbea5a52c1d357282c2914ef2fde74e22a42bf42
+Author: zed <starmen@tut.by>
+Date:   2019-03-24 21:45:56 +0300
+
+    3424: Включение HTTP/2 под Windows 10
+
+commit a519a206b243f9c56217528395d3cbbc7dee2704
+Author: zed <starmen@tut.by>
+Date:   2016-05-05 19:50:08 +0300
+
+    3022: Добавил опцию для игнорирования ошибок сертификатов и прочей секюрности в https
+
+commit 1d266e6e48c95dbb08534d83d71b67ccbf762ac4
+Merge: 5dfc3ee 55624e5
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2015-11-13 23:15:39 +0200
+
+    Merge
+
+commit 55624e514d4a975ad33aa96f00d93beb1d4c2247
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-13 08:50:56 +0000
+
+commit 92e0052a439a0b599b4e4dacc8507f7ea9f74b67
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-12 13:26:08 +0000
+
+commit 8438fe2f62da8daa37250627f52d6e59f9a9c2c7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-12 13:25:13 +0000
+
+commit 809f24e32dce9ffe931c3d23f2362855ca0205e9
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-12 13:24:20 +0000
+
+commit 3e40142657280c8ba5b01551b6cc3970610faf96
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-11 16:48:45 +0000
+
+commit 7aacc3ba7e578826a142ec04215c2d0f9c325757
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-11 15:45:48 +0000
+
+commit 46a84a677813430fea78834364d8c49f3bd16e88
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-11 15:02:28 +0000
+
+commit 48638acf37314db7701a24fc30e4bf3ae1015fef
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-10 12:49:20 +0000
+
+commit cb3a976722f87515cd5510d82bf14e3db84f8e89
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-10 12:01:55 +0000
+
+commit edf12538c9015aff5e7f70978759dd4fc9809a02
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-09 14:29:21 +0000
+
+    Fixed possible "Access violation"
+
+commit 8da3feaa321d6dbfc6ead06510c85bfa5694ec21
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-09 10:51:55 +0000
+
+commit ed11ac8d1ecac8ea5cde327312ed8954d7b5dda7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-09 09:42:39 +0000
+
+commit 5dfc3eeecb1236916f83ae07b67704ca067320bf
+Merge: 0d35bd0 ca75b8b
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2015-11-08 20:35:06 +0200
+
+    Merge
+
+commit ca75b8b3db691e6f39396aab04cb71ef5ff156c3
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-08 16:07:05 +0000
+
+commit 5f371047f0dbf6afa3a37a896c03194236735856
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-06 15:55:09 +0000
+
+commit 880b9816afe52b445a9f987dad8e7d69fd5f9539
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-06 14:15:56 +0000
+
+commit f51bb488129c91ebd53d63f1cd22a8f24a412a59
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-06 12:42:40 +0000
+
+commit 6408a7d5818fb01c06616f19ae6a5d1c0b2c2b03
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-03 16:00:08 +0000
+
+    Fix fail on parsing unsuccessful operation IN(...)
+
+commit cc0ae7c0271e4395968f7ff4cce14cf270dfc716
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-03 13:11:14 +0000
+
+commit 222638e8ba6bd811c2cb60753f64390b513aa6b7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-11-02 21:09:53 +0000
+
+    Optimize the unit ALExprEval.pas
+
+commit 6c90e3c2405c6bf060b83019e2ddbae486df20db
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-31 18:45:12 +0000
+
+    forget one unit to commit in the previous commit
+
+commit 81e4093f48d03ef4d71d162bc8466894b1cee831
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-31 18:43:09 +0000
+
+    few optimizations: use exception.createFmt instead of Exception.create
+
+commit 4ae45089cb9b6bb34970c0d061ea66ff90bc04da
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-30 10:14:29 +0000
+
+    add compiler directives for old delphi version compatibility and add the function ALFastTagReplacePrecompile
+
+commit 0d35bd0c9c17af9984bcc80f7f78565ed84724d6
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2015-10-27 21:01:35 +0200
+
+    Fix build in XE2
+
+commit c9c0658373e9aee2bddecc02536de64d0d5db4fe
+Merge: 4361abf d3e20ab
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2015-10-27 20:45:03 +0200
+
+    Merge
+
+commit d3e20ab30780ccc48767d1bc317de68e37bf4d73
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-27 12:31:53 +0000
+
+    Memory leak in ALRtti was fixed
+
+commit 7c86bba6d4653eff1b3e50ee7cf0d315896b6e4b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-25 11:50:07 +0000
+
+commit f8e3c94cab14c8e8ef9dbdbb1dfd030a4fce0ce5
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-22 22:38:08 +0000
+
+commit db01943dbcc87b373241ac93a34fa422de516afc
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-21 18:54:16 +0000
+
+commit bc5fce56ddc174e77a65695fd8b14e913198693f
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-21 07:52:54 +0000
+
+commit 4197e45c0bb61118ffa3ef6efe787126feb9cdc0
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-18 23:42:56 +0000
+
+commit c27f7f0611c29715385b075e82d3f7bf03055f31
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-16 16:15:39 +0000
+
+commit a385d2708f4c81819e00da1d38e4b1950bd09b44
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-14 09:18:47 +0000
+
+commit f7d2957275ef9b55a2240af7db2bf50e01f00986
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-13 16:36:38 +0000
+
+commit 20f541917280fa626fc6a8df47f926ec6fa415d4
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-12 21:23:10 +0000
+
+commit 24fe26801ba3fda76184c09c0afd7bbed9cbb598
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-12 15:57:23 +0000
+
+commit c6a132ae21dbb4ce52faa7037ec50d71407dc2ab
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-09 15:21:11 +0000
+
+commit 6c8b7fd361857f9cc7f62df596d980c8df7f5b21
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-02 23:36:05 +0000
+
+commit ed4e343e9810897b1948f187a46c5a33b9872b4a
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-02 23:35:45 +0000
+
+commit 6c5c21f61b8692ed598203bbe3add198b8e18cae
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-10-02 23:34:55 +0000
+
+commit 10ebf73875ab7d90034353e21355a9262865f256
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-09-24 10:07:19 +0000
+
+commit 94777ea51268f179db6d999bdbac4905db97766d
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-09-17 15:50:14 +0000
+
+    minor updates
+
+commit 4361abfc190efcae223cb4cf63b702e52b1c44f1
+Author: Aleksand Alekseev <randomclear@gmail.com>
+Date:   2015-07-21 08:55:28 +0300
+
+    Добавлена поддержка Delphi XE.
+
+commit 273e6e90c774b71bdf1fdf7074ed3d672a2cc5f9
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-06-29 13:44:48 +0000
+
+commit e20cbf82327d1b86b9a21d084c71f9ca9ee9e149
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-06-26 14:01:04 +0000
+
+commit 30bc694f155ba743b1f98377868b2939c03d73be
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-06-24 14:27:16 +0000
+
+commit 6d459e91e028de215123066d117c5edb0c3f6b4a
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-06-15 13:34:20 +0000
+
+commit afdfc8bc071699127b863e8925d7c81d9986363b
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-06-02 13:15:31 +0000
+
+commit 5a20d1977c4ac48e5af1e7a6857e0f610e22b95c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-24 08:17:45 +0000
+
+commit 3d54b716eaa2e6a312fee41d5a28e0315ed8e1f6
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 13:41:03 +0000
+
+commit 91d3252aeb92f41936b32a1158615742476853d7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 12:51:52 +0000
+
+commit c9ccee7baad3175ed7a17c9c07bc430d7820959c
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 12:21:49 +0000
+
+commit 9bd6f4a8c55d441506acd76478e995f2d219da36
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 11:16:38 +0000
+
+commit ac71148d96aeb617045cf5624eb41cedd6a6e6b5
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 11:08:36 +0000
+
+commit 9d4e969ec8c0436280b59328a128df67a83e398e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:59:14 +0000
+
+commit ae4701e7cfe8d75def58b117181d94055b1315cb
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:57:20 +0000
+
+commit 0d6f4e03977338b81b3d3c7ba9d4dc8cadbd34d6
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:53:42 +0000
+
+commit 48cb18a0db383b964f61aee31215883d64f06ef5
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:48:22 +0000
+
+commit 6110ac0b97ede2ea278d9a2fa5a886c5e6672b15
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:43:09 +0000
+
+commit 16f7d940e4b7b878299852cbb8273b7328bb5d56
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:42:24 +0000
+
+commit 41218ab2b078a3c05178ebfb648146b2066f53d2
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:21:21 +0000
+
+commit a31c9f6aaab587c31b9c6c2c90f4333dbbc0c6bc
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:12:53 +0000
+
+commit 98028ce687c19499d07e4ef100b340c5f0625e30
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:12:35 +0000
+
+commit a32433c14365a2f0843e157c6477fdc13fb04106
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:11:25 +0000
+
+commit 067018f7ade2d493b3f781cdf4e9111466122ab2
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-21 09:10:44 +0000
+
+commit b399c5cb155e3ddf02c95ce0723b62aad0cb0f44
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-20 15:07:07 +0000
+
+commit 4b002b4fc979826364a676780de12a6cc05899c8
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-16 14:46:44 +0000
+
+commit b83be182cf89065afb9d74d6c64154a3a724f771
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-15 16:57:35 +0000
+
+commit 8e91264c4dfb1d1f360f8fa1fb0cc00dbaec09f8
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-15 16:41:22 +0000
+
+commit 5873c57578aeccbec6132768ac1c8046c3145ffd
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-15 16:39:07 +0000
+
+commit 6db3860de6d9d17a2ec1206b164d8e55b08b2439
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-05-15 16:34:28 +0000
+
+commit 5dc3c4e87830628642202cac543ac3178e1f59fc
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2015-04-11 19:46:28 +0300
+
+    Fix compile in D2007
+
+commit 121f23f9555a6d1647bad07ad45776aa0c1afaeb
+Merge: c48a468 0962ae3
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2015-04-11 19:24:16 +0300
+
+    Merge with svn
+
+commit 0962ae357d47933a1932006a8c03d7cd8484b3c5
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-03-10 12:00:41 +0000
+
+commit b5d1b2abb836ba70ebb9a3efe087c8525e604dff
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-03-10 11:11:07 +0000
+
+commit b026039dfb42782a8848a47d8f5f2b4944fb2d79
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-03-06 14:33:42 +0000
+
+commit a72a6e5deec97ca06d1e89f02112759bb4465142
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-03-03 11:16:07 +0000
+
+    Added function ALIPv4EndOfRange, ALIPv6EndOfRange
+
+commit 665bd980b6b704b708145ce87d37fbd3204b838b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-03-02 09:47:49 +0000
+
+commit 210b08c21112b428f7494a60c2a3dc5e5071d15b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-03-02 09:46:50 +0000
+
+commit e1808b554941b7482719b8512b5cc99fba8c196c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-03-01 21:07:34 +0000
+
+commit 2e40606b23e3b5bf1db87182a6df25e04f5594b6
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2015-02-06 09:51:29 +0000
+
+commit 89bdaf691a5c6bee7620b6f152a62b63fd108fef
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-12-12 11:33:38 +0000
+
+commit ef60fdd36dce1f4d2683941abdddf09e4c977af6
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-12-12 11:30:53 +0000
+
+commit c48a468a2e852331cbba19c6bfb12ebbf57ba5b9
+Merge: dbdb7d6 4abcb3b
+Author: zed <starmen@tut.by>
+Date:   2014-12-07 00:09:03 +0300
+
+    Merge with svn
+
+commit 86fb9d5968d60b8ce00f332da7c2bdd3c34c5296
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-11-10 13:25:59 +0000
+
+    minor fix in mongoDBclient/alString
+
+commit 4abcb3ba9b416ce6590aa2468cac9d2f8f50462d
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-11-10 13:25:59 +0000
+
+    [r266] minor fix in mongoDBclient/alString
+
+commit e367d2133566c8b704d37387608355ec311dce6f
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-10-15 14:33:52 +0000
+
+    Added function ALAntialiasingImage
+
+commit 685a7a27ca7bf5b3ab97c72ed7c96b6a4e7ba99e
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-10-15 14:33:52 +0000
+
+    [r265] Added function ALAntialiasingImage
+
+commit 6b1d079b8a8765548b99718723618e043f5c17a4
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-10-13 10:20:09 +0000
+
+    add FindAndModifyData in ALMongoDBClient.pas
+
+commit 97e26c91385d8cf19f7fc655d6e362088a6d9cc8
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-10-13 10:20:09 +0000
+
+    [r264] add FindAndModifyData in ALMongoDBClient.pas
+
+commit a8753ab44e0ca0d12859950ffde49cbbc6821381
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-10-02 20:20:43 +0000
+
+commit 48ecb4dd30c35777acbe98f05f06a4b331fc44d4
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-10-02 20:20:43 +0000
+
+    [r263]
+
+commit 5a2c6fa80d8be51f5f2707feeee3dfede274dc18
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-09-23 11:48:01 +0000
+
+commit ff0e365fe5d8e66a779f1c741fa211b3e662e19c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-09-23 11:48:01 +0000
+
+    [r262]
+
+commit e19987308e1affb5ef3650f3b1689925af3c683b
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-09-05 13:46:20 +0000
+
+    added ALRunJavascript
+
+commit b305d75156bcf6d73cc0ef9f080bda9dc9b9e216
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-09-05 13:46:20 +0000
+
+    [r261] added ALRunJavascript
+
+commit 0c919229980d664c960b3ea5a00f718f13396edc
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-09-05 05:57:51 +0000
+
+commit 4d5e54ddaea7536b5c0770f3799db8f8be450253
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-09-05 05:57:51 +0000
+
+    [r260]
+
+commit dbdb7d69bf5b7ab05df6ffc887f31d02b3a5fee2
+Author: zed <starmen@tut.by>
+Date:   2014-08-12 18:40:38 +0300
+
+    Fix proxy setup
+
+commit 73329d561c74a5347476d13ca1fbe958357dc81d
+Merge: 04598e8 f5363b3
+Author: zed <starmen@tut.by>
+Date:   2014-07-07 21:22:38 +0300
+
+    Merge with svn
+
+commit 3d22f96c32d3e0e0e76190029429858ff4985aec
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-06-30 10:31:32 +0000
+
+    Small fix: added one call of ALLowerCase
+
+commit f5363b318c3f119c9e4f7137aa936466d4dcb831
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-06-30 10:31:32 +0000
+
+    [r259] Small fix: added one call of ALLowerCase
+
+commit 4422b596bfdf2477d7be01cc9ad575cd7ab5fcb6
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-05-23 11:02:20 +0000
+
+commit 440fe77a6d7b93142e7a0a85053da56723dd5ff4
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-05-23 11:02:20 +0000
+
+    [r258]
+
+commit 9835a7401beb46ab094877ae2dd652f45a5661db
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-28 07:39:02 +0000
+
+commit eed679724b378b783626d19211cb4324720b3233
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-28 07:39:02 +0000
+
+    [r257]
+
+commit e4722d51fad03d44541c281e9c6fc8927431f990
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-26 13:34:19 +0000
+
+    add OwnsObjects to ALQuickSortList
+
+commit 2b94aec13d140a3ae19327ccc375b16bdffcf995
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-26 13:34:19 +0000
+
+    [r256] add OwnsObjects to ALQuickSortList
+
+commit 531dab8878f902fddf8004b2bf68aba6c253e338
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-24 09:00:16 +0000
+
+commit 993a5181c24ec38405f939c5391182cff19eb809
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-24 09:00:16 +0000
+
+    [r255]
+
+commit 4d8d82c7d4ace0e47bcbb61f2f389e03438db7bd
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-17 10:27:24 +0000
+
+commit 7ebdc0b3a4aa1a40e6adea2713b33a9898c77ad5
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-17 10:27:24 +0000
+
+    [r254]
+
+commit ed52690623d9fbec6a4251ecbf8224fdb79ea120
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-14 08:22:58 +0000
+
+commit 88a38d8416a9719859a3070f28eb93df44b7fdd2
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-14 08:22:58 +0000
+
+    [r253]
+
+commit 0ee920b1453c4b47bb2265939761cee49fcf25a0
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-07 09:57:11 +0000
+
+commit 29b022dd1c8eeada3d228549439686d3f926a242
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-07 09:57:11 +0000
+
+    [r252]
+
+commit 2a32e68ed7604f9e9bea8736bef7fe1cf6b758e3
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-07 09:19:27 +0000
+
+commit a77dfead678a84e3c1259fe7cfc13d3229e7aa03
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-07 09:19:27 +0000
+
+    [r251]
+
+commit 409061561ca21f36a43827e4c41e7176a6bd6bc3
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-05 12:37:46 +0000
+
+commit 0e137f55c992579077e0a19c65272001b3f90c5c
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-05 12:37:46 +0000
+
+    [r250]
+
+commit ce0a21f5440e1f840602a4b50659b14d1d5e1aaf
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-04 13:37:59 +0000
+
+commit 677f8b42b4079dcbb293744db4fb395f34712e58
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-04 13:37:59 +0000
+
+    [r249]
+
+commit 28f9889a5eebbf081bbef12bdc8836c7dc863ef8
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-03 10:25:06 +0000
+
+commit 40c8a49d90ab15962d114bcbeeab886e091d5929
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-03 10:25:06 +0000
+
+    [r248]
+
+commit 1317f991448513ef5ccbe8f4a2300371d6335849
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-01 12:56:45 +0000
+
+    Added ALStringsToJson
+
+commit 8a244f610be99c993018d51bd896f66836e75a72
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-01 12:56:45 +0000
+
+    [r247] Added ALStringsToJson
+
+commit 85b3c0b6df3135a7f6e435dbf9994066718a6074
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-01 07:00:56 +0000
+
+commit 8f0fc4a3ac0c2b9a53518492c6766105d47490ef
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-02-01 07:00:56 +0000
+
+    [r246]
+
+commit 0f78101b66c9dec090a231b2c7998f06e4886792
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-31 12:16:04 +0000
+
+commit db1f3a9cbe1ad85211a037e285386d144436da44
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-31 12:16:04 +0000
+
+    [r245]
+
+commit cb35d953643f645077e26316b8a7843821629f4b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-28 11:08:21 +0000
+
+commit 364fdc7250b00c5b99b1014c4413a1e329c09367
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-28 11:08:21 +0000
+
+    [r244]
+
+commit ee83f87ebf528a3d06409602e79e27b01f1998ba
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-28 10:49:02 +0000
+
+commit b71af46a4d8d3da339db759afe61e872c5049609
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-28 10:49:02 +0000
+
+    [r243]
+
+commit 04598e86365af56d52676997b201cea5150f72bc
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2014-01-18 17:44:20 +0200
+
+    Fix compile in D2007
+
+commit db9a3571c95bfa7fa467964ad248b019fb3f6efc
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2014-01-18 17:19:24 +0200
+
+    Fix error "F2084 Internal Error: URW5517" in D2007
+
+commit 38129f6d8c3111ad0e45d10b89ff34548f2266e7
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2014-01-18 17:16:58 +0200
+
+    Add function ALFloatToStrF to interface
+
+commit e8db233275b6a581a10351cca1c12eec700b719a
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2014-01-18 17:12:31 +0200
+
+    Fix problem of reading 'Content Type' from registry
+
+commit 196968a9c7bc234a90dd40176cef0875b4a07e9d
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-16 10:07:49 +0000
+
+commit d650233e60e3e846ee7e405e50fe40523755e9b0
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-16 09:46:58 +0000
+
+commit 9a0245faedc761e536c8339dff77041ff71a0087
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-16 08:07:52 +0000
+
+    ALJSONToTStrings works correct now with empty {} and []
+
+commit e0f5eeee260a8d8a6019d65ae18fd3c6c7c56731
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-09 08:24:31 +0000
+
+    small fix in ALJsonDoc and update Demo ALCheckSource
+
+commit 47ca4a9752258b785655d28ec088d80fff8107d8
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2014-01-08 10:30:30 +0000
+
+    replace ALMakeKeyStrByGUID by ALNewGUIDString
+    minor fix in TALXmlDoc
+    minor update in ALJSONDoc
+
+commit 33f6e7ffe3db83b44560c4b565607e4a7ddb350e
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-24 13:17:43 +0000
+
+    1. Fixed problem with GET_MORE when we don't need taliablecursor.
+    2. Fixed problem with cycling of the GET_MORE (cycle "repeat")
+
+commit aea0d1ac158b21b195a0b8d1f9fe79b2a1727a26
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-23 19:06:50 +0000
+
+    Add binary support to ALJSonDoc
+
+commit 13a89131635f50d194f2e3fb1e7e245271553a41
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-19 11:07:50 +0000
+
+commit 9ddacfe5bc7174913fac40ac831093332e05d857
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 11:20:41 +0000
+
+commit ee1d80a3ef70eef7c5865e0969ac5dc475fc4ab5
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:57:04 +0000
+
+commit d9089dd72e67ecef61856e62ac96242be56c2ebc
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:54:41 +0000
+
+commit b647e5d4ee22d37ebcf4e89b27597987bc30fdf2
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:53:52 +0000
+
+commit 026732e24cd8099d15c72d08a6828f88010420c9
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:43:06 +0000
+
+commit ccc8947c24db17166aca5c23073a9fd71dc8d3ce
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:33:59 +0000
+
+commit 6f946421d88d3d1ec23e7a3dd5d0e4831cc98e65
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:29:43 +0000
+
+commit 0e8366a9fc1091888bdfb7ef39e69d02ec6846fe
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:29:19 +0000
+
+commit 3f313bb7731cb0ac7bfee3a4be4dc8353a73d1e6
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:29:01 +0000
+
+commit e2bb14a0f9ba87d51239fc9a1e0072ad7507cbee
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:28:46 +0000
+
+commit 79a4b9997d1b94513184f6328c2fa5318f3e24d6
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:28:10 +0000
+
+commit 519d704ad432870783cc4b7730fc8dd4f3ba3b10
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:04:54 +0000
+
+commit 272b72db5a252a8c7f36e95b7b29b5109d23aa09
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-18 10:04:20 +0000
+
+commit 2401905f3948025e2a120dfbdff58e9701686501
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-12-16 11:16:38 +0000
+
+commit 646f3f772d052ad8b83d1d5608cffda9d5acd5d0
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-10-23 07:13:55 +0000
+
+    Support of regular expressions for BSON
+
+commit 4f784067de3383e4d7408458af166732c6acbd83
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-10-21 10:03:11 +0000
+
+commit 29480d09d0681839937e518672dac6146bab79ac
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-10-01 08:01:11 +0000
+
+commit 22e951e10c95d8df69826b75a097b154120200cd
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-25 13:04:15 +0000
+
+commit 0af63ba287e060103240c38126941dc472755277
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-25 13:03:44 +0000
+
+commit 0150b2637901b7ab401ff7023939e80f1a579015
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-24 15:36:53 +0000
+
+commit 83df196778ca6a7318c4b7574872f8b0fd34189a
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-24 15:05:43 +0000
+
+commit a528c8668c672013bd572de4e0ae24243a28cb8e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-23 10:52:20 +0000
+
+commit ccb841aaf29423894aaabb1a99b82b5968883234
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-20 09:11:47 +0000
+
+commit ac9e0b312e8ea49fd2a0c2e39535ae933a0bb400
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-19 12:19:31 +0000
+
+commit 4677a680eceb4fb53c9dbfa8131b1ffbeda0a801
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-18 20:18:45 +0000
+
+commit fb2fbd571eaa1f7e14c8515b431ddc860e00f461
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-18 19:16:57 +0000
+
+commit 5b7c6932ed8a07d071ce78c5bdf14b417686e31b
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-18 14:34:57 +0000
+
+    UnixToDateTime and DateTimeToUnix replaced by their analogues working with milliseconds.
+
+commit 7c337779a083bfa0153108f361d7b7e72493daa0
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-18 11:30:41 +0000
+
+commit e55fed178c2d6a48755e9e243e947b58ddf227b4
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-18 07:51:02 +0000
+
+commit 86009211e142f18d383d5ab6b5bb98bdbf27611f
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-18 07:50:32 +0000
+
+commit e5dbd509ad3905803aab01f8ad222d963fb796c0
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-17 11:45:14 +0000
+
+    Added support for BSON-like Timestamp
+
+commit 1601ac6393b621534d99dbbb06991c8df3025950
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-17 10:19:24 +0000
+
+commit d1e1176def2a3b20ccaa154954fe3f61143f5a55
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-17 10:18:47 +0000
+
+commit eb3504b46b6f5b78f62482e53687026c4da17c9f
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-15 12:55:44 +0000
+
+    add the support to ObjectID in ALJSONDoc
+
+commit 106f86c08b159363bed98521c31038d0c0f94590
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-13 07:39:33 +0000
+
+commit 83c00b02c5e36ed63b1b22e670c90347d06353ee
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-12 11:39:24 +0000
+
+    Handle ObjectId when build JSON-document from BSON-text
+
+commit 791e929d1967991130db4d44b105f6f241753d57
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-12 10:01:12 +0000
+
+commit 75ea29945c439dfe133a6e32f8081d20bbf37cd2
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-12 10:00:48 +0000
+
+commit f345deb9610ee10efe00b4b24dfd3433f511d13a
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-12 09:58:57 +0000
+
+commit cde98dade117e2f4aa39f52d592742f150f5572f
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-12 09:30:34 +0000
+
+commit 777d22e6df529280bcb93e1adbadb96deb6f18fe
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-11 21:02:15 +0000
+
+commit a7816f4c34993fa771b62908200168c992acabb7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-11 20:23:42 +0000
+
+commit 28759918ad5e60fce87821b75b14ace99e809c36
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-11 14:32:14 +0000
+
+commit 2747f4e2a2df2b2ca29c0353fefa4328eef97a82
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-10 14:55:29 +0000
+
+commit 63b0d37f9eae4fe2a326e73885e452f652605c10
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-09 09:29:07 +0000
+
+commit 1f6de2d32aaa1cd44c8ce1b5d20455bba161cd82
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-09 07:15:50 +0000
+
+commit b36011712807e1cb6b157e84afeb123964bf4709
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-09 07:15:03 +0000
+
+commit 7af5907736760f7f3e619e0d54b2c259c0f5e25e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-08 21:45:16 +0000
+
+commit 563cea468f3433bdf2607520336b1f6b2986fca0
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-08 21:40:19 +0000
+
+commit b3551af8943481ecdfe9c2185e7e408ac09a1730
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-08 20:31:26 +0000
+
+commit 98395c6841ea7b76cfc95218a00d66ee7e734637
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-08 20:23:46 +0000
+
+commit b3b85c19ca2fa18047b35acfd9d6faf1f4fd8468
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-08 20:21:48 +0000
+
+commit 3b00003c170d85b843b1903bb6df2ecf6f865f47
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-08 20:19:34 +0000
+
+commit 2001214ed4f9939f6fd3c78d9b0a2ead1a409ffe
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-08 20:18:39 +0000
+
+commit 528b05c1fd8dcaa6bb796ea99bf8afb7ef403bce
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-07 14:45:07 +0000
+
+commit 50a205534ed2424e46442a300445210ad7578a1c
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-09-07 08:26:26 +0000
+
+    Added methods LoadFromBSON, SaveToBSON for TALJSONDocument
+
+commit 154f6a503d6a6eade8d3ccdc7f395253726ead46
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-08-16 07:58:01 +0000
+
+commit 689f30c5c408d517840c20afb5e5e6c2fe8e0bc4
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-08-16 07:56:31 +0000
+
+commit cc6872e4913abf638c271200c69736eea9636d3e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-07-10 10:07:57 +0000
+
+commit 15c5da640100aca83186b750174d028457fff61a
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-06-21 11:29:08 +0000
+
+commit eb32fd860e3bda95aa5a4bdf0991d05da915c30c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-06-18 09:14:19 +0000
+
+commit 23a6528e23cff1744c5b88641d793b78f02942a8
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-06-18 09:10:16 +0000
+
+commit 58e07121f08708053745aa27f32cd341edd50c5a
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-06-03 08:44:23 +0000
+
+    Compatibility fix with new TALXMLDoc
+
+commit 8178ecf767ad681b9ece09fb69bd3a5adcf04acf
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-05-23 14:49:15 +0000
+
+    update in ALXmlDoc
+
+commit f3b0631bc1e638524a0d62a21a04c9bbaea5d83e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-05-15 09:03:56 +0000
+
+commit 863490a8c30800b4f114d66f8640c41607796a2c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-05-15 06:38:11 +0000
+
+commit 496b6365c2f56806d8580584c5cd10522ad8e891
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-05-13 11:29:59 +0000
+
+commit 909e23ccb484063ec7ab35de8019418c5d78e653
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-05-06 07:58:21 +0000
+
+commit b5914e2f2f9527c9f54d6232c4d99d2fd01af081
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-05-01 07:51:45 +0000
+
+    rename url location of the svn (monkey sourceforge!)
+
+commit deca915c9b1421d32fc26b88dac9ad05f4f439ef
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-05-01 07:10:34 +0000
+
+    Do some little cleanup. Some objects not need to be a inherited from TComponent (like ALXmlDoc, ALWinHttpClient, Etc)
+    also add the unit ALMemcached (wrapper to memcached database). use now winsock2 instead of winsock unit (in DXE2+)
+
+commit c774d00b6d180de3eb21a6a5498cb18b22a45d9e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-25 18:32:59 +0000
+
+commit 81b1b3ab0b93947cecdaf1e39b3e0ff7d9bd39e7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-24 13:25:59 +0000
+
+commit 148ef05846e722760b2f8086069734694185a96d
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-24 13:18:19 +0000
+
+commit ef5a73f4f161fba8bd8f32dcd94df9a9325be4ee
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-24 11:43:07 +0000
+
+commit 9318dfd9821946faf0da49df50cbfb397fcfcf20
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-24 10:07:06 +0000
+
+commit 02ead890af6862ef84796cf53cdd5a8b49779d55
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-24 06:43:01 +0000
+
+    Function to check that user is existing in the system
+
+commit 24ac04ef844fd22adb34f65ef7a76ae0fed52f24
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-24 06:42:19 +0000
+
+    Possibility to run application under some user
+
+commit 158c8196f58ea60bf4fb93a5519d2d42171c74fa
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-24 06:37:17 +0000
+
+    1. Functions with variable count of args. 2. Operator IN(...)
+
+commit ffb3c4b9b2ae973d974e7ea0caa37b5a5ebd8301
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-22 08:55:39 +0000
+
+    !! sourceforge IS MADE BY MONKEY !!
+
+commit 8f7a4c4dcacf15289713221a91e650492ab413d1
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-22 08:53:31 +0000
+
+commit 155178554867960ab6b76588d4323d9867897775
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-22 08:51:38 +0000
+
+commit aff826c54c6d29f5f0fff43f23b1cd7a7abb1915
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2013-04-22 08:36:02 +0000
+
+commit 7c73bc7eba7c4e3e585c87cbe132712ac6d45d48
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-12-10 10:11:31 +0000
+
+    Correct a bug in TALXmlNode.getxml
+
+commit 59d148c1a7000797fa122fb74fe051b7b8048993
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-12-07 07:04:50 +0000
+
+    minor update in ALHttpCommon to avoid overflow
+
+commit 811244676c65e134be4ecb0ace5bbf9e607f779e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-12-04 11:39:57 +0000
+
+    Add StrictNames property to TALStrings
+
+commit 96970ffb27604f75b1dc90b3ed82a3b52dc38b6e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-12-01 09:01:46 +0000
+
+    remove range check error from ALCipher
+
+commit b14fe0673dc2374c8a612f01a6d4531497cd2535
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-11-27 09:46:08 +0000
+
+    add new functions in ALFcnFile
+
+commit 890e8376b8c7359e3fdaddf4695a33a26744c095
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-11-22 13:07:00 +0000
+
+    Minor range check error correction in ALXmlDoc
+
+commit 4393878c4c9c1409ca47532861b7a89f5f5077d7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-11-22 12:32:19 +0000
+
+    correct overflow error in ALCipher
+
+commit df780146c13ab38495d19866db282d7d6d22fda9
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-11-22 08:05:18 +0000
+
+    Minor update to avoid Range Check error
+    Update/improuve ALFastTagReplace
+    Add the unit ALExprEval
+
+commit 91b582bc6a729932a2011dfa496b538bb793a318
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-10-26 13:00:16 +0000
+
+    Fixed the problem with incorrect type-cast of TALAVLInt64ListBinaryTreeNode
+
+commit a03839b1f823417aad54e60d09940aad16757261
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-10-26 12:52:38 +0000
+
+    small corrections in ALFcnString
+
+commit 3ec3e8312b72f57c652705539b8671720a669b20
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-10-15 17:31:32 +0000
+
+    Correction of a bug in ALIsapiHTTP.pas
+
+commit 92116cf4068fe95d1329816440c3b1fd325c8d3b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-10-14 07:23:00 +0000
+
+commit 58701d04e56eea77ef94181cef9380a48b947f8b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-10-14 07:15:16 +0000
+
+commit 44f58d1d389b2935e89ee85d8dbb2b98d8b38ca7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-10-12 21:42:16 +0000
+
+commit 7291e0a8c98fba9c7f18ab05e4f83f968d118fe9
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-10-09 08:37:48 +0000
+
+commit c3441cdf4d928dc3544ceff790408b82ef7f6e5c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-10-08 14:48:55 +0000
+
+commit 9a6e1155eb1dae8d54086ca78c5c64803d0bce29
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-28 21:38:33 +0000
+
+    D7 support again ... sorry we play a little ping pong
+
+commit dafacceb54a72aa12e5520c4247187ff266533ed
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-28 21:29:18 +0000
+
+    D7 support again, forget one include in XMLDoc
+
+commit 9ffba1f5cec300956ba46fa5623e5dfbd14e8e4c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-28 21:26:23 +0000
+
+    Add D7 support
+
+commit 1eeb2565e3f6b486376d8dfaea4e67d352ef0c37
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-28 11:33:00 +0000
+
+    Rename ALGetCodePageFromName in ALGetCodePageFromCharSetName
+
+commit f7e2b99a0bc26847f23b6a8a3a3e1178e5c74177
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-28 11:28:17 +0000
+
+    Update ALGetCodePageFromCharSetName to use build in functions under XE2 (Tencoding) and ALGetCodePageFromLCID to use Windows API
+
+commit c758709e27c43574d895d39499fb68136eaa4bd6
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-28 07:59:40 +0000
+
+    Add D7 support
+
+commit 018859c031dea7e99a2ccf0fc95eed01c6224954
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-27 20:26:33 +0000
+
+    ADD DELPHI XE2 (Unicode and Win64) SUPPORT
+    
+    About Win64
+    
+    Unfortunatly, in win64 we lost all the FastCode heritage.
+    (that was mostly based on ASM). That mean that most of
+    the functions will be around 2x to 10x more slower.
+    you can try to launch /demo/ALStringBenchMark/
+    in win64 and Win32 to see the difference in speed.
+    This Unfortunatly make the Win64 support of Delphi
+    like a "gadget", because most of the app demanding the
+    win64 support are Server App (or dll) and this king
+    of app need all the power. I just Hope that
+    embarcadero will improuve the speed of the win64
+    functions, but i doubt they want to do them in asm
+    because they want to go in multi plateforme, and
+    they not really want to do dedicated ASM for
+    every plateforme, they instead want to improuve
+    their compiler. but i thing it's an utopia that
+    their compiler will produce code that can compete
+    with handly optimized ASM
+    
+    About Delphi D2009+ (Unicode)
+    
+    No mistake, Unicode was necessary for a product like Delphi.
+    But the way embarcadero decide to implement it’s questionable!
+    Indeed they decide to migrate the 8bit string to 16bit string
+    instead of choosing to implement Unicode through 8bit string
+    (UTF8).  This cause the migration of some Delphi app < d2009
+    very hard, especially on application that assume that string
+    is 8bit. Here a very good article about why to avoid to use
+    UFT-16: http://www.utf8everywhere.org/
+    
+    The main argument of embarcadero why choosing UTF16 instead
+    of UTF8 is because the windows API work in the background in
+    UTF16 and better to stay in the same way as the windows API.
+    This is still questionable when the strategy becomes to make
+    Delphi a multi platform product.
+    
+    So I was facing the need to choose: stay in D2007, move to
+    freepascal (that implement Unicode through UTF8) or migrate
+    to Unicode. After studying the Unicode migration and discover
+    that it’s will be very hard to do (even in the Delphi I
+    discover some bugs in their own source code due to the
+    migration from ansi to Unicode like for exemple
+    http://qc.embarcadero.com/wc/qcmain.aspx?d=106424).
+    Also on lot of my applications the migration to Unicode was
+    really unnecessary, as they was already working in UTF8,
+    receive their input request in utf8 and output their response
+    in UTF8. Here the migration to UTF16 will mean:
+    Input (UTF8) => UTF16 => data processing => UTF16 => output(UTF8)
+    + off course all the migration job (that include debugging).
+    In fact, except the input/output to the "visual interface",
+    most (if not all) of the input/output of most of the
+    application will be done in 8bit string (ex: file storage,
+    client/server protocol, HTTP, Smtp, tcp, xml, html, database,
+    etc.). So I decide to go in Delphi Xe2 but to stay in
+    ansistring (8bit string). My first through was to replace
+    everywhere in my code all the String by AnsiString.
+    Unfortunately,  most of the usefull and needed string function
+    in D2009+ are not available in 8bit string like inttostr,
+    strtoint, strtofloat, Tstrings, TstringStream, etc. that
+    simply unbelievable, in their way to go in 16bit string,
+    embarcadero remove the 8bit support ! of course we can still
+    do ansistring(inttostr(x)) but this is very pity (and slow).
+    So i decide to make my component like a "framework" to help
+    the fully support of 8bit string (mostly in UTF8).
+    
+    I build a small application (available in /demo/ALStringToAnsiString/)
+    to convert all string type and string function to their
+    ansistring equivalent. The conversion reflects my
+    programming style and quirks so you may need to tweek the
+    output or modify the converter so you have the code. Will
+    this work for your code? Probably not out of the Non Box but
+    you may only be left requiring only few little tweaks.
+    
+    You can also go in /demo/ALStringBenchMark/ to find an
+    application to benchmark ansiString vs Unicode String and
+    in /demo/ALSortedList/ to see the benchmark of TALStringList
+    (ansiString) vs TStringList (UnicodeString). In fact, most
+    of the Unicode function (when they are implemented correctly,
+    thanks to fastcode) will be close to the same speed as their
+    ansi equivalent. But no mistake, Unicode string will still
+    use 2x more memory and dependly of the application, this can
+    be not acceptable (exemple application that load huge list of
+    string in a TstringList or in an XML object).
+    
+    Under D2009+, ansiString Have now a codepage, and some
+    transliteration (OldCodePage => UTF16 => NewCodePage) will
+    happen when assigning one ansiString with different codepage
+    to another ansistring with another codepage. To avoid this
+    it’s important to always set project option to the code page
+    you want (eg. 65001 for UTF8) and also to call at the
+    beginning of the program SetMultiByteConversionCodePage(CP_UTF8);
+    Also it’s very important to avoid to use 2 differents
+    string type (eg UTF8string and aniString) even if they have
+    the same codepage, because compiler at compile time
+    don’t know that codepage is the same and will do a
+    transliteration (ex MyAnsiStringUTF8 := MyUTF8String will
+    result in UTF8 => UTF16 => UTF8). This is why we use in
+    all our code only AnsiString instead of UTF8String (even
+    when we assume that string contain only UTF8 char) to
+    avoid theses transliteration keep the rule to only use
+    AnsiString with SetMultiByteConversionCodePage and not type
+    like UTF8string or other
+    
+    Also about the compiler warning, when he detect a
+    transliteration you will have a warning, but he can not
+    always detect the transliteration Ex: MyFunctionNeedPWideChar(Pointer(aPansiChar))
+    Here unfortunatly you will not get any "warning" nor
+    any "error" from the compiler.
+    
+    Everyone that want to join us in the development of this
+    8Bit string framework is welcome !
+
+commit 20725ea5ef3d7d2023a757caf3febdfe0ef2d126
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-27 10:57:20 +0000
+
+    add support for Delphi Xe2
+
+commit 810581a6e08da33bc794eecf1358ed6502a4928b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-27 10:47:12 +0000
+
+commit ee162bf4616d4dd55cf9be129f51f141b5c9ad7c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-14 13:40:55 +0000
+
+commit 293f0952ecb9bf9b8413991b692c62a8ac7c2cfa
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-14 13:36:19 +0000
+
+commit ee7ba671e33aa44a621411ed6d102d07edca0233
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-14 11:46:20 +0000
+
+commit 2574377c7eeac61ddf11e5a50fd5b43c23b699aa
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-13 15:43:31 +0000
+
+commit c6f36a2a0d36dfffd989b4dd06e539319495c4c7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-13 15:19:24 +0000
+
+commit dfd185ff0b7699345a39707eea3fa92390cde589
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-13 07:33:14 +0000
+
+commit 8a7c1705507151774924f4aff88c36c97a8c3abf
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-13 05:46:51 +0000
+
+commit 5f37fae82bc872c0c8bc7a8f0aeae2f60ae98c50
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-06-13 05:46:10 +0000
+
+commit b8519806b3ae6176604ebee827d13a0cbf1c79d5
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-30 21:29:24 +0000
+
+commit 996cdd14716bfaf2c2a44f9beee83850961040ef
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-30 14:55:35 +0000
+
+    Add MySQL options to MySQLClient and SphinxSQLClient
+
+commit da995ebd6a3e3bc6ea1a94504140443ba836621c
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-30 14:53:56 +0000
+
+    Fix the bug when ALIsInteger returns true from hex-like row
+
+commit d1058abf17e413e7172c706dd971f4428aa94002
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-21 10:40:36 +0000
+
+commit be0d95b64a8013c9512711f366b8e687c9363b68
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-21 10:08:08 +0000
+
+commit eaaaa413f9448aae371f2efedc8c32a457ddd837
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-21 08:58:12 +0000
+
+commit 08cbac00e5c06954c1754920e75fd1fbf75af70e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-20 10:06:21 +0000
+
+commit 0a240c59b9cea74d4a4b8da6402e68237e407d9d
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-17 19:10:58 +0000
+
+    correction of a little bug in ALXmlDoc (CloneNode)
+
+commit 7c602170add3a68875117f43076f9475157f0107
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-17 06:40:52 +0000
+
+    List of MIME-types is sorted now to use the advantages of TALStringList
+
+commit 90eae7e61c2eb8660d881163125a5be47cd59a68
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-17 06:39:36 +0000
+
+    Implementation of HTTP-methods PUT and DELETE
+
+commit 1af56ba2ee51f93263b7b7f9f599137b99276f4b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-16 08:16:12 +0000
+
+    add clonenode to XMLDoc + make unit ALXmlDoc compatible for Delphi XE2
+
+commit fa90fa238d6d3a93a9ea4dada99e90c2563c98d7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-11 07:24:04 +0000
+
+commit 8d48525143869f2e580139af232d4b901b4d1a5d
+Author: toledus <toledus@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-04 12:53:37 +0000
+
+commit 40908c6963bc63b4f41bc8e5d552178dcd4fc54d
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-01 13:00:26 +0000
+
+commit 8b30289f63601119b5f789e7e54ae1ad9e870f44
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-05-01 09:02:51 +0000
+
+commit a034a2ce318c46982a1dacc9f0c4b3d924b19d8b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-04-05 19:18:00 +0000
+
+commit 92c067aee5f390e30a6100b1ce0a9876caca2729
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-04-02 12:36:46 +0000
+
+    Update of ALFBXClient to handle Statement Pool and not only Connection Pool
+
+commit 873c4db6c4249d1810f96a72ab8cc83df5d92704
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-03-26 09:15:07 +0000
+
+commit f63ecb34d788e1316cb5eda0f6b9f8bfc42133f2
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-03-26 09:14:08 +0000
+
+commit fb7e6ea95e5d4704aa3b7b0273c0c6820fdf84cc
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-03-16 09:44:47 +0000
+
+    Update of the ALFBXclient to add also Statement / Transaction pooling instead of only connection pooling
+
+commit 391a635fd08e2441498bf3a8133e698bc5780143
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-03-12 07:15:18 +0000
+
+commit 97792c974c1711348573ccced5bc9d9e0f10bc07
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-03-11 19:04:55 +0000
+
+commit 449cfa10d971310a3eefd7a1fb20be7501109cf1
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-03-11 07:26:18 +0000
+
+commit e0a7fcdd9bf1a95028969fb1aa7aaba4c6e12a70
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-03-08 18:44:21 +0000
+
+commit d1ac4d1f5919bc15bb3179badc31bba4a49583b9
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-03-04 21:15:22 +0000
+
+commit aa64744b2301926efaa741c6f0f86924dd30ec9b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-03-04 21:12:36 +0000
+
+commit a0c5199dc2f9ce1485bc81e75a2afe7f92f99807
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-03-04 17:10:34 +0000
+
+commit 1bc20a95125d2e3b99055aefc5362f9e2768f045
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-02-29 06:43:28 +0000
+
+commit 4276ab748379ebeac4ab7e00593e3d7c0b3a051b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-02-17 07:52:33 +0000
+
+commit 3c47f2f4747e782beab241ce30bd082839d3b7d0
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-02-13 17:55:38 +0000
+
+commit b96b31e6d15eaf5750445ea69ee1fb66b2c8df05
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-02-08 14:08:23 +0000
+
+commit e48b68231e4c742a2de904da527f85e4a030363f
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-02-08 13:54:34 +0000
+
+commit 82fa6479f147a7a080e6896b0611845f7c4ba6ba
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-02-08 13:45:11 +0000
+
+commit 2e0f344a412dffd53c23e2ddc283c858053a528a
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-02-08 12:33:50 +0000
+
+commit 8c714f0660cee35677e7d7e36f2054a5ca98c2e7
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-02-02 11:56:28 +0000
+
+commit a6ec55609164c6c879fbd1016f18b1c48a08280a
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-01-31 14:13:03 +0000
+
+commit 16be4b08774449cf016aa1beb9d5ee80861ef566
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-01-29 08:44:16 +0000
+
+commit 9fecfe27cad773f896f923ae5c4b7552acd2291f
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-01-26 07:45:15 +0000
+
+commit 87c8b249b776b5487f8902a13f9d893b336fdae9
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-01-25 17:20:01 +0000
+
+commit 170611384e1d638a0b0fd426e5e96e56f8caa8eb
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-01-18 08:49:34 +0000
+
+commit 61489c2fcd68ecc582d54f67d42a9f83cb3a80d6
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2012-01-11 11:48:35 +0000
+
+commit 1c771a97fe85c99b2570a2e78f633936041829b1
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-12-31 17:16:59 +0000
+
+    Very little minor update in ALFBXClient
+
+commit 289806f45c172d7d34a794838fd946df80e70eb2
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-12-23 22:33:05 +0000
+
+commit c3a7893d52640e84c930dc163ca21ed07a38101a
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-12-23 22:32:37 +0000
+
+commit 8afe41ea6f78a8de3f82ea1bbdaf54b684019c08
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-09-22 22:23:48 +0000
+
+commit a7c06ba2193283dae235aebae7fdc281ba450c32
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-09-21 15:17:24 +0000
+
+commit 0e3fad7aeb44b5ed9e74cbb197c53810a4760c98
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-09-08 10:59:10 +0000
+
+commit 8c166290999573d631128ec43d8172b6d9f66d55
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-09-08 10:00:29 +0000
+
+commit 7c8cf44682d2acf777b44d2542a2dc65f4c004d4
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-08-22 12:47:48 +0000
+
+    minor fix in ALGSMComm
+
+commit ef39700e2b44d4d1e57d54c29dd139de1356f4bb
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-08-19 08:53:16 +0000
+
+    ADD VERB TRACE to ALWinInetHTTPClient and ALWinHTTPClient.
+
+commit 0423aca23ce517a2c169702dad29dccef6afde49
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-08-18 13:55:41 +0000
+
+    little modification in ALAVLBinaryTree.pas and ALWindows.pas
+
+commit d91dba0564cbefdc058d4cad2185179e59210cec
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-08-11 09:17:18 +0000
+
+    Update the AlWinHttpClient and AlWininetHttpClient to make them not disconnect on error because if so we loose the cookies on any http error
+
+commit 06c5ea2216de61ada3aa5c9c566afa69c780649a
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-07-25 12:12:27 +0000
+
+commit 3f26778e7c8b420171e48a10178b93e189912c3b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-04-25 17:06:47 +0000
+
+commit 3bfabd250e36053d1c38c4ee6e9d626e3b9f6074
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-04-20 19:18:23 +0000
+
+commit 9ab376fd2a77c633220b3d83c1267f94a4e3a450
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-03-17 10:48:10 +0000
+
+commit 977e07e9673d2434300b6da6b1f136c2351d75f9
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-02-28 07:17:16 +0000
+
+commit d7d9410a6b07c429edcfa34b026e1324a6c1fcd9
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-02-24 13:00:21 +0000
+
+commit 9e1fc894e9feca98880e75320c2dec4801b8291b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-01-31 08:43:44 +0000
+
+commit fff24f34cdb327cf75564a4392be373dd540ff7b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-01-20 09:47:03 +0000
+
+commit 8a7e0cb2f9bc266fb0fe26d10e3ac5ba06c604e0
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-01-14 08:38:10 +0000
+
+commit 7695144f8fb10a9d0dcb961117adef81c36ce541
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-01-11 08:08:57 +0000
+
+commit 646ddefbaf05224b75fb43e9a7e13d3024c134bf
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-01-10 09:14:07 +0000
+
+commit 89b933f4bf9c768102edf4acf234ef93474e79ef
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2011-01-10 09:13:48 +0000
+
+commit 2ec6c1fa0f7b75483cec6e9471425d5916f998e4
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-12-15 12:47:21 +0000
+
+commit f577465a98429af3801f27a25ba44753d606b476
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-12-10 08:26:28 +0000
+
+commit 18b79bb1a235c07f9c968d5c88cd2d017e8fc67b
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-12-10 08:18:57 +0000
+
+commit 493a5a79a3990a9f3bccd36a7d357a6ed3b0213e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-12-07 18:40:13 +0000
+
+commit feba38398bab6acde90b0f60270ed46f37325a8e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-12-06 09:26:37 +0000
+
+commit 669aadbc3ec9fea656ffb6349e9e7402c67fc88c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-11-06 18:37:51 +0000
+
+commit 65e2af6ca47414b97a65fd776e584bb50fe65d44
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-09-17 13:02:32 +0000
+
+commit c820df6340f159407a965ec50e255c3a4c245346
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-07-29 19:15:54 +0000
+
+commit 025e3547e01474166abf4791bcf47e50226fc6c8
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-07-26 06:24:22 +0000
+
+commit 1174d0591af22bf7216d9040c9f529a222771261
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-07-08 15:36:39 +0000
+
+commit 2eb2b619e64195786dc1c063e23ec674d63990d9
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-07-08 15:35:22 +0000
+
+commit 64581dcebf7fa9d8d4151ae3a318923283c7387d
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-06-28 19:10:29 +0000
+
+commit 3f01402aa6bea4d6ecef3e7c9799791f2ab4618e
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-06-24 21:01:40 +0000
+
+commit 3a911f43361583e43254d70e52aaa011ad19fb2c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-06-22 20:06:54 +0000
+
+commit 1dde9dbe088de4f18e906cf4f1dc0cb6f6b33eb1
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-06-09 08:58:17 +0000
+
+commit d125b24193d9bca35099b7170e4fffcf24d2a068
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-06-01 20:38:39 +0000
+
+commit 25265df1b8970420f645eac20ce6c7aa112fba3f
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-05-25 11:02:30 +0000
+
+commit e8f486a911a2b5c176fbae0b17d8b0a1c8a1b394
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-05-23 10:30:15 +0000
+
+commit f816d497756f9ed7e7e3a0a476d64fefcc854725
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-04-27 09:08:24 +0000
+
+commit c32bf439870c7ba435ccc4102036c777b6ab14f0
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-04-18 21:02:52 +0000
+
+commit a09313508e4016a93899d34a1ac16625ce6ce483
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-04-14 06:24:12 +0000
+
+commit 4d572c4fdf9e316864fda147827015446af09c17
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-03-22 07:13:18 +0000
+
+commit 17117ac932f92b5c9fdc22b5c316047f7c1e56cd
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-03-13 23:26:06 +0000
+
+commit ada2e5b93d1f420ba7474b30c987cfa2b10cb3f9
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2010-01-14 13:28:19 +0000
+
+commit db5037aaf8aeecac6d21b5c9aaa8637dd93c3e70
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-11-29 11:37:11 +0000
+
+commit b196c4b54ae8232eaa5d51d832a7e0214f7f6155
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-11-26 08:41:32 +0000
+
+commit 97561c0b901dcb9af902b1768066dbeefd1f9a03
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-11-20 16:52:52 +0000
+
+commit 10decc664b63caf59f9710d684a3f8b5d151fc39
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-11-02 17:31:30 +0000
+
+commit 4af5d896a6ec3364288d8a087f82aeb5d38f7d04
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-11-01 19:13:17 +0000
+
+commit dbba91578275be777c735431b13b41c31f4f81ea
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-29 18:09:15 +0000
+
+commit 58e8d2a7ea7bdb6587d230c58bf9b50c8ce8b7b1
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-21 16:55:59 +0000
+
+commit e462ec31211654c86bdbcc5090b3ac9776a7489f
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-21 16:45:01 +0000
+
+commit 2a175ab01768541e4c2968ef937422fb4cc9fe19
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-21 14:54:25 +0000
+
+commit 147ad7dfc544b4fe9f091049cbacff548993a7a8
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-21 13:13:51 +0000
+
+commit 96400ea4de87454546387d99f809886d170db953
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-19 13:06:55 +0000
+
+commit 0a74cb5620afffc11d4618b2c4513e1f6a141873
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-19 11:41:36 +0000
+
+commit a311c2374ccbdf3604ae527e6c134363b276bbda
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-19 11:24:26 +0000
+
+commit 42c4e1736f53e6c810ba06bbdb561c1629d74178
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-19 11:23:10 +0000
+
+commit 8b98cbfe7c9afc0f54bb37fdf8fbf9eed8246740
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-19 11:19:52 +0000
+
+commit 38016b142a1036182b05d27046419ae856787981
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-19 10:47:30 +0000
+
+commit 9a61bbda1cc225b17a2aae4297f83bd2a5da58ea
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-19 10:45:20 +0000
+
+commit e2e9f1af47815f748356ca12933938d53dbeb8fb
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-19 10:44:41 +0000
+
+commit 55a4ea8220f2c12a3b0f76416e5003395b1cceb6
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-19 07:10:36 +0000
+
+commit dc56423a7088724cc6a284341412bd79236a1e64
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-10-12 06:28:57 +0000
+
+commit 6294714233a9808cbc40656ab21bcb8a016e2534
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-09-27 10:08:02 +0000
+
+commit 2364c378b07f4a731ad5053a5459ba076f49f9b8
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-09-23 13:15:34 +0000
+
+commit b2dfdb8bb7808e63964941983045044dc5714e35
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-09-21 08:52:01 +0000
+
+commit f3594e540a16597acb6a07c8b6045e6e88c7b9dc
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-07-09 11:21:38 +0000
+
+commit bae95aaedf800cd9ce6015c2ad5b4dd4ff2567fd
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-07-05 16:50:44 +0000
+
+commit 5a9b8062f68443362f4f3c16245a3291dff2b1d8
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-07-04 08:38:36 +0000
+
+commit 2a76738fbe400eda2cb59ea678861f5cada684fc
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-06-25 17:19:11 +0000
+
+commit 7bfd07d0d366f749476064251e2f21eb4e0b81f0
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-06-24 20:03:28 +0000
+
+commit dd09473329852411049f802f3de6c5130d9a451c
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-06-10 21:09:57 +0000
+
+commit 3509df1d0856b1c2036590041e81b12fe82a11c2
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-06-08 17:24:11 +0000
+
+commit 075fbf905545af20c9389c3333fd5ca0cbc53643
+Author: svanderclock <svanderclock@f771dc77-5a89-4a8d-8f51-50898dbcc0b7>
+Date:   2009-05-26 19:24:34 +0000
