@@ -1,0 +1,56 @@
+commit 23dab3909e6761bcc660183db95047fca6b71cf5
+Author: zed <starmen@tut.by>
+Date:   2019-03-25 10:26:53 +0300
+
+    3425: Для того, чтобы запросы могли переиспользовать соединение, флаги
+    безопасности https надо устанавливать для соединения, а не запроса. Включение
+    HTTP/2 так же лучше производить один раз, для соединения
+
+commit d83d23953167a4ebd5f3d6bc25ecfc144c441288
+Author: zed <starmen@tut.by>
+Date:   2019-03-24 21:47:03 +0300
+
+    3424: Включение HTTP/2 под Windows 10
+
+commit 783ba04461ee857c30c068765428c188f01db5ad
+Author: zed <starmen@tut.by>
+Date:   2018-12-09 16:18:27 +0300
+
+    Фикс для сборки в D10.3 (PCRE перешли с UTF-8 на UTF-16)
+
+commit 7d32d304f4ac9ee297b4cd6fc182412f7cad72d2
+Author: zed <starmen@tut.by>
+Date:   2017-10-08 13:03:42 +0300
+
+    Alcinoe rev. 746
+
+commit 8aa5aea4ddcbad43fc309e67910b7d34bd42e1bf
+Merge: 4e5bdcf e4b7255
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2017-04-23 03:30:58 +0300
+
+    Merge
+
+commit e4b7255ced2c7875f1b0eb2de8bfa710d57c843a
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2017-04-23 03:28:54 +0300
+
+    Alcinoe rev. 627
+
+commit 4e5bdcfc3f1526aea7df6439dc1a94e610effae8
+Author: zed <starmen@tut.by>
+Date:   2016-12-22 15:32:01 +0300
+
+    Портировал функцию ALFloatToStrF из старой версии
+
+commit 2b6da2345b7428fdd03c9cd40ff71fdc0133b9a8
+Author: zed <starmen@tut.by>
+Date:   2016-12-22 15:25:23 +0300
+
+    Портировал изменения из старой версии
+
+commit 03738061a46cc0647ec0e4655b83bc1030978585
+Author: zed <starmen@tut.by>
+Date:   2016-12-22 15:24:08 +0300
+
+    Alcinoe rev. 537
