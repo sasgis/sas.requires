@@ -1,0 +1,29 @@
+commit 407fb9a8f85ef5446c9b668b7bcb742976f811e7
+Author: zed <starmen@tut.by>
+Date:   2019-05-07 16:51:31 +0300
+
+    another fix for Delphi 10.3 Rio
+
+commit 317b740a2cf3846748c89f2bd2143386c39b7432
+Author: zed <starmen@tut.by>
+Date:   2018-12-09 15:56:05 +0300
+
+    fix for Delphi 10.3 Rio
+
+commit 7bc208d17a412ac18e5b9388d27606459af7fb11
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2016-08-11 21:12:38 +0300
+
+    fix for XE2
+
+commit 98156bdf293d4f9d52ee7a085bd830d8b0e9d086
+Author: Viktor Demydov <vdemidov@gmail.com>
+Date:   2016-07-04 00:30:40 +0300
+
+    Обновление до версии 1.5.3
+
+commit 1fa0a1b3b6b648b0d53997f1a60d19e60b387118
+Author: sas_team <vdemidov+sas_team@gmail.com>
+Date:   2013-05-15 09:16:20 +0200
+
+    Imported from SVN by Bitbucket
