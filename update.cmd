@@ -9,7 +9,7 @@ if not exist %log%\ (
     mkdir %log%
 )
 
-for /f "usebackq tokens=1-3 delims=," %%a in ("meta.csv") do (
+for /f "usebackq tokens=1-3 delims=," %%a in ("update.csv") do (
     
     echo.
     echo %%a %%b %%c
@@ -32,7 +32,7 @@ for /f "usebackq tokens=1-3 delims=," %%a in ("meta.csv") do (
         git remote add origin %%b
     )    
         
-    git fetch --all --verbose
+    git fetch origin --verbose
     git clean -d -x --force    
     git reset --hard %%c
     
