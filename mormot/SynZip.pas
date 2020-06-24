@@ -6,7 +6,7 @@ unit SynZip;
 {
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2019 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2020 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit SynZip;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2019
+  Portions created by the Initial Developer are Copyright (C) 2020
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -74,8 +74,6 @@ unit SynZip;
   Jean-loup Gailly
   Mark Adler
 
-
-
     Cross-platform ZLib implementation
    ====================================
 
@@ -83,78 +81,6 @@ unit SynZip;
     - Win32: use fast obj and inline asm
     - Linux: use available system library libz.so
     Also defines .zip file structure (TFileInfo TFileHeader TLastHeader)
-
-   Version 1.3
-    - Delphi 2009/2010 compatibility (Unicode)
-
-   Version 1.3.1 - January 23, 2010
-    - issue corrected in CompressStream()
-    - compilation of TSynZipCompressor under Delphi 2009/2010, without any
-      Internal Error DT5830 (triggered with my Delphi 2009 Update 3)
-
-   Version 1.3.2 - February 5, 2010
-    - added .zip direct reading class
-
-   Version 1.4 - February 8, 2010
-    - whole Synopse SQLite3 database framework released under the GNU Lesser
-      General Public License version 3, instead of generic "Public Domain"
-
-   Version 1.5 - February 11, 2010
-    - added .zip direct writing class
-
-   Version 1.9
-   - crc32 is now coded in inlined fast asm (crc32.obj is no longer necessary)
-   - crc32 hashing is performed using 8 tables, for better CPU pipelining and
-     faster execution
-   - crc32 tables are created on the fly during unit initialization, therefore
-     save 8 KB of code size from standard crc32.obj, with no speed penalty
-
-   Version 1.9.2
-   - both obj files (i.e. deflate.obj and trees.obj) updated to version 1.2.5
-
-   Version 1.13
-   - code modifications to compile with Delphi 5 compiler
-   - new CompressGZip and CompressDeflate functions, for THttpSocket.RegisterCompress
-   - now handle Unicode file names UTF-8 encoded inside .Zip archive
-   - new TZipWrite.CreateFrom constructor, to add some new content to an
-     existing .Zip archive
-   - EventArchiveZip function can be used as a TSynLogArchiveEvent handler to
-     compress old .log files into a .zip standard archive
-
-   Version 1.15
-   - unit now tested with Delphi XE2 (32 Bit)
-
-   Version 1.16
-   - unit now compiles with Delphi XE2 (64 Bit)
-   - TZipWrite.AddDeflated(const aFileName) method will use streaming instead
-     of in-memory compression (will handle huge files much efficiently, e.g.
-     log files as for EventArchiveZip)
-
-   Version 1.18
-   - defined ZipString dedicated type, to store data in a Unicode-neutral manner
-   - introducing new TZipWriteToStream class, able to create a zip without file
-   - added TFileHeader.IsFolder and TLocalFileHeader.LocalData methods
-   - added TZipRead.UnZip() overloaded methods using a file name parameter
-   - added DestDirIsFileName optional parameter to TZipRead.UnZip() methods
-   - added TZipRead.UnZipAll() method
-   - fixed CompressDeflate() function, which was in fact creating zlib content
-   - fixed TZipWrite.AddDeflated() to handle data > 200 MB - thanks jpdk!
-   - fixed unexpected error when adding files e.g. via TZipWrite.CreateForm()
-     to an empty archive - thanks Gigo for the feedback!
-   - addded CompressZLib() function, as expected by web browsers
-   - any zip-related error will now raise a ESynZipException
-   - fixed ticket [2e22dd25aa] about TZipRead.UnMap
-   - fixed ticket [431b8b3dd9d] about gzread() overoptimistic assertion
-   - fixed UnZip() when crc and sizes are stored not within the file header,
-     but in a separate data descriptor block, after the compressed data (this
-     may occur e.g. if the .zip is created with latest Java JRE) - also added
-     corresponding TZipRead.RetrieveFileInfo() method and renamed TZipEntry
-     info field into infoLocal, and introduced infoDirectory new field
-   - renamed ZipFormat parameter to ZlibFormat, and introduce it also for
-     uncompression, so that both deflate and zlib layout are handled
-   - allow reading files of size 0 in TZipRead
-   - fixed TZipWrite.Destroy issue as reported by [aa468640c59]
-   - unit fixed and tested with Delphi XE2 (and up) 64-bit compiler
 
 }
 
@@ -439,11 +365,8 @@ type
   PFileInfo = ^TFileInfo;
   /// generic file information structure, as used in .zip file format
   // - used in any header, contains info about following block
-  {$ifndef UNICODE}
-  TFileInfo = object
-  {$else}
-  TFileInfo = record
-  {$endif}
+  {$ifndef USERECORDWITHMETHODS}TFileInfo = object
+    {$else}TFileInfo = record{$endif}
     neededVersion : word;            // $14
     flags         : word;            // 0
     zzipMethod    : word;            // 0=Z_STORED 8=Z_DEFLATED 12=BZ2 14=LZMA
@@ -463,7 +386,8 @@ type
 
   /// directory file information structure, as used in .zip file format
   // - used at the end of the zip file to recap all entries
-  TFileHeader = {$ifdef UNICODE}record{$else}object{$endif}
+  TFileHeader = {$ifdef USERECORDWITHMETHODS}record
+    {$else}object{$endif}
     signature     : dword;           // $02014b50 PK#1#2
     madeBy        : word;            // $14
     fileInfo      : TFileInfo;
@@ -479,7 +403,8 @@ type
 
   /// internal file information structure, as used in .zip file format
   // - used locally inside the file stream, followed by the name and then the data
-  TLocalFileHeader = {$ifdef UNICODE}record{$else}object{$endif}
+  {$ifdef USERECORDWITHMETHODS}TLocalFileHeader = record
+    {$else}TLocalFileHeader = object{$endif}
     signature     : dword;           // $04034b50 PK#3#4
     fileInfo      : TFileInfo;
     function LocalData: PAnsiChar;
@@ -588,13 +513,13 @@ function deflateInit2_(var strm: TZStream;
   version: PAnsiChar; stream_size: integer): integer; cdecl;
 function inflateInit2_(var strm: TZStream; windowBits: integer;
   version: PAnsiChar; stream_size: integer): integer; cdecl;
-function get_crc_table: pointer; cdecl;
 {$endif USEINLINEASM}
 {$endif USEPASZLIB}
 
 type
   /// simple wrapper class to decompress a .gz file into memory or stream/file
-  {$ifdef UNICODE}TGZRead = record{$else}TGZRead = object{$endif}
+  {$ifdef USERECORDWITHMETHODS}TGZRead = record
+    {$else}TGZRead = object{$endif}
   private
     comp, zsdest: pointer;
     zscrc: cardinal;
@@ -856,10 +781,7 @@ type
 // into .zip archive files
 // - resulting file will be named YYYYMM.zip and will be located in the
 // aDestinationPath directory, i.e. TSynLogFamily.ArchivePath+'\log\YYYYMM.zip'
-{$ifdef MSWINDOWS}
 function EventArchiveZip(const aOldLogFileName, aDestinationPath: TFileName): boolean;
-{$endif}
-
 
 implementation
 
@@ -896,7 +818,6 @@ const
 var
   EventArchiveZipWrite: TZipWrite = nil;
 
-{$ifdef MSWINDOWS}
 function EventArchiveZip(const aOldLogFileName, aDestinationPath: TFileName): boolean;
 var n: integer;
 begin
@@ -914,7 +835,6 @@ begin
       result := True;
   end;
 end;
-{$endif MSWINDOWS}
 
 function Is7BitAnsi(P: PChar): boolean;
 begin
@@ -1637,6 +1557,7 @@ end;
 const
   GZHEAD: array [0..2] of cardinal = ($088B1F,0,0);
   GZHEAD_SIZE = 10;
+
 type
   TGZFlags = set of (gzfText, gzfHCRC, gzfExtra, gzfName, gzfComment);
 
@@ -1692,7 +1613,7 @@ end;
 function TGZRead.ToMem: ZipString;
 begin
   result := '';
-  if comp=nil then
+  if (comp=nil) or ((uncomplen32=0) and (crc32=0){0 length stream}) then
     exit;
   SetLength(result,uncomplen32);
   if (UnCompressMem(comp,pointer(result),complen,uncomplen32)<>integer(uncomplen32)) or
@@ -4692,7 +4613,6 @@ asm  pop ebp  // auto-generated push ebp; mov ebp,esp
         xor     eax, eax
         pop     esi
         ret     4
-
 @@195:  mov     eax, -2
         pop     esi
         ret     4
@@ -4714,25 +4634,20 @@ asm
 	jne       @31
 	mov       eax,1
 	jmp       @32
-@31:
-	test      ebp,ebp
+@31:    test      ebp,ebp
 	jbe       @34
-@33:
-	cmp       ebp,5552
+@33:    cmp       ebp,5552
 	jae        @35
 	mov       eax,ebp
 	jmp        @36
-  nop; nop
-@35:
-	mov       eax,5552
-@36:
-	sub       ebp,eax
+        nop; nop
+@35:    mov       eax,5552
+@36:    sub       ebp,eax
 	cmp       eax,16
 	jl        @38
 	xor       edx,edx
 	xor       ecx,ecx
-@39:
-	sub       eax,16
+@39:    sub       eax,16
 	mov       dl,[esi]
 	mov       cl,[esi+1]
 	add       ebx,edx
@@ -4784,19 +4699,16 @@ asm
 	lea       esi,[esi+16]
 	lea       edi,[edi+ebx]
 	jge       @39
-@38:
-	test      eax,eax
-	je         @42
-@43:
-	xor       edx,edx
+@38:    test      eax,eax
+	je        @42
+@43:    xor       edx,edx
 	mov       dl,[esi]
 	add       ebx,edx
 	dec       eax
 	lea       esi,[esi+1]
-  lea       edi,[edi+ebx]
+        lea       edi,[edi+ebx]
 	jg        @43
-@42:
-	mov       ecx,65521
+@42:    mov       ecx,65521
 	mov       eax,ebx
 	xor       edx,edx
 	div       ecx
@@ -4808,13 +4720,11 @@ asm
 	test      ebp,ebp
 	mov       edi,edx
 	ja        @33
-@34:
-	mov       eax,edi
+@34:    mov       eax,edi
 	shl       eax,16
 	or        eax,ebx
 @45:
-@32:
-	pop       ebp
+@32:    pop       ebp
 	pop       edi
 	pop       esi
 	pop       ebx
@@ -5074,7 +4984,6 @@ function deflateInit2_(var strm: TZStream;
   version: PAnsiChar; stream_size: integer): integer; cdecl; external;
 function inflateInit2_(var strm: TZStream; windowBits: integer;
   version: PAnsiChar; stream_size: integer): integer; cdecl; external;
-function get_crc_table: pointer; cdecl; external;
 
 {$endif FPC}
 

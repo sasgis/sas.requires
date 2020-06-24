@@ -6,10 +6,10 @@ unit SyNode;
 {
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2019 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2020 Arnaud Bouchez
       Synopse Informatique - http://synopse.info
 
-    SyNode for mORMot Copyright (C) 2019 Pavel Mashlyakovsky & Vadim Orel
+    SyNode for mORMot Copyright (C) 2020 Pavel Mashlyakovsky & Vadim Orel
       pavel.mash at gmail.com
 
     Some ideas taken from
@@ -30,7 +30,7 @@ unit SyNode;
 
   The Initial Developer of the Original Code is
   Pavel Mashlyakovsky.
-  Portions created by the Initial Developer are Copyright (C) 2019
+  Portions created by the Initial Developer are Copyright (C) 2020
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -368,7 +368,7 @@ type
     FMaxPerEngineMemory: Cardinal;
     FMaxNurseryBytes: Cardinal;
     FMaxRecursionDepth: Cardinal;
-    FEnginePool: TObjectListLocked;
+    FEnginePool: TSynObjectListLocked;
     FRemoteDebuggerThread: TThread;
     FContentVersion: Cardinal;
     FOnNewEngine: TEngineEvent;
@@ -1145,7 +1145,7 @@ constructor TSMEngineManager.Create(const aCoreModulesPath: RawUTF8; aEngineClas
 begin
   FMaxPerEngineMemory := 32*1024*1024;
   FMaxRecursionDepth := 32;
-  FEnginePool := TObjectListLocked.Create(true);
+  FEnginePool := TSynObjectListLocked.Create(true);
   if aEngineClass <> nil then
     FEngineClass := aEngineClass
   else

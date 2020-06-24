@@ -6,7 +6,7 @@ unit SynFPCSock;
 {
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2019 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2020 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -27,7 +27,7 @@ unit SynFPCSock;
   Portions created by Lukas Gebauer are Copyright (C) 2003.
   All Rights Reserved.
 
-  Portions created by Arnaud Bouchez are Copyright (C) 2019 Arnaud Bouchez.
+  Portions created by Arnaud Bouchez are Copyright (C) 2020 Arnaud Bouchez.
   All Rights Reserved.
 
   Contributor(s):
@@ -52,9 +52,6 @@ unit SynFPCSock;
 
   Shared by Kylix and FPC for all POSIX systems.
 
-  Version 1.18
-  - initial release
-
 }
 
 {$ifdef FPC}
@@ -62,18 +59,22 @@ unit SynFPCSock;
 {$MODE DELPHI}
 {$H+}
 
+{.$define USELIBC}
+
 {$ifdef ANDROID}
   {$define LINUX} // a Linux-based system
 {$endif}
 
 // BSD definition of socketaddr
-{$ifdef FREEBSD}
-  {$DEFINE SOCK_HAS_SINLEN}
+{$if
+     defined(OpenBSD) or
+     defined(FreeBSD) or
+     defined(Darwin) or
+     defined(Haiku)
+}
+  {$DEFINE SOCK_HAS_SINLEN}               // BSD definition of socketaddr
 {$endif}
 {$ifdef SUNOS}
-  {$DEFINE SOCK_HAS_SINLEN}
-{$endif}
-{$ifdef BSD}
   {$DEFINE SOCK_HAS_SINLEN}
 {$endif}
 
@@ -96,7 +97,7 @@ uses
   Unix,
   {$ifdef Linux}
   Linux, // for epoll support
-  {$endif}
+  {$endif Linux}
   termio,
   netdb,
   Sockets, // most definitions are inlined in SynFPCSock to avoid Lazarus problems with Sockets.pp
@@ -108,7 +109,7 @@ uses
   KernelIoctl,
   SynKylix,
   {$endif}
-  {$endif}
+  {$endif FPC}
   SyncObjs,
   Classes;
 
@@ -178,6 +179,9 @@ const
 
   SO_DEBUG      = sockets.SO_DEBUG;
   SO_REUSEADDR  = sockets.SO_REUSEADDR;
+  {$ifdef BSD}
+  SO_REUSEPORT  = sockets.SO_REUSEPORT;
+  {$endif}
   SO_TYPE       = sockets.SO_TYPE;
   SO_ERROR      = sockets.SO_ERROR;
   SO_DONTROUTE  = sockets.SO_DONTROUTE;
@@ -192,7 +196,13 @@ const
   SO_RCVTIMEO   = sockets.SO_RCVTIMEO;
   SO_SNDTIMEO   = sockets.SO_SNDTIMEO;
 {$IFDEF BSD}
+  {$IFNDEF OPENBSD}
+  {$IFDEF DARWIN}
   SO_NOSIGPIPE  = $1022;
+  {$ELSE}
+  SO_NOSIGPIPE	= $800;
+  {$ENDIF}
+  {$ENDIF}
 {$ENDIF}
   // we use Linux default here
   SOMAXCONN     = 128;
@@ -208,8 +218,12 @@ const
   MSG_PEEK      = sockets.MSG_PEEK;     // Peek at incoming messages.
 
   {$ifdef BSD}
+  {$ifndef OpenBSD}
+  // Works under MAC OS X and FreeBSD, but is undocumented, so FPC doesn't include it
   MSG_NOSIGNAL  = $20000;  // Do not generate SIGPIPE.
-  // Works under MAC OS X, but is undocumented, so FPC doesn't include it
+  {$else}
+  MSG_NOSIGNAL  = $400;
+  {$endif}
   {$else}
   {$ifdef SUNOS}
   MSG_NOSIGNAL  = $20000;  // Do not generate SIGPIPE.
@@ -240,7 +254,7 @@ const
   WSAEFAULT = ESysEFAULT;
   WSAEINVAL = ESysEINVAL;
   WSAEMFILE = ESysEMFILE;
-  WSAEWOULDBLOCK = ESysEWOULDBLOCK;
+  WSAEWOULDBLOCK = ESysEWOULDBLOCK; // =WSATRY_AGAIN/ESysEAGAIN on POSIX
   WSAEINPROGRESS = ESysEINPROGRESS;
   WSAEALREADY = ESysEALREADY;
   WSATRY_AGAIN = ESysEAGAIN;
@@ -440,8 +454,8 @@ type
                     sin_zero: array[0..7] of Char);
           AF_INET6:(sin6_port:     word; // see sockaddr_in6
                     sin6_flowinfo: cardinal;
-      	    	      sin6_addr:     TInAddr6;
-      		          sin6_scope_id: cardinal);
+      	    	    sin6_addr:     TInAddr6;
+      		    sin6_scope_id: cardinal);
           AF_UNIX: (sun_path: array[0..{$ifdef SOCK_HAS_SINLEN}103{$else}107{$endif}] of Char);
           );
   end;
@@ -564,7 +578,7 @@ type
   PEPollData = ^TEPollData;
 
   /// epoll descriptor data structure
-  TEPollEvent = {$ifdef CPU64}packed{$endif} record
+  TEPollEvent = packed record
     events: cardinal;
     data: TEpollData;
   end;
@@ -593,6 +607,9 @@ var
 
 implementation
 
+{$ifdef USELIBC}
+{$i SynFPCSockLIBC.inc}
+{$endif}
 
 function IN6_IS_ADDR_UNSPECIFIED(const a: PInAddr6): boolean;
 begin
@@ -685,6 +702,7 @@ begin
   fpFD_ZERO(fdset);
 end;
 
+{$ifndef USELIBC}
 function fpbind(s:cint; addrx: psockaddr; addrlen: tsocklen): cint;
 begin
   result := sockets.fpbind(s, addrx, addrlen);
@@ -704,6 +722,7 @@ function fpsend(s:cint; msg:pointer; len:size_t; flags:cint): ssize_t;
 begin
   result := sockets.fpsend(s, msg, len, flags);
 end;
+{$endif USELIBC}
 
 {$endif FPC}
 
@@ -881,13 +900,14 @@ begin
 end;
 
 function Socket(af,Struc,Protocol: Integer): TSocket;
-{$IFDEF BSD}
-var on_off: integer;
+{$IF defined(BSD) AND NOT defined(OpenBSD)}
+var
+  on_off: integer;
 {$ENDIF}
 begin
   result := {$ifdef KYLIX3}LibC.socket{$else}fpSocket{$endif}(af,struc,protocol);
 // ##### Patch for BSD to avoid "Project XXX raised exception class 'External: SIGPIPE'" error.
-{$IFDEF BSD}
+{$IF defined(BSD) AND NOT defined(OpenBSD)}
   if result <> INVALID_SOCKET then begin
     on_off := 1;
     fpSetSockOpt(result,integer(SOL_SOCKET),integer(SO_NOSIGPIPE),@on_off,SizeOf(integer));
@@ -968,8 +988,8 @@ begin
       Hints2.ai_family := AF_INET6;
       TwoPass := True;
     end else begin
-      Hints2.ai_family := AF_INET;
       Hints1.ai_family := AF_INET6;
+      Hints2.ai_family := AF_INET;
       TwoPass := True;
     end;
   end else
@@ -1107,12 +1127,13 @@ var TwoPass: boolean;
   end;
 begin
   result := 0;
-  FillChar(Sin,Sizeof(Sin),0);
   if (Family=AF_UNIX) then begin
     Sin.AddressFamily := AF_UNIX;
     Move(IP[1],Sin.sun_path,length(IP));
+    Sin.sun_path[length(IP)]:=#0;
     exit;
   end;
+  FillChar(Sin,SizeOf(Sin),0);
   Sin.sin_port := Resolveport(port,family,SockProtocol,SockType);
   TwoPass := false;
   if Family=AF_UNSPEC then begin
@@ -1164,7 +1185,7 @@ begin
           x := 1;
         end else
           x := Resolvename(name,a4) else
-        x := 1;
+          x := 1;
       for n := 1  to x do
         IpList.Add(netaddrToStr(a4[n]));
     end;

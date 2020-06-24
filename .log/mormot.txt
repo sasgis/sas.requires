@@ -1,8 +1,5127 @@
+commit 571584b24575c511e113d80f11b7789d69e41a4e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-24 11:57:59 +0200
+
+    fixed TPropInfo.IsDefaultOrVoid with variant property
+    - and associated regression tests
+
+commit a8c8afbc4fc6c64b6d5c6b3b26457a6b9bf508ba
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-23 10:02:32 +0200
+
+    not JSON serialize void class instances if woDontStore0 is set
+    - with the new IsObjectDefaultOrVoid() function
+
+commit 7e2adc3ea60a72f94ae2f9ef6343b3f9ff4e7d27
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-17 11:11:48 +0200
+
+    introducing TSynMapFile.FromCurrentExecutable and TSynMapFile.FindStackTrace class functions
+
+commit 7ef4a849cb0571e4d6604b86c88017e48158054b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-16 15:49:11 +0200
+
+    fixed Delphi <= 2007 compilation
+
+commit 3a18c06354e5b88cb88008dfaa60692eec53d843
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-16 11:19:15 +0200
+
+    explicit error when trying to compile FPC-specific units on Delphi
+
+commit 9fda3bcab6859d0d7a4977a7baeac1f230685ead
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-16 11:18:26 +0200
+
+    ensure the FPC SVN revision is accurate in the documentation
+
+commit 8ca98665bfe1d5ec0624fe0c07926dd15eff3069
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-16 11:12:11 +0200
+
+    some fixes to TWebSocketProcessClient thread
+
+commit d63b9eaa8bc8ca744de5568ae26547069e5941b0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-15 15:39:06 +0200
+
+    fixed HTTP_REQUEST struct layout on Win32
+
+commit 2632f42e3ec3ebe53683b1e86ef280e2725054a0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-15 14:27:33 +0200
+
+    include latest arm/aarch64 linux sqlite3.o
+
+commit 8aa25d6b7482245a50d1baa72d7bc49708eca249
+Merge: a61f609d 2cc70fc4
+Author: ab <webcontact01@synopse.info>
+Date:   2020-06-15 14:19:26 +0200
+
+    Merge pull request #320 from LongDirtyAnimAlf/master
+    
+    Android build scripts for Windows and Linux.
+
+commit a61f609de03fa339dbf7841f1fca66a47c49c371
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-15 13:02:47 +0200
+
+    SQLite3 cross-compilation for FPC arm/aarch64 Linux now uses new fpcupdeluxe bins
+    - thanks Alfred for updating fpcupdeluxe cross bins!
+    - using native debian/ubuntu cross-compiler made linking issues with regular cross-compilers
+
+commit 2cc70fc4b651d7fa37dfb5f814e6cb25195b7d6c
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-06-14 19:24:30 +0200
+
+    Remove old Android build script
+
+commit 11355419aa0873e067611e4190db3f48cdaa7bf8
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-06-14 19:23:37 +0200
+
+    Enable Android build
+
+commit 7247937e4bc4a7194b94f55bd327fd3bd6a3c64f
+Merge: 9b2f09dc 5ee0716c
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-06-14 19:18:06 +0200
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 9b2f09dce52c4506aacf445037ed4813cf0c6407
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-06-14 19:13:54 +0200
+
+    Android build scripts
+
+commit 5ee0716c7672ff1ab8125a390d74ecf05f899e56
+Merge: 9c98b2f8 ff1f0431
+Author: ab <webcontact01@synopse.info>
+Date:   2020-06-13 12:12:00 +0200
+
+    Merge pull request #319 from Yn0ga/master
+    
+    Sync/Update some HTTP.h structs
+
+commit 9c98b2f8adb31d4e4d47d7a83d5f7e75f0c14a4f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-13 12:08:14 +0200
+
+    two minor fixes
+    - intercept exception in case FPCUSEVERSIONINFO is defined but no resource info is available
+    - use UTF-8 codepage if none is defined
+
+commit ff1f0431c73130ce0c4cddd6be581c55ddd9a1da
+Author: Ynoga <ynoga@protonmail.com>
+Date:   2020-06-12 23:57:49 +0200
+
+    Sync/Update some HTTP.h structs
+    
+    Updated HTTP_REQUEST_AUTH_INFO fields according to https://docs.microsoft.com/en-us/windows/win32/api/http/ns-http-http_request_auth_info
+
+commit ddc1afb52b6c3afddb2ff21c1741cd907168cb79
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-12 11:51:41 +0200
+
+    fixed TMongoDatabase.CreateUser with MongoDB 4.x
+
+commit 2c86df96c7df505ef40369219b994bd91aba81b6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-12 11:14:50 +0200
+
+    fixed TMongoConnection.GetReply to properly handle latest MongoDB protocol requirements
+
+commit 692cc720fd239bea918b4c1b4b2b55332088eb7d
+Merge: d8bc14cb 6d90832f
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-06-11 19:49:59 +0200
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 6d90832fc4b5a5944e16c34c915c33e3c3d94ae2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-10 16:39:09 +0200
+
+    include latest SQLite3 static for Delphi
+
+commit fc474a4a284699000221a32946db935635e54492
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-10 16:38:08 +0200
+
+    include latest binary files for FPC
+
+commit 923112de2649540cdea3529dd23ae74f12ade8dc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-10 16:22:33 +0200
+
+    fixed potential GPF in PurgeHeaders()
+
+commit 1586f9e3c37008a4d35ac93bfb8cdd931c10402e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-10 16:16:11 +0200
+
+    another pass on SQLite3 cross-compilation
+    - still hoping fpcupdeluxe could provide the gcc cross-compilers, since they are a real PITA as packages
+
+commit 1f51f958554923c252fd5a19e450efd12a9f03e8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-10 16:08:45 +0200
+
+    fixed TSQLDBOracleLib.BlobReadToStream
+
+commit 44f6be409309f59a92cd31200e1788463488de3d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-10 16:07:49 +0200
+
+    a lot of fixes for proper i386 Linux (and POSIX) support
+    - FPC codegen for Linux i386 changed late 2019 (SVN rev 43005 to 43014) to force a stackframe generation: https://www.mail-archive.com/fpc-devel@lists.freepascal.org/msg38885.html
+    - ensure stack is always 16-bytes aligned during SOA calls
+    - also fixed a problem with epoll struct
+
+commit 46fb5b28b91eaea325cd428b1713f54eee45fe8b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-10 15:56:28 +0200
+
+    try to fix http.sys V2 API struct
+
+commit 071bff288cb54b854ea206f4b8c4db918679f5bf
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-09 21:14:01 +0200
+
+    update SQLite3 to latest 3.32.2 revision
+    - switched to VFS pattern for encryption
+    - sqlite3 cross-compilation is now done from Linux scripts
+
+commit 936611a08f739c07b9103380d917590193f0f78d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-05 19:05:17 +0200
+
+    try to circumvent issues of IObjectDynArray with Delphi 10.4 Sydney
+    - the order of fields finalization may have changed, so the whole purpose of wrapper may have become incompatible with Delphi 10.4 and up
+
+commit e1b2815167bf7e1160df7e66846a09493d096f12
+Merge: d081fa47 1c6d7a64
+Author: ab <webcontact01@synopse.info>
+Date:   2020-06-05 18:30:55 +0200
+
+    Merge pull request #318 from ASiwon/fix_TOracleDate_record
+    
+    fixed conversion time part of date in TOracleDate record problem
+
+commit 1c6d7a644cf9d1e2f33baad1fdfced78086059dc
+Author: asiwon <a.siwon@gidex.com.pl>
+Date:   2020-06-05 16:17:41 +0200
+
+    fixed conversion time part of date in TOracleDate record problem
+
+commit d081fa47b2542c19c0c0e68504a280628cb56c7f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-05 16:05:25 +0200
+
+    let _FreeMem() return the released chunk size as FPC RTL
+    - also reformated all assembly code
+
+commit 4e4cdc434fb3cec231c6a4447b22b93c79271eec
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-05 11:28:35 +0200
+
+    use rdtsc low-overhead opcode instead of clock_gettime() API
+    for sleep time report in debug mode (also on Windows)
+
+commit 2cfec1b79279ac10d9e6142c7293ea2f7098da5a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-04 21:37:57 +0200
+
+    fixed Delphi Add/Delete/Clear late-binding
+
+commit b770182110a9a8c0ab2f96dda8ebdaa786745ef8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-04 15:55:23 +0200
+
+    use rdtsc during FPCMM_PAUSE spinning instead of counts
+    - as recommended by http://tiny.cc/toeaqz due to SkylakeX "pause" opcode cycles change
+    - note that from our tests, spinning is slower (at least on Linux), even if it is the recommended way of Intel
+
+commit 34ddf5ae9afb53fd493ba28376318629e8098ac8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-04 15:48:44 +0200
+
+    fixed awful random GPF bug in SynFPCx64MM
+
+commit 81c53bd573a54f6e84933d2bedf4aa316a567da6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-04 15:48:02 +0200
+
+    disabled write late-binding methods (Add/Clear/Delete) on FPC
+    - they triggered random GPF so are unsafe due to RTL restrictions
+
+commit b687fea328e234eb3507cecf3f4225df91f9ed00
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-03 22:27:08 +0200
+
+    let Getmem(0) act like GetMem(1) just like FPC RTL heap.inc
+
+commit b31ab2e2eb33eece373ee50563063337e6d9fb1e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-03 17:05:05 +0200
+
+    new FPC_X64MM_WIN explicit conditional
+    - SynFPCx64MM is not fully validated on Windows yet
+
+commit d258eaf9df559d26e08c8e3475554095672c178a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-02 19:27:14 +0200
+
+    wait for TAutoFlushThread to be released at shutdown
+    - avoid unexpected memory leak report
+
+commit acb7c11ab12193700b36f5506a0c8050811fe94e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-02 18:56:30 +0200
+
+    fixed TSQLPropInfoRTTIVariant to properly handle TNullableDateTime
+
+commit c5cc757c7a4a711a7abb7748d8d52a0d89e1e22e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-02 18:35:11 +0200
+
+    use StrPosI() instead of ContainsUTF8()
+
+commit a1c6fd8ddff86d06bdfa23281740826c01207f2a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-02 18:33:48 +0200
+
+    rewritten fpc_ansistr_compare/fpc_ansistr_compare_equal in x86_64 asm
+
+commit ef8a15f6f5236951821d28959f1a22b915a4af84
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-01 21:10:40 +0200
+
+    added global RemoteIPLocalHostAsVoidInServers variable
+    - able to disable the 127.0.0.1 -> '' default Remote-IP convention
+
+commit 298bbca8629766da4cbcb2c78b1bd1bc2734746d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-01 18:30:55 +0200
+
+    avoid warning with Delphi
+
+commit 23266e77619e5096195c9a1bd43d23611dda71a5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-01 17:13:41 +0200
+
+    avoid warning with Delphi
+
+commit 65308d59b30ee787816cb3fdca137f2352ff28d0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-01 17:13:03 +0200
+
+    fixed Iso8601ToDateTimePUTF8CharVar() to handle len parameter
+
+commit 350844ef572fc520663fc327928a7510d7b9b79d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-01 17:12:08 +0200
+
+    optimized SynDBZeos array binding of dates
+
+commit 431d26093ca21cecfdb6a1c58c0865c7a05f9510
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-01 15:59:47 +0200
+
+    include regression test for latest commit
+
+commit 437c8286be443d1648a5c8accf994c4bdd608000
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-01 15:45:31 +0200
+
+    fixed Iso8601ToTimeLogPUTF8Char() to properly handle L parameter
+
+commit 91ee6340afb3a2ed364c73c35a510bfa005dc002
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-01 12:39:34 +0200
+
+    small optimizations to FillCharFast and FPC RTL patches
+
+commit d0b384438d527603d7946954de58f18b0c0b3996
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-01 12:37:43 +0200
+
+    introducing ColumnBlobFromStream() for 'select .. for update' statements
+    - fixed from https://github.com/synopse/mORMot/pull/315
+
+commit 30858dc8757be956b1c80bec95c500e322e78358
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-01 11:57:08 +0200
+
+    properly implement ColumnBlobToStream()
+    - fixed from https://github.com/synopse/mORMot/pull/315
+
+commit 9aa30c10604aaead2c49c8040bfc10670d9fc622
+Merge: 9b405f8a 91a75a00
+Author: ab <webcontact01@synopse.info>
+Date:   2020-06-01 11:28:41 +0200
+
+    Merge pull request #315 from algalg/master
+    
+    Read / Write blob column to / from a TStream
+
+commit 91a75a00e0cc6a2504525075ff4e0a9d42fd4e71
+Author: Aleš Gregor <algalg@gmail.com>
+Date:   2020-06-01 10:48:08 +0200
+
+    improved comments
+
+commit d15618e92dc434c7db9ff2e0a1bf55edfd158707
+Author: Aleš Gregor <algalg@gmail.com>
+Date:   2020-06-01 10:47:37 +0200
+
+    ColumnBlobWriteFromStream and ColumnBlobToStream
+
+commit 9b405f8aca8bcecd8812a6ed574ac5103679047f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-31 19:40:27 +0200
+
+    ensure FillCharFast() rejects count<0 just as the FPC RTL
+    - seems like FPC generics code assumes this
+
+commit c0c53af706b0b7837f2fb8f803a33a8227d062c4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-30 16:06:57 +0200
+
+    enhanced datetime to iso function
+
+commit 4292cfd6ead78bfc9d35aa80a6ffdfbf8abc7bd9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-30 16:06:15 +0200
+
+    new OnActivate event handler for LVCL
+
+commit 270e9e8f7aaf02c1a5fa49ce9ad6c7c821942f23
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-30 15:59:59 +0200
+
+    new TSQLDBProperties.DateTimeFirstChar field
+    - used to circumvent e.g. PostgreSQL non standard date/time during BindArray() and for the new SQLDateToIso8601Quoted() method
+
+commit 2ed40df0c174f87713b271983ce1e3dd973ecb6b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-29 18:39:19 +0200
+
+    introducing DOUBLE_SAME constant
+    - 1E-11 seems less paranoid than 1E-12
+
+commit 0564f4d2b6df4552bab675b7fd8423f9411ab3f4
+Merge: 04329b03 559272d4
+Author: ab <webcontact01@synopse.info>
+Date:   2020-05-29 11:10:35 +0200
+
+    Merge pull request #316 from tim-lebedkov/master
+    
+    bugfix: CreateHyperlink does not work
+
+commit 04329b032f6c1c5eb28f769cbc18bf52ae6d9fb6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-29 10:51:52 +0200
+
+    fixed TPdfForm/TPdfFormWithCanvas
+
+commit 559272d4941bfa8aa25eef06271eb95a765db1a1
+Author: Tim Lebedkov <tim.lebedkov@gmail.com>
+Date:   2020-05-29 10:49:25 +0200
+
+    bugfix: CreateHyperlink does not work
+
+commit 025636e88f91c52c8f35d614f8b1897ebec7101c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-29 10:19:34 +0200
+
+    new thread-safe TSynValidateRest.Validate
+    - from https://github.com/synopse/mORMot/pull/298
+
+commit c39f4bd5ce4388552fbd51a622ffb561fb0ff3b2
+Merge: e743528a 4ab1ae3e
+Author: ab <webcontact01@synopse.info>
+Date:   2020-05-29 10:15:50 +0200
+
+    Merge pull request #298 from transmogrifix/master
+    
+    Introduced TSynValidateRest.Validate to make validation thread-safe
+
+commit e743528a3543a73d45cb89e96b2d1055693c8186
+Merge: d9a6591f dbba530f
+Author: ab <webcontact01@synopse.info>
+Date:   2020-05-29 10:10:49 +0200
+
+    Merge pull request #296 from tim-lebedkov/master
+    
+    bugfix: fixed font is replaced by a variable one and vice versa
+
+commit d9a6591f9ecd74a36374cd978daab4ec1a75dcc3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-29 10:07:35 +0200
+
+    several SynCurl fixes
+    - includes proper https://github.com/synopse/mORMot/pull/314 fix
+
+commit 7a190ef5d7e5967448d3acf912599df8aba05093
+Merge: d4e6770c 0340bc13
+Author: ab <webcontact01@synopse.info>
+Date:   2020-05-29 09:58:25 +0200
+
+    Merge pull request #313 from synopse/fix/ODBC_MSSQL_smallNumbers
+    
+    prevent "Invalid character value for cast specification" SQL Server error for small digits like 0.01, -0.0001 in ODBC SQL server 0.01
+
+commit d4e6770c653adaf5abe5f561665b06e01082355b
+Merge: 615c1e98 78f6d70e
+Author: ab <webcontact01@synopse.info>
+Date:   2020-05-29 09:55:13 +0200
+
+    Merge pull request #312 from synopse/fix/floatStrCopyDot
+    
+    fix FloatStrCopy for -.01 .02: should be -0.01 0.02
+
+commit 615c1e98562df4b9d7cdec4279b1d381ceea85ec
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-28 17:56:44 +0200
+
+    cleaner WriteHeapStatus() after regression tests
+
+commit 265bb723ea03d26dfb06938e7389703e8ea18c52
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-28 17:56:05 +0200
+
+    TCrtSocket.TimeOut is now measured when nothing is written/read
+    - necessary to read huge content on a slow connection
+
+commit 8095c6fa3913e67c58de5e74c22183f157cd0909
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-28 17:54:00 +0200
+
+    don't spend too much time on DDD multi-thread tests by default
+
+commit 7207f8c385d473acc1a37b7f1824b619a11fe0c9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-28 17:52:59 +0200
+
+    added TSimpleHttpClient.Proxy property
+
+commit 86ac1db1bade003e77b1ea6d692197caed1e720f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-28 17:51:40 +0200
+
+    TMemoEx will detect and raise an exception if the font width is not consistent when bold/italic is used
+
+commit 8b4bf451a1cecae64bde9c2e34fe906da8a85d7a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-28 17:50:05 +0200
+
+    the FPC RTL x86_64 asm patches are now disabled by default
+    - unless DOPATCHTRTL conditional is defined
+
+commit a6e077ccdb42c7c858ba421a8552735ad91b262f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-28 17:49:07 +0200
+
+    notify that SynBzPas is not stable enough to be used on production
+
+commit 74993b29412be82748085cf9ab0021a1d817e11c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-28 17:25:43 +0200
+
+    small LVCL fixes
+
+commit 81936ea50d55fd2282e7ce81630e7746a2db121e
+Author: Aleš Gregor <algalg@gmail.com>
+Date:   2020-05-28 10:47:54 +0200
+
+    Read / Write blob  to/from stream
+
+commit 663fe519636f28d448af65028b1470b3fbf3acc7
+Author: Aleš Gregor <algalg@gmail.com>
+Date:   2020-05-28 10:47:00 +0200
+
+    Added comments
+
+commit 0340bc13cd9b67bbc23e90fb2c8ae41c6c302ab7
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-05-20 20:44:38 +0300
+
+    ODBC SQL server: prevent _Invalid character value for cast specification_ error for small digits like 0.01, -0.0001
+
+commit 78f6d70e16be88c8197714e671c09a3f48c29054
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-05-20 19:44:34 +0300
+
+    fix FloatStrCopy for -.01 .02: should be -0.01 0.02
+
+commit e9e192a9bdb32413109ca529e1a6181e2b1a13e4
+Author: Aleš Gregor <algalg@gmail.com>
+Date:   2020-05-20 16:25:58 +0200
+
+    Blob to/from Stream
+    
+    Added ColumnBlobToStream and ColumnBlobWriteFromStream for chunked read/write of blob data from/to a TStream
+
+commit 9a17f96b172a5a9ef8c4e269402eeedce5dcd97f
+Author: Aleš Gregor <algalg@gmail.com>
+Date:   2020-05-20 16:23:56 +0200
+
+    Blob to/from Stream
+    
+    Added ColumnBlobToStream and ColumnBlobWriteFromStream for chunked read/write of blob data from/to a TStream
+
+commit d8bc14cb12aee95a6ff3cf71e7bbe3838dfb3121
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-17 21:56:44 +0200
+
+    upcoming Delphi 10.4 codename seems to be "Sydney"
+
+commit 79c3cb824b84e1b5aeb755b7c99ae76166bfdc19
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-17 18:23:34 +0200
+
+    rewritten FPC SetLength(ansistring) in asm for SynFPCx64MM
+
+commit 3fc4117982147532407c03785e95b931e3897e1a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-17 18:21:50 +0200
+
+    optimized medium blocks SynFPCx64MM process
+
+commit d45a14c55e300d66bba9596542f394f5595a4c14
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-17 12:51:04 +0200
+
+    leverage Unicode string support
+    - noticed after https://github.com/synopse/mORMot/pull/311
+
+commit 5109f34b7ba20fda3c5157dc251beacaf7b77180
+Merge: 5c4412d9 905875f9
+Author: ab <webcontact01@synopse.info>
+Date:   2020-05-17 12:19:14 +0200
+
+    Merge pull request #311 from HgAlexx/master
+    
+    * Missing DocVariantType.Free
+
+commit 5c4412d9a8d00aaaef3b4fe12576c1aa28f9e1d9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-17 12:17:12 +0200
+
+    include missing static binaries for libcurl support on Android
+    - thanks Alfred for the input!
+
+commit a1b366279ed09bfafd7ef0021b99a1806ba5a7d1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-17 12:13:57 +0200
+
+    include some patches and binaries for libcurl support on Android
+    - thanks Alfred for the input!
+
+commit 172deafd6c4d2c34959d9ae82a6201a2dddbfa43
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-16 21:56:25 +0200
+
+    patch fpc_ansistr_concat (and *_multi) on FPC_X64/POSIX at runtime
+
+commit 2ad905da8446360ac3529e6db7b8074c8c6d62a9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-16 21:53:13 +0200
+
+    fixed Delphi compilation
+
+commit aeca4035dbb7b276e81db54b02ce0cd89ffd0b5a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-16 21:52:31 +0200
+
+    ensure FastMM4 info can be retrieved
+
+commit bb76fe299dd601f064e5cd81c2d8d1875f5fc502
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-16 21:51:43 +0200
+
+    disable spinning and lockless-freemem by default on SynFPCx64MM
+    - those two alternative algorithms have been reported as actually slower
+
+commit 905875f9e5e26881b676d36d00214fb753776afc
+Author: HgAlexx <alex@mzhg.space>
+Date:   2020-05-15 14:37:35 +0200
+
+    + Add propery FullURL on THttpServerRequest
+
+commit 001ee598b96bc80fb1986a92b594445b0f57dae4
+Author: Alex OBLETTE <alex.oblette@drillscan.com>
+Date:   2020-05-15 14:10:59 +0200
+
+    * Missing DocVariantType.Free
+
+commit 39f0dc9a8759e18b99b43d765097355cb5535add
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-14 18:06:23 +0200
+
+    restore expected GetExtended() behavior on error
+    - it should return the parsed value, just like the Delphi x87 asm
+
+commit ec2a29e1f67581829356d3c77b33108ea72b6527
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-14 15:17:10 +0200
+
+    enhanced TDDDThreadsThread test
+
+commit bde936aecdfba1d6a108acdc7726697b670daf13
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-14 15:16:37 +0200
+
+    reduce heap allocation during THttpSocket.GetHeader
+    - would help scaling a lot
+
+commit b125256667d6873e06108c1ccd8e9d1c9ab43264
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-14 15:13:35 +0200
+
+    enhanced WriteHeapStatus content
+
+commit 78df0814f0872467c6adeab366a10521f07a5498
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-14 11:16:09 +0200
+
+    introducing app modes: default mono-threaded, FPCMM_SERVER or FPCMM_BOOST
+    - also some new asm optimizations
+
+commit 84df56bbde44ad89419addb1436bdb560227865a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-14 00:04:18 +0200
+
+    new FPCMM_LOCKLESSFREE conditional to reduce OS API calls
+
+commit 4bf6198d0fa96e934bb84707d46dffaf81640ed4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-13 14:34:43 +0200
+
+    better SynFPCx64MM integration to raw SynCommons process
+
+commit 5852f44c4ebc17993fc7e55e16f15ba249fc1316
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-13 14:32:50 +0200
+
+    enhanced SynFPCx64MM heap status reporting and memory leak detection
+
+commit 7527511ce528bab4e3006cea9c985b8b1605bf92
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-12 20:16:35 +0200
+
+    introduce memory leak detection to SynFPCx64MM
+    - also fixed unexpected memory leaks in some border case uses of ReallocMem()
+
+commit 9efc3945cf4d92f11e620901d547dab3e9de868f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-12 07:56:43 +0200
+
+    THttpSocket.GetHeader use much less memory allocations
+    - would help proper multi-threading
+
+commit 240eddf96dfa5b51cb21b7a0734ae92740c06897
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-12 07:50:47 +0200
+
+    SynFPCx64MM asm reduction
+    - inlining SSE2 movaps seems better than small moveNNN() functions
+
+commit a7ea58b33ad013a5312110872b998b416ddd940d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-11 17:24:18 +0200
+
+    start TSynLog AutoFlush thread only if when writing
+
+commit 2fb3c7c1c7f0802d51f11225e47d0b6eff680acf
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-11 15:56:30 +0200
+
+    deep refactoring of SynFPCx64MM
+    - with enhanced multi-thread performance and introducing also FPCMM_ASSUMEMULTITHREAD conditional
+
+commit 0612553052ad46e14b535ae408d6aa293d73bf3e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-10 21:34:35 +0200
+
+    added missing SynFPCx64MM unit
+
+commit bb3d36ca3bb56f08288df6cb4f389e4f4a2405b6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-10 21:29:43 +0200
+
+    round-robin of smallest blocks (<=128 bytes) for better thread scaling
+    - also with a new FPCMM_BOOST experimental mode
+
+commit e970e7cef8b4f514cd3e1dedd880cc4819c72098
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-10 14:18:14 +0200
+
+    x86_64 asm patches for fpc_dynarray_* and fpc_unicodestr_* raw functions
+
+commit c89b532ac0df86a488b469b2d277bbf5392bfd53
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-10 11:19:28 +0200
+
+    added small fixed moves for MM
+
+commit 4697644e57e5bbf0b8b11945b3f2bc11cbe73ed2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-09 21:46:15 +0200
+
+    optimized FPC RTL fpc_ansistr* patches
+
+commit 8bebc879c34c3daf7f860d821a6c372217cf5a2a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-09 16:53:54 +0200
+
+    redirect FPC RTL raw fpc_ansistr* functions to some optimized x86_64 asm
+
+commit 990d6e9223ab10f90639f3545adc2b86bcab4de2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-09 12:05:05 +0200
+
+    paranoid unnested CS for socket polling
+
+commit 931bb6b2a30e1fd7ef683e5207c2230d66cf0fab
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-09 12:04:19 +0200
+
+    introducing SynFPCx64MM new Multi-thread Friendly Memory Manager for FPC
+    written in x86_64 assembly
+
+commit 9d46f574284fd0f535e3da29cbf3d3d29bd865c1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-05 21:42:20 +0200
+
+    small fixes
+
+commit 30eeff205b405c6bc3767962c60094dc6b9d9646
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-04 09:53:51 +0200
+
+    mostly comments enhancements
+
+commit 086546c7397e950310d4f3a4e7e5d8810b69296a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-04 09:52:42 +0200
+
+    fixed and enhanced MVC Web Server content cache (part II)
+
+commit 4dded44ae462f7d8e040260c0d45baf39eb641d3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-05-04 09:36:42 +0200
+
+    fixed and enhanced MVC Web Server content cache
+
+commit 3e5a42922755e8293a3569abd268ca3263a5c3a9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-30 16:46:59 +0200
+
+    ensure TDynArray.LoadFrom identify mORMot2 new layout with hash32=0
+
+commit 613a5d91e8e7d5b47ab9e88a64073d8ddd525f39
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-28 10:14:48 +0200
+
+    customize HTTP 'Accept: */*' default header with TWinHttpAPI.NoAllAccept
+    - from https://github.com/synopse/mORMot/pull/307
+
+commit ef38d117c479e97d58cb6c26ec4729856d4c41dd
+Merge: 7b11b828 68de9339
+Author: ab <webcontact01@synopse.info>
+Date:   2020-04-28 10:07:40 +0200
+
+    Merge pull request #307 from eugeneilyin/master
+    
+    customize HTTP 'Accept: */*' default header with TWinHttpAPI.NoAllAccept
+
+commit 7b11b828e7c11edc317710d316f3da3370319b13
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-27 21:51:18 +0200
+
+    fixed TSynAuthenticationAbstract exceptions
+
+commit 6ed5622b1f24f3ff7dc3db49933bbf20ada82289
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-26 18:08:40 +0200
+
+    new TModel.RecordReferences public property
+
+commit e637ee7b28bf83f069705eb1607355d8faafbec6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-26 10:58:22 +0200
+
+    try to circumvent "Verify Method Calls" paranoid checks in FPC
+
+commit f90a9bc0aa4fa213c2349279ce76a6255f2a2751
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-25 15:27:52 +0200
+
+    fixed TSynLogFamily.EchoRemoteStop
+
+commit 18f05b93ce87bd261b53d2bf60f653abcfa5edbc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-21 11:14:24 +0200
+
+    THttpApiServer: ensure processing threads actually ended before Free
+
+commit 68de933904b05d10e714976567304f85650adaab
+Merge: 3c0bd873 76091a23
+Author: Yevgeny Iliyn <eugene.ilyin@gmail.com>
+Date:   2020-04-20 14:50:24 +0400
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit b005cb94d9624cb319d09dcda4a76567160f1ca6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-19 14:22:33 +0200
+
+    new THttpServer.WaitStarted to be called after THttpServer.Create
+
+commit 89169244d5acff0dfad0f7e4ae8910693f214f35
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-19 13:36:14 +0200
+
+    introducing TSynLogFamily.ExceptionIgnorePerThread property
+
+commit 7c129cf45da6c87bdbcf104dc327f05719d953e5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-16 20:40:11 +0200
+
+    refactored THttpServer internal execution flag
+
+commit 2a58f046737a42fcb216377cfe82ee16dd3aec27
+Merge: 080c227f a29208f3
+Author: ab <webcontact01@synopse.info>
+Date:   2020-04-16 19:31:13 +0200
+
+    Merge pull request #309 from synopse/fix/shouldThtosIfPortInUse
+    
+    Socket.Bind should throw in case of fatal error during bind
+
+commit a29208f3e1513f961411d5eb00130f45bf7e716e
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-04-16 19:58:52 +0300
+
+    Socket.Bind whould throw in case of fatal bind error
+
+commit 080c227fda81a04c02102bae73879e8a3a2ba110
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-16 13:37:39 +0200
+
+    fixed some typos - no functional change
+
+commit 952fe801eda4d7762b92e8108a98a75df8000077
+Merge: 76091a23 b74a39cb
+Author: ab <webcontact01@synopse.info>
+Date:   2020-04-16 13:35:25 +0200
+
+    Merge pull request #308 from synopse/fix/empttGzip
+    
+    allow to decompress zero length zstream
+
+commit b74a39cb84eca41d14290514db511800388ea938
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-04-15 15:01:29 +0300
+
+    allow to decompress zero length zstream
+
+commit 76091a237b471b345df546e1bddb42d3cca1a925
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-14 14:05:52 +0200
+
+    new TSQLDBConnectionProperties.FilterTableViewSchemaName property
+    - also fixed MySQL GetTableNames/GetViewNames associated SQL
+
+commit 6e0036aab3053250aba1ff8257f11ea8094c073d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-13 09:37:14 +0200
+
+    fixed typo in TSynAuthenticationAbstract.CreateSession
+
+commit 3c0bd87379efc479ca3e6a1f147c91395e5e297f
+Author: Yevgeny Iliyn <eugene.ilyin@gmail.com>
+Date:   2020-04-13 06:29:45 +0400
+
+    add QueryDataAvailable for TWinHttpAPI classes
+
+commit 4dcc50ea70e54263478066e49fd41d92744109d1
+Author: Yevgeny Iliyn <eugene.ilyin@gmail.com>
+Date:   2020-04-13 05:36:40 +0400
+
+    Revert "add QueryDataAvailable for TWinHttpAPI classes"
+    
+    This reverts commit 187f315af2196d0f713a03c061ef89df6f36f77f.
+
+commit 187f315af2196d0f713a03c061ef89df6f36f77f
+Author: Yevgeny Iliyn <eugene.ilyin@gmail.com>
+Date:   2020-04-13 05:19:28 +0400
+
+    add QueryDataAvailable for TWinHttpAPI classes
+
+commit 21e2b99b330c9d2ef4aa149c0ec12f53a5124030
+Author: Yevgeny Iliyn <eugene.ilyin@gmail.com>
+Date:   2020-04-12 06:37:30 +0400
+
+    customize 'Accept: */*' HTTP default header add with TWinHttpAPI.NoAllAccept
+
+commit 6c56c7975a86710e46846f81865bbe1713f1afff
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-11 16:41:16 +0200
+
+    fixed potential GPF at SynLog finalization
+    - check https://github.com/synopse/mORMot/commit/3d7e6e2013722cbaabc66a348b55927ac3f74300#r38431461
+
+commit 12ea7967d7e501ba448f7e8ccd9bce988e015a73
+Merge: dcbd84a6 1dc37fe5
+Author: ab <webcontact01@synopse.info>
+Date:   2020-04-11 12:16:15 +0200
+
+    Merge pull request #303 from sakura1977/master
+    
+    HTTP Status Code 402 added
+
+commit dcbd84a6d7e4cff9f422d6862c7c8583049133df
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-11 12:15:23 +0200
+
+    fixed W1035 Warnings in TOpenSSL* stubs
+    - from https://github.com/synopse/mORMot/pull/304
+
+commit 86b3b6223a9e810ef971bb1c5b80dfbdacbdfd86
+Merge: f50c5dad 988ca11e
+Author: ab <webcontact01@synopse.info>
+Date:   2020-04-11 12:14:34 +0200
+
+    Merge pull request #304 from eugeneilyin/master
+    
+    fixed W1035 Warnings in TOpenSSL* stubs
+
+commit f50c5dad7daf613af928391b1ab13ebd1efc8f73
+Merge: afb21836 db52a230
+Author: ab <webcontact01@synopse.info>
+Date:   2020-04-11 12:13:27 +0200
+
+    Merge pull request #305 from transmogrifix/EventArchiveZip_win
+    
+    SynZip: Enable EventArchiveZip on windows.
+
+commit db52a230738b28162e9037f5a5581af4857cc539
+Author: Svetozar Belic <toza.belic@gmail.com>
+Date:   2020-04-11 08:47:44 +0200
+
+    SynZip: Enable EventArchiveZip on windows.
+
+commit 988ca11e2df61699c7ff2d78d8dc15b5fb1b235f
+Author: Yevgeny Iliyn <eugene.ilyin@gmail.com>
+Date:   2020-04-10 05:34:01 +0400
+
+    fixed W1035 Warnings in TOpenSSL* stubs
+    
+    - [dcc64 Warning] SynOpenSSL.pas(817): W1035 Return value of function 'TOpenSSLConnectionClient.Connect' might be undefined
+    - [dcc64 Warning] SynOpenSSL.pas(832): W1035 Return value of function 'TOpenSSLConnectionClient.SecureWrite' might be undefined
+
+commit afb218367a68b2b4ecc3d4fda133bece50c88610
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-09 10:29:59 +0200
+
+    new optional TSynAuthenticationAbstract parameter for TSQLDBServerAbstract.Create()
+
+commit 6956e38377aa9b4408924385f0ce5da3eca3424d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-09 09:52:04 +0200
+
+    added a regression test for TDocVariantData.ToJSON/TTextWriter with huge JSON
+    to detect any memory leak as reported earlier
+
+commit a7be720a858a786c3e08f53ca903da53517a5c81
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-09 01:33:27 +0200
+
+    fixed TRawUTF8InterningSlot.Clean
+
+commit d5773795cd35d741d269875d596b8786699c64b1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-09 01:28:54 +0200
+
+    fixed FPC compilation
+
+commit 3c7e265fa13ae33d378fb5a6ab997a7d46c406db
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-09 01:22:05 +0200
+
+    enhanced TSetWeakZeroClass.Create thread-safety
+
+commit 54923e6de04428ae54f6f814446bf00e0add63a9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-09 01:21:04 +0200
+
+    optimized TRawUTF8Interning
+
+commit 6d62b847ba93d24427f79d3bd559fda903751d20
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-09 01:18:59 +0200
+
+    fixed memory leak in TDocVariant.ToJSON
+
+commit 1dc37fe55f6a4339bba5f6aa1ffb2a5a897bae69
+Merge: f47ae33e 98be9827
+Author: sakura1977 <59915973+sakura1977@users.noreply.github.com>
+Date:   2020-04-08 07:21:01 +0200
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 98be9827f2a0844546beb03667842c9141c8d863
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-07 11:51:08 +0200
+
+    circumvent FPC problem with late-binding methods during TDocVariant regression tests
+
+commit 0a84b161a5d505a989582ba0747a9839fff7a9d4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-07 11:50:26 +0200
+
+    when using glibc heap, try to override default error handler which calls abort()
+
+commit 5219716e9e3d0259a427fd1afc3e97bce6507b68
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-07 10:31:02 +0200
+
+    introducing DEFAULT_WRITEOPTIONS global
+    - including now woSQLRawBlobAsBase64 by default
+    - to circumvent problems reported by Alf
+
+commit f47ae33ee9211c4c5875a549e63ec763428f20a7
+Author: sakura1977 <59915973+sakura1977@users.noreply.github.com>
+Date:   2020-04-06 08:48:35 +0200
+
+    HTTP Status Code 402 added
+    
+    HTTP Status Code 402 - Parameter Required
+
+commit 5505a0b0edcf0d1b6285c2c9f26ce695c1659158
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-05 17:11:49 +0200
+
+    rename TSynThread.fOnTerminate -> TSynThread.fOnThreadTerminate
+    - from https://github.com/synopse/mORMot/pull/302
+
+commit 34c4d8e3facd5f46da3175c00519f81954909cd8
+Merge: c9354983 583c64b6
+Author: ab <webcontact01@synopse.info>
+Date:   2020-04-05 17:03:24 +0200
+
+    Merge pull request #302 from synopse/fix/confusingNameFOnTerminate
+    
+    rename confusing TSynThread.FOnTerminate->FOnThreadTerminate
+
+commit c9354983de2cc69ee9e924669aed89f68820c135
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-05 17:01:22 +0200
+
+    allow 'ASA' driver ID for SynDBFireDAC
+
+commit 7191ce3ba555361d703612829614d15dad80cfab
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-05 15:53:00 +0200
+
+    fixed GetExtended() with xxxE32 exponent
+
+commit 583c64b6664547f6fc88344317de6129ec7c157d
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-04-05 09:11:09 +0300
+
+    rename confusing FOnTerminate->FOnThreadTerminate
+
+commit 5a86c820c6bfa74ad9a4682c88151758e1b5ccb5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-05 01:10:33 +0200
+
+    ensure OCI_AL32UTF8 is used by default
+    for UTF-8 encoding in Oracle databases
+
+commit 75bf8b6134ace21a29581b22f27866d81270eb63
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-04 12:13:43 +0200
+
+    fixed Delphi compilation
+
+commit 95743f382f75f9ebee2895a8c78f8fc4154f43b5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-04 12:06:58 +0200
+
+    introducing IsLeapYear() - and optimized Div100/TryEncodeDate/Int32ToStr
+
+commit c62e6bbfad5c544b130ea73ad5d96e0a2e895410
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-03 15:05:19 +0200
+
+    introducing TSQLDBLib.TryLoadLibrary
+
+commit 65e91e7ada7a3ae1f9a074e22682d7903d10f030
+Merge: 87a873bb e976d77c
+Author: ab <webcontact01@synopse.info>
+Date:   2020-04-03 14:49:01 +0200
+
+    Merge pull request #301 from synopse/fix/libpqWinWithPath
+    
+    fix load libpq.dll under Windows
+
+commit e976d77cbb932769182cf4184bdf37cd5758fc45
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-04-03 14:56:46 +0300
+
+    fix load libpq.dll under Windows in case SynDBPostgresLibrary contains a full path to libpq.dll
+
+commit 87a873bb8115d9a50ac52c850bf903f635ee6a0e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-03 12:05:02 +0200
+
+    several optimizations - mainly about UrlEncode - with no functional change
+
+commit 4a771eb65d3e423f3d7d7652de86cbf1a327a1af
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-03 12:02:13 +0200
+
+    added optional aAllFields parameter to ORMAdd/ORMUpdate DDD persistence
+
+commit 3fe7a76bc63b243553d4fa2f62dc98bc852faaec
+Merge: 0e62cddf 2fd52f62
+Author: ab <webcontact01@synopse.info>
+Date:   2020-04-02 12:48:31 +0200
+
+    Merge pull request #300 from synopse/fix/OracleAV2
+    
+    SynDBOracle: enhanced EnvNlsCreate call
+
+commit 2fd52f62be9cbcb18e52e893c043d55815d653a1
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-04-02 13:07:06 +0300
+
+    SynDBOracle: dummyusermem removed (raise an AV); added EnvNlsCreate result check
+
+commit 0e62cddff6a5b2e8aedcd7928fa11bb0066ed5c3
+Merge: 527e3be8 833a5f3e
+Author: ab <webcontact01@synopse.info>
+Date:   2020-04-01 21:34:40 +0200
+
+    Merge pull request #299 from synopse/fix/synDBOracleAV
+    
+    SynDBOracle: fix long term x64 AV
+
+commit 833a5f3e19981a1349deba562d76a7df9d98a826
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-04-01 22:31:13 +0300
+
+    SynDBOracle: fix logn term x64 AV
+
+commit 527e3be8292165548825403cc0369712413acd60
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-04-01 17:37:04 +0200
+
+    try to circumvent random A/V with newest OCI revisions
+    - ensure usrmempp parameter in OCI.EnvNlsCreate() is not nil
+
+commit 4ab1ae3e2489baf243becf9110c09aa6080e8103
+Author: Svetozar Belic <toza.belic@gmail.com>
+Date:   2020-04-01 16:41:17 +0200
+
+    Introduced TSynValidateRest.Validate to make validation thread-safe while trying to maintain backwards compatibility as much as possible.
+
+commit 6243dd96deb9f6a5066a874b44aadb1a6e016861
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-31 18:24:42 +0200
+
+    fixed/enhanced TextToVariantNumberType/TextToVariantNumberTypeNoDouble
+
+commit 340f32f383f7b9cd66372f5f5e755e820872b2b4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-31 18:22:44 +0200
+
+    circumvent a Lazarus bug which crashed the IDE when browsing mORMot code
+    (at least I am not able to reproduce it any more)
+
+commit 1994c138280f45c517908e492192bbab0d8934a0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-31 00:06:19 +0200
+
+    rewritten GetExtended() to use a 64-bit integer for the digits
+    - also ensure regressions tests are a little relaxed about floating point precision
+
+commit 0af5ed16d11fff75971334b4a02d6b7dfeafacee
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-30 14:29:30 +0200
+
+    added the Delphi 6/7 needed files from RTL7 folder
+
+commit f121081ffe80ab182ec12084f4ea47b364a5af9a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-30 14:27:23 +0200
+
+    fixed JSONEncode() in Delphi Unicode
+    - from TTextWriter.AddJSONEscapeW
+    - thanks mapes for the patch!
+
+commit f2b2de861b5d86a3955b49026824dfe4e7545677
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-30 14:17:36 +0200
+
+    tuned scientific notation for floating point values
+    - also optimized d2a_gen_digits
+
+commit ea584148c8a951beed63be9caa89e432502d60b7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-29 19:35:39 +0200
+
+    small enhancements to DoubleToAscii()
+
+commit 1dee1951016b9ab7e6f47c5bac42e23847066e3f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-29 13:04:04 +0200
+
+    fixed SynDBZeos BLOB process when SynCommons+7.3 is not used
+
+commit 4ed49d9b524c1a6146a8363a3c15cabc1df565b7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-28 17:29:47 +0100
+
+    stabilized d2a Grisu conversion on all targets but Delphi Win32
+    (which compiler is inefficient with 64-bit arithmetic)
+    - includes updated benchmark numbers
+
+commit f80e653d231efa3345f9486baa6f80cee20f1e1b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-28 11:01:36 +0100
+
+    enabled double to text Grisu conversion on Delphi Win64
+    - includes some benchmarking notes
+
+commit 4276b9c449f88c9d711b027b2c3cf3c1449ed048
+Merge: d9d6ca5d fc0f861e
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-28 10:18:55 +0100
+
+    Merge pull request #295 from LongDirtyAnimAlf/master
+    
+    fix armfakestub when compiling with -O2
+
+commit fc0f861ec4483cf31848ca7ce87f1db11768f007
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-28 09:59:46 +0100
+
+    Typo of previous ARM64 commit.
+
+commit a315eb3fc9acf147f7fe657231b8f1dea645b464
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-28 09:44:26 +0100
+
+    Adjust ARM64 MethodIndex register to use IP0 register.
+
+commit 0e5241d30c5589d2d9fcab2061d3426ab14dbab6
+Merge: 8a3a747f d9d6ca5d
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-28 07:30:40 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit d9d6ca5d0d05b3ea19bc0223a3232ed22ef42c4b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-28 02:26:07 +0100
+
+    fixed awful regression in JSON parsing introduced yesterday
+
+commit e98fe1bdcb72cfb022f37339cc7e27e74a92b6f6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-28 02:14:34 +0100
+
+    added some new tests - and fix Delphi issue about float to text
+
+commit ae87a6977aef2bc0881f3ee990773bd7051174a7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-28 01:55:36 +0100
+
+    it is better without the debug-to-console code ;)
+
+commit 304fbd3a0f28293ad551b25e5a52e98813e20b5d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-28 01:54:00 +0100
+
+    one last fix on d2a()
+
+commit cb099228366b4935e19e16e12906c84beb6b6e64
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-28 01:12:12 +0100
+
+    another (late) pass on d2a()
+
+commit 1652b3fe253a422716a39d25f02e80f03ffbeff5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-28 00:22:44 +0100
+
+    several fixed to FastMM4 for FPC/Linux compilation
+    - but detected an issue when sizing-up a memory block :(
+
+commit bce32206a8420474d0cd636b12ffdb7088e2b357
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-28 00:21:03 +0100
+
+    optimized FloatStringNoExp() and SynLZDecompress1()
+
+commit c7e9a7bdf9102dba8cf3fac00eca3845ccb690ce
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-27 23:56:46 +0100
+
+    huge refactoring of floating-point to text/JSON conversion
+    - introducing Fabian Loitsch's Grisu algorithm especially compiled for double values (on FPC)
+
+commit dbba530f13301c6afdceace5437a15eaf60bfb07
+Author: Tim Lebedkov <tim.lebedkov@gmail.com>
+Date:   2020-03-27 16:47:34 +0100
+
+    bugfix: fixed font is replaced by a variable one and vice versa
+
+commit 8a3a747f4a2677e811b10eb3a2a121f62ee60e63
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-27 15:53:09 +0100
+
+    Fix armfakestub when compiling with -O2
+
+commit 369d483e80469c4f8578034f6e10bce7213e9427
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-26 19:07:24 +0100
+
+    rewritten CompareMemSmall
+
+commit 64a1bae17d6b0ea56d1e66fb143dafb77401419c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-26 18:40:20 +0100
+
+    included latest Michael's patch for SynDBZeos
+
+commit 213763e41cad2cfc73908f99a6861427e9271224
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-26 18:38:56 +0100
+
+    rewritten MoveSmall function
+
+commit 270feb6ce8dbab9a7eb49164382009bb2faec64b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-26 17:48:19 +0100
+
+    refactored TJsonWriter buffer to use a stack buffer at first
+    - increase performance when up to 8KB of JSON is generated: which is likely to be the case for most Retrieve() statements - then an increasing heap buffer (up to 1MB) will be used
+
+commit 252ec0777392fe13412933ba0789c68a23f4d800
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-26 17:44:43 +0100
+
+    TTextWriter.FlushToStream will auto-resize also from stack buffer
+    - could increase a lot the performance in some situations
+
+commit 225da2db3cdf1d536394cfb61042b5df5221f83f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-26 10:01:29 +0100
+
+    tuned GetNextFieldProp() to use our lookup tables for branchless code
+
+commit c3f991f521f1b91f5ec377c7a548c34757bbfb6e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-26 09:59:42 +0100
+
+    enhanced TSQLDBPostgresLib to automatically try to load the libpq.so.5 then the libpq.so.4
+
+commit 64a6a477a32c72dc89f8d4db5e2346eb6bf7d96c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-26 01:33:58 +0100
+
+    refactoring of JSON/text/numbers/uri parsing
+    - using optimized lookup tables for branchless decoding
+    - FPC is not efficient when compiling P^ in [....] or case P^ of ....
+
+commit 24919a7b242823c6c98e64c53e8022ed32051f5d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-25 16:49:53 +0100
+
+    another speed-up of JSON serialization process
+    (optimized escape algorithm to avoid branches)
+
+commit 1cc9fbab5ebf4b2c78f19ca9ad8d67f8d790a72e
+Merge: 475582e8 f40fd441
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-25 14:03:29 +0100
+
+    Merge pull request #292 from synopse/impr/synDBDoc
+    
+    doc about possible ExecuteWhenConnected usage for SQLite3
+
+commit 475582e8a74fb2ceb7fd320919d10a4ce3d562e4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-25 10:42:21 +0100
+
+    tuned PerfTestConsole logging
+
+commit c45714d2f407c043c2b5f6a3dde2f33ffc46dda8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-25 10:41:35 +0100
+
+    optimized hexadecimal, octal and base-64 encoding - targetting the FPC compiler
+
+commit 97f8c875bd42000b3cf417b4a1c45053bdb15b2e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-24 20:56:05 +0100
+
+    updated sample 15
+
+commit eb52f2153bde1eb05212a10519a5fe0f57d7f10e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-24 20:12:31 +0100
+
+    fixed sample 15 compilation
+
+commit e9cebcdbcfc6c9aefb7ebf9eecafcb7af29febbf
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-24 18:26:57 +0100
+
+    introducing "Samples/15 - External DB performance/PerfTestConsole.dpr" new cross-platform project - to replace the old and confusing GUI version
+
+commit f92b7a67bdca554c795ff3a6591a9368882ccb5b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-24 18:25:45 +0100
+
+    introducing "Samples/15 - External DB performance/PerfTestConsole.dpr" new cross-platform project - to replace the old and confusing GUI version
+
+commit 867c14cdc146cd8106ff4c094d2eca058118a47f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-24 16:58:14 +0100
+
+    introducing "Samples/15 - External DB performance/PerfTestConsole.dpr" new cross-platform project - to replace the old and confusing GUI version
+
+commit c6412860afe17952fc6022cc0f47ae491d3bf61e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-24 16:56:07 +0100
+
+    refactored mORMotMongoDB logs
+
+commit 9f723d822ef2380e3b429682b790472afcd2c040
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-24 16:55:38 +0100
+
+    fixed SynDBPostgres bulk insertions
+
+commit 0fc7d0532cc3c0e8b36b13c5835bfc5a539dea4e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-24 16:54:24 +0100
+
+    fixed documentation about our SQLite3 proprietary AES-OFB encryption
+
+commit b4cf3749f85ec69ad39ad1fda7e714337ceee90e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-24 16:53:49 +0100
+
+    defined TSQLDBServerRemote as cross-platform safe SynDBRemote server class
+
+commit 6a5c58c44965eb0df94fa494a99328246e98a4b7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-24 16:53:16 +0100
+
+    optimized some integer-array processing functions
+
+commit aae9111323631811e75f0efc82c6221fb059e01a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-23 22:18:56 +0100
+
+    rewritten the SynTests execution core
+
+commit 58fe2631d2602109c22c52c099b4742868945d3b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-23 17:31:37 +0100
+
+    refactored some MongoDB raw process
+
+commit 85a3f8ba3865711f8f3bc8b619503157e0285a4c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-23 17:30:00 +0100
+
+    optimized TSynInvokeableVariantType.IsOfType()
+
+commit 141da6ace9eb8e1d26224ae73a9752e0d324a1ef
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-23 15:49:18 +0100
+
+    reverted last TJSONObjectDecoder.EncodeAsSQLPrepared modification for Update with 1 field
+
+commit e84c10acaa7ca466152df8a54f317ee6cfabb54f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-23 15:17:39 +0100
+
+    fixed MongoDBTestCases for FPC
+
+commit 389db135a715f8c6fc850b7bd992836103dc1cf5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-23 12:45:30 +0100
+
+    use PosExChar() instead of PosEx() when possible (faster on FPC)
+
+commit 9f7581176fb39e587932b9d118c83b3b176f7abc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-23 12:42:29 +0100
+
+    introducing long-standing patches for SynDBZeos by Michael - thanks!
+    - also introduce cPostgreBulkArray for tuned ORM generation for SynDBPostgres
+
+commit fec5db3cfa097b3b30c3cb5d6f164331a893fb04
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 23:32:48 +0100
+
+    minor refactoring - no functional change
+
+commit 02715ac13d2288eac321c042abae6c736731a152
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 23:31:42 +0100
+
+    fixed Delphi compilation
+
+commit b6288bb5d217469d289df6586ca6c1df40a8e98b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 23:13:27 +0100
+
+    introducing new HeadersUnFiltered optional parameter to THttpServer.Create
+    - as an alternative to https://github.com/synopse/mORMot/pull/293
+
+commit d7408de506d4a7a54c0d3eede5ab3dd36deb4c3b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 15:03:32 +0100
+
+    new TSQLDBStatement.SQLLogBegin/SQLLogEnd methods to have as consistent Prepare/ExecutePrepared log information in all SynDB units
+
+commit 8c0cebf78c4f865858a52580cec2da9b4d010d1f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 12:22:39 +0100
+
+    introducing TSQLDBStatementWithParams.ReleaseRows to release the bound parameter memory ASAP (may be huge in case of array binding or blob process)
+
+commit 1fd44338ce1e8faf886a1032271434134c26703d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 12:06:30 +0100
+
+    reverted ISQLDBRows.RefCount check and introduced an explicit call to new ReleaseRows method
+
+commit 8438cc89747e6b4651511049fe18424433fc4697
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 03:37:15 +0100
+
+    deep refactoring of SQL parameters logging - to use less resource and be more reusable - especially for SynDBSQLite3
+
+commit 10308988f48715852cf66962fc942979708fbe9a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 03:30:20 +0100
+
+    new TSQLDBStatement.ReleaseResources virtual method
+    - called when ISQLDBStatement RefCount=1, i.e. when it is back to the cache
+
+commit 0b22df45d2c1eeba0f79f256a411280676183f01
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 03:26:49 +0100
+
+    optimized TRawUTF8Interning.UniqueVariant/TTextWriter.AddQuotedStr/RawByteStringToVariant/TextToVariantNumberType* functions
+
+commit 394e40c64e960cd28422e0084924f73434e9d551
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 00:27:35 +0100
+
+    small refactoring of the TSQLDBStatement*.Reset methods
+
+commit 983a6a3167d0c4818a028278c44ec7937c41a775
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 00:26:02 +0100
+
+    undefined RewindToFirst optional parameter to FetchAll* methods
+
+commit 03c707436e0f5252c4a88486909644172c69750e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-22 00:24:09 +0100
+
+    defined our inlined VarClear() also for Delphi - get rid of explicit VTYPE_STATIC check
+
+commit f40fd441bb2e8794684f32395e26140db7b6f1d0
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-03-21 22:38:43 +0200
+
+    doc about possible ExecuteWhenConnected usage for SQLite3
+
+commit 647ad598662d6c8bac7632be38385aa9fa276757
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 19:21:09 +0100
+
+    minor TAESCTR tuning on 64-bit CPU
+
+commit faeeb4acc98352c7e622b562b44d3fb9d01eb74b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 19:03:03 +0100
+
+    small comments / error message enhancement - no functional change
+
+commit 7108ee23d38d9b12a9cfe01a5642d0e87429a2a3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 19:01:55 +0100
+
+    introduce TAESCTR.ComposeIV() modular method instead of TAESCTRNIST
+    - from https://github.com/synopse/mORMot/pull/290
+
+commit a0c43c5810a62970fe6d3389ef267d1bcdac3b5f
+Merge: 825425c7 3b83471a
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-21 18:29:33 +0100
+
+    Merge pull request #290 from karwos/patch-2
+    
+    add ComposeIV to AES CTR mode to add flexibility and follow NIST guidelines
+
+commit 825425c76282bacb3319c1bb5530eeb930f86854
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 17:59:39 +0100
+
+    try to enable SynDBPostgres PostgreSQL ORM bulk insert/update/delete via nested array binding
+
+commit e63f9b1a595f949e2027b2cb8aaaa01200bc31f8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 17:26:48 +0100
+
+    try to enable SynDBPostgres bulk insert via 'insert into ... values (unnest...)'
+    - more feedback and testing are needed!
+
+commit 33f3d23c93ce12d35f10a01e393420abba3e5268
+Merge: 44ded144 00cd9a5e
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-21 17:09:51 +0100
+
+    Merge pull request #291 from synopse/feature/executeWhenConnected
+    
+    new property TSQLDBConnectionProperties.ExecuteWhenConnected
+
+commit 00cd9a5ef495f9cdce973a6766ebc238372b6f26
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-03-21 17:34:28 +0200
+
+    fix typos in doc
+
+commit b1de9f2534048fa6329e81d5742598c651e118eb
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-03-21 17:30:28 +0200
+
+    new property TSQLDBConnectionProperties.ExecuteWhenConnected - array of statement to run on each cennection just after connect
+
+commit 44ded144eca46b42e4c13449be0d918384bef299
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 15:58:33 +0100
+
+    ensure TSQLDBPostgresStatement.ColumnsToJSON returns strict ISO-8601 dates
+
+commit 00e4648b00102dc3dc081ccf309d73c34340b70e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 15:44:34 +0100
+
+    introduced FloatStrCopy() and fixed TTextWriter.AddFloatStr - with new regression tests
+
+commit cafac5c8ff5f67a428f7d71f35f6f1c7473af780
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 15:31:14 +0100
+
+    fixed TTextWriter.AddFloatStr - with new regression tests
+
+commit e01b7c7c5908a994684046380cac4278f8b4078d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 15:21:11 +0100
+
+    fixed TSQLDBPostgresStatement.ColumnsToJSON ftDouble/ftCurrency and introduce JSONB support
+
+commit ec2a4fa1556c2d7c5407d01033836ca83f022c17
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 13:08:38 +0100
+
+    faster PostgreSQL BLOB process - libpg>=8.3 is not required any more, since PQunescapeBytea() is replaced by our faster HexToBin/OctToBin decoding (with no memory allocation)
+
+commit 55d1f0773849cef2ae6d138be9123f1bb6809434
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 13:06:22 +0100
+
+    introducing OctToBin() and HexToBinFast() functions
+
+commit 3b83471ae5f1755cfd57fc11b4d9b8db21e34af1
+Author: Piotr Karwowski <piotr@karwos.hk>
+Date:   2020-03-21 05:09:23 +0100
+
+    Update SynCrypto.pas
+
+commit 355f122e8e369d8959906f51a2b409046aa045db
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 01:09:53 +0100
+
+    introducing TAESCTRNIST as proper fix for https://github.com/synopse/mORMot/pull/288
+
+commit a059c4e63bf388479ce5f5f81483d9ab4e9b42b5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 00:02:54 +0100
+
+    tuned libpq OID internal types table
+
+commit 736ef7327146caf9e3aae7ab987001092de5485f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-21 00:02:13 +0100
+
+    optimized TTextWriter.AddJSONEscape which is now faster with Len=0
+
+commit 5e09340967c699129f639f42bd6f200fdde83438
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 23:37:04 +0100
+
+    optimized TTextWriter.AddFloatStr
+
+commit 8d88463e78b065a13248f7ff02b843e0f059d902
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 23:36:23 +0100
+
+    fixed TSQLDBPostgresStatement.ColumnsToJSON for ftDate and ensure no libpq notification slows down the process
+
+commit 57c43a8abd1bcb69bb882549479a7f3477f8b0c3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 21:51:45 +0100
+
+    another pass on TSQLDBUniDACStatement.DataSetBindSQLParam by Daniel
+
+commit b7457fc392430017feaf6ec079bdeb0aabe2ccbb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 20:21:04 +0100
+
+    fixed compilation on Unicode Delphi
+
+commit 43d851930a1643058d98c6ac9623e5721f31b4fb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 20:20:38 +0100
+
+    all SynDB Prepare and ExecutePrepared methods would have the same log layout
+    - thanks to new TSQLDBStatement.GetSQLLog method
+
+commit 9407975c7845dd5a09e2309d95087d144b85ae4b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 20:06:45 +0100
+
+    include some SynDBUniDAC patches by itSDS - thanks for the feedback!
+
+commit 5de0ae4dfce6f80bfbb76da9c8f9d74fbf1a40c0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 15:55:59 +0100
+
+    introducing minimal libpq library wrapper, and optimized TSQLDBPostgresStatement.ColumnsToJSON method to SynDBPostgres.pas - now it is Delphi compatible!
+
+commit 0a6f1ca557fa6a1a0acc1b5d7b58798c99ba616a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 15:53:11 +0100
+
+    include Hash128Index/Hash256Index tests and some IsGuidEqual() optimized use
+
+commit 86c9bd5c742f16b8befee8ed9f12866bd4f6ac49
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 15:51:21 +0100
+
+    paranoid multi-thred hardening of TSQLDBOracleConnectionProperties OCI initialization
+
+commit 646441880db76dd78a5bce5c43c9a4c70b81b78f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 15:50:19 +0100
+
+    optimized TODBCStatement.ColumnsToJSON blob process
+
+commit dcc3c053fb987e54d2b1419b598ed076aa0a5033
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 15:49:42 +0100
+
+    TSQLDBConnectionPropertiesThreadSafe will use TSynObjectListLocked mutex
+
+commit 68637ecba0922f0f9d41a635358ae0aad6e4d7c2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 15:48:50 +0100
+
+    new Hash128Index/Hash256Index optimized functions instead of HashFound
+
+commit 3f63ae390159fae77247c950f42de2b617c872c9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 15:44:19 +0100
+
+    ensure GetSystemPath() won't create a \log sub-folder on Windows unless required
+
+commit 6f7e2a9730f2c146cbbc8e21017f65d95cb1db56
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 15:43:05 +0100
+
+    avoid null FillCharFast/MoveFast on Darwin
+
+commit 7597d1305791ec6440118571cbeeccc8c2ef8ca1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 11:23:29 +0100
+
+    circumvent an UniDAC bug reported with BLOB updates
+
+commit d6071a82267a365b44861e9215c526c5bdd63aa0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-20 11:07:09 +0100
+
+    fixed SQLDBConnection.NewStatementPrepared - thanks itSDS for the feedback!
+
+commit 57748519cd2ae44b0fa1aa00b7d9ca0099fc4f95
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-19 21:16:28 +0100
+
+    remove compiler hint on Delphi
+
+commit eddd5e8a222477cb910b1c3ed4bf3734d834d902
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-19 20:03:19 +0100
+
+    fixed TSQLDBPostgresStatement.ExecutePrepared from https://github.com/synopse/mORMot/pull/289
+
+commit bf0630615deabe6b776a92652566a6cdda2d685b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-19 20:02:04 +0100
+
+    new ReplaceParamsByNumbers() and BoundArrayToJSONArray() function
+    with proper regression tests - as used by SynDBPostgre.pas
+
+commit 976dd2aee5eba259f66022d89b3270bd9b339d13
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-19 18:59:29 +0100
+
+    let compile when USEWININET is not defined
+
+commit cad3d55d7743f696d0c70c819bb64b5e0da4f39a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-19 18:57:53 +0100
+
+    tune TSQLRestStorageExternal.AdaptSQLForEngineList logs
+
+commit 42dd0ca37aba8c54f4960deecd26b18aca8259de
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-19 18:57:05 +0100
+
+    circumvent weird (FPC compiler?) bug on Win32/Win64 in THttpClientSocket.RequestSendHeader
+    - thanks Alf for the feedback and patch!
+
+commit b79116c1f7fc235ca9937954b94ce9091822ca96
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-19 15:20:45 +0100
+
+    fixed typo
+
+commit bcaa7aff30cc3ddea0dd0cadc8ef95caeadaa3aa
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-19 15:18:05 +0100
+
+    reviewed logging of SynDB units - including latest SynDBPostgres
+
+commit c218adb71044e5055c8f5332c2f488540b90206a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-19 13:04:54 +0100
+
+    introducing SynDBPostgres.pas
+    - deep refactoring of https://github.com/synopse/mORMot/pull/287
+
+commit 3f55d0038b0a91a0613feef50586c4626355ff7c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-19 10:44:38 +0100
+
+    small refactoring of FindNameValue/GotoNextLine for better performance
+
+commit 8a43486debe5fbc1c4b9013d04f6affd48c3d875
+Merge: 21482d16 d668802c
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-19 10:43:20 +0100
+
+    Merge pull request #287 from synopse/feature/synDBPostgres
+    
+    introduce SynDB interface for postgres
+
+commit 21482d16e4dcb91479cc3d196b70dee945dd8121
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-18 20:03:12 +0100
+
+    introducing FindNameValue() when FindIniNameValue() is not required
+
+commit d668802c2a1bb07eeb742ab2cad4fef1899596b9
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-03-18 19:13:15 +0200
+
+    introduce SynDB interface for postgres
+
+commit 8524132d8d3e69df7ae4fe9349b8bbf77fec1436
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-18 11:30:21 +0100
+
+    fixed compilation when USE_VTYPE_STATIC is undefined (BSD+ARM)
+
+commit 4bd7c3ed38e1f642b94aa6df494ea7791dc899ae
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-18 11:28:29 +0100
+
+    some review after https://github.com/synopse/mORMot/pull/286
+    (still need to review SynFPCSockLIBC.inc)
+
+commit 12d5418e1c37c193a63e8e396b9c7752b23c7ccc
+Merge: 26bd10fb af97b227
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-18 09:50:36 +0100
+
+    Merge pull request #286 from LongDirtyAnimAlf/master
+    
+    Good pull this time for BSD.
+
+commit af97b227d50da0c40f95d79ededc342b6b5c9f00
+Merge: 2958b7fc 26bd10fb
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-18 06:06:34 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 26bd10fba4f1f1d8cc1291cf6013a5b1e7a75e91
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-17 22:45:15 +0100
+
+    small comment fixes - no functional change
+
+commit 2958b7fc64dd6d6aae6a6436b324cbed4cadb9b1
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-17 16:08:21 +0100
+
+    Patchset BSD and more.
+
+commit 421f551096f3a180da1bd538e5dc95a9cbc8dfd6
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-17 16:05:08 +0100
+
+    New static Linux ARM64
+
+commit c60d6290c44f2fe3123a821abaa05dd8d5734db7
+Author: Don <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-17 16:00:13 +0100
+
+    Static FreeBSD x64
+
+commit 11008f413ae3263723199d01321a35170701d643
+Author: Don <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-17 15:59:37 +0100
+
+    Static OpenBSD x64
+
+commit 9e418d6681892e5ef418486538bda2a403417d79
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-17 10:17:34 +0100
+
+    fixed SynLog process - includes minor optimization refactoring for x86_64
+
+commit a065be54fec0e644419e6a2cdb9ccbd502cff44c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-17 10:02:33 +0100
+
+    avoid unexpected GPF when log is disabled
+
+commit 3d7e6e2013722cbaabc66a348b55927ac3f74300
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-16 22:48:06 +0100
+
+    try to harden TSynLog instance creations in heavily multi-threaded environment
+
+commit a334fa5d67cc4ea397684a11d7d53bb1a7096bed
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-16 22:40:57 +0100
+
+    small refactoring while translating existing code to mormot2
+    - no functional change
+
+commit 1a0b82c1e0013a4ad46720c8fa2d02243d9714f4
+Merge: cd0439cf 27343019
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-13 18:11:23 +0100
+
+    Merge pull request #283 from tim-lebedkov/master
+    
+    bugfix: Acumin Pro SemiCondensed is not detected
+
+commit 27343019b7e6c6dd2787480756a34e0e935ce2d1
+Author: Tim Lebedkov <tim.lebedkov@gmail.com>
+Date:   2020-03-13 15:15:48 +0100
+
+    bugfix: Acumin Pro SemiCondensed is not detected
+
+commit cd0439cf24bd9249a7801434a4312ecbe58fbf63
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-13 10:44:32 +0100
+
+    fixed and optimized GetLineContains()
+
+commit e3a2340032d836b49dfeab1a940f72ba132f7264
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 21:58:17 +0100
+
+    fixed Delphi 6 compilation ;)
+
+commit 50ad43fa1d7fd2e2a2b7a2992064417f07d40306
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 21:50:49 +0100
+
+    slightly optimized /root/timestamp URI endpoint
+
+commit 870713ff14ce47eec64dbc5312da2dc69cb81688
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 21:50:13 +0100
+
+    faster StrLenPas() and BufferLineLength()
+
+commit d0018b9cb8ff7b205d1237fdb8ae99bb05186ae1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 21:49:10 +0100
+
+    refactored GotoNextLine() for better performance and no compiler complain
+
+commit 2f2391cfdda4dec58bc741fb33b472e3d76992c6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 21:48:17 +0100
+
+    fixed GetLineSize() so that it stops on #0 when PEnd=nil
+
+commit e751179e407c5fceb02a6cc67deeb7fdaee3ee7e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 17:58:22 +0100
+
+    RawUTF8ToVariant() refactoring
+
+commit 15877ff608b3cb78aa9cd185e11b249eb0e698e2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 17:56:29 +0100
+
+    small POSIX socket optimizations by mpv
+    - from https://github.com/synopse/mORMot/pull/282
+
+commit b62f0c250008b4636ff17a5ac45e91ac3b849d2c
+Merge: d5ecf1c0 e120554c
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-12 17:50:52 +0100
+
+    Merge pull request #282 from synopse/feature/linuxHTTPPerf2
+    
+    remove unnecessary ioctl and shutdown
+
+commit e120554cd82c42a28e388ff94c329b27463d0fb2
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-03-12 17:54:04 +0200
+
+    add extra space
+
+commit d5ecf1c01999e79de3472461324695799acfd312
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 15:29:51 +0100
+
+    fixed compiler warning in Unit tests on Delphi
+
+commit 2217bd1efa3393cdcb45480c79e78a20fbbb018f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 15:27:14 +0100
+
+    GetLineSize() will use optimized BufferLineLength() and its SSE2 asm
+
+commit 6a07b767ded6109850ea56ea0fddd245a46ab8c8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 15:26:16 +0100
+
+    fixed IdemPCharWithoutWhiteSpace()
+
+commit d2d753901fb2ed7ea4c603ed548a55a5ab7e2a06
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-03-12 16:19:21 +0200
+
+    Socket based HTTP server - avoid unnecessary ioctl and shutdown syscalls
+
+commit cdb337b2a61aa7439682f8816d9256be504de587
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 10:46:45 +0100
+
+    ensure TSQLDatabaseBackupThread will first delete any previous temporary file
+
+commit db66bc6ad2105da9ff6bc157fa88c683a81c4b66
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 10:45:34 +0100
+
+    TAESPRNG.GetEntropy won't block waiting for /dev/random if not needed
+
+commit 2c034f1bb810f5c03290111cb782ef61ad2c6902
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 10:44:45 +0100
+
+    hardened "array of const" pairs input parameters
+
+commit d63164a4c28e07d168fa59a6da8495b237249680
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-12 10:43:54 +0100
+
+    new overloaded SynReplaceAll() function
+
+commit 5582102585f082c9c7f06939e63525d36b6d0cf2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-11 16:48:15 +0100
+
+    another attempt to fix THttpApiServer stable shutdown
+
+commit 88aefa6595d888330b61756e7201bdcd16e9c44b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-11 11:12:06 +0100
+
+    proper unit test log on FPC
+
+commit f0090942d7831c0f8fb7b484ca6ea3ae74d0e974
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-11 11:08:50 +0100
+
+    fixed THttpApiServer random deadlock at shutdown
+
+commit 97f97b485abf364e707021f2b3ca0883ec46e964
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-11 01:55:03 +0100
+
+    fixed Darwin 64 compilation
+
+commit c5224e46f0d30c9b798b215cbb1b32f2ba9247c1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-11 01:17:08 +0100
+
+    socket HTTP server will return only meaningful HTTP headers to the processing code
+
+commit c835cd1c2fb1affee56ee877513ad279b98718bb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-11 00:19:44 +0100
+
+    refactoring of the HTTP socket server for better stability on high load
+    - set directly the client IP without calling GetRemoteIP/GetPeerName
+    - do not ACCEPT any new connection when the queue is full (wait ContentionAbortDelay = 5 seconds)
+
+commit cbb68ebebfd4b62354441df13887d78e8ab915f7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 22:26:46 +0100
+
+    fixed recent memory leak regression in TSynCache
+
+commit ec09d17386550a516015436259563a6b6c889c74
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 20:17:59 +0100
+
+    fixed long-standing issue of potential modification of TSQLRestServer memory after it has been freed - not triggered in normal cases, but when the TSQLDatabase is used after its TSQLRestServer is released
+
+commit 52dffc035ec66902ab0f24d64a0e1287770bf7ac
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 20:16:31 +0100
+
+    enhanced TSQLRestServerNamedPipe stability
+
+commit 5b68da20a62c7cdaae8dd3c667b999e9ff8b1f8d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 20:15:40 +0100
+
+    small hasher use and regression tests optimizations
+
+commit 69c15de273eb4f484d88c9d8e83b663f71bb238a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 20:12:47 +0100
+
+    small refactoring of dynamic array header rtti access - no functional change
+
+commit 54a198205b50bb319575e7ae696545239ba2e9c6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 19:59:09 +0100
+
+    fixed SynCommons initialization pattern
+
+commit 6796f68b98734f729475b8eddd8fef9c5fe867f8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 12:16:13 +0100
+
+    fixed random socket problem on Windows after https://github.com/synopse/mORMot/commit/84f29682cd2a004111a52f7b733a5dcb8245fa12
+
+commit b923372b0d8c316acf532bb70e5c3eee9d852fdd
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 11:50:09 +0100
+
+    fixed FPC Win32 target
+
+commit edca2ef68b63a1ac28f11625e824c28544b5d1c9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 11:49:25 +0100
+
+    fixed FileOpenSequentialRead() on Delphi
+
+commit c004f36e6431954d4949769dc590367857c2dcc6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 02:17:23 +0100
+
+    FileStreamSequentialRead() will return a THandleStream and FileOpenSequentialRead() will call fpOpen only (whereas SysUtils.FileOpen calls fpOpen + fpFlock) on POSIX - assuming FileName is UTF-8
+
+commit 4a43bbeaa54f2581fe4491d24d1eb94fe5cbf5b3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-10 02:14:57 +0100
+
+    fixed CompareStringW() compatibility function for Linux
+    - result was all wrong :(
+
+commit 49404a3d5e63e30adc43751677db03f364a384cb
+Merge: a452fe48 3dc2fe82
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-10 01:54:19 +0100
+
+    Merge pull request #281 from synopse/feature/clock_gettime_libc
+    
+    use vDOS enabled clock_gettime from libc
+
+commit 3dc2fe82eafdf1ab4d0e05a14e84a748d2cee82f
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-03-09 23:02:56 +0200
+
+    use vDOS enabled clock_gettime from libc
+
+commit a452fe48acfbd9290d051121b9a246ce355413ff
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-09 14:13:14 +0100
+
+    refined TSynLocker / TSynObjectListLocked documentation about thread-safety
+
+commit 84f29682cd2a004111a52f7b733a5dcb8245fa12
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-09 12:33:32 +0100
+
+    reduce unnecessary calls to GetTick64() OS function (clock_gettime) during normal socket processing
+
+commit ced303dfd2e991f3f2401a6087c4030cc2016800
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-09 01:41:22 +0100
+
+    introducing TSynList/TSynObjectList/TSynObjectListLocked
+
+commit 40750ba331e2a6f01b10b1586489beee5bc1c915
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-08 22:41:12 +0100
+
+    refactored THttpApiServer and TSynThreadPool
+    - also includes a cut-down version of https://github.com/synopse/mORMot/pull/280
+
+commit a7bb1442bf961084c711583174152998a6834224
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-07 17:05:14 +0100
+
+    added padding to avoid TSynThreadPool locks cpu cache line collision on 32-bit (ensure it is >128)
+
+commit bd6acaf37499015a2f75eeea632073947bbe284e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-07 16:44:51 +0100
+
+    try to reduce TSynThreadPool futex/lock contention
+
+commit 1b88d0dc3bdec54ae86734936876f7a8adccf7a2
+Merge: 6d68fe2d 6f961cda
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-07 16:19:40 +0100
+
+    Merge pull request #278 from synopse/feature/linuxSocketOptInheritance
+    
+    optimized server socket accept() on Linux
+
+commit 6d68fe2db2990e68628aeb6b87736938c24878bb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-07 15:29:54 +0100
+
+    refactored crcblocks() function and its asm/SSE4.2 versions
+
+commit 6f961cda8239b2de96a1cb220d1b622bb3c0537c
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-03-06 23:53:01 +0200
+
+    Optimized server socket acception on Linux
+
+commit 3f36ff9cf3e786617706a678e21d965035a59017
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-06 17:12:23 +0100
+
+    optimized TSynAnsiFixedWidth conversions
+
+commit 90b1f496cbe00a7f5859f8a87e1d96e45ba8bf88
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-06 17:11:00 +0100
+
+    ensure SynchFolders() includes the number of synched files from sub-folders
+
+commit cdf4499beb85c7631b1644c5a4a698698a85236e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-06 17:08:19 +0100
+
+    let SourceCodeRep write the number of GitHub synched files to the console
+
+commit a919f2054e94077fd7be08b04289b9fdeb65ba8f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-06 15:44:42 +0100
+
+    fixed SynLZO regression introduced by https://github.com/synopse/mORMot/pull/276
+
+commit b3a867afe706c856a2b492cc436530162eb90d37
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-06 15:37:59 +0100
+
+    ensure TPdfDocument.TTFFontPostcriptName add style to the font name retrieved from
+    - thanks 18114532(at)qq.com for the patch
+
+commit 38c4f4edcbeb57b27e728124b21da4ec31086cea
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-06 15:06:35 +0100
+
+    refactoring after merged https://github.com/synopse/mORMot/pull/276 - ARM compatibility
+
+commit 378f93fa710129557c57782a2f08980ea13d7ea1
+Merge: 1528d3d6 ab41ac70
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-06 15:00:18 +0100
+
+    Merge pull request #276 from LongDirtyAnimAlf/master
+    
+    small Alfred tweaks for ARM
+
+commit 1528d3d672bf6d46f9b8ff9f525d4b56f397f904
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-06 12:02:34 +0100
+
+    introducing USERECORDWITHMETHODS conditional to use "record" instead of "object" and circumvent Delphi bugs in an unified way
+
+commit 44165ba9aa7df5ff12d19a7786068b9249706d75
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-06 11:59:31 +0100
+
+    fixed Delphi unexpected Warning in SynchFolders()
+
+commit ab41ac70b6dd5246a01c16fe4eb39d57d3a489d9
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-05 20:54:52 +0100
+
+    Typo.
+
+commit b19fc3579bce560eabe460922a49b22215fc4342
+Merge: 72cd6021 9877d928
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-05 19:16:52 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 72cd602111a14f4c080ae8e945b3e1b83682dbb9
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-05 19:11:59 +0100
+
+    Few small arm compat changes.
+
+commit 9877d928ff22d896441a39b95e30054235b8a65c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-05 19:00:29 +0100
+
+    SourceCodeRep tool will use our own SynchFolders() framework function instead of robocopy/rsynch - rsynch had synch problems sometimes
+
+commit fb89434f84fd0610b656b1fd8bc564996c40c8b4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-05 18:58:20 +0100
+
+    fixed SynchFolders() with SubFolder=true
+
+commit 5ae769a093f8a86914ea0f57200128e00adc3ea2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-05 14:35:36 +0100
+
+    another try to prevent F2084 Internal Error: C2130 on Delphi XE3
+
+commit 4eefd19408ee20cad2ec8aea4971920dedbaa840
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-05 14:27:00 +0100
+
+    try to prevent F2084 Internal Error: C2130 on Delphi XE3
+
+commit 437101185a4eeba1f0148a2989c990c0c5fee675
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-04 17:49:59 +0100
+
+    fixed Delphi Win64 compilation after https://github.com/synopse/mORMot/pull/275
+
+commit cb56edac1f3fd2d47da35c8d71e077c7628eb9cb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-04 16:25:12 +0100
+
+    include static SQLite3 object files for Android
+    - thanks to Alfred!
+
+commit 7fb7546ebd0d941c014df3ece09b7e73f00b8ab7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-04 15:17:04 +0100
+
+    Android ARM/AARCH64 compatibility by Alfred
+    - from https://github.com/synopse/mORMot/pull/275
+
+commit 11049be0742286e65f40fb9296a9ff88afb416ad
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-04 14:30:33 +0100
+
+    remove SQLite3 amalgamation file which should not be part of the repository but retrieved from sqlite.org
+
+commit 4447d746e0696c5769f8ed65bfa114e5e7ee6068
+Merge: e3c519bb 05324d95
+Author: ab <webcontact01@synopse.info>
+Date:   2020-03-04 14:26:58 +0100
+
+    Merge pull request #275 from LongDirtyAnimAlf/master
+    
+    changes to get the mORMot working on Android for arm64
+
+commit 05324d95cf2714d3cc8939e9a75fdaefbdf9e0fb
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-03-04 11:41:47 +0100
+
+    Changes to get the mORMot working on Android for arm64.
+
+commit e3c519bb42f7bae9b3205fc48f84afe6da9c18e3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-03 21:59:53 +0100
+
+    optimized GetExtended/GetCardinal overloaded functions
+
+commit 85eb326de0099b6d7c43aa1d5b65904ab059d95c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-03 21:24:07 +0100
+
+    optimized GetInteger() overloaded functions
+
+commit 644ce27794e2db1a1f461b0bd03f9e90d44c47b0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-03 18:00:38 +0100
+
+    fixed (and regenerated) documentation to reflect latest units changes
+
+commit 147124c6ad8e4c5bbd262af461ef39b8dc389d1c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-03 17:33:11 +0100
+
+    fixed sample 30 compilation
+
+commit de7c7f3ce079e5d750863ea99ec744140513fd38
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-03 17:28:14 +0100
+
+    fixed samples compilation
+
+commit e698555921da658ad7bbb480f9d71744f92ee4b5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-03 17:16:15 +0100
+
+    removed comments about changes/versioning which were old and redundant to our fossil/github source code management systems
+
+commit 6f985469f89d785efbef6011b1c80bc543853917
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-03 16:45:32 +0100
+
+    fixed Delphi 10.3 compilation
+
+commit 4e1dcb70cb5f11f30523e21a58a5afc96632bcf7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-03 16:23:32 +0100
+
+    include missing SynCommons.pas
+
+commit 283b4beca052dc79692879628ea20725fe557b10
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-03 16:22:58 +0100
+
+    deep refactoring of SynCommons.pas and mORMot.pas to move code into SynTable.pas
+    - trying to reduce bloated size of those units, which tends to make the IDE very unstable
+
+commit fa9a9d6cf119b79ea0818caea348bb8cb2d33631
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-03 16:17:32 +0100
+
+    enhanced cross-compiler string/dynarray internal header access
+
+commit 798a400c0af34a61435eb11a520ce8050ea80b31
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-02 21:09:30 +0100
+
+    refactored TDocVariant sorting methods
+
+commit 78c8394a609b9fbd4bd5e902aa70758cde8c9b1a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-02 21:08:52 +0100
+
+    new overloaded FindPropName() function
+
+commit bb9d506d0b3ff382fd29d5c08f8cb4c15fb3af70
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-02 12:37:13 +0100
+
+    try to achieve ms resolution on Windows 8+ using GetSystemTimePreciseAsFileTime()
+    - introducing UnixMSTimeUTCFast() new function when 10-16 ms resolution is enough
+
+commit 1aa35b96b708b32be330dca9433f2e531c7ff9f5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-02 10:44:16 +0100
+
+    small refactoring - no functional change
+
+commit d11bed747b659ed5d522fd5564c3bc670b6665ef
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-01 19:32:34 +0100
+
+    optimized variant arrays QuickSort
+
+commit cd5dff2252f69c6e2648786dcdb494afd4e359eb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-03-01 19:31:56 +0100
+
+    optimized (AnsiString) dynamic arrays clearing process
+
+commit 6c4eb61ddda0c124221cd239b7b7163454ba30d1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-28 19:49:57 +0100
+
+    deep rewrite of dynamic arrays clearing process - for TDynArray/TSynDictionary and also at lower level - for better performance and consistency
+
+commit cf66ac0a94e9cb486b23a02d87cc1f822893bc7d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-28 12:38:10 +0100
+
+    refactored TSynInvokeableVariantType/TDocVariant property lookup
+
+commit 609af29fd2b5e00fba676f6a5f3086ac0946f63b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-28 12:35:06 +0100
+
+    optimized FindShortStringList* functions
+
+commit 0c90eb3c498719ddff87c85bbd372c5480a9a022
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-28 12:32:30 +0100
+
+    optimized GetNextItemShortString/GetNextTChar64
+
+commit bc2948cf25ed60e3ccb2df9229bfb5bdf1dc0ed0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-26 12:12:04 +0100
+
+    fixed longstanding bug in TDocVariantData.InitJSONInPlace
+
+commit e769cac4dbeb67ca4c0d23e29088b256c548f7c4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-26 11:45:41 +0100
+
+    introducing JSONToVariant/JSONToVariantInPlace
+    - after fixes from https://github.com/synopse/mORMot/pull/274
+
+commit 988e0c3086f99f42d0a18971d3fb84521f62343d
+Merge: 569e49f2 cd309122
+Author: ab <webcontact01@synopse.info>
+Date:   2020-02-26 08:57:47 +0100
+
+    Merge pull request #274 from eugeneilyin/master
+    
+    added JSONToVariant to align with RFC 8259, RFC 7159, RFC 7158
+
+commit 569e49f2df228390c5e0e9f3df9340d3c40ca55c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-26 08:57:29 +0100
+
+    FillZero() rewrite - no functional change
+
+commit cd309122587fbf1d22bd4a0d49547ab83cb0ea9b
+Author: eugeneilyin <eugene.ilyin@gmail.com>
+Date:   2020-02-26 01:45:33 +0300
+
+    added JSONToVariant to align with RFC 8259, RFC 7159, RFC 7158
+
+commit a56fff77fd655acfb928afd607e0adff22ff79af
+Author: eugeneilyin <eugene.ilyin@gmail.com>
+Date:   2020-02-26 01:42:39 +0300
+
+    added JSONToVariant to align with RFC 8259, RFC 7159, RFC 7158
+
+commit d24534a498c502fd752e32fb82200449878a5911
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-25 19:51:53 +0100
+
+    rewritten FastFindWordSorted() x86_64 asm as a branchless loop
+
+commit a7cad0a4a80754c7e2506ea20d466623ce3deedf
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-25 19:32:54 +0100
+
+    optimized TSQLModel.GetTableIndex/GetTableIndexPtr
+
+commit 56d80e30558515780b4f0f74866655af7f0eede3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-25 19:32:04 +0100
+
+    optimization pass - especially about FastFindPUTF8CharSorted() and IntegerScan/Index/Exists Int64Scan/Index/Exists
+
+commit 4b2b62a262b0e3524bfce8ed35568ef0d67933a8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-25 19:29:52 +0100
+
+    new AnyScanExists() function
+
+commit b55b7e5369768b11dde673b1df7539b0fad08f53
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-25 08:20:13 +0100
+
+    actual changes to prefer "mov eax,-1" to "or eax,-1" which is sometimes slower due to an unexpected dependency to previous eax value :)
+
+commit d8d9719a5dcb4068cac2a51b6f6759ecc5cb5105
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-25 08:19:32 +0100
+
+    prefer "mov eax,-1" to "or eax,-1" which is sometimes slower due to an unexpected dependency to previous eax value
+
+commit 6cc0b0b176f960162e99246e531ca933ca9274f1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-25 08:18:37 +0100
+
+    enhanced FastFindIntegerSorted/FastFindInt64Sorted x86_64 asm to use branchless implementation
+
+commit 6277301e985e350896197edd8a89b49b2db71d02
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-24 21:10:04 +0100
+
+    added FastFindIntegerSorted/FastFindInt64Sorted/FastFindWordSorted in fast x86_64 asm
+
+commit 941594cfd562ddf4c8a7c47aca5a40eac86b47c2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-24 18:41:00 +0100
+
+    reimplemented crc32cfast() in fast x86_64 / i386 asm using Maxim feedback
+
+commit 4786f97d0626ceefae5d5875ba38900ff664eebb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-24 12:27:42 +0100
+
+    (hopefully) last try to circumvent Delphi 2010 compilation bug
+
+commit 21d6bea363c6840a3aec11f67668a4282a768d28
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-24 12:16:13 +0100
+
+    try to circumvent Delphi 2010 compilation bug
+
+commit e8f1db365e1c61b66d69a12cb2d5a6f5d2457e96
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-24 12:13:08 +0100
+
+    favor movaps/movups against movadq/movudq since it performs the same and is one byte shorter
+    - also includes minor x86_64 asm refactoring
+
+commit 1d4950f8968cd12ad9a1b52d75aecd68f47182ab
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-23 12:50:26 +0100
+
+    fixed some keyboard typo just before commit! :(
+
+commit abfd8386858a54ae532b16683cbed86d39386493
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-22 11:14:46 +0100
+
+    some fixes to TRawUTF8List - mainly documentation and thread-safety
+
+commit 60200d7eb03e29e8dbf878ba14a40f0772ad1c93
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-21 18:25:47 +0100
+
+    defined CPUX64LINUX conditional, e.g. to add tuned server-side asm
+
+commit fe7ab38a078d2ac7d8c42e1aca557f8e67f34c6c
+Merge: 30f9df70 da014094
+Author: ab <webcontact01@synopse.info>
+Date:   2020-02-21 17:42:44 +0100
+
+    Merge pull request #258 from benok/FixSamples
+    
+    Fix samples which can't be compiled now
+
+commit 30f9df703dd0eb77347c3cc84027dbb76ff100aa
+Merge: b1f3b26f 7742d714
+Author: ab <webcontact01@synopse.info>
+Date:   2020-02-21 17:40:39 +0100
+
+    Merge pull request #273 from eugeneilyin/master
+    
+    minor fix in SynCrtSock.InternalSendRequest
+
+commit b1f3b26fe56dafb2a86a0cb752e60c2708700b73
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-21 17:37:54 +0100
+
+    extended UrlEncodeJsonObject to allow exclusion of query delimiter ('?')
+    from https://github.com/synopse/mORMot/pull/272
+
+commit 77d95c37a60b88efaf12302138288642abdd68b4
+Merge: 5e186218 c6c05dc9
+Author: ab <webcontact01@synopse.info>
+Date:   2020-02-21 17:28:07 +0100
+
+    Merge pull request #272 from sakura1977/master
+    
+    extended UrlEncodeJsonObject to allow exclusion of query delimiter ('?')
+
+commit 5e186218e02ba50688842d5018bcc11b13bc5094
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-21 17:22:52 +0100
+
+    SOA code refactoring after TRawUTF8List rewrite
+
+commit bdd887f7673e7d1c04c9e5fe483f085e674579c7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-21 17:21:31 +0100
+
+    full rewrite of TRawUTF8List - confusing TRawUTF8ListHashed/Locked are now deprecated and will be removed soon
+
+commit bf8fb095eb2711ee51c5871daaa15957a5095b8f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-21 17:20:45 +0100
+
+    full rewrite of TRawUTF8List - confusing TRawUTF8ListHashed/Locked are now deprecated and will be removed soon
+
+commit 39f364ea6403c99c5ca734981df0f23577b24f67
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-21 17:17:08 +0100
+
+    rewritten crc32csse42() for Win32/Linux32
+
+commit c62ea9501ee267fba36964162b9484ea03a61543
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-21 17:16:07 +0100
+
+    several fixes and enhancements to TDynArray
+
+commit 71064535d712f5d1a5d48434190ef81a2fc76c7f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-21 17:14:39 +0100
+
+    new overloaded FindRawUTF8(PRawUTF8) efficient search function
+
+commit bfe3dd3a56e379d72d6c8e6c968fe28521ce5329
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-21 17:13:32 +0100
+
+    new i386/x86_64 asm version of Hash32() - twice faster than pure pascal code
+
+commit 699e91902176f307f7c69dc457891ab6847b3b04
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-21 17:11:10 +0100
+
+    enhanced Darwin compatibility
+
+commit 7742d714a1f11ca6fbd2328e6375bb1c75bd91cc
+Author: eugeneilyin <eugene.ilyin@gmail.com>
+Date:   2020-02-21 01:03:59 +0300
+
+    Slight fix in SynCrtSock.InternalSendRequest
+    
+    "CONTENT-ENCODING:" is 17 chars length.
+
+commit c6c05dc9cc00a26ef5cda267c9ef338255231929
+Merge: 31b810cc c1ea5ec7
+Author: sakura1977 <59915973+sakura1977@users.noreply.github.com>
+Date:   2020-02-19 16:50:55 +0100
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 31b810cc4a20b06acc0838662a818c2416169f4c
+Author: sakura1977 <59915973+sakura1977@users.noreply.github.com>
+Date:   2020-02-19 16:50:44 +0100
+
+    Extended UrlEncodeJsonObject to allow exclusion of query delimiter ('?')
+    
+    When encoding a JSON object for POST-SendData, the query delimiter ('?') must not be present. To allow for that circumstance, an optional parameter IncludeQueryDelimiter (defaulting to previous implementation) has been introduced.
+
+commit c1ea5ec7a68e00669af9a26da9359140ef44cc7d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-19 15:20:22 +0100
+
+    fixed framework version which was 200 numbers behind reality
+    due to https://synopse.info/fossil/info/c53e884c8efe2a1c
+
+commit 92fb00967e205eb8474acae789190270517c6478
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-19 15:15:31 +0100
+
+    fixed THttpApiServer.Execute
+
+commit 822565845e43b402bafcf03ee13aaf2c6b866e83
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-19 12:24:38 +0100
+
+    fixed Delphi Win64 compilation and included some other asm optimizations
+
+commit 87a20902be6eca74042a16c96d7b73739fae86d9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-19 02:23:56 +0100
+
+    enhanced some internal ORM comparison functions
+
+commit 871cb8cb10c1dc13931efd1cdc304aec91ee3487
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-19 02:23:13 +0100
+
+    avoid performance penalty on Intel CPU due to TVarData.VType field being 16-bit
+
+commit 7cf7a5b4993d00a93122ede16a5121c12a8c74cb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-19 00:18:33 +0100
+
+    deep rewrite of our TSQLRestStorageInMemory NoSQL engine as used by TSQLRestServerFullMemory
+
+commit 41ebeb2be5ca36e83ac29b18e4ab489971811da2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 23:59:58 +0100
+
+    slightly optimized FillCharFast()
+
+commit a028e5a13fe901db0115d44808b09da95210de1f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 23:19:12 +0100
+
+    slightly optimized crc32c_sse42_aesni()
+
+commit cf96a08046dd53ba17b61fe59e3a7798b6f39f1d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 23:18:40 +0100
+
+    get rid of unneeded TObjectHash - we can use TDynHasher instead
+
+commit 30437073ea736aba794c6773ce0941c5d603a3f6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 23:17:48 +0100
+
+    ensure TDynArray down resize won't reallocate memory each time for T*ObjArrays
+
+commit f03140fa86eb228ec172327373aaab297b7cf762
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 23:16:26 +0100
+
+    optimization via branchless comparison and explicit byte() conversion
+
+commit 09f845fa6063703c5342d7f1a0a438193dadc5f9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 23:14:30 +0100
+
+    use MoveFast() when MoveSmall() has little benefit
+
+commit e6f6d83b3bd01830d8881917a802e54cff0ddfd8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 23:10:37 +0100
+
+    published RawObjectsClear() for efficient FreeAndNil() over an array of objects
+
+commit d862b6f3750d7733f4c911345c688c6ebc3928ca
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 13:37:54 +0100
+
+    enhanced regression tests - especially about sorting/comparison functions
+
+commit 1be37a217564b8e16e4d6d4e91618558fc842a8b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 13:37:07 +0100
+
+    hardened RecordSave(TSynTempBuffer)
+
+commit 48a6cfbc29de91afffdb6364627de392c8a2455b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 13:34:49 +0100
+
+    fixed comments/documentation
+
+commit cfa40bba9580dd545143ed46e6c7f3894134ebf1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 13:33:33 +0100
+
+    new optimized asm versions of most-used sorting/comparison functions
+
+commit 04619dde6431c666e1859e9cce700c18e36b5d20
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 13:32:07 +0100
+
+    refactored TRawUTF8ListHashed
+
+commit f83941c49f6519e2d242aa0497855f01a337ed4a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 13:31:06 +0100
+
+    enhanced TDynArrayHasher/TDynArrayHashed
+
+commit 615c55a579e3c5b1c412d8f5c9d6a5ad12521f69
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 13:29:04 +0100
+
+    optimized ToVarUInt32/ToVarUInt64 functions
+
+commit 051101f74586a39bd704af437d20b58ea8a93ab1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-18 13:26:58 +0100
+
+    new TSortedIntegerArray object storage
+
+commit 3a276f6c5aa43999e5cc128789a4279af5879442
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-17 10:55:53 +0100
+
+    overloaded TSynTestCase.NotifyTestSpeed() method
+
+commit d4a77677293434a437c25ead18d4289873e0d4a4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-17 10:42:13 +0100
+
+    introducing TPrecisionTimer.Started/StopInMicroSec
+
+commit 497a52df4f1ad55a0ff981d01a32901a3c2ac511
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-17 10:13:49 +0100
+
+    new overloaded UrlEncodeJsonObject() with explicit copy of the JSON input buffer
+
+commit bbd75a4b8400fddc6ab1ab6018125987e35b253a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-17 09:49:27 +0100
+
+    allow TServiceFactoryClient custom class - https://github.com/synopse/mORMot/pull/271 from Sakura1977
+
+commit 673cf090c89c73cf1a5aa3b66df434f3330cafb3
+Merge: bf3ea66d 2d0f071e
+Author: ab <webcontact01@synopse.info>
+Date:   2020-02-17 09:47:40 +0100
+
+    Merge pull request #271 from sakura1977/master
+    
+    allowing to override TServiceFactoryClient
+
+commit 2d0f071eb98e5b42cf1334a7b8b93a009ded44be
+Merge: 22f08c13 bf3ea66d
+Author: sakura1977 <59915973+sakura1977@users.noreply.github.com>
+Date:   2020-02-17 08:40:58 +0100
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 22f08c13ccb914baf0d5c3cf2424b8ff0b804588
+Author: sakura1977 <59915973+sakura1977@users.noreply.github.com>
+Date:   2020-02-17 08:40:40 +0100
+
+    Extending TServiceContainerClient for subclassed TServiceFactoryClient
+    
+    Adding property ServicesFactoryClients to TServiceContainerClient, allowing to override existing virtual methods of TServiceFactoryClient and having those used, when accessing server.
+
+commit bf3ea66d4db677cc405496893c9b5e7bb5fa53bc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-16 12:26:05 +0100
+
+    some fixes for hash reduction in TDynArrayHasher/TSynDictionary
+
+commit a91dfbe2e63761d724adef0703140e717f5b2f00
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-16 00:07:56 +0100
+
+    use Lemire's algorithm for hash reduction in TDynArrayHasher/TSynDictionary
+    allowing to use primes with no costly integer modulo computation (especially for CPU64 or FPC compilers with efficient 64-bit multiplication)
+
+commit ec5910f41a1a2574a5dd3f1c4c4744b65336c0cb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 13:42:17 +0100
+
+    fixed Mac OS X compilation
+
+commit febd5a9897a1375b541ef11fc2a85a04a6e68dcf
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 13:32:36 +0100
+
+    extract TDynArrayHasher logic from TDynArrayHashed storage
+    - better SOLID design to enable hashing logic reuse
+
+commit 2e2b9fe52b1e31342eab5e1591ac75974a9f9cab
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 11:19:59 +0100
+
+    enhanced regression tests
+
+commit 49b87a4a5c9e774ab6679b068ab78a3760cfbc29
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 11:06:53 +0100
+
+    add missing file
+
+commit 8676f8b8f633af868e4927238eafd342a2cfbf9a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 11:06:27 +0100
+
+    TDynArrayHashed refactoring - enhanced logic and use prime modulos for higher ranks
+
+commit 2a4731034d5e1649e460a8659cf107f9bdd17c50
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 11:05:16 +0100
+
+    enhanced TObjectListHashed deletion
+
+commit 258b3db686d9fb5d6b77f85d7da273481e6fbdf6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 11:03:26 +0100
+
+    refactored TDynArrayHashed.FindHashedAndDelete and its associated sse2/avx2 asm
+
+commit b3f4b081398ea339ce4ce667dc9af7a5a924c76c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 11:01:33 +0100
+
+    non-temporal move/fill optimization
+
+commit 7989405e062156b2f4ffac800212f981d2b569dc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 11:00:56 +0100
+
+    crc32c asm optimization
+
+commit 5640b08388906a8efa958c20d0622b4a1850af6d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 10:57:17 +0100
+
+    record/object use refactoring - no need to mess with the compiler/IDE if there is no managed field involved
+
+commit da2a8413ebf51ae875b4fa6b0182dcc5df7007e3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-15 10:54:04 +0100
+
+    avoid GPF in THttpServer.Destroy when socket was not opened
+    - thanks Macc2010 for the report!
+
+commit a24ada5959df9cc82df35b7c73749fb4601ef83a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 18:49:57 +0100
+
+    minor update - no functional change
+
+commit 9b58faa1030f5c04f68c3435772be70e9146d794
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 18:38:45 +0100
+
+    new AVX code for MoveFast() for 30% speed increase - also fixed a problem in SSE2 non-temporal move
+
+commit db87be9ea75fc404fd5055b2d1f285385799b2cc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:44:52 +0100
+
+    try to circumvent missing files after rsynch to github repository
+
+commit 6cf4cbb9d55ac77ecbbcc4f4c0bc266f7fc0ff23
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:41:14 +0100
+
+    running TestSQL3 without the SQlite3-64 dll on XE4 won't create a GPF
+
+commit a13f978eb0f6c1137489cf8bf89dcf2a8736e897
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:40:32 +0100
+
+    enhanced TSynTestCase.NotifyTestSpeed
+
+commit 8cd5cb578f152f412a366c0294454b9d6dd8b72c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:39:22 +0100
+
+    add missing files
+
+commit 2d61e8b0d2aa66b2add53e17d7f3c30eae594f1e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:38:45 +0100
+
+    TDynArrayHashed and TSynDictionary will now delete much faster and use half memory for their internal hash table (only one 32-bit integer per slot)
+    - won't fully rehash at deletion: introducing a new algorithm and very nice SSE2/AVX2 simd code for very fast indexes adjustment in the hash table
+
+commit 339486c801cb5fab1088d9fb986444c325b9f10b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:36:03 +0100
+
+    regression tests for MoveFast() and FillCharFast() - with proper timing
+
+commit 002cf17505aec900b763c344d4046667ab75bd44
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:34:47 +0100
+
+    new FillCharFast() x86_64 optimized assembly function for SSE2 and AVX
+
+commit 1557a367f776fcc38e84f839798bc73d568cfc52
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:33:36 +0100
+
+    new MoveFast() x86_64 optimized assembly function
+
+commit 30815ab00045b0a81cf6f3feb67698c422c89043
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:26:38 +0100
+
+    refactored TPrecisionTimer - especially fixing Pause/Resume process
+
+commit 25120d7f7f210333bc3b4efd008826ac8f8db51c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:19:20 +0100
+
+    fixed TSQLRestStorageInMemory.SearchField
+
+commit 5a27d14069bedf2742528ffdc152bdadaa0366d6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-13 16:10:50 +0100
+
+    circumvent Delphi 2007 "C1632 internal error" bug
+
+commit b6ecf1e024890684de4e34fc5eaeaf29845009ab
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-10 14:36:14 +0100
+
+    missing file
+
+commit 5f8e7fe2f41a393eda4bd14a10de785b01e1b793
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-10 14:35:34 +0100
+
+    documentation update
+
+commit fcd540aca8ffb7eba8badf0c9228bce8afad7712
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-10 14:14:59 +0100
+
+    fixed Delphi compilation
+
+commit 717ed5e685515cb43da243fcaf93d9cecb77768d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-10 12:37:30 +0100
+
+    include missing file
+
+commit 773b650310606381f355c6f206e8f0ab3ba8cdff
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-10 12:37:05 +0100
+
+    huge TDynArrayHashed/TSynDictionary optimizations: use twice less memory, and no full ReHash on deletion
+
+commit d30da8584f1b5fc4593ce49d75cc3c56b89716ed
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-10 12:34:43 +0100
+
+    fixed TDynArray.Find with too optimistic optimization
+
+commit b73139a5617b7d39b65bbc60d3bfbbc0a794dbe6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-10 12:33:20 +0100
+
+    introducing x86_64 optimized assembly for SortDynArrayAnsiString()
+
+commit 37242a7d96b883007be33910fa81f9b0beb9ad54
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-10 12:31:34 +0100
+
+    let TTimeLog use up to 40 bits, allowing year 0..9999 as per the ISO-8601 standard
+
+commit ba74c09a78a24525c4b5e2a72904e35a3eabbbc6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-10 12:28:21 +0100
+
+    fixed TOracleDate limitation to 0..4095 range
+
+commit 5ea0e23a7224b7b7d873407fcf3fac3b7b6bc793
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-07 21:40:01 +0100
+
+    introducing GetBitsCountPtrInt() - with SSE4.2 popcnt use if available
+    - as used also by GetBitsCount()
+
+commit c69f2fb2d070520746e0e42c2105795c47525426
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-07 21:33:56 +0100
+
+    ensure clock_gettime() Posix API is checked at startup
+
+commit 427209e937b618f2b50e2b52dbc7c666a5770169
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-07 21:33:00 +0100
+
+    optimized TDynArrayHashed.ReHash for most common cases
+
+commit 66829e236906aa9d417114fd381a1a48528f2798
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:52:43 +0100
+
+    add some missing files
+
+commit 59ae905df867d0081917c1cc3b680d6226d71d5a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:51:47 +0100
+
+    let MVC  Blog sample 30 web pages include the generation time in its footer
+
+commit dcaf2301bfa936a214fdde4b8cc0a5f4d89ea5eb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:51:12 +0100
+
+    circumvent FPC memory leaks about variant in MVC Web Blog sample 30
+
+commit 2c663adfcd3bdb0212ab032105ea80dcadbe2878
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:50:28 +0100
+
+    enhanced DotClearFlatImport() image process for MVC Web Blog sample 30
+
+commit afac8d5558ec3b11049aa5bc55a30e993ee2ba53
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:48:35 +0100
+
+    deep mORMot MVC enhancements, for better performance and stability, especially under FPC/Linux
+
+commit bd3ad6d77e217b259cfcd3ff5ecd01bba0489757
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:46:59 +0100
+
+    fixed memory leak appearing only on FPC with variant function results
+    - mORMot MVC did suffer from it
+
+commit 22f57192b7e825495bd3afee681913d65bd10813
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:45:41 +0100
+
+    introducing CacheControlMaxAge optional parameter to TSQLRestServerURIContext.Returns* methods
+
+commit 6b5743f2e689a45277fce6180b550dbe0b05841e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:43:01 +0100
+
+    new FoundInTemplate() methods for SynMustache
+
+commit d6577b4788c7baaa8e5ed46397ee51a764a4e1ac
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:42:10 +0100
+
+    minor JWT refactoring - no functional change
+
+commit 1d979f754ed83ec19ad18eb340ede71e58a53a10
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:41:30 +0100
+
+    new OutStatus optional parameter to THttpRequest Get/Post/Delete/Put class functions
+
+commit 0f062f38d9912f9546368a9434ece9f5faebc70f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:41:03 +0100
+
+    Curl HTTP requests will follow redirections by default, just like TWinHTTP
+
+commit 61b7c03a690abd78201ee15cf43c10bcb4114b3f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:38:59 +0100
+
+    optimized Split() functions for FPC
+
+commit 4916173be431d11a5b9dbaa57db0e60ff18e0b6c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:38:30 +0100
+
+    new aValueOwned optional parameter to TDocVariantData.AddValue()
+
+commit 4890dce2994659f3ecf352c35eef6f63e151bcb2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:37:32 +0100
+
+    minor code refactoring in implementation section - no functional change
+
+commit 4c4a5c1c1a9408d6ba38bb2b6f111139cadc467d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:35:11 +0100
+
+    fixed long-standing bug in TNameValuePUTF8Char/JSONDecode on FPC/x86_64
+
+commit 99fad0121dcbb1f5d23fed916fb2b2cc44ae539d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:34:07 +0100
+
+    new TRawUTF8List.Contains method
+
+commit 11570af6fc706f99a9e379288322d89ca5f82a57
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:33:15 +0100
+
+    ensure dynamic arrays are made unique before their items are deleted/modified if RefCount>1
+
+commit b4ea4396be0bcafbe6ceea5670a8df819c3f94f2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:30:01 +0100
+
+    new TTextWriter.PropName method - fixes e.g. record serialization in extended JSON mode
+
+commit aef432ac1190c96615d46f98cef3ed0d88da5e96
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:23:30 +0100
+
+    enhanced GetMimeContentTypeFromBuffer/GetMimeContentType
+
+commit 82dbf26ef2b15e8e96b9e941476fcaed70fde089
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:21:18 +0100
+
+    fixed NOSETTHREADNAME compilation
+
+commit e5679fb26e93ec0e85f2f41355ee17b8fa952757
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-06 21:20:31 +0100
+
+    new IsVoid() and IdemFileExts() functions
+
+commit 1376824b2f8ce13f023bd314ca87a28d03f1beca
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-05 12:36:50 +0100
+
+    optimized late binding access to all our enhanced variant types
+
+commit 93a60075e5978c13d9e695434a452a03973a9401
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-05 12:34:45 +0100
+
+    optimized TDocVariant object name lookup
+
+commit 2bf5fc57a978bea2231d62c3529b1c7e7b21130d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-04 17:02:43 +0100
+
+    added missing file
+
+commit db0469848d2508d798a9c2a17cf7925752d63c9d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-04 17:01:54 +0100
+
+    hardened TSQLRecord binary serialization against buffer overflow
+
+commit 4cd4acd626dcad0e02b750809c4350a478b2e1b8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-04 17:01:07 +0100
+
+    overloaded QuotedStrJSON(PUTF8Char) function
+
+commit 7d6af0277476a6fdb9274c7917477db49d05371a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-04 16:59:43 +0100
+
+    overloaded FromVarUInt64/FromVarString with optional buffer overflow checking
+
+commit 1931d6b739be284aeb121826bba54fc026a18220
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-04 16:58:00 +0100
+
+    overloaded NeedsJsonEscape(PUTF8Char) function
+
+commit 800243b658023159adbadfda4bbe1a88fc3a8b5e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-03 21:05:29 +0100
+
+    protect TSQLRecord binary serialization against buffer overflows
+
+commit 03f7eb4b43cfe408773efdd88f5860763ed6ed56
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-03 20:49:45 +0100
+
+    new FromVarString() and FromVarUInt64Safe() functions protected against buffer overflows
+
+commit 49d05bc00c24127ed24f97f4d76a81a5c71b981d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-03 19:58:46 +0100
+
+    fixed TPollAsynchSockets.Stop
+    - adapted from https://github.com/synopse/mORMot/pull/270
+
+commit 1ef2eb2d8743622f21f3da7365c9432948f0c209
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-03 10:04:21 +0100
+
+    added an explicit warning when TSQLHttpServer.DomainHostRedirect('something.localhost') is defined
+
+commit 76cb0948af1db70de2e79c53cf84325d725d98ff
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-02-01 18:26:22 +0100
+
+    small refactoring of mORMot VCL units
+
+commit c0c3f31242eed49b4c0c588d3199755efb966cb8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-31 22:18:16 +0100
+
+    introducing regClearPoolOnConnectionIssue/rpmClearPoolOnConnectionIssue options
+    for ORM over external databases
+
+commit bf08cfece96077f84cdb98b05829a1cf5c7fb391
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-31 16:29:22 +0100
+
+    deleted unneeded folder
+
+commit e23d576af8abd74def8aaa0760874bb71c762d40
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-31 15:55:05 +0100
+
+    let SynDBOracle support the new ReconnectAfterConnectionError option
+
+commit b2bfc983eab799bf7856bd659f7c87cf077585fc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-31 15:52:47 +0100
+
+    new TSQLDBConnectionProperties.ReconnectAfterConnectionError property
+
+commit 00c5e7305213ce6ec1a09a71d6f1c3356c1b2cf4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-31 15:51:43 +0100
+
+    don't use FILE_FLAG_SEQUENTIAL_SCAN on XP/WS2003
+
+commit 275693e5ceb4ebc1863d48cf7410790c8fc256ef
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-31 10:29:15 +0100
+
+    new proper constructor TInjectableObjectRest.CreateWithResolverAndRest
+    - thanks Uian2000 for the feedback!
+
+commit 6edf5e5ce54d6c5ff0426c04ccf7f5bc988d121d
+Merge: 1684cd74 3a20b7ee
+Author: ab <webcontact01@synopse.info>
+Date:   2020-01-31 10:16:03 +0100
+
+    Merge pull request #269 from sakura1977/master
+    
+    update SynLog.pas to allow overriding LogCurrentTime
+
+commit 1684cd747ce7091c0ec91712e44bab7f96e7b159
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-30 19:01:31 +0100
+
+    SynProtoRelay now supports HTTP REST calls
+
+commit ee840ed0dc67dc3c5646165954c829beb9cf9bb7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-30 19:00:31 +0100
+
+    small fixes and enhancements to HTTP connection
+
+commit 94a6f16430b9c4e298f5e8820f8e9206ff5fea08
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-30 18:28:22 +0100
+
+    several fixes to the Windows socket layer
+
+commit 8232c0232bc3fcafabb056ff307858976fe1abcd
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-30 18:23:53 +0100
+
+    reverted original QWord/Int64Scan*() code
+
+commit 9366b288fb1bd4cc59db1a16a87aecff97ba6cf8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-30 11:41:35 +0100
+
+    fixed GetTickCount64 fallback routing on XP/2003
+
+commit b349886b4a33ab6a22c8035b1dbbc9fd72141800
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-30 10:55:41 +0100
+
+    refactored Int64/WordScan*() functions
+
+commit 3a20b7ee82eec6dd91a60b575c2b44d6a2419ddc
+Author: sakura1977 <59915973+sakura1977@users.noreply.github.com>
+Date:   2020-01-30 10:44:03 +0100
+
+    Update SynLog.pas
+    
+    Made TSynLog.LogCurrentTime virtual, to allow customized handling in application classes.
+
+commit 5b04c4f2dc1dae319d0c5a85decf36b757f3fb22
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-29 18:45:03 +0100
+
+    several fixes to TCrtSocket error handling
+
+commit 6a2ef765f75144799752f2ddec96a81018ccab74
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-29 18:43:27 +0100
+
+    enhanced REST loging
+
+commit 60976c76546e7db4c11636adbdb3f61f0d0ad5f2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-29 18:41:50 +0100
+
+    shorten thread names by removing meaningless chars
+
+commit 14cd55e009dd478d0dfebc5f0a2be7f5145d8fba
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-29 12:20:46 +0100
+
+    introducing THttpServerRequest.RequestID and other enhancements
+
+commit ad3fe2988b33c44f46ccd1df77fed654a0829604
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-29 12:19:59 +0100
+
+    enhanced TSynQueue for optional value comparison
+
+commit ea9acf49e09afd1849cdfa3833faf0dbe1aa2c6e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-29 12:19:22 +0100
+
+    new overloaded ObjArrayFind() ObjArrayDelete() functions
+
+commit 3c83d6bdf58fc682bedb4dfc4592599ee21a577d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-29 12:18:13 +0100
+
+    new PurgeHeaders() and FrameInit() low-level functions
+
+commit f3e777d239bf3282d5fb70f536ffdd88afe24134
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-29 12:16:52 +0100
+
+    use [] instead of "" in exceptions to avoid JSON escape
+
+commit 6dfce056dbe0b98ae01fbfcd45b5a0c5f6b499f1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-28 16:00:59 +0100
+
+    small refactoring of TSQLRest.InternalCustomDecrypt/Encrypt
+
+commit eedbdeea495fd548678de40fe59053de563c682f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-28 15:58:30 +0100
+
+    fixed Delphi compilation
+
+commit 2d49173e181380af63f689705571c70a0414098d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-27 23:48:36 +0100
+
+    small refactoring - no functional change
+
+commit 802759843992d89c52e51e2afa7f0919ff5bbccb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-27 22:55:31 +0100
+
+    hardened records and dynamic arrays binary serialization / pass #2
+
+commit e55780167cd985a01dc98eeeadcdfd1c69bc56d4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-27 19:39:24 +0100
+
+    hardened records and dynamic arrays binary serialization
+    to avoid potential buffer overflow on forged input
+
+commit a4b2749cbf6d351b53e4836c49ef74a8cc098fbd
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-27 18:48:27 +0100
+
+    restore Win64 SQLite3 static linking for non-XE2 Delphi
+
+commit 2280c5c56e20f2eb5bb28f10f78f2075ae3c86aa
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-27 18:36:54 +0100
+
+    fixed regression tests with Delphi 10.3 aggressive optimization
+
+commit 0554d1fa7758113b49d6fb2b097c960071346f21
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-27 15:14:38 +0100
+
+    proper THttpServerConnectionID use in SynProtoRelay
+
+commit bcb7f5fea3b3c4942337f3cbdeb853c64abc59ac
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-27 12:51:49 +0100
+
+    bypass XE4 Win64 linker bug by disallowing static SQLite3 for this target
+
+commit 6260f37249592aa2c4645a4cb3debb2dc6666743
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-27 12:32:39 +0100
+
+    optional aFileNotMapped flag to TFileBufferReader.Open()
+
+commit 43d860d22c726e88d38a6c21ada860ce0b7e5560
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-27 12:31:22 +0100
+
+    fixed and enhanced sockets Connection ID process
+    - e.g. ensure it is 64-bit library wide, and there is no unexpected overflow
+
+commit 12e87f0b9081086f2a210a36881a5b2d3113d72b
+Merge: aa1346c2 8df292bf
+Author: ab <webcontact01@synopse.info>
+Date:   2020-01-26 12:32:21 +0100
+
+    Merge pull request #268 from LongDirtyAnimAlf/master
+    
+    fix compilation of Alpine Linux.
+
+commit aa1346c22b5d3090ade481f7f1d408e591f52dd9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-26 12:01:01 +0100
+
+    some fixes to Websockets Relay
+
+commit 181c9a225ac90960375b72a5703fd148cb380ad0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-26 11:59:48 +0100
+
+    updated documentation about how to compile with FPC trunk
+    (i.e. not our officially supported SVN revision)
+
+commit ea71d8495e6d2244c765b225420f3743e00ce90c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-26 09:52:39 +0100
+
+    updated SQLite3 engine to latest version 3.31.0
+
+commit 8df292bf6ae621214875ffe022122082e93b7d7c
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2020-01-25 12:03:00 +0100
+
+    Fix compilation of Alpine Linux.
+
+commit 2a4d93ee80a9116766649350ca40f0e603a346e4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-23 20:47:52 +0100
+
+    implemented SynProtoRelay with proper regression tests
+
+commit a8a545839740d2b35b9e0a77f5a0ff3a1807914e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-23 20:47:25 +0100
+
+    new overloaded TSynTestCase.CheckUTF8() method
+
+commit 1fa925c7b053e498b0a063a0b029f1570ff1f812
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-23 20:45:55 +0100
+
+    several fixes and enhancements to WebSockets process
+    - especially needed for SynProtoRelay
+
+commit 2678a545eb0e5c214571048df9b335a763b37246
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-23 20:42:07 +0100
+
+    fixed some comments
+
+commit 106571ccdde082278590ca7d6666951ec12cba9b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-23 20:40:40 +0100
+
+    ensure TSynLog.Enter won't write unexpected line feeds
+
+commit 8883448fa178a24be18c708ce036f0c26ac89841
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-23 20:39:34 +0100
+
+    new THttpServer.ServerConnectionActive property
+
+commit 8a42579f2736677d1538cf2940efd1dc97fc631c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-23 20:38:04 +0100
+
+    let TJWTAbstract.Parse accept void payload (e.g. {})
+
+commit 0edcd0130bdc436982a9a5cc85f5893ae8ff0c63
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-23 20:37:21 +0100
+
+    FillCharx64 / TSynPersistent.NewInstance optimizations
+
+commit d620199ac536a7b51ce4a109e0a2dcf90bfad011
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-23 20:36:08 +0100
+
+    enhanced PtrArrayDelete/ObjArrayDelete
+
+commit e6e8c81ce130815635fbfec5f356b4f799594767
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-23 20:34:14 +0100
+
+    enhanced documentation
+
+commit 3d7dead48f1654f0395cc4b4e121bd4a54025e2b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-20 12:38:01 +0100
+
+    add missing file
+
+commit 7ddfedba162744a6f28be0fe2453fd20efbef4c5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-20 12:37:15 +0100
+
+    circumvent Delphi compiler bug
+
+commit 1e47a73f6633ef9c381ef627215fc36d4e4a5b2c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-20 12:17:23 +0100
+
+    enhanced OS information included in the log headers
+
+commit c6ca7b8f0180d0f4055ae2320dac55ca311af2b8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-20 12:15:53 +0100
+
+    Wine API detection
+
+commit dbe6f76a6fa794efdbca22c119c11f3a8dbb5f8b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-20 12:12:38 +0100
+
+    optimized IP4Text()
+
+commit 76280613dfe53d8d7a7f2724478c0062a52ba05c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-20 12:11:45 +0100
+
+    new TTextWriter.AddTrimSpaces overloaded methods
+
+commit 359c8af152dbe0ceb365eabf55801eee9dd45038
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-17 15:17:00 +0100
+
+    introducing SynProtoRelay unit - just the skeleton yet
+
+commit fe364d8138427ab8631f7062c7f8d7d757b0af5f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-17 15:12:41 +0100
+
+    new IsValidJson() functions
+
+commit fc09e8889dbb56a4162d0fd1bf9c9f79cc743f44
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-16 22:13:03 +0100
+
+    fixed SynBidirSock.pas unit file name case-sensitibility problem in TestSQL3
+
+commit f365e1037e62ac259225af2bb850b24217da6962
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-16 22:10:53 +0100
+
+    refactored CompareStringW() FPC/POSIX compatibility wrapper
+
+commit 13b1d298e8f96ec02e0ead13d52a2d99064fb8f8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-16 22:10:07 +0100
+
+    SleepHiRes(0) will wait 10 microseconds on POSIX instead of 1
+
+commit 5ffc1234d775817c45cb359e5a275be161d9c8e5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-16 22:09:28 +0100
+
+    refactoring of THttpServerSocket.GetRequest for better error handling - part II
+
+commit c8e8df99814a4209a79e18637403d11a1e159be1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-16 22:07:33 +0100
+
+    refactoring of THttpServerSocket.GetRequest for better error handling, and optional execution context extraction, e.g. to allow asynchronous WebSockets process
+
+commit 6cfb082d82149705db52183b407ba0de162475b3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-16 12:07:55 +0100
+
+    several fixes to SynMemoEx component
+
+commit 2d683b7f63a4adf6da20d9940602d3447455965c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-16 12:06:55 +0100
+
+    new THttpSocket.ServerInternalState and THttpSocket.Upgrade properties
+    - and several optimizations
+
+commit b3ead57d4b6e3330bb91a8fa36d20df579f1d4dc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-16 12:03:57 +0100
+
+    new TrimCopy() function
+
+commit 658bbc54953e8aaed89a0460b8086c684f8884fa
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-16 11:58:28 +0100
+
+    optimized SynProject assembly code for modern CPU opcode fusion
+
+commit 850bf9d710971cd1c1efbba7452932a6aa6c549e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-15 15:59:12 +0100
+
+    another WebSockets refactoring for better abstraction/reuse
+
+commit cf17d63e6f042490aae602195b4310f0fa747fc0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-15 15:56:27 +0100
+
+    optimized FindHeader() for HTTP processing
+
+commit 625a8347b363ee1ff2a3dc2c5551a17724a51977
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-15 15:55:32 +0100
+
+    new BinToBase64Short() overloaded functions
+
+commit 6df6dca9e20fb628223dd8915562be78a282bbed
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-14 19:50:09 +0100
+
+    new asynchronous state machine to process incoming WebSockets frames
+
+commit 499b2733a8fdd58f08196d218a016bb06562f762
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-14 16:12:36 +0100
+
+    allow IsHashElementWithoutCollision() to compare items for exact duplicates - used e.g. by TSynDictionary.LoadFromJSON
+
+commit 6ac95eff6e609795d6d943228892709c443a9f18
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-14 12:46:15 +0100
+
+    fixed Delphi compilation on some versions
+
+commit 1869f738074c216a01962a807192ffbb6384b90d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-14 12:40:56 +0100
+
+    include missing file
+
+commit 5f5fb6a3490ef692836ad530047b47e005aa1b92
+Merge: da210bb1 43d4d246
+Author: ab <webcontact01@synopse.info>
+Date:   2020-01-14 12:39:13 +0100
+
+    Merge pull request #267 from dhewg/pull/streampos
+    
+    SynGdiPlus: read from the current position in TSynPicture.LoadFromStream()
+
+commit da210bb146055f1a4c8b4241ca16fbc08aeda5f9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-14 12:29:55 +0100
+
+    fixed samples compilation
+
+commit 57dbe6b82e85f4de4b9d0143735a9f3500200fa6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-14 12:28:35 +0100
+
+    optimized TDynArrayHashed.IsHashElementWithoutCollision
+
+commit d4ebc534c071b76ef0ae10ca65c6727f69854751
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-14 12:27:53 +0100
+
+    fixed StringFromFile() on constrained Windows platforms
+
+commit 43d4d246857ed2765856f1fc2598b038beebb116
+Author: Andre Heider <a.heider@gmail.com>
+Date:   2020-01-14 10:22:29 +0100
+
+    SynGdiPlus: read from the current position in TSynPicture.LoadFromStream()
+    
+    Just like TGraphic and its descendents.
+
+commit bedc07afcea0a68671b87223325e48615bcf90bf
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-13 22:30:47 +0100
+
+    added CustomVariantOptions parameter to TSynDictionary.LoadFromJSON
+
+commit e89896c214ca906e24231bd80cb333045ec0840d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-13 22:26:55 +0100
+
+    added CustomVariantOptions parameter to TDynArray.LoadFromJSON and TDynArrayJSONCustomReader
+
+commit c9c19e15944b3b5b8c9c898b4c1f72af0f92361c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-11 16:02:14 +0100
+
+    fixed ERMS support for Win64
+
+commit fc6fae6580c8e98d80724b11295baa91e18905d2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-11 15:56:45 +0100
+
+    ERMS support for FillFastChar() on FPC x86_64 Windows/Linux
+
+commit 50173055929933cbdaef80c61dfe6f7d7cf50ddc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-11 15:15:03 +0100
+
+    small HTTP process optimization
+
+commit cd4f994fa2ea95e36b9c0e4ebe4666774545d0ed
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-11 15:08:26 +0100
+
+    new FillCharFast() in optimized asm for FPC x86_64
+    (faster than RTL's version for small blocks)
+
+commit cb432aec3d4aa51dc8d6465a128b5ed0900fd10b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-10 18:28:31 +0100
+
+    introducing RecordZero()
+
+commit cb0bc18c4dbbde6966c954595e2d72e2fc979e26
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-10 17:33:20 +0100
+
+    fixed compilation on FPC trunk + Win target
+
+commit 8b427d3a16788d4778fec301f5392c5a5e379b7b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-10 15:50:47 +0100
+
+    fixed (some versions of) Delphi and Kylix compilation
+
+commit 7c9d6e58c328f3fa092dc580978705c153afbbf5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-10 15:22:47 +0100
+
+    introducing TAsynchConnection.RemoteIP property
+
+commit 14bb416ca180d468f9f12fdad66a53cae5b20c18
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-10 15:20:58 +0100
+
+    refactored TSQLRestServerURIContext.Input*[] methods
+
+commit 6874cc110034bc823b364b225d8e5c39995bd3dc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-10 15:20:14 +0100
+
+    HUGE performance boost on Linux after SleepHiRes() refactoring
+
+commit ff423e4ca358ea8837d72a8c9e9527cea7d93e4d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-09 21:10:17 +0100
+
+    get rid of an unexpected warning with Delphi
+
+commit 564c19d41d446f8f18fa4b2ba9f40ffb79926fb0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-09 19:58:34 +0100
+
+    include missing file from latest commit
+
+commit 93cde1e098e040e6386c4555fc8a078212d75683
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-09 19:57:54 +0100
+
+    introducing TSQLRestURIParams.HeaderOnce
+
+commit cf71ed9e26fa447cfb19a2f01172e90dc38f5768
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-09 19:57:00 +0100
+
+    small bi-direction communication fixes
+
+commit cc1800f1a3e15b40d56668f8a5ae409a952344f6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-09 19:55:49 +0100
+
+    TTextWriter refactoring and enhancements - in both implementation and use
+
+commit bd253cf35014e54d9b0dc070a7c450963605ab2b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-09 19:51:40 +0100
+
+    small fix after https://github.com/synopse/mORMot/pull/262
+
+commit 4d7edfcd335f83df290655438edd0b6694518797
+Merge: 2a522ded a3080968
+Author: ab <webcontact01@synopse.info>
+Date:   2020-01-09 19:48:33 +0100
+
+    Merge pull request #262 from cutec-chris/master
+    
+    Check for Quoted Fields before check for Keywords
+
+commit 2a522ded30e159703475b06153a9d9900b45fcb0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-09 19:32:12 +0100
+
+    several fixes to TPollAsynchSockets
+    - including https://github.com/synopse/mORMot/pull/263
+
+commit 54d7d75870f626bb383f1726b700179c480ecd9f
+Merge: 5eb87756 c70335ef
+Author: ab <webcontact01@synopse.info>
+Date:   2020-01-09 17:04:34 +0100
+
+    Merge pull request #263 from f-vicente/master
+    
+    fix TPollAsynchSockets.ProcessWrite
+
+commit c70335ef0ca7affad612aedee3069d2ce86da451
+Author: f-vicente <25110862+f-vicente@users.noreply.github.com>
+Date:   2020-01-09 13:41:00 +0100
+
+    Fix TPollAsynchSockets.ProcessWrite
+
+commit 44e6270d09235b0b718de30015cc1fdcf79fb210
+Merge: d1dee1bd 5eb87756
+Author: f-vicente <25110862+f-vicente@users.noreply.github.com>
+Date:   2020-01-09 13:37:18 +0100
+
+    Merge branch 'master' of https://github.com/synopse/mORMot
+
+commit 5eb8775616be5ab3d8898d062684e551164a4064
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-08 18:12:54 +0100
+
+    fixed Delphi compilation issue
+
+commit a30809682c43b59a73ff2b84c46f045e36391620
+Author: Chris <ulrich@tcs-germany.de>
+Date:   2020-01-08 13:27:21 +0100
+
+    Format like in other Synopse units
+
+commit 79b5091a1e20e87799e123ed7e005b4dca9e5cdc
+Author: Chris <ulrich@tcs-germany.de>
+Date:   2020-01-08 13:22:10 +0100
+
+    When Keywords are Quoted, thers no need for Automapping or Warnings
+
+commit 9fae9b292598437a991d0ccc7fedd1dfeba374d4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-08 10:26:07 +0100
+
+    small refactoring - no functional change
+
+commit c9de50304cd5334028dd98f203925bf405905f43
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-08 10:18:37 +0100
+
+    allow to customize Markdown process (e.g. Emoji detection), especially as Mustache helper
+
+commit 6bf3102c6fa9d824037a8b1127a84e3eab78d175
+Merge: 03878dc7 8bb15aaa
+Author: Chris <ulrich@tcs-germany.de>
+Date:   2020-01-08 07:59:20 +0100
+
+    Merge with synopse master
+
+commit 8bb15aaafccb8f477aa0d21c1d61c1cd86ed80b4
+Merge: 191f4f87 807e75e7
+Author: Chris <ulrich@tcs-germany.de>
+Date:   2020-01-08 07:58:40 +0100
+
+    Merge https://github.com/synopse/mORMot into HEAD
+    
+    # Conflicts:
+    #       SynSSPI.pas
+    #       SynSSPIAuth.pas
+
+commit 807e75e7aaf3c87edad7ec9ccc0fafb1bd3e43fa
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-07 22:03:35 +0100
+
+    some additional tests
+
+commit a16514eec9b91601eec694f25083a834f16349b7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-07 21:55:40 +0100
+
+    small Emoji process enhancements
+
+commit a107f6e85ec306e406e93315b41ce8a97d096508
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-07 21:46:13 +0100
+
+    include file missing from latest commit (GitHub only)
+
+commit 87c369b7270ce882270584e3abfbde4656d5b1aa
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-07 21:43:28 +0100
+
+    transparent Emoji support in Wiki/Markdown
+
+commit f18a4bff3b99885c2dc1838c4d1f915b5dad2138
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-07 21:42:29 +0100
+
+    tuned MoveSmall() usage
+
+commit 5d44f68d9ba9ae098179ffd27559ab0026fc4efd
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-07 15:23:30 +0100
+
+    introducing MarkdownToHtml and SimpleToHtml Mustache helpers (part 2)
+
+commit f478a8f1e0da743f31ab7743c74e5b60ce8271dc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-07 15:22:45 +0100
+
+    introducing MarkdownToHtml and SimpleToHtml Mustache helpers
+
+commit 03878dc756397f12d2a1dd41b8ff995eaa2af51f
+Author: Chris <ulrich@tcs-germany.de>
+Date:   2020-01-07 10:05:29 +0100
+
+    fpc 3.2 has no attr_table ??
+
+commit 85998589c91f3c19c3a51ab59909387712f81432
+Merge: 191f4f87 d8c5993e
+Author: Chris <ulrich@tcs-germany.de>
+Date:   2020-01-07 10:02:13 +0100
+
+    Merge commit 'a5e09a8'
+    
+    # Conflicts:
+    #       SQLite3/mORMot.pas
+    #       SynCommons.pas
+
+commit d8c5993ed19250df3d982b611fe9d0bec84c4a6e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-06 22:01:43 +0100
+
+    addition tests for Markdown to HTML renderer
+
+commit 597e624da2896d261d86ef4f75c35cfbed991661
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-06 21:44:35 +0100
+
+    new fast Markdown to HTML renderer
+
+commit d6428ae6c393bd9a5204b6ff78643977bb0dff9a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-03 12:06:29 +0100
+
+    fixed Delphi Unicode compilation warning
+
+commit 82b27770fd4cd9726c2c767b9b5ef7172c4e1391
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-03 11:26:33 +0100
+
+    enhanced, tested and fixed Swagger Wrapper export
+
+commit adba5bf4cebdb2e344158f265f4ddfd6fbd2dcac
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-03 10:35:18 +0100
+
+    avoid potential memory leak during Wrapper generation
+
+commit 5a333655bab483148fe941f9983553378a9bcf79
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-03 10:34:02 +0100
+
+    fix for null variant not converted as 'null' in some Mustache helpers
+
+commit 0adc0720d92287021effdc5186172823f977ba66
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-03 10:31:36 +0100
+
+    changed TFileVersion.VersionInfo text layout
+
+commit ba46c9c9ef5696e59eb028065369c0d476dba706
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-03 10:30:28 +0100
+
+    new VarStringOrNull() and QuotedStrJSON() functions
+
+commit ffbede3f9b9dfad61f28f07a4a90212c0bc8c2ff
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-03 10:26:35 +0100
+
+    ensure Wrapper generator template search path is cross-platform
+
+commit ffcf5d22ac6c7f5f8fa9d42867f969ceaaab0f5f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-01-03 10:09:50 +0100
+
+    fixed potential GPF in TSQLRestHTTPServer from void URI
+
+commit f2f0b0fe5987ab6c15a52bf5538e818e2ef48250
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-31 15:27:37 +0100
+
+    happy new mORMot's Year 2020 ! :)
+
+commit 978cb423736d59789b16468907b8ff4d10cc1821
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-30 11:19:12 +0100
+
+    introducing new ThirdParty sample from https://github.com/krkodil/mORMot
+
+commit bf96abed42dbfb01e1eb33c55d0ac03caab1618f
+Merge: 0a1bebb6 db955c7a
+Author: ab <webcontact01@synopse.info>
+Date:   2019-12-29 16:43:12 +0100
+
+    Merge pull request #261 from lagodny/master
+    
+    set UseNagle to false
+
+commit db955c7ace34da1b9e98f22918896e7bb138b663
+Author: Alex Lagondy <a.lagondy@gmail.com>
+Date:   2019-12-29 16:12:00 +0200
+
+    set UseNagle to false
+
+commit 0a1bebb6c44ec5cdd2a087f4182b07563a3d45a7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-28 07:47:57 +0100
+
+    documentation enhancements - no functional change
+
+commit 2fc50376ae34b820dc6869533405fff5f98552e5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-28 07:46:22 +0100
+
+    new TCurlHTTP.CACertFile property
+    - from Darian's https://github.com/synopse/mORMot/pull/259
+
+commit 9e074ef7297bd9e5054f8ccca25f04861c587129
+Merge: 19986e96 3e6e4129
+Author: ab <webcontact01@synopse.info>
+Date:   2019-12-28 07:40:34 +0100
+
+    Merge pull request #259 from darianmiller/master
+    
+    allow CACertFile to be set separately than client cert info, also set…
+
+commit 19986e9638b8d14363302c0dd294342350025a6d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-28 07:39:05 +0100
+
+    allow proper compilation of Windows-specific units as void units under POSIX systems
+
+commit c3a27998826b34d0512f0703bc7eb68b85f01624
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-24 19:01:01 +0100
+
+    fixed JSON parameters for mtVariableUnescape helpers
+
+commit f7d8ab9a2dc4dbfd5384c94d9522936e70136914
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-23 13:58:47 +0100
+
+    fixed SynMustache to handle JSON objects/arrays as helpers parameter
+    - correct implementation of https://github.com/synopse/mORMot/pull/260
+
+commit 176115cd7f4588a3ab7d562701286aba5f1659fe
+Merge: 415e3be4 49ace226
+Author: ab <webcontact01@synopse.info>
+Date:   2019-12-20 11:47:16 +0100
+
+    Merge pull request #260 from edwinyzh/master
+    
+    Fixed issue with passing a JSON string to a DMustache helper as described here: https://synopse.info/forum/viewtopic.php?pid=30666
+
+commit 49ace22695f6a3fb12114a5748c7c337b8ab9b11
+Author: Edwin Yip <edwin.yip@innovationgear.com>
+Date:   2019-12-20 17:33:11 +0800
+
+    Fixed: Issue with passing a JSON string to a DMustache helper, as described here in the mORMot forum:
+    
+    https://synopse.info/forum/viewtopic.php?pid=30666
+
+commit a27b9d1fc12551c8926356e6b2ca5516ae0175b2
+Merge: 3441c1e5 415e3be4
+Author: Edwin Yip <edwin.yip@innovationgear.com>
+Date:   2019-12-20 17:28:59 +0800
+
+    Merge pull request #5 from synopse/master
+    
+    merging latest changes from synopse/mORMot
+
+commit 3e6e41295df2e819c5212bf5255d9af2b5574752
+Author: Darian Miller <darian@darianmiller.com>
+Date:   2019-12-19 20:48:49 -0600
+
+    Allow CACertFile to be set separately than client cert info, also set CAInfo when no client cert is present
+    
+    Fixes TLS on Windows without a client certificate
+
+commit da014094de448e8a635d9bf144c0e2fa4c4fdc64
+Author: benok <benok1@gmail.com>
+Date:   2019-12-19 18:40:38 +0900
+
+    Fix samples which can't be compiled.
+
+commit 415e3be48be325bb658e4f976153a1221ec5c6ab
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-19 11:49:30 +0100
+
+    includes regression tests of QuotedStr when Quote is not "
+
+commit 82b812d54c3ca1b986dc81537bea7538da0df7ed
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-19 11:46:53 +0100
+
+    fixed QuotedStr when Quote is not "
+
+commit a643d221f75ff0dd4074d5a0e0044133eee51032
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-18 10:31:25 +0100
+
+    ensure Delphi/Win64 will use SynEcc64O2.o
+    and not the file in static sub-folder, which is not available when the source is downloaded from fossil
+
+commit 0d52349ac1089a0dfb042001975dc1f121b48c19
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-16 12:20:11 +0100
+
+    several optimization for 64-bit and RISC (ARM) CPUs
+    - no functional change
+
+commit a56b80f7d0dc7a04f3fd9940e82d36ba0f8d5192
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-16 11:40:41 +0100
+
+    fixed class custom JSON serialization - from https://github.com/synopse/mORMot/pull/251
+
+commit 128e77bcd2bd9ad7ea7c7cd3dc276adb51d9b9ac
+Merge: 75c69a7c d3fc3842
+Author: ab <webcontact01@synopse.info>
+Date:   2019-12-16 09:12:10 +0100
+
+    Merge pull request #257 from LongDirtyAnimAlf/master
+    
+    Use custom objarray writer for remote connection
+
+commit 75c69a7c8e45a56c03ab6907d1b917bcd174bbe1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-16 09:09:37 +0100
+
+    include missing file from https://github.com/synopse/mORMot/commit/c32376d15a669b167365276983595353563f9a04
+
+commit d3fc3842496794f14ac13221ad9a486d511c3d5c
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-12-15 14:47:52 +0100
+
+    Addition for custom objecarray parser.
+
+commit 940980d0b103c3a8713e2cd7b0ccabcb6308aaf2
+Merge: 50fd282f 575fd942
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-12-15 14:45:56 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 575fd942d13cb7ca403cc1d4d84bcb1bd7d6267e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-14 17:16:22 +0100
+
+    fixed HTTP servers (both multi-threaded and asynchronous) shutdown
+
+commit 2bb01c1fa0bd9cad64bec2e8eab5b443a2c3ca34
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-14 17:14:20 +0100
+
+    allow custom serialization to TJSONSerializer.RegisterObjArrayForJSON()
+    - some refactoring from Alfred's https://github.com/synopse/mORMot/pull/256
+
+commit 8a4f35199d2984eedf97e37f6537520c1e7a7c03
+Merge: c32376d1 50fd282f
+Author: ab <webcontact01@synopse.info>
+Date:   2019-12-14 17:04:12 +0100
+
+    Merge pull request #256 from LongDirtyAnimAlf/master
+    
+    Custom ObjArray serializer.
+
+commit 50fd282f9b17e1fb3ba37f8ebed11f5044226e33
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-12-14 14:28:43 +0100
+
+    Custom ObjArray serializer.
+
+commit 191f4f872a1c2dbbe1693f31c564a0537c1a53ba
+Merge: 5b273639 4646c25c
+Author: Christian Ulrich <git@chris@ullihome.de>
+Date:   2019-12-14 03:53:08 +0100
+
+    Merge commit '4646c25c'
+
+commit 4646c25c7dbe1daa8e60d78dd6a7e2382f980866
+Author: Christian Ulrich <git@chris@ullihome.de>
+Date:   2019-12-14 03:52:54 +0100
+
+    Fix running in fpc > 3.2.0
+
+commit c32376d15a669b167365276983595353563f9a04
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-14 00:00:51 +0100
+
+    introducing TWinRegistry object - fixed REG_MULTI_SZ support
+    which was not consistent with FPC and Delphi
+
+commit 92c70bee279881de741248dacc578e53efd48c06
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-13 23:59:09 +0100
+
+    proper QuotedStr() tests and use in SynDB
+
+commit 952f4c11538158b1197ee104fe22efca2bcc2556
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-13 23:57:19 +0100
+
+    fixed QuotedStr() - seems unstable with FPC+Win64 and heaptrc
+
+commit 9f456cd6e315d2b3471ed78d01952c23355f4549
+Merge: 7a0733ee fee3c844
+Author: ab <webcontact01@synopse.info>
+Date:   2019-12-13 22:11:56 +0100
+
+    Merge pull request #251 from darianmiller/master
+    
+    Unicode bug on pasted text, only receiving first character
+
+commit af6c4e8a58da336b688038cae1d585b95693afda
+Author: Christian Ulrich <git@chris@ullihome.de>
+Date:   2019-12-13 19:22:24 +0100
+
+    fix compiling in Linux
+
+commit 5b2736397402c68379e9918490859dab094534e2
+Author: Christian Ulrich <git@chris@ullihome.de>
+Date:   2019-12-13 19:18:09 +0100
+
+    Fix compilation in Linux
+
+commit 7a0733ee49131912c836e2962e8cc5429560e8b9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-12 12:07:06 +0100
+
+    ensure TPollSocketSelect (on Windows) detects graceful disconnections
+
+commit 4388aaf7c35e470f29064b668c06b1ea26e8aced
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-12 10:29:03 +0100
+
+    includes TSynThreadPool changes - don't know why rsynch failed to copy those
+
+commit 4a59217023356e4d22698f5a710b1bcf2d143632
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-12 10:24:03 +0100
+
+    small code cleaning - no functional change
+
+commit fba45a7eb8bf4e3ca83d1c12a309de83b3a8254b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-12 10:21:54 +0100
+
+    deep refactoring of the WebSocket process to allow using a thread pool
+
+commit 3010329db1fbe072777b5dba36496dcf580e6b84
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-12 09:57:13 +0100
+
+    rewrite of TSynThreadPool to enhance HTTP server threads cross-platform process
+
+commit a9b02d1131ab3793830258cb49266f9624a163eb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-12 09:54:34 +0100
+
+    ensure TCrtSocket.SockReceivePending actually waits for data
+
+commit 0898efdd2723292381d3fde0b61625e1a3560960
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-12 09:53:31 +0100
+
+    fixed SysErrorMessagePerModule()
+
+commit fe4290550861144bfd465721845292ec30600610
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-12 09:52:33 +0100
+
+    fixed TCrtSocket.SockInPending
+
+commit 788c96fe339799cca04ebe220d01ee979f240978
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-12 09:50:39 +0100
+
+    small refactoring of TBSONVariant.TryJSONToVariant
+    - no functional change to implement https://github.com/synopse/mORMot/pull/252
+
+commit d699d7b3185b2eab11affdda8b01469e1cde5d17
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-12 09:39:22 +0100
+
+    circumvent a SynMongoDB compilation issue with FPC trunk
+    - adapted from https://github.com/synopse/mORMot/pull/252 for proper Delphi compilation
+
+commit c7c080d3e3fa6b095974a135c84d3d6ef2757c2e
+Merge: 6744cbaf fa32af49
+Author: ab <webcontact01@synopse.info>
+Date:   2019-12-12 09:13:30 +0100
+
+    Merge pull request #252 from LongDirtyAnimAlf/master
+    
+    Alf changes to allow compilation of the mORMot with latest FPC trunk
+
+commit fa32af49981e8ab481eefc351c3278334633e3f3
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-12-12 08:02:56 +0100
+
+    Solve FPC trunk compilation.
+
+commit 649fc08a05a0607a8a48578f6631949e6ebc3da9
+Merge: ff5bef3b 6744cbaf
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-12-11 07:49:06 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 6744cbaf0a44bc554c88959f73f93837ec56c015
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-10 21:21:05 +0100
+
+    fixed long-standing socket gracefully disconnection detection
+    - in TCrtSocket.SockReceivePending and also in HTTP client
+
+commit 0631d7a307331f944a66be5f74d6c818cf37f757
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-10 21:19:37 +0100
+
+    enhanced RetrieveSystemInfo e.g. running from a VM
+
+commit ff5bef3b348bcd9a41582b9e9736d329ce3fccf3
+Merge: 3d97e4fe 6e64796c
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-12-09 08:57:43 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 6e64796c4dfb442fbb8d1de1a5bb5f66c819d324
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-05 11:32:00 +0100
+
+    fixed PosExString() on Unicode Delphi - thanks Amir for the report!
+
+commit 79e984a4c205febfb63d94c15c08217eb68088e5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-03 09:19:22 +0100
+
+    fixed TServiceMethod.ArgsStackAsDocVariant
+
+commit 9fce260627c8c99ea4bf76716523d695c0f1983a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-02 13:45:09 +0100
+
+    fixed PosExStringPas/PosExPas with negative Offsets (should return 0)
+
+commit 0e01b3085b6c7f00aa9d3769cb85c14b9bd7e824
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-02 11:44:06 +0100
+
+    introduced PosExString()
+
+commit 160c0e7a148c963c67f54969b923d0c5b477822f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-12-02 11:36:02 +0100
+
+    fixed mORMotService unit compilation with Delphi 2010-XE
+
+commit 3d97e4fecc5787567f416ab2659dc4e315d5dd8e
+Merge: 150e297d 31dc5d84
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-11-29 12:03:15 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 31dc5d842e443c33bf9c7961bd353be04c906b9e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-29 11:47:02 +0100
+
+    full hardening to prevent problems in case of RDRAND/SEE42 cpu hardware bugs
+
+commit 150e297d9b7f801ec04dc0bdb21af7de19c8d647
+Merge: 53ba1b4f 63672f7b
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-11-29 09:57:57 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 63672f7bcf0ac922031b0dc57ad0bd6d96c5e17c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-28 16:20:48 +0100
+
+    deep pass over the whole framework to fix and tune memory allocation of strings or TBytes returned as functions result
+
+commit e8c46dedb59ab9d4ac8c7081c73c3ce209c77c94
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-28 16:17:47 +0100
+
+    detect and circumvent AMD CPU bug: RDRAND opcode returning -1 after HW suspend
+
+commit fee3c844047d521d08bc8d547cd25eadd3bc8719
+Author: Darian Miller <darian@darianmiller.com>
+Date:   2019-11-27 13:29:35 -0600
+
+    Unicode bug on pasted text, only receiving first character
+
+commit 53ba1b4f1bb7aec5dc94b48289dfaae63e0f28ab
+Merge: da7c9399 83a13ee4
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-11-27 10:13:17 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 83a13ee4cd57005c9cf4557dd8cdda6d29476843
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-26 10:59:24 +0100
+
+    fixed long-standing ORM random bug when retrieving data from the database
+    - thanks Alan for the feedback!
+
+commit 618fbac507b9f72f162253ba5d031bca28c364c2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-26 10:57:35 +0100
+
+    some refactoring (especially TSynLocker) - no functional change
+
+commit e4e638bbc59c635a3b9913c812340aed98490a0c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-26 10:46:53 +0100
+
+    published AFDiffusion() low-level crypto function
+
+commit 6d191ef15de1dfc23af4be4ed6ef731aaea04050
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-26 10:45:32 +0100
+
+    small optimization - no functional change
+
+commit 7e84a0194afe6f1a75caad1b0f33f38034fcecc2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-22 19:32:34 +0100
+
+    introducing Hash128ToExt/Double/Single() and TAESPRNG.RandomDouble() with associated regression tests
+
+commit be423d22bf5920fca6b9b7fbca0330b0fe28436e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-22 19:31:10 +0100
+
+    MongoDB-like field.subfield1.subfield2 supports for SQL parsing in ORM/ODM
+
+commit 9e83a2dcdb73a9ad92e5ee598fe746bc8c3a4b68
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-21 16:50:26 +0100
+
+    enhanced documentation about UTF-8 and currency handling
+
+commit 3d55d8b1d91a8f8dc35736411ffae4e6bd746754
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-20 08:42:23 +0100
+
+    enhanced documentation about UTF-8 and currency handling
+
+commit 9cbd8f4090f072231e96045581b08455334ad39c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-19 10:22:42 +0100
+
+    hardened TServiceController.Start
+
+commit 6f06b6d10b0907872f3e48a896024ce8019cc89a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-19 10:21:59 +0100
+
+    small TFileVersion.Create fix
+
+commit ee31194526622ff267a973fc58b807bfbb11ae4a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-19 10:21:10 +0100
+
+    update FAQ from https://synopse.info/forum/viewtopic.php?id=5184
+
+commit da7c939992fabc2704e1971ec04c032ddf7bc2ca
+Merge: e6f751be daedf134
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-11-18 11:53:52 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit daedf134dd96fb607425d8b89e360c666fe2b29a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-15 21:50:51 +0100
+
+    SyslogMessage() refactoring - no functional change
+
+commit e6f751be1899f0c0d33f9b506a531aba7c4144ba
+Merge: 292ffebe d8733f5d
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-11-15 20:09:48 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit d8733f5da568070ee75c3d9593b6b3ed774db5bc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-15 18:27:44 +0100
+
+    include missing file for GitHub
+
+commit 77cc1f82862c7b0e18d1f617b769c3c4efd1d93f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-15 18:25:28 +0100
+
+    Utf8TruncateToLength/AppendUInt32ToBuffer optimization
+
+commit afb7fd5367402c7a836347e8d46024d99c036381
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-15 18:24:28 +0100
+
+    renamed UTF-16 overloaded IsAnsiCompatible() into IsAnsiCompatibleW()
+
+commit 4d403ce51e90ee8dc04c83a35344420514768361
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-15 18:23:21 +0100
+
+    optimized SyslogMessage()
+
+commit 3d9bfce0e81fd75be1d0393abdc8f0b45e1cdd74
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-15 12:43:24 +0100
+
+    small fix in StatusCodeToReason
+
+commit 9ae7e293d473df4b6fa1e1576d378b48473eaca1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-15 12:42:08 +0100
+
+    fixed TPdfWrite.AddUnicodeHex
+    - and some temporary buffer refactoring
+
+commit 292ffebea0e969fd715dd07a3ec62c6b25168f46
+Merge: 5f107418 48ec502b
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-11-15 10:25:00 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 48ec502b8662e09866c6dda2898f01477fd38d60
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-13 14:21:46 +0100
+
+    include modifications from latest commit
+
+commit 2a5177415cd88c46593fe4302dd59d5664e05459
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-13 14:19:43 +0100
+
+    new AnyScanIndex() function
+    and optimized CompareMemFixed/CompareMemSmall/TDynArray.IndexOf/GetLineContains
+
+commit d760ef563acd6d5172b88a61a9e7835a058cd384
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-13 14:17:59 +0100
+
+    fixed DynArrayItemTypeLen()
+
+commit 5f107418c7ec025f4913fd2ad8d8e066c865ddc4
+Merge: 13e6bee5 a3c21e47
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-11-13 12:15:13 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit a3c21e47f4d96c35c7e1ca9d40d695d239baa9f3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-12 17:52:02 +0100
+
+    regression tests for ParseCommandArgs()
+
+commit 0b4f8c64c2b5423b439036b0f7dd911a2466b728
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-12 17:51:20 +0100
+
+    optimized IdemPropNameUSameLen()
+
+commit 539559a724d469499902a12a51d6a9b25cb2ce1c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-12 17:50:15 +0100
+
+    introducing Windows command line parsing
+
+commit 61117a5e5b3ecdc641b57e31cdc1ef318281f158
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-12 09:53:53 +0100
+
+    fixed BSD compilation
+
+commit f9e48c73f7ecf78962d08d3d60b496ee92d66c1c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-12 09:48:10 +0100
+
+    no need to spawn the shell for simple POSIX RunCommand()
+    - huge performance benefit for most simple commands
+
+commit e47a157c8fa49ab4409a59001014e60527b64420
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-10 14:05:50 +0100
+
+    fixed ParseCommandArgs()
+    - and included proper regression tests
+
+commit 13e6bee5fcff937d56c4aaf3ff17305892087ea6
+Merge: 19f2748e 6163491a
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-11-09 10:28:31 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
+commit 6163491a7b0e5172a60207c3c40795e0ed588d1b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-08 19:12:10 +0100
+
+    new ParseCommandArgs() low-level function
+
+commit 02c38dcd238a86fd99cd26524dd5eec780710730
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-08 17:27:08 +0100
+
+    introducing RunCommand() as an alternative to RunProcess()
+    - it is usually more efficient with the actual modified files :)
+
+commit 4de940f477a0ec878724f43a2e47c620ceb0c389
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-08 17:26:20 +0100
+
+    introducing RunCommand() as an alternative to RunProcess()
+
+commit a54edc20586847239a3b3cdb51a9f8a193b7bcbc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-08 16:29:23 +0100
+
+    refactored RunProcess() to specify the environment variables
+
+commit 199a00515a820e96f8d5ea1d556ea04e6a25b408
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-08 12:49:58 +0100
+
+    overloaded StringToSynUnicode() procedure
+    - with some refactoring of UNICODE compiler handling
+
+commit 783560b9d800249c0f0035b5865337820a0c5517
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-07 15:19:22 +0100
+
+    enhanced the Split() function
+
+commit 87391ed0ce73ba02ad6dac25e8bb24e21a184dca
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-07 15:17:27 +0100
+
+    new overloaded DynArrayLoadJSON() function which will make a copy of the input buffer
+
+commit e8e797cbd6cec374a3ead17442bc37f94ec55d7b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-06 15:32:48 +0100
+
+    enhanced TTextWriter.CancelLastChar/CancelLastComma documentation
+    to clearly state that calling such methods twice won't work
+
+commit 53858d982576bc853f3b94af54d70faab522d512
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-06 10:12:00 +0100
+
+    meld buttons won't wait and block SourceCodeRep during process
+
+commit f6c4a0195b33a9920c24d427310609039cd02504
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-06 09:54:08 +0100
+
+    several fixes and enhancements to TSQLDBConnectionProperties.MultipleValuesInsertFirebird
+
+commit a95a9c7817cfc1f1dfafd9cf195fa74c4d2a4b69
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-06 09:53:23 +0100
+
+    TSQLDBOracleStatement.ExecutePrepared refactoring
+    (VData header patch is not needed for Delphi Win64)
+
+commit 55efb8e3738d0eb4b7ce6accedcc58c7d0aec2e0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-05 15:42:37 +0100
+
+    fixed TSQLDBConnectionProperties.MultipleValuesInsertFirebird()
+    for timestamps values including time part
+
+commit cdd5e551e274a83078b226257337c6ce17b4be97
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-05 12:57:47 +0100
+
+    fixed Delphi Win64 target compilation
+
+commit 4d5ba1f679be1d8ea81599d036d10bd81da0009c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-04 18:41:20 +0100
+
+    enhanced TSynTempWriter
+
+commit 010a90ac4dd095488d263347393ad831d72e0fc7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-04 12:51:00 +0100
+
+    let SourceCodeRep internal tool call Meld merge GUI for "Shell" buttons
+
+commit fb9e42da9f40431a57b566b4835cb58375f5e70e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-01 15:29:13 +0100
+
+    fixed/refactored merged https://github.com/synopse/mORMot/pull/250
+
+commit 6e6643ceb578a5eacef0a7f338892444085a6236
+Merge: 0d02eb22 8bbc2aa1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-11-01 14:48:44 +0100
+
+    merge with local changes
+
+commit 8bbc2aa108559d9540216277f6e5bd7058b8bc30
+Merge: 3ba71ee9 ddcad129
+Author: ab <webcontact01@synopse.info>
+Date:   2019-11-01 14:48:26 +0100
+
+    Merge pull request #250 from synopse/fix/oracleBLOB_x64
+    
+    SynDBOracle for x64: try to fix binding of BLOBs longer than 2000
+
+commit 0d02eb22b164b322ffae2a36714db24efa6e0bc8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-10-31 16:10:38 +0100
+
+    several TCountry fixes
+
+commit ddcad129cdf6ea4eeb3192a554b0b57bd3762820
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2019-10-31 13:47:00 +0200
+
+    fix typo endof -> endif
+
+commit eea10818869608e3b7b221bb6254d7a146f7c87f
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2019-10-31 13:32:19 +0200
+
+    add restoring of string length for Oracle BLOB binding x64 fix + add a max blob length check
+
+commit e8c0cd60fed932771500873acc34fe5c72d2d7cd
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2019-10-30 20:45:06 +0200
+
+    SynDBOracle for x64: try to fix binning of BLOBs longer than 2000
+
+commit 3ba71ee9fcb799b4fb4d95337d193c713de0f97c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-10-30 16:39:24 +0100
+
+    try to fix Delphi Win64 target linking issue
+    introduced by https://github.com/synopse/mORMot/pull/249
+
+commit c08bdd3f2270b28d322559e9ce7a5ddb09fee5ab
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-10-30 16:12:27 +0100
+
+    still expect specific FPC SVN
+
+commit bdde3a995010390a61dbc462d1cd5dc1bc2e0711
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-10-30 16:11:17 +0100
+
+    small TMVCApplication enhancement
+
+commit 7c4117074d7700f56a1d94045603a80fe49240c1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-10-30 16:10:31 +0100
+
+    restored Delphi compilation after https://github.com/synopse/mORMot/pull/249 merge
+
+commit dff34b96e8c45b37daae1b65d4b9276ddd187bdf
+Merge: aa476518 19f2748e
+Author: ab <webcontact01@synopse.info>
+Date:   2019-10-30 15:39:02 +0100
+
+    Merge pull request #249 from LongDirtyAnimAlf/master
+    
+    new pull for ARM and FPC trunk
+
+commit 19f2748e9eef101cc4a2ef3c2a5e0d82cd457d21
+Merge: 4313c22a aa476518
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-10-30 08:36:09 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master' into FPC_trunk
+
+commit 4313c22a5d7d08e721057a7640e2290dfb0b6dcd
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-10-29 19:43:51 +0100
+
+    More tweaks for ARM
+
+commit 925a88b2ea426a95d4c1846008b953914d014e1f
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-10-29 16:17:55 +0100
+
+    Small tweak of previous commit
+
+commit 8d9066e6a7044ae47922bd6de3d4cf6a6cf47e33
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-10-29 16:00:01 +0100
+
+    Changes for FPC trunk on ARM
+
+commit aa4765186c9f087d750d4ece3208253ca675c2c8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-10-29 13:58:13 +0100
+
+    DDD TCountry fixes and refactoring
+
+commit 1990e7c5e5432e4319e8cdcb92f261b8b08e72e6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2019-10-29 12:27:53 +0100
+
+    moved DDD TCountry type to a dedicated unit
+    - with some refactoring and improvements for low-level access
+
+commit 1a93705f249987501c469f30e960803968cd00e9
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-10-28 17:43:03 +0100
+
+    First changes for FPC trunk
+
+commit f050f0c3de17f0796a03dda82f15c5dcf45f76b0
+Merge: b14e64de 31af2f12
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-10-28 08:15:59 +0100
+
+    Merge remote-tracking branch 'refs/remotes/synopse/master'
+
 commit 31af2f12cfafa81f18d30d3caab582f8e399c9e5
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2019-10-27 20:11:33 +0100
 
     fixed Delphi compilation of SynCurl unit
+
+commit b14e64dea3e1e090d92ec770a18a0b314e8815d4
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-10-27 18:07:38 +0100
+
+    Correct PDouble (ub)alignment
+
+commit af9023461dfd3110615489b99aea350af7eafa57
+Author: LongDirtyAnimAlf <LongDirtyAnimAlf@gmail.com>
+Date:   2019-10-27 13:15:00 +0100
+
+    ARM fixes
 
 commit a19603fb5f4618ddd0e1af701cb9807a121fdf10
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
@@ -1060,12 +6179,48 @@ Date:   2019-08-14 14:11:53 +0200
     DrawAntiAliased() in the same way. Both use DrawImageRectRect() internally,
     so they expose a destination rect as well.
 
+commit 3441c1e58343f1ca26bfb0b6d68c060d720b9193
+Merge: cd48761c 99e8896c
+Author: Edwin Yip <edwin.yip@innovationgear.com>
+Date:   2019-08-03 20:23:19 +0800
+
+    Merge pull request #4 from synopse/master
+    
+    pull the latest from upstream repo - let VariantToBoolean() handle text input as potential boolean value
+
+commit cd48761c2346a44d843c325eaadbc91a585f29d9
+Author: Edwin Yip <edwin.yip@innovationgear.com>
+Date:   2019-08-03 20:23:03 +0800
+
+    @ab has done the fix on his side, so overwrite my previous changes to my own fork, so that there will be no conflicts when merging the upstream repo into my forked repo.
+
+commit cca8c2f4f55e741dccd8fe3407d6a7ba1f46bfd5
+Author: Edwin Yip <edwin.yip@innovationgear.com>
+Date:   2019-08-03 20:13:07 +0800
+
+    Improvements requested by @ab to the previous commit for the `VariantToBoolean` function: Optimization and take into account the `HASVARUSTRING` conditional define
+
 commit 99e8896c0bed259fe37d32436799e8c9e6db4f39
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2019-08-03 13:34:46 +0200
 
     let VariantToBoolean() handle text input as potential boolean value
     - properly implement https://github.com/synopse/mORMot/pull/229
+
+commit a9ebd06cc1b2214a8ed617dbaafb39814806db4a
+Author: Edwin Yip <edwin.yip@innovationgear.com>
+Date:   2019-08-03 16:32:42 +0800
+
+    Fixed: `TDocVariantData.B` or `GetBooleanByName` couldn't correctly handle the "true" and "false" JSON values.
+
+commit 6bb9e2419a27ba77ebb9866cc63963cb1ca8bf7b
+Merge: 531c2ef6 8a55fb3b
+Author: Edwin Yip <edwin.yip@innovationgear.com>
+Date:   2019-08-03 16:05:47 +0800
+
+    Merge pull request #3 from synopse/master
+    
+    Pull the latest revision from upstream synopse/mORMot
 
 commit 8a55fb3bf2d4cffeb779dd19a8be18e227188f2f
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
@@ -1706,6 +6861,23 @@ Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2019-06-19 17:25:58 +0200
 
     fixed UnixMSTimePeriodToString() first parameter name and type
+
+commit d1dee1bde34077204ee3453376278a602cae5b7b
+Merge: 774ad658 3a6d91a5
+Author: f-vicente <25110862+f-vicente@users.noreply.github.com>
+Date:   2019-06-18 13:02:49 +0200
+
+    Merge pull request #4 from synopse/master
+    
+    Update from synopse/mORMot
+
+commit 774ad658c993fda0e14b7bb032859ffa8d5fbb54
+Author: f-vicente <25110862+f-vicente@users.noreply.github.com>
+Date:   2019-06-18 11:52:34 +0200
+
+    Revert "Update from synopse/mORMot (#3)"
+    
+    This reverts commit 872355c223c28d2f74d3526569bb23cc179467d7.
 
 commit 5f2f1a9f4409f4d08aac80afbd1edc6dd1a3baa4
 Author: nortg <48905359+nortg@users.noreply.github.com>
@@ -3217,6 +8389,509 @@ Date:   2019-03-01 10:01:36 +0100
     several fixes for GetTickCount64 on pre-Vista Windows
     - previous GetSystemTimeAsFileTime call was not monotonic
     - warning: FPC's SysUtils.GetTickCount64 or TThread.GetTickCount64 don't handle properly 49 days wrapping under XP -> always use our safer version
+
+commit 872355c223c28d2f74d3526569bb23cc179467d7
+Author: f-vicente <25110862+f-vicente@users.noreply.github.com>
+Date:   2019-03-01 08:23:09 +0100
+
+    Update from synopse/mORMot (#3)
+    
+    * inherit TSQLMonitorUsage from TSQLRecordNoCaseExtended
+    to optimize stored content
+    
+    * new TSynMonitorUsageRest.ProcessIDShift and optional Batch support
+    
+    * several fixes to TSynMonitorUsage/TSynMonitorUsageRest
+    
+    * WIP: slow any base64 buffer decoder
+    
+    * fast version of fail tolerant base64toBin
+    
+    * remove unused parameter in anyBase64toBin
+    
+    * optimized VariantToBoolean(null)
+    
+    * fixed THttpRequest.Create when aIgnoreSSLCertificateErrors is true
+    
+    * fix unmapping memory mapped files for Unix
+    
+    * small optimization of TPdfEncryptionRC4MD5.EncodeBuffer
+    
+    * tuning of TServiceCustomAnswer content SOA logging
+    
+    * fixed regression after last commit
+    
+    * several fixes for Delphi 10.3 Rio compatibility
+    
+    * SyNode: Embadding JavaScript files into executable as a resources
+    
+    * TCurlHTTP: remove 1 second delay on non-GET requests by disabling sending of 'Expect: 100-continue' HTTP header
+    
+    * avoid potential AV in curl.slist_append
+    
+    * fixed potential GPF in latest pull request
+    
+    * new SynDaemonIntercept function and SynDaemonTerminated flag
+    
+    * New functions GetProcessInfo to collect more detailed info about Windows processes
+    
+    * published TDynArrayHashed.ElemPtr/ElemCopyAt methods for Unicode Delphi
+    
+    * documentation update
+    
+    * enhanced items per second display during performance tests
+    
+    * new TSynDaemon.ConsoleMode property
+    
+    * mast TSynLog constructor as virtual
+    
+    * TextColor - prevent unnecessary syscalls and made 'thread safe'
+    
+    * Fixed a bug in TPropInfo.GetVariant handling of tkDynArray. Result from GetOrdProp was being erroneously dereferenced before being passed to TDocVariantData.InitArrayFromObjArray.
+    
+    * StrLenSSE42 & StcCompSSE42 available only if HASAESIN is defined
+    
+    * fix access to memory we do not write to in UnCamelCase(D,P)
+    
+    * add tip about disabling HASAESNI in case testing with valgrind
+    
+    * add +x permission to SQLite3/build-fpc-linux64.sh and remove #13 in Shebang
+    
+    * return back call to ioresult to reset a global InOutRes to 0
+    
+    * add idents (git diff -w can be used to see only valuable changes)
+    
+    * updated SQLite3 engine to latest version 3.26.0
+    
+    * fixed TJSONSerializer.RegisterCustomSerializerFieldNames
+    - thanks mohsenti for the patch!
+    
+    * fixed potential GPF in TSQLRestStorage classes when no server is supplied
+    (fallback to an owned model instance instead of an hypothetical/ephemeral external server)
+    
+    * avoid wrongly deleted content with FillZero(RawUTF8/RawByteString)
+    
+    * fixed TSynAnsiConvert.AnsiBufferToUnicode for FPC/POSIX
+    
+    * new functions to handle unquoting CSV strings
+    
+    * Bug fix for broken quoted string (return empty string for such case) and tests.
+    
+    * Fix Delphi compilation
+    
+    * WIP: get a low level connection ID from reverse proxy server header
+    
+    * Use GetNextItemUInt64 instead of SynCommons.GetInt64 + compare RemoteConnectionID <> 0 instead of >0
+    
+    * WIP: initial support for Unix Domain Socket
+    
+    * fix Windows build (AF_UNIX is not defined under Win)
+    
+    * Lazarus project for 36-RestBenchmark
+    
+    * enhance Sample36 by UnixDomainSocket
+    
+    * UnixDomainSocket support for TCurlHTTP
+    
+    * prevent redefining of prototype props in descendants
+    
+    * SyNode: new function TSMEngine.CallObjectFunctionVal + use this function for call timerLoop. A small optimization as a result
+    
+    * fix Windows build
+    
+    * some minor (mostly documentation) enhancements
+    
+    * after latest merges, fixes for compilation on all targets
+    (especially old Delphi compilers)
+    
+    * fixed TTestExternalDatabase.AutoAdaptSQL regression tests
+    (low-level hooks were not working any more due to some code sanitation)
+    
+    * propagate RemoteIPHeader & RemoteConnIDHeader to HttpApi server clones
+    
+    * propagate RemoteIPHeader & RemoteConnIDHeader to HttpApi server clones
+    - from https://github.com/synopse/mORMot/pull/165
+    
+    * enhanced TIntelCpuFeatures with latest CPUID flags
+    
+    * new GetDiskPartitions/GetDiskPartitionsText functions
+    
+    * added aThreadName parameter to TSynLogFamily.OnBeforeException callback
+    
+    * published PDynArrayRec to allow TDynArray.GetCount inlining
+    
+    * new TSynLogFamily.WithInstancePointer property
+    to optionally reduce log verbosity
+    
+    * exceptions will log the current thread name
+    
+    * optionally include the free disk space to GetDiskPartitionsText()
+    - used for remote REST status of the serve too
+    
+    * json serializer adds a T00:00Z to dates without in UTC0 timezone to allow FireFox propertyly decode a Date object
+    
+    * introducing low-level GetMemoryInfo() API function
+    
+    * GetMemoryInfo/TSynMonitorMemory won't return FastMM4 values
+    but OS returned values by default
+    
+    * introducing TMatch.PrepareRaw method and published some TMatch properties
+    
+    * new IsCaseSensitive() function
+    
+    * initialize a DayOfWeek by 0 in GetNowUTCSystem
+    
+    * minor refactoring of SynCrtSock (no functional change)
+    - mainly about performance and Kylix compatibility
+    
+    * fixed Delphi 10.3 MainDemo compilation
+    
+    * TSynTempBuffer.Init and TSQLTableJSON will always allocate 16 more bytes than required
+    - for a trailing #0 and to ensure our (e.g. TDocVariant) fast JSON parsing won't trigger any GPF (since it may read up to 4 bytes ahead via its PInteger() trick) or any SSE4.2 function applied on the buffer
+    - fix for https://github.com/synopse/mORMot/pull/168
+    - also fixed other potential buffer overflows (especially in TTextWriter)
+    
+    * please some paranoid valgrid expectations
+    for https://github.com/synopse/mORMot/pull/168
+    
+    * include method and uri to ECurlHTTP message
+    
+    * new %L format specifier for ScanUTF8()
+    
+    * fixed Delphi compilation
+    - sounds like if we really spend all our time in FPC/Lazarus now :)
+    
+    * for FPC result of TPrecisionTimer.ProfileCurrentMethod should be assigned to local var
+    
+    * happy new year 2019 ! :)
+    
+    * fix typo in doc
+    
+    * prevent raising of Overflow exception in case project is compiled with -Co flag
+    
+    * some missing files for 2019
+    
+    * too low coffee level - messed up last commit ;)
+    
+    * new TSynSystemTime.ToDateTime method
+    
+    * slight optimizations in the HTTP socket server
+    - no functional change
+    
+    * ensure SynFPCLinux uses the regular Synopse.inc conditionals
+    
+    * fixed SortDynArrayString on Delphi 2009+ (circumvent RTL's SysUtils.StrComp bug)
+    
+    * proper detection of Windows Server 2019 edition
+    
+    * exclude UID from stackoverflow.com links comments
+    
+    * minor refactoring and fixes to mORMotReport.pas - no functional change
+    
+    * new TExprParserMatch class for efficient search expression parsing
+    
+    * fixed TQueryValue.AsVariant problem under FPC on empty string
+    
+    * disable double quotes for TExprParserMatch
+    (it was not working anway)
+    
+    * fixed IsCaseSensitive() to work as expected
+    - it was working like a IsUpperCase() function
+    
+    * new TMatch.PrepareContains method and several optimizations to TMatch search
+    
+    * enhanced TExprParserAbstract and TExprParserMatch implementation
+    
+    * some TMatch fix for Delphi Win64
+    
+    * udpated documentation about JWT auth
+    
+    * fixed Delphi 6 compilation
+    
+    * PasZip FPC/Linux compatibility and x86-64 performance fix
+    
+    * fixed reference-counting in TJSONCustomParserRTTI.FinalizeNestedArray
+    - thanks maciej for the feedback!
+    
+    * huge performance boost with TMatch.PrepareContains
+    by using Holub and Durian (2005) SBNDM2 algorithm for 2..31 long patterns
+    
+    * optimized case-insensitive TMatch '*pattern*' search
+    
+    * introducing TParserAbstract to allow any kind of expression parsers
+    (e.g. SQL evaluator)
+    
+    * overloaded ToUTF8(TExprParserResult) function
+    
+    * marked TSQLRestServerURIContext.AuthenticationCheck as virtual
+    
+    * introducing TExprNodeWordAbstract.ParseWord virtual method
+    
+    * optimized GetExtended() for FPC/x86-64
+    
+    * x3 speedup of TMatch.PrepareContains(aCaseInsensitive=true) process
+    
+    * ensure proper x86_64 registers use on some functions
+    
+    * TExprParserMatch refactoring
+    
+    * introducing BufferLineLength() fast function
+    
+    * introducing PosExChar() fast function
+    
+    * fixed typo in latest commit
+    
+    * several fixes to BufferLineLength()
+    - with associated regression tests
+    
+    * circumvent some Delphi compilation bugs
+    
+    * some comments changes - no function modification
+    
+    * minor changes to DateTimeToUnixMSTime() and GetExtended()
+    
+    * specificaly implement pattern='' for TMatch
+    
+    * new OS_INITIAL[] constants
+    
+    * added explicit regression test for RecordSave() with a void dynamic array field
+    
+    * new RecordSaveBytes() function
+    
+    * some RecordSaveBase64/RecordLoadBase64 and similar optimizations
+    
+    * comments fixes - no functional change
+    
+    * ensure TCurlHTTP handles connection timeout parameter
+    - was left to the default libcurl value i.e. 300 seconds = 5 minutes!
+    
+    * fixed TSynMonitorMemory.PhysicalMemoryTotal
+    
+    * refactored TSynMonitorSize / TSynMonitorMemory / GetDiskPartitionsText
+    to allow shorter text without spaces
+    
+    * new overloaded IsValidUTF8() functions
+    
+    * add aIgnoreAnyException param to TSQLRestClientURI.ServiceRegister/ServiceDefine
+    so that TSQLRestClientURI.ServiceDefineSharedAPI works as expected
+    
+    * introducing NOHTTPCLIENTWEBSOCKETS conditional
+    
+    * use libcurl API to retrieve the error message
+    
+    * renamed THttpSocket.HeaderValue to THttpSocket.HeaderGetValue
+    due to the parameter now required to be uppercased
+    - also several fixes and optimizations to the HTTP layer (e.g. about RemoteIPHeader)
+    
+    * another fix about aIgnoreAnyException support
+    
+    * new LogEscapeFull() overloaded functions
+    
+    * several fixes to SynCrtSock, especially for Windows
+    - after instrumenting the code to add low-level logs, and spent the whole day examining the results on real-world production code
+    - there is still an unexpected problem sometimes with the TWinHttp client in some very obscure condition
+    
+    * TRawByteStringGroup will now have on demand compaction
+    - also refactored to fix some potential GPF issues
+    
+    * fixes for GetDiskPartitions/GetDiskPartitionsText
+    
+    * fixed TSQLRest.OneFieldValues(TInt64DynArray) about "where" clause parsing
+    
+    * new DDDNOSYNDB and DDDNOMONGODB to reduce the units linked by dddInfraSettings
+    
+    * fixed DDDNOSYNDB process
+    
+    * new ToText(TOperatingSystemVersion) and TrimLeftLowercaseToShort() functions
+    
+    * enhanced TTextWriter + new ToTextOS() function
+    
+    * TDynArray documentation precision - no functional change
+    
+    * alllow days time unit in MicroSecToString()
+    
+    * fixed MicroSecToString() with days unit
+    - includes associated regression tests
+    
+    * fixed Darwin (OSX) compilation
+    
+    * properly fix auxiliary columns in TSQLRecordRTree/TSQLRecordRTreeInteger
+    - latest pull request was breaking existing non RTree fields standard with '_'
+    
+    * new TSynDictionary.FindKeyFromValue method
+    
+    * includes regression tests for new TSynDictionary.FindKeyFromValue method
+    
+    * allow some missing fields in the TSQLTableJSON input expanded objects
+    
+    * added fmShareDenyWrite to TTextWriter.CreateOwnedFileStream flags
+    
+    * new MatchAny() function
+    
+    * prevern send Content-Type: STATICFILE header
+    
+    * add optional BufferSize parameter to TSQLTable.GetJSONValues and TSQLRestBatch.Create
+    - default TSQLRestBatch value of 4KB is clearly underestimated
+    
+    * new TFileVersion.UserAgent method
+    
+    * enhanced THttpRequest and TSQLHttpClientGeneric
+    
+    * avoid some unexpected Delphi compiler hints
+    
+    * new TSQLTable.FieldAsString() overloaded methods
+    
+    * more aggressive auto-resize of TTextWriter internal buffer
+    to use 1MB when 40MB is reached (instead of 64KB)
+    
+    * Update SynWinSock.pas
+    
+    * overloaded AddInteger/AddInt64 functions to append two dynamic arrays
+    
+    * new TAlgoCompress.UncompressedSize class method
+    
+    * new overloaded TDynArray.Sort with TEventDynArraySortCompare comparer
+    
+    * new IsDirectoryWritable() function
+    
+    * TSynDaemonSettings will ensure that /var/log folder is writable
+    
+    * ensure GetSystemPath(spUserData) will return ~/.cache/appname for POSIX
+    - also used for spLog as fallback if neither /var/log nor the executable folder is writable
+    
+    * use recursion only for smaller range on all QuickSort functions
+    - thanks Maciej for the tip!
+    see https://github.com/maciej-izak/generics.collections/blob/master/src/generics.collections.pas#L999-L1044
+    
+    * ensure the TDynArray.Sorted flag is set by Sort() not by SortRange()
+    
+    * made TSynPersistentLock and TSynPersistentLocked aliases
+    since allocated PSynLocker on heap is no overhead in comparison to maintaining a lock
+    
+    * new TSynLogFamily.OnThreadEnded method
+    
+    * new TSynQueue.WaitPop/WaitPopFinalize methods
+    
+    * enhanced TSynQueue.WaitPopFinalize
+    
+    * try to return a correct folder for logs under Windows
+    
+    * do not override FPC $hints value (which is commonly disabled)
+    
+    * introducing TSynQueue.WaitPeekLocked method
+    
+    * refactoring to fix "Times" embedded font naming
+    
+    * new overloaded IPToCardinal() function, and CompareFloat/CompareInt64 comparators
+    
+    * optimized PosEx() pure pascal version - especially for FPC x86_64
+    
+    * updated SQLite3 engine to latest version 3.27.1
+    
+    * fixed FTS RANK execution for Delphi Win32
+    
+    * updated documentation - mainly about TSynDictionary
+    
+    * made TSynLog.FamilyCreate thread-safe in all cases
+    
+    * made TSQLRecordProperties and T*AutoCreateFields initialization thread-safe in all cases
+    
+    * ensure PatchCode() will work even if OS memory page size is not 4KB
+    
+    * fixed SHA256/x64-SSE4.1 process using new GetMemAligned() function
+    
+    * introducing SynFPCCMemAligned unit
+    
+    * small refactoring after latest changes - no functional modification
+    
+    * small refactoring of TSHA384/TSHA512 - no functional modification
+    
+    * SynFPCCMemAligned will make no overhead any more - but will be for Linux only
+    
+    * optimized TDynArray.InternalSetLength
+    
+    * introducing SynTBB unit and FPC_SYNTBB conditional for FPC + Intel TBB malloc use
+    (tested on Linux x86_64 for server-side multi-threaded performance)
+    
+    * small optimization of SynFPCCMemAligned via direct glibc malloc/free calls
+    
+    * allows SynFPCCMemAligned to use either glibc, Intel TBB or jemalloc libraires
+    
+    * tuned heap manager identifier in SYNOPSE_FRAMEWORK_FULLVERSION
+    
+    * new TSynSystemTime.ToNCSAText method
+    
+    * new TPrecisionTimer.SizePerSec method
+    
+    * new OnMainThreadIdle optional parameter to TSynParallelProcess.ParallelRunAndWait
+    - to allow e.g. direct call from the UI thread
+    
+    * fixed TWrapperContext.CreateFromModel
+    - thanks EMartin for the patch!
+    
+    * preliminary (beta state) Swagger support
+    
+    * Socket HTTP Server refactoring for better performance and stability
+    - mainly reducing and tuning system calls, locks and CLOCK_MONOTONIC_COARSE
+    
+    * new CMDLINESWITCH cross-platform constant
+    
+    * tuned documentation about crc32c() to avoid confusion with plain zlib's crc()
+    
+    * fixed Windows compilation
+    
+    * new TAlgoCompress.Algo overloaded method
+    
+    * TPrecisionTimer optimizations (mainly for FPC on Linux/BSD/Darwin)
+    
+    * ensure our faster GetTickCount64 using CLOCK_MONOTONIC_COARSE is called
+    
+    * refactored TPrecisionTimer for consistency
+    
+    * ensure TSynLog will call QueryPerformanceCounterMicroSeconds on Linux/POSIX
+    
+    * renamed QueryPerformanceCounterMicroSeconds() as QueryPerformanceMicroSeconds()
+    
+    * new "auth" optional parameter to HttpPost()
+    
+    * updated sqlite3-64.dll binary stored in repo
+    
+    * updated documentation, mainly about installation process
+    
+    * updated SourceCodeRep internal tool with latest fossil build
+    
+    * optimized sorting of pointer-sized array
+    
+    * try to fix unexpected problems in TAESPRNG.RandomExt with FPC/Win64
+    
+    * documentation updates
+    
+    * added "description" field to Swagger SOA template
+    
+    * minor refactoring - no functional change
+    
+    * optional BufferOffset parameter to TAlgoCompress.Compress/Decompress
+    
+    * new TFastReader.ReadCompressed method
+    
+    * optional BufferOffset parameter to TSynPersistentStore.SaveTo and TFileBufferWriter.FlushAndCompress
+    
+    * fixed TAESAbstractSyn.Clone, and included some refactoring
+    
+    * updated SQLite3 engine to latest version 3.27.2
+    
+    * added BufferOffset optional parameter to overloaded TAlgoCompress.Decompress method
+    
+    * introduced TDDDLogSettings.CustomFileName property
+    
+    * added '/' in TFileVersion.UserAgent
+    
+    * new TSQLRestServer.Sessions public property
+    
+    * fixed several bugs in TAlgoCompress.Compress
+    - if BufferOffset<>0 or Plain=nil or PlainLen=0
+    
+    * refactored TSQLRestServer.SessionDelete - no functional change
 
 commit d39f82b1e3ba3c9950d67304712e33601eb9390d
 Author: Arnaud Bouchez <fakeaddress@synopse.info>

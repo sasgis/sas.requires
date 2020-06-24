@@ -3,12 +3,14 @@
 // - define -dFPC_SYNCMEM (for glibc), -dFPC_SYNTBB (after "apt-get install libtbb2")
 // or -dFPC_SYNJEMALLOC (after "apt-get install libjemalloc1")
 // - with Linux glibc, alignment is 2*SizeOf(pointer) i.e. 16 bytes under x86_64
+// - this unit is a part of the freeware Synopse mORMot framework,
+// licensed under a MPL/GPL/LGPL tri-license; version 1.18
 unit SynFPCCMemAligned;
 
 {
     This file is part of Synopse mORMot framework.
 
-    Synopse mORMot framework. Copyright (C) 2019 Arnaud Bouchez
+    Synopse mORMot framework. Copyright (C) 2020 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -27,7 +29,7 @@ unit SynFPCCMemAligned;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2019
+  Portions created by the Initial Developer are Copyright (C) 2020
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -46,10 +48,6 @@ unit SynFPCCMemAligned;
   the terms of any one of the MPL, the GPL or the LGPL.
 
   ***** END LICENSE BLOCK *****
-
-
-  Version 1.18
-  - initial revision
 
 }
 
@@ -117,6 +115,26 @@ function msize(p: pointer): PtrUInt; cdecl; external 'c' name 'malloc_usable_siz
 // = Mac OS X 10.5, FreeBSD 6.0, NetBSD 5.0, OpenBSD 3.8, Minix 3.1.8, AIX 5.1, HP-UX 11.00,
 // IRIX 6.5, OSF/1 5.1, Solaris 11.3, mingw, MSVC 14, Interix 3.5, BeOS, Android 4.1
 
+
+{$ifndef FPC_SYNCMEM_NO_MCHECK}
+  {$define FPC_SYNCMEM_MCHECK}
+  // try to override default error handler which calls abort()
+  // - it would call mcheck() to trigger Error(reExternalException)
+  // - enabled even if glibc seems to have hooks disabled on most distros; it
+  // shouldn't hurt anyway
+  // - define FPC_SYNCMEM_NO_MCHECK if you encounter e.g. linking issue
+{$endif FPC_SYNCMEM_NO_MCHECK}
+
+{$ifdef FPC_SYNCMEM_MCHECK}
+
+type
+  TAbortFunc = procedure(mstatus: integer); cdecl;
+
+function mcheck(abort: TAbortFunc): integer; cdecl external 'c' name 'mcheck';
+// see http://man7.org/linux/man-pages/man3/mcheck.3.html
+
+{$endif FPC_SYNCMEM_MCHECK}
+
 {$else}
 
 uses
@@ -146,14 +164,14 @@ end;
 function _FreeMem(p: pointer): PtrUInt;
 begin
   free(p); // free(nil) has no effect
-  result := 0;
+  result := 0; // should return the chunk size - only used by heaptrc
 end;
 
 function _FreeMemSize(p: pointer; size: PtrUInt): PtrUInt;
 begin // our unit won't check the "size" value (not mandatory)
   if size <> 0 then
     free(p);
-  result := 0;
+  result := 0; // should return the chunk size - only used by heaptrc
 end;
 
 function _AllocMem(size: PtrUInt): pointer;
@@ -199,9 +217,35 @@ const
 
 var
   OldMM: TMemoryManager;
+
   {$ifndef FPC_SYNCMEM}
   lib: pointer;
   {$endif FPC_SYNCMEM}
+
+{$ifdef FPC_SYNCMEM_MCHECK}
+
+const
+  MCHECK_OK = 0;
+  MCHECK_FREE = 1;
+  MCHECK_HEAD = 2;
+  MCHECK_TAIL = 3;
+
+{$I-}
+procedure mcheckabort(mstatus: integer); cdecl;
+begin
+  write(StdErr, 'WARNING: mcheckabort(', mstatus, ') called - ');
+  case mstatus of
+    MCHECK_FREE: writeln(StdErr, 'Block freed twice');
+    MCHECK_HEAD: writeln(StdErr, 'Memory before the block was clobbered');
+    MCHECK_TAIL: writeln(StdErr, 'Memory after the block was clobbered');
+    else writeln('Unknown/Unexpected Error');
+  end;
+  Error(reExternalException); // notify problem, but don't call abort()
+end;
+{$I+}
+
+{$endif FPC_SYNCMEM_MCHECK}
+
 
 {.$define VERBOSE}
 
@@ -210,6 +254,9 @@ procedure InitMM;
 begin
   {$ifdef FPC_SYNCMEM}
   {$ifdef VERBOSE}writeln('using glibc');{$endif}
+  {$ifdef FPC_SYNCMEM_MCHECK}
+  mcheck(mcheckabort); // override default error handler which calls abort()
+  {$endif FPC_SYNCMEM_MCHECK}
   {$else}
   {$ifdef FPC_SYNJEMALLOC} // jemalloc 3.6 seems slower, but maybe less fragmented
   lib := dlopen('libjemalloc.so.1', RTLD_LAZY);
@@ -223,6 +270,7 @@ begin
   end else
     writeln(StdErr, dlerror, '  [apt-get install libjemalloc1]');
   {$else}
+  {$ifdef FPC_SYNTBB}
   lib := dlopen('libtbbmalloc.so.2', RTLD_LAZY);
   if lib = nil then
    lib := dlopen('libtbbmalloc.so', RTLD_LAZY);
@@ -236,14 +284,15 @@ begin
     pointer(@msize)   := dlsym(lib, 'scalable_msize');
     {$ifdef VERBOSE}writeln('using Intel TBB');{$endif}
   end;
+  {$endif FPC_SYNTBB}
   {$endif FPC_SYNJEMALLOC}
   {$endif FPC_SYNCMEM}
   if pointer(@msize) <> nil then begin
-    {$ifdef CPUX64} // no cdecl on x86_64 -> direct call is just fine
-    NewMM.GetMem := pointer(@malloc);
+    {$ifdef CPUX64} // no cdecl on x86_64 -> direct call is just fine :)
+    NewMM.GetMem  := pointer(@malloc);
     NewMM.FreeMem := pointer(@free);
     NewMM.MemSize := pointer(@msize);
-    {$endif}
+    {$endif CPUX64}
     GetMemoryManager(OldMM);
     SetMemoryManager(NewMM);
   end;

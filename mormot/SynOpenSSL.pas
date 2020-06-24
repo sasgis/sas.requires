@@ -6,7 +6,7 @@ unit SynOpenSSL;
 {
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2019 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2020 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit SynOpenSSL;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2019
+  Portions created by the Initial Developer are Copyright (C) 2020
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -44,9 +44,6 @@ unit SynOpenSSL;
   the terms of any one of the MPL, the GPL or the LGPL.
 
   ***** END LICENSE BLOCK *****
-
-  Version 1.18
-  - initial revision
 
 }
 
@@ -816,7 +813,7 @@ end;
 function TOpenSSLConnectionClient.Connect(const Read, Write: TOnOpenSSLData;
   Level: TOpenSSLConnectionLevel; Options: TOpenSSLConnectionOptions): boolean;
 begin
-
+  result := false;
 end;
 
 procedure TOpenSSLConnectionClient.Disconnect;
@@ -831,7 +828,7 @@ end;
 
 function TOpenSSLConnectionClient.SecureWrite(Buffer: pointer; Len: integer): boolean;
 begin
-
+  result := false;
 end;
 
 procedure TOpenSSLConnectionClient.SetNotify(States: TOpenSSLConnectionStates;

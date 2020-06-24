@@ -6,7 +6,7 @@ unit dddInfraApps;
 {
     This file is part of Synopse mORMot framework.
 
-    Synopse mORMot framework. Copyright (C) 2019 Arnaud Bouchez
+    Synopse mORMot framework. Copyright (C) 2020 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit dddInfraApps;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2019
+  Portions created by the Initial Developer are Copyright (C) 2020
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -45,11 +45,8 @@ unit dddInfraApps;
 
   ***** END LICENSE BLOCK *****
 
-  Version 1.18
-  - first public release, corresponding to Synopse mORMot Framework 1.18
-
   TODO:
-   - store settings in database
+   - store settings in database, or a centralized service?
    - allow to handle authentication via a centralized service or REST server
 
 }
@@ -781,9 +778,10 @@ begin
   SQLite3Log.Add.LogThreadName('Service Start Handler', true);
   {$endif}
   log := SQLite3Log.Enter(self, 'DoStart');
-  with ExeVersion do
-    log.Log(sllNewRun, 'Daemon Start svc=% ver=% usr=%',
-      [fSettings.ServiceName, Version.Detailed, LowerCase(User)], self);
+  if log<>nil then
+    with ExeVersion do
+      log.Log(sllNewRun, 'Daemon Start svc=% ver=% usr=%',
+        [fSettings.ServiceName, Version.Detailed, LowerCase(User)], self);
   {$endif}
   fDaemon := NewDaemon;
   res := fDaemon.Start;
@@ -799,8 +797,9 @@ begin
   SQLite3Log.Add.LogThreadName('Service Stop Handler', true);
   {$endif}
   log := SQLite3Log.Enter(self, 'DoStop');
-  log.Log(sllNewRun, 'Daemon Stop svc=% ver=% usr=%', [fSettings.ServiceName,
-    ExeVersion.Version.Detailed, LowerCase(ExeVersion.User)], self);
+  if log<>nil then
+    log.Log(sllNewRun, 'Daemon Stop svc=% ver=% usr=%', [fSettings.ServiceName,
+      ExeVersion.Version.Detailed, LowerCase(ExeVersion.User)], self);
 {$else}
 begin
 {$endif}
@@ -843,7 +842,7 @@ var
 begin
   tix := GetTickCount64 + TimeoutMS;
   repeat
-    sleep(50);
+    SleepHiRes(50);
     result := Daemon <> nil;
   until result or (GetTickCount64 > tix);
 end;
@@ -959,12 +958,12 @@ var
     end
     else begin
       error := GetLastError;
-      msg := FormatUTF8('Error % "%" occured with',
+      msg := FormatUTF8('Error % [%] occured with',
         [error, StringToUTF8(SysErrorMessage(error))]);
       TextColor(ccLightRed);
       ExitCode := 1; // notify error to caller batch
     end;
-    msg := FormatUTF8('% "%" (%) on Service "%"',
+    msg := FormatUTF8('% [%] (%) on Service [%]',
       [msg, param, cmdText, fSettings.ServiceName]);
     writeln(msg);
     AppendToTextFile(ExeVersion.User + ' ' +msg,
@@ -1346,7 +1345,7 @@ begin
   Terminate;
   timeOut := GetTickCount64 + 10000;
   repeat // wait until properly disconnected from remote TCP server
-    Sleep(10);
+    SleepHiRes(10);
   until (fMonitoring.State = tpsDisconnected) or (GetTickCount64 > timeOut);
   inherited Destroy;
   if fMonitoring.fOwner=self then
@@ -1379,15 +1378,17 @@ begin
     fMonitoring.State := tpsConnected; // to be done ASAP to allow sending
     InternalExecuteConnected;
     {$ifdef WITHLOG}
-    log.Log(sllTrace, 'ExecuteConnect: Connected via Socket % - %',
-      [fSocket.Identifier, fMonitoring], self);
+    if log<>nil then
+      log.Log(sllTrace, 'ExecuteConnect: Connected via Socket % - %',
+        [fSocket.Identifier, fMonitoring], self);
     {$endif}
   except
     on E: Exception do begin
       fMonitoring.ProcessException(E);
       {$ifdef WITHLOG}
-      log.Log(sllTrace, 'ExecuteConnect: Impossible to Connect to %:% (%) %',
-        [Host, Port, E.ClassType, fMonitoring], self);
+      if log<>nil then
+        log.Log(sllTrace, 'ExecuteConnect: Impossible to Connect to %:% (%) %',
+          [Host, Port, E.ClassType, fMonitoring], self);
       {$endif}
       fSocket := nil;
       fMonitoring.State := tpsDisconnected;
@@ -1398,9 +1399,11 @@ begin
       Terminate
     else if fSettings.ConnectionAttemptsInterval > 0 then // on error, retry
       if SleepOrTerminated(fSettings.ConnectionAttemptsInterval * 1000) then
-      {$ifdef WITHLOG}
-        log.Log(sllTrace, 'ExecuteConnect: thread terminated', self)
-      else
+      {$ifdef WITHLOG} begin
+        if log<>nil then
+          log.Log(sllTrace, 'ExecuteConnect: thread terminated', self)
+      end
+      else if log<>nil then
         log.Log(sllTrace, 'ExecuteConnect: wait finished -> retry connect', self)
       {$endif};
 end;
@@ -1430,7 +1433,8 @@ begin
         fSocket := nil;
       end;
       {$ifdef WITHLOG}
-      log.Log(sllTrace, 'Socket % disconnected', [info], self);
+      if log<>nil then
+        log.Log(sllTrace, 'Socket % disconnected', [info], self);
       {$endif}
       InternalLogMonitoring;
     finally
@@ -1440,7 +1444,8 @@ begin
     on E: Exception do begin
       fMonitoring.ProcessException(E);
       {$ifdef WITHLOG}
-      log.Log(sllTrace, 'Socket disconnection error (%)', [E.ClassType], self);
+      if log<>nil then
+        log.Log(sllTrace, 'Socket disconnection error (%)', [E.ClassType], self);
       {$endif}
     end;
   end;
@@ -1495,7 +1500,7 @@ begin
       else if fPerformConnection then
         ExecuteConnect
       else
-        sleep(100);
+        SleepHiRes(100);
       if Terminated then
         break;
       try
@@ -1555,7 +1560,7 @@ begin
     fRest.LogClass.Add.Log(sllDebug, 'Shutdown: % will stop any communication ' +
       'with %:%', [ClassType, fHost, fPort], self);
     if andTerminate and not Terminated then begin
-      sleep(100);
+      SleepHiRes(100);
       Terminate;
       WaitFor;
     end;
@@ -1659,7 +1664,7 @@ function TDDDSynCrtSocket.DataInPending(aTimeOut: integer): integer;
 begin
   fSafe.Lock;
   try
-    result := fSocket.SockInPending(aTimeOut,true); // aSocketForceCheck=true
+    result := fSocket.SockInPending(aTimeOut,{aPendingAlsoInSocket=}true);
   finally
     fSafe.UnLock;
   end;
@@ -1761,7 +1766,7 @@ begin
     if (result <> 0) or ((fOwner <> nil) and TSQLRestThread(fOwner).Terminated)
       or (aTimeOut = 0) then
       break;
-    sleep(1); // emulate blocking process, just like a regular socket
+    SleepHiRes(1); // emulate blocking process, just like a regular socket
     if (fOwner <> nil) and TSQLRestThread(fOwner).Terminated then
       break;
   until GetTickCount64 > endTix; // warning: 10-16 ms resolution under Windows
@@ -1878,9 +1883,8 @@ begin
   finally
     fSafe.UnLock; // wait outside the instance lock
   end;
-  while (waitMS > 0) and not ((fOwner <> nil) and TSQLRestThread(fOwner).Terminated)
-    do begin
-    sleep(1); // do not use GetTickCount64 (poor resolution under Windows)
+  while (waitMS > 0) and not ((fOwner <> nil) and TSQLRestThread(fOwner).Terminated) do begin
+    SleepHiRes(1); // do not use GetTickCount64 (poor resolution under Windows)
     dec(waitMS);
   end;
 end;
@@ -1994,7 +1998,7 @@ begin
         fORM.ServerName := Server else
         if Server = '' then
           fORM.ServerName := 'http://localhost:' + Port else
-          if PosEx(':', Server) = 0 then
+          if PosExChar(':', Server) = 0 then
             fORM.ServerName := 'http://' + Server + ':' + Port else
             fORM.ServerName := Server;
     if fClient.WebSocketsPassword = '' then
@@ -2352,19 +2356,23 @@ begin
     exit; // notify once
   log := fLogClass.Enter('ClientDisconnect(%)', [fApplicationName], self);
   fConnected := false;
-  log.Log(sllTrace, 'ClientDisconnect -> AfterDisconnection', self);
+  if log<>nil then
+    log.Log(sllTrace, 'ClientDisconnect -> AfterDisconnection', self);
   try
     AfterDisconnection;
   except
-    log.Log(sllWarning, 'Ignored AfterDisconnection exception', self);
+    if log<>nil then
+      log.Log(sllWarning, 'Ignored AfterDisconnection exception', self);
   end;
   if Assigned(fOnDisconnect) then
     try
-      log.Log(sllTrace, 'ClientDisconnect -> OnDisconnect = %',
-        [ToText(TMethod(fOnDisconnect))], self);
+      if log<>nil then
+        log.Log(sllTrace, 'ClientDisconnect -> OnDisconnect = %',
+          [ToText(TMethod(fOnDisconnect))], self);
       fOnDisconnect(self);
     except
-      log.Log(sllWarning, 'Ignored OnDisconnect exception', self);
+      if log<>nil then
+        log.Log(sllWarning, 'Ignored OnDisconnect exception', self);
     end;
 end;
 
@@ -2391,19 +2399,23 @@ begin
       log2 := nil;
       fServicesRegistered := true;
     end;
-    log.Log(sllTrace, 'ClientSetUser -> AfterConnection', self);
+    if log<>nil then
+      log.Log(sllTrace, 'ClientSetUser -> AfterConnection', self);
     try
       AfterConnection;
     except
-      log.Log(sllWarning, 'Ignored AfterConnection exception', self);
+      if log<>nil then
+        log.Log(sllWarning, 'Ignored AfterConnection exception', self);
     end;
     if Assigned(fOnConnect) then
     try
-      log.Log(sllTrace, 'ClientSetUser -> OnConnect = %',
-        [ToText(TMethod(fOnConnect))], self);
+      if log<>nil then
+        log.Log(sllTrace, 'ClientSetUser -> OnConnect = %',
+          [ToText(TMethod(fOnConnect))], self);
       fOnConnect(self);
     except
-      log.Log(sllWarning, 'Ignored OnConnect exception', self);
+      if log<>nil then
+        log.Log(sllWarning, 'Ignored OnConnect exception', self);
     end;
   end;
 end;

@@ -6,7 +6,7 @@ unit PasZip;
 {
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2019 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2020 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
     This library is free software; you can redistribute it and/or modify it
@@ -35,13 +35,6 @@ unit PasZip;
     and some critical part rewrite
    - .zip reading from file, resource or direct memory - Windows only
    - .zip write into a file (new .zip creation, not update) - Windows only
-
-
-   Version 1.18
-   - enhanced compatibility with new targets and compilers (Win32, Win64,
-     Delphi 2009+, FPC)
-   - even more refactoring, and fixes
-   - .zip supported for Windows only
 
 }
 
@@ -356,6 +349,7 @@ begin // should be fast enough in practice, especially inlined
 end;
 {$else}
 procedure MoveWithOverlap(Src: PByte; Dst: PByte; Count: Integer);
+  {$ifdef FPC} nostackframe; assembler; {$endif}
 asm // eax=source edx=dest ecx=count
         push    edx
         sub     edx, eax
@@ -363,19 +357,18 @@ asm // eax=source edx=dest ecx=count
         pop     edx     // restore original edx=dest
         ja      System.Move // call FastMove() routine for normal code
         or      ecx, ecx
-        jz      @@Exit
+        jz      @exit
         push    edi
         mov     edi, edx // restore original edi=dest
-@@overlap: // byte by byte slower but accurate move routine
+@overlap: // byte by byte slower but accurate move routine
         mov     dl, [eax]
         inc     eax
         mov     [edi], dl
         inc     edi
         dec     ecx
-        jnz     @@overlap
+        jnz     @overlap
         pop     edi
-
-@@Exit:
+@exit:
 end;
 {$endif}
 

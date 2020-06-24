@@ -5,7 +5,7 @@ unit SynLizard;
 {
     This file is part of Synopse Lizard Compression.
 
-    Synopse Lizard Compression. Copyright (C) 2019 Arnaud Bouchez
+    Synopse Lizard Compression. Copyright (C) 2020 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -24,7 +24,7 @@ unit SynLizard;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2019
+  Portions created by the Initial Developer are Copyright (C) 2020
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -76,13 +76,7 @@ unit SynLizard;
 
   ***** END ORIGINAL LICENSE BLOCK *****
 
-  Revision history
-
-  Version 1.18
-  - first release, associated with the main Synopse mORMot framework
-
   Some numbers, for a 53MB log file (taken from a production server):
-
   FPC Win32
        TAlgoSynLz 53 MB->5 MB: comp 563.7 MB/s decomp 815.3 MB/s
        TAlgoLizard 53 MB->3.9 MB: comp 54.6 MB/s decomp 1.1 GB/s
@@ -109,7 +103,6 @@ unit SynLizard;
        TAlgoDeflateFast 53 MB->7 MB: comp 141.4 MB/s decomp 420.2 MB/s
   Conclusion: SynLZ has the best compression ratio for its compression speed,
     but Lizard is much faster at decompression, when working with big log filesiles.
-
   For small files (<MB), SynLZ is always faster, and uses less memory than Lizard.
 
   NOTE:
@@ -172,6 +165,13 @@ const
   LIZARD_HUFFMAN_CLEVEL = 41;
   /// maximum compression level for TSynLizard.compress
   LIZARD_MAX_CLEVEL = 49;
+
+
+{$ifndef LIZARD_EXTERNALONLY}
+  {$ifndef MSWINDOWS}
+  // function __printf_chk(Flag:integer; Format: PChar; Arguments: array of TVarRec):longint;
+  {$endif MSWINDOWS}
+{$endif LIZARD_EXTERNALONLY}
 
 {$ifdef LIZARD_STANDALONE}
 
@@ -362,6 +362,9 @@ function Lizard_decompress_safe_usingDict(src, dst: pointer; srcSize, maxDstSize
     {$L static/x86_64-linux/fse_compress.o}
     {$L static/x86_64-linux/fse_decompress.o}
     {$L static/x86_64-linux/entropy_common.o}
+    {$ifdef FPC_CROSSCOMPILING}
+      {$linklib ./static/x86_64-linux/libgcc.a}
+    {$endif}
     {$endif MSWINDOWS}
   {$endif FPC}
 {$endif CPUX64}

@@ -6,10 +6,10 @@ unit SpiderMonkey;
 {
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2019 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2020 Arnaud Bouchez
       Synopse Informatique - http://synopse.info
 
-    SyNode for mORMot Copyright (C) 2019 Pavel Mashlyakovsky & Vadim Orel
+    SyNode for mORMot Copyright (C) 2020 Pavel Mashlyakovsky & Vadim Orel
       pavel.mash at gmail.com
 
   *** BEGIN LICENSE BLOCK *****
@@ -26,7 +26,7 @@ unit SpiderMonkey;
 
   The Initial Developer of the Original Code is
   Pavel Mashlyakovsky & Vadim Orel.
-  Portions created by the Initial Developer are Copyright (C) 2019
+  Portions created by the Initial Developer are Copyright (C) 2020
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -510,7 +510,8 @@ type
     mStorage: Int64;
   end;
 /// internal Spidermonkey structure for storrage jsid
-  JSIdArray  = {$ifdef UNICODE}record{$else}object{$endif}
+  {$ifdef USERECORDWITHMETHODS}JSIdArray  = record
+    {$else}JSIdArray  = object{$endif}
   private
     _internal: _JSIdArray;
     procedure init(cx: PJSContext); {$ifdef HASINLINE}inline;{$endif}
@@ -567,7 +568,8 @@ type
   JSONWriteCallback = function(const buf: PCChar16; len: uint32; data: pointer): Boolean; cdecl;
 
   /// high-level definition of the JSValue
-  jsval = {$ifdef UNICODE}record{$else}object{$endif}
+  {$ifdef USERECORDWITHMETHODS}jsval = record
+    {$else}jsval = object{$endif}
   private
     _l: jsval_layout;
 
@@ -704,7 +706,8 @@ type
   end;
 
   /// hight-level definition of arguments of function
-  JSArgRec = {$ifdef UNICODE}record{$else}object{$endif}
+  {$ifdef USERECORDWITHMETHODS}JSArgRec = record
+    {$else}JSArgRec = object{$endif}
   private
     rec: _JSArgRec;
     function GetIsConstructing: Boolean; {$ifdef HASINLINE}inline;{$endif}
@@ -1352,7 +1355,8 @@ type
   /// JSObject is the type of JavaScript objects in the JSAPI
   // - this object does not store anything, but just provide some helper methods
   // to access a PJSObject value via low-level API functions
-  JSObject = {$ifdef UNICODE}record{$else}object{$endif}
+  {$ifdef USERECORDWITHMETHODS}JSObject = record
+    {$else}JSObject = object{$endif}
   private
     function GetPrivate: Pointer; {$ifdef HASINLINE}inline;{$endif}
     procedure SetPrivate(data: Pointer); cdecl; {$ifdef HASINLINE}inline;{$endif}
@@ -3545,9 +3549,8 @@ var
   str16: PCChar16;
   strL: size_t;
 begin
+  VarClear(Value);
   with TVarData(Value) do begin
-    if VType and VTYPE_STATIC<>0 then
-      VarClear(Value);
     VType := varSynUnicode;
     VAny := nil; // avoid GPF below
     if JS_StringHasLatin1Chars(@self) then begin
