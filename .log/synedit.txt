@@ -1,3 +1,248 @@
+commit a670e027349a85029fe3d6972f5d76ce66d7b1ca
+Merge: e6679ff be027b9
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2020-06-23 23:07:58 +0200
+
+    Merge pull request #154 from eStreamSoftware/master
+    
+    Added ECMA Script syntax highlighter to 10.4 Sydney package
+
+commit be027b9e973a82a2c2e0dbf752d85ac1177025a2
+Author: Chau Chee Yang <ccy@sql.com.my>
+Date:   2020-06-23 16:58:09 +0800
+
+    Added ECMA Script syntax highlighter to 10.4 Sydney package
+
+commit e6679ff8dbdbed17cc916d6d834c7993da0d6219
+Merge: c558092 27bd634
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-06-21 23:42:11 +0200
+
+    Merge branch 'master' of https://github.com/SynEdit/SynEdit
+
+commit c5580921a88283f1c845af1a01717054d88188b4
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-06-21 23:41:59 +0200
+
+    Added a new ECMA Script syntax highlighter, which should comply with the latest ECMA-262 edition 11 from 2020. Compared to the JScript syntax highlighter the MS JScript related keywords have been dropped, which it doesn't replace the existing highlighter. (solves #153)
+
+commit 12139290887241543a8af2656c9b5397587d96d3
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-06-21 17:50:44 +0200
+
+    Minor improvements to the SynEdit generator
+
+commit 27bd6344855d4c85ae72be4d6917937b7f47225f
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2020-05-30 10:30:34 +0200
+
+    packages and compilation fix for 10.4 Sydney
+
+commit ba639e8d4ebe68dae5a518ad1106131c3cfa1340
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-05-26 03:13:14 +0200
+
+    Removed DWS asm comment combinations which do not exist in the compiler so far.
+
+commit 09dbefe23a143ad74869b03c43de206391ffb9bd
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-05-23 17:05:04 +0200
+
+    Fixed an issue with nested "ANSI" and C-style comments
+
+commit 84e12f0aab6553eed96fdf0150a5a9e69e2f1b5c
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-05-18 13:45:55 +0200
+
+    Fixed issue #148
+
+commit 39b3d9356d07059976f1623fee849d9cb97a7c2b
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-05-18 09:34:46 +0200
+
+    Fixed issue #150
+
+commit 2b3dc5bb1d0af193b819722af2149fb56deebfb2
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-05-18 09:12:50 +0200
+
+    Fixed issue #151
+
+commit 3e099811145d1f4a1ea695f1fcde5df604c123a3
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-05-09 16:50:20 +0200
+
+    Minor changes on the ZPL syntax highlighter
+
+commit 7c9162a6a885ea23e32695443181d8767a6efe98
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-05-09 16:04:07 +0200
+
+    Minor changes to the ZPL syntax highlighter (removed Kylix code, added sample code)
+
+commit d358b0a73ca667681092a490360f31b09d421339
+Merge: ccffb1c f398867
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2020-05-09 12:05:44 +0200
+
+    Merge pull request #149 from chtilux/master
+    
+    Create SynHighlighterZPL.pas
+
+commit f3988675eb24d49696eb1caa33edd85d87717b74
+Author: chtilux <62291974+chtilux@users.noreply.github.com>
+Date:   2020-05-08 10:57:39 +0200
+
+    Create SynHighlighterZPL.pas
+
+commit ccffb1c96693dd174b09f301d9fab5caa1f0a3a8
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-14 20:54:27 +0200
+
+    Avoided SYN_WIN32 as it is misleading. Instead MSWINDOWS is used now. (Thanks to DavidHeff for mentioning this in issue #143)
+
+commit fcd5ca60fc1411003eeb78a10a9a22bc76c0b8f7
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-10 23:14:03 +0200
+
+    Applied comment patch only for MySQL (see issue #42)
+
+commit 6e6735272b96e89990cfb7a1da35d3348ccdd9a9
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-10 23:10:56 +0200
+
+    Applied a patch by Ansgar Becker about comments in SQL
+
+commit 35a558b9e2f879935f8c40d85adb0b9a024921c5
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-10 22:06:00 +0200
+
+    Added basic XML code folding
+
+commit ea851b28edc5072dd116252598412b869b497c6c
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-10 20:13:35 +0200
+
+    Improved and simplified registry access (especially for 64-bit) as mentioned in issue #140 (thanks to davidheff)
+
+commit 8cb22fdd45bef88972ef5e0907108c999e6365c2
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-10 18:13:28 +0200
+
+    Added missing option sync for scoLimitToMatchedTextAnywhere as referred to in issue #136 (thanks to jBitHub)
+
+commit 7da87986ab3bbaff5f2d616daf7f7a864f2ee610
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-10 17:09:37 +0200
+
+    Applied hint about using a compiler workaround only for the affected 32-bit compiler (as reported in #13) by davidheff
+
+commit 91618b8b16faa3cf4aaa6e7953e02aeaa27ace34
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-10 16:48:05 +0200
+
+    Removed the unused 'step' keyword
+
+commit 8b7c023625d18b03f1278304df6d9ff99f347c52
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-10 16:16:10 +0200
+
+    Added 'namespace' as scoped keyword for units
+
+commit 7759cfe542c32b0979efb5618c13c149b8e03215
+Merge: 58cbc8f 51146d6
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2020-04-10 15:16:35 +0200
+
+    Merge pull request #131 from Lajos-Juhasz/master
+    
+    Update SynHighlighterSQL.pas
+
+commit 58cbc8f862f2039509784886d8a2d24f3f24fcfa
+Merge: 1804cb4 34c976c
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2020-04-10 15:15:47 +0200
+
+    Merge pull request #134 from iThyx-AK/patch-1
+    
+    Fix for load unicode (memo text) BLOB fields
+
+commit 1804cb47a5cb2c837fff6dfc678f7946031f4551
+Merge: 65ce61f d37fcc8
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2020-04-10 15:14:25 +0200
+
+    Merge pull request #135 from iThyx-AK/patch-2
+    
+    Update: Type changed to TCustomIniFile for use both TMemIniFile and TIniFile
+
+commit 65ce61fab16c56c773016e1bfda54e3898495100
+Merge: 5c3cc3c 6586f45
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2020-04-10 15:12:30 +0200
+
+    Merge pull request #142 from zencode1/issue-141
+    
+    Fix for issue 141
+
+commit 6586f450f199ec1ae4cc69fc1399412f980d58e7
+Author: Clayton Arends <clayton.arends@evisions.com>
+Date:   2020-04-09 10:55:44 -0700
+
+    No transient painting during search/replace
+
+commit 8f06f48bfbc13d66a31c67221f8dd59ae91e41c9
+Author: Clayton Arends <clayton.arends@evisions.com>
+Date:   2020-04-09 10:55:16 -0700
+
+    No transient painting during paste
+
+commit 5c3cc3c44f62987023b87f6d6531fe81811130d5
+Merge: 2482fe6 0b43ec1
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-04 22:15:16 +0200
+
+    Merge branch 'master' of https://github.com/SynEdit/SynEdit
+
+commit 2482fe62acd32782120f5a3fbeff92e0f120eb4a
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-04-04 22:13:02 +0200
+
+    Improved GLSL highlighter and added to packages
+
+commit d37fcc89a79415741d741bf512004ab115b6ef68
+Author: iThyx-AK <51588290+iThyx-AK@users.noreply.github.com>
+Date:   2019-12-05 16:47:04 +0300
+
+    Update: Type TIniFile changed to TCustomIniFile for use both TMemIniFile and TIniFile
+    
+    After change  TSynHighlighterAttributes functions  LoadFromFile/SaveToFile  can use type TMemIniFile and load/save attributes not only from a file but also from TStringList  (file name may be empty)
+
+commit 34c976ccbddbe626708ff3f30b2f276e64824381
+Author: iThyx-AK <51588290+iThyx-AK@users.noreply.github.com>
+Date:   2019-12-04 10:56:24 +0300
+
+    Fix for load unicode (memo text) BLOB fields
+    
+    fix for unicode TCustomDBSynEdit.LoadMemo
+    Tested on UTF8 TEXT Sqlite3 & Zeos Unicode (UTF16) v7.2.6
+    For UTF8 use: System.SysUtils.TEncoding.UTF8
+
+commit 51146d6b94ac72bed59c4c65c0a8ff91cc9412a4
+Author: Lajos-Juhasz <juhasz.lajos@gmail.com>
+Date:   2019-10-31 16:30:05 +0100
+
+    Update SynHighlighterSQL.pas
+
+commit 0b43ec1a701ddafd85eff858ee63b4a3083ce602
+Merge: 7be1c95 4ed62d8
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2019-09-24 11:35:11 +0200
+
+    Merge pull request #130 from sglienke/master
+    
+    Fixed 10.3 packages and removed unused variable
+
 commit 4ed62d8daf6d9ebd82a0558e14b7e854ef712a08
 Author: Stefan Glienke <sglienke@aagon.com>
 Date:   2019-09-24 11:05:27 +0200

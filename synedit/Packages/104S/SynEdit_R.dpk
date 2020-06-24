@@ -5,7 +5,7 @@ package SynEdit_R;
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
-{$DEBUGINFO ON}
+{$DEBUGINFO OFF}
 {$EXTENDEDSYNTAX ON}
 {$IMPORTEDDATA ON}
 {$IOCHECKS ON}
@@ -26,7 +26,7 @@ package SynEdit_R;
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'SynEdit component suite runtime'}
-{$LIBSUFFIX '10S'}
+{$LIBSUFFIX '104S'}
 {$RUNONLY}
 {$IMPLICITBUILD OFF}
 
@@ -92,6 +92,7 @@ contains
   SynHighlighterDml in '..\..\Source\SynHighlighterDml.pas',
   SynHighlighterDOT in '..\..\Source\SynHighlighterDOT.pas',
   SynHighlighterDWS in '..\..\Source\SynHighlighterDWS.pas',
+  SynHighlighterECMAScript in '..\..\Source\SynHighlighterECMAScript.pas',
   SynHighlighterEiffel in '..\..\Source\SynHighlighterEiffel.pas',
   SynHighlighterFortran in '..\..\Source\SynHighlighterFortran.pas',
   SynHighlighterFoxpro in '..\..\Source\SynHighlighterFoxpro.pas',
@@ -140,8 +141,8 @@ contains
   SynMacroRecorder in '..\..\Source\SynMacroRecorder.pas',
   SynMemo in '..\..\Source\SynMemo.pas',
   SynRegExpr in '..\..\Source\SynRegExpr.pas',
-  SynUnicode in '..\..\Source\SynUnicode.pas' {$IFNDEF CPUX64},
   SynURIOpener in '..\..\Source\SynURIOpener.pas',
+  SynUnicode in '..\..\Source\SynUnicode.pas' {$IFNDEF CPUX64},
   SynUsp10 in '..\..\Source\SynUsp10.pas' {$ENDIF};
 
 end.

@@ -47,7 +47,7 @@ Known Issues:
 
 unit SynEdit;
 
-{$I SynEdit.Inc}
+{$I SynEdit.inc}
 
 interface
 
@@ -1411,7 +1411,7 @@ begin
   Width := 200;
   Cursor := crIBeam;
   Color := clWindow;
-{$IFDEF SYN_WIN32}
+{$IFDEF MSWINDOWS}
   FFontDummy.Name := 'Courier New';
   FFontDummy.Size := 10;
 {$ENDIF}
@@ -2725,7 +2725,7 @@ begin
       end;
   end;
 
-{$IFDEF SYN_WIN32}
+{$IFDEF MSWINDOWS}
   // draw Word wrap glyphs transparently over gradient
   if FGutter.Gradient then
     Canvas.Brush.Style := bsClear;
@@ -2737,7 +2737,7 @@ begin
         FWordWrapGlyph.Draw(Canvas,
                             (FGutterWidth - FGutter.RightOffset - 2) - FWordWrapGlyph.Width,
                             (cLine - TopLine) * FTextHeight, FTextHeight);
-{$IFDEF SYN_WIN32}
+{$IFDEF MSWINDOWS}
   // restore brush
   if FGutter.Gradient then
     Canvas.Brush.Style := bsSolid;
@@ -3948,7 +3948,9 @@ begin
     else
       vStartOfBlock := CaretXY;
 
+    Inc(FPaintTransientLock);
     SetSelTextPrimitiveEx(PasteMode, PWideChar(GetClipboardText), True);
+    Dec(FPaintTransientLock);
     vEndOfBlock := BlockEnd;
     if PasteMode = smNormal then
       FUndoList.AddChange(crPaste, vStartOfBlock, vEndOfBlock, SelText,
@@ -5605,7 +5607,7 @@ begin
     FHighlighter.NextToEol;
     iRange := FHighlighter.GetRange;
     if TSynEditStringList(Lines).Ranges[Result] = iRange then
-      Exit; // avoid the final Decrement
+      Exit; // avoid the final decrement
     TSynEditStringList(Lines).Ranges[Result] := iRange;
     Inc(Result);
   until (Result = Lines.Count);
@@ -8823,6 +8825,7 @@ begin
   end
   else
     bEndUndoBlock := False;
+  Inc(FPaintTransientLock);
   try
     while (ptCurrent.Line >= ptStart.Line) and (ptCurrent.Line <= ptEnd.Line) do
     begin
@@ -8912,6 +8915,7 @@ begin
   finally
     if bReplaceAll and not bPrompt then DecPaintLock;
     if bEndUndoBlock then EndUndoBlock;
+    Dec(FPaintTransientLock);
     DoOnPaintTransient( ttAfter );
   end;
 end;
