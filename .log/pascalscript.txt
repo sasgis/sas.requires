@@ -1,3 +1,21 @@
+commit d48b2cb5e9dadffe80f1bc8f13f33b9579ecc402
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2020-02-27 09:50:23 +0100
+
+    Cherry pick into stable: Fix IDispatchInvoke on Unicode.
+
+commit 1f846a56c81997b5cafe20d8dbd2234a88314a63
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2019-08-15 08:13:39 +0200
+
+    Added call stack functionality. Taken from #203 by Vizit0r, with fixes and cleanup. Does not yet display parameter values, nor does it return position information.
+
+commit eff7823c09c2e89e674461ad4e5690471830ec77
+Author: evgeny-k <git@evgenysoft.com>
+Date:   2019-08-07 13:43:05 +0300
+
+    0: INLINE_SUPPORT define was added
+
 commit e893802668b52ccfed58592aee4a7315586fea76
 Author: santiagoIT <sburbano@itworks.ec>
 Date:   2019-04-30 23:40:02 -0500
