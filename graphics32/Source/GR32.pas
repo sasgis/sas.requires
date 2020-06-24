@@ -5295,7 +5295,7 @@ var
   Header: TBmpHeader;
   P: TPicture;
 begin
-  FileStream := TFileStream.Create(Filename, fmOpenRead);
+  FileStream := TFileStream.Create(Filename, fmOpenRead or fmShareDenyWrite);
   try
     FileStream.ReadBuffer(Header, SizeOf(TBmpHeader));
 

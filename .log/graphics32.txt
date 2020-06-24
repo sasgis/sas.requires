@@ -1,3 +1,16 @@
+commit d811f9242a04828c225a911a86ace262dca3770c
+Merge: 9583a97d 8e45dbc5
+Author: zed <starmen@tut.by>
+Date:   2020-06-24 15:41:40 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 8e45dbc50751fd324d948668209dfb4085435fe0
+Author: iThyx-AK <51588290+iThyx-AK@users.noreply.github.com>
+Date:   2020-06-16 00:24:00 +0300
+
+    Allows multi-threaded access to read a file
+
 commit 9583a97d31d2307d21a813bf344ba5de870b9b07
 Merge: 70cc2fd8 83de05de
 Author: zed <starmen@tut.by>
