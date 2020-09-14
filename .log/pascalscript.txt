@@ -1,3 +1,12 @@
+commit 652d9075eef8726da69355fc7a5ea8fdbf5b3f08
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2020-08-31 07:04:32 +0200
+
+    Cherry pick into stable:
+    Added support for Delphi 10.4 Sydney
+    0: eDefines.inc was updated
+    Add optional OnWriteLine2. Can be used to support Step Out debugging.
+
 commit d48b2cb5e9dadffe80f1bc8f13f33b9579ecc402
 Author: Martijn Laan <martijnlaan@gmail.com>
 Date:   2020-02-27 09:50:23 +0100
