@@ -1,3 +1,9 @@
+commit e4f95a20325d9c262fe837197e2e1fa9a3881a6c
+Author: zed <starmen@tut.by>
+Date:   2020-09-14 18:19:56 +0300
+
+    Синхронизация некоторых юнитов с апстримом
+
 commit 23dab3909e6761bcc660183db95047fca6b71cf5
 Author: zed <starmen@tut.by>
 Date:   2019-03-25 10:26:53 +0300

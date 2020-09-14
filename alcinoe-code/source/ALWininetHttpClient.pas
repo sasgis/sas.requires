@@ -296,6 +296,7 @@ uses {$IF CompilerVersion >= 23} {Delphi XE2}
      {$ELSE}
      SysUtils,
      {$IFEND}
+     ALCommon,
      ALString;
 
 {********************************************************************}

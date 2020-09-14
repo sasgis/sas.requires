@@ -1,55 +1,11 @@
-﻿// <- User With delphi < D2007 must manually delete this UTF8 BOM
-{*************************************************************
-www:          http://sourceforge.net/projects/alcinoe/              
-svn:          svn checkout svn://svn.code.sf.net/p/alcinoe/code/ alcinoe-code
-Author(s):    Stéphane Vander Clock (skype/email: svanderclock@yahoo.fr)
-              John O'Harrow (john@elmcrest.demon.co.uk)
-              Charalabos Michael (chmichael@creationpower.com)
-              Aleksandr Sharahov
-              Dennis Kjaer Christensen
-
-product:      Alcinoe String functions
-Version:      3.53
-
+﻿{*************************************************************
 Description:  Powerfull stringreplace, Pos, Move, comparetext,
               uppercase, lowercase function. Also a powerfull
               FastTagReplace function To replace in string tag
               like <#tagname params1="value1" params2="value2">
               by custom value
-
-Know bug :
-
-History:      11/05/2005: Remove the bug in alFastTagReplace that raise
-                          an exception when char % is found in the params
-                          of a tag
-							20/10/2005: Move AlANSICodePage1252UppercaseNoDiacritic to
-							            ALWideUpperCaseNoDiacritic in alFcnUnicode...
-              16/11/2005: minor update in ALFastTagReplace to better
-                          handle the "Handled" property of TALHandleTagfunct
-              02/12/2005: 1/ Correct AlCopyStr;
-                          2/ Move some copy call to AlCopyStr call;
-                          3/ Update AlFastTagReplace to better performance and
-                             low memory usage;
-              08/12/2005: Update AlFastTagReplace to correct a bug that make
-                          rfignorecase wrong in some case
-              16/12/2005: remove ALStringMatches that seam to not work propertly
-                          use MatchesMask insteed !
-              01/04/2007: Update the FastCode Function
-              22/02/2008: Use AlHttpEncode instead that HttpEncode
-              26/12/2008: replace ALGetStringFromFileWithoutUT8BOM by
-                          ALGetStringFromFileWithoutUTF8BOM
-              01/03/2009: Now use the default internal delphi function
-                          for alPos, AlPosEx, AlCompareText, AlLowerCase,
-                          AlUpperCase, AlMove because they are all taken from
-                          the fastcode project
-              01/09/2009: Change ALFastTagReplace to launch again ALFastTagReplace
-                          on the result of FastTagReplaceProc
-              26/06/2012: Add xe2 support
-              15/11/2012: Improve the ALFastTagReplace Functions
-
-Link :
-
 **************************************************************}
+
 unit ALString;
 
 interface
@@ -93,17 +49,16 @@ interface
 {$IFEND}
 
 uses {$IFDEF MSWINDOWS}
-       Winapi.Windows,
+     Winapi.Windows,
      {$ENDIF}
      System.SysUtils,
      System.Classes,
      {$IFNDEF NEXTGEN}
-       System.Contnrs,
+     System.Contnrs,
      {$ENDIF}
      {$IFDEF MACOS}
-       Macapi.CoreFoundation,
+     Macapi.CoreFoundation,
      {$ENDIF MACOS}
-     ALInit,
      ALStringList;
 
 resourcestring
@@ -111,6 +66,10 @@ resourcestring
   SALArgumentMissing = 'No argument for format ''%s''';
 
 type
+
+  {$IF CompilerVersion > 33} // rio
+    {$MESSAGE WARN 'Check if System.SysUtils.TFormatSettings is still the same and adjust the IFDEF'}
+  {$IFEND}
 
   {$IFNDEF NEXTGEN}
   pALFormatSettings = ^TALFormatSettings;
@@ -180,18 +139,9 @@ var
   {$ENDIF}
   ALDefaultFormatSettingsU: TALformatSettingsU;
 
+{$IFNDEF NEXTGEN}
 type
 
-  {$IFNDEF NEXTGEN}
-  EALException = class(Exception)
-  public
-    constructor Create(const Msg: AnsiString);
-    constructor CreateFmt(const Msg: ansistring; const Args: array of const);
-  end;
-  {$ENDIF}
-  EALExceptionU = class(Exception);
-
-  {$IFNDEF NEXTGEN}
   TALStringStream = class(TStream)
   private
     FDataString: AnsiString;
@@ -207,13 +157,11 @@ type
     procedure WriteString(const AString: AnsiString);
     property DataString: AnsiString read FDataString;
   end;
-  {$ENDIF}
 
-  {$IFNDEF NEXTGEN}
-
-  //
-  //TALMask is taken from delphi seattle upd1
-  //
+  {************************}
+  {$IF CompilerVersion > 33} // rio
+    {$MESSAGE WARN 'Check if System.Masks is still the same and adjust the IFDEF'}
+  {$IFEND}
 
   EALMaskException = class(Exception);
 
@@ -250,7 +198,7 @@ type
 
   function  ALMatchesMask(const Filename, Mask: AnsiString): Boolean;
 
-  {$ENDIF}
+{$ENDIF}
 
 type
   TALPerlRegExOptions = set of (
@@ -262,6 +210,12 @@ type
     preUnGreedy,       // Repeat operators (+, *, ?) are not greedy by default (i.e. they try to match the minimum number of characters instead of the maximum)
     preNoAutoCapture   // (group) is a non-capturing group; only named groups capture
   );
+
+// TALPerlRegEx is not supported anymore after Tokyo, you can use instead
+// TPerlRegEx (unicode). TALPerlRegEx is hard to maintain and the win in
+// performance (mostly to avoid to do a conversion from ansiString to Unicode)
+// seam to be low (I didn't do any test, but i suppose)
+{$IF (not defined(NEXTGEN)) and (CompilerVersion <= 32)}{Delphi Tokyo}
 
 type
   TALPerlRegExState = set of (
@@ -280,8 +234,6 @@ const
 // All implicit string casts have been verified to be correct
 { $WARN IMPLICIT_STRING_CAST OFF}
 
-{$IFDEF AL_PCRE}
-{$IFNDEF NEXTGEN}
 type
   TALPerlRegExReplaceEvent = procedure(Sender: TObject; var ReplaceWith: AnsiString) of object;
 
@@ -450,23 +402,15 @@ type
   end;
 
   ERegularExpressionError = class(Exception);
-{$ENDIF}
-{$ENDIF}
+{$IFEND}
 
-var ALMove: procedure (const Source; var Dest; Count: NativeInt);
-function  ALIfThen(AValue: Boolean; const ATrue: Integer; const AFalse: Integer): Integer; overload; inline;
-function  ALIfThen(AValue: Boolean; const ATrue: Int64; const AFalse: Int64): Int64; overload; inline;
-function  ALIfThen(AValue: Boolean; const ATrue: UInt64; const AFalse: UInt64): UInt64; overload; inline;
-function  ALIfThen(AValue: Boolean; const ATrue: Single; const AFalse: Single): Single; overload; inline;
-function  ALIfThen(AValue: Boolean; const ATrue: Double; const AFalse: Double): Double; overload; inline;
-function  ALIfThen(AValue: Boolean; const ATrue: Extended; const AFalse: Extended): Extended; overload; inline;
+
 
 {$IFNDEF NEXTGEN}
 function  ALGUIDToByteString(const Guid: TGUID): Ansistring;
 function  ALNewGUIDByteString: Ansistring;
 function  ALGUIDToString(const Guid: TGUID; const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): Ansistring;
 Function  ALNewGUIDString(const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): AnsiString;
-function  ALIfThen(AValue: Boolean; const ATrue: AnsiString; AFalse: AnsiString = ''): AnsiString; overload; inline;
 function  ALFormat(const Format: AnsiString; const Args: array of const): AnsiString; overload;
 procedure ALFormat(const Format: AnsiString; const Args: array of const; var Result: ansiString); overload;
 function  ALFormat(const Format: AnsiString; const Args: array of const; const AFormatSettings: TALFormatSettings): AnsiString; overload;
@@ -489,6 +433,9 @@ function  ALStrToDateTime(const S: AnsiString; const AFormatSettings: TALFormatS
 function  ALTryStrToInt(const S: AnsiString; out Value: Integer): Boolean;
 function  ALStrToInt(const S: AnsiString): Integer;
 function  ALStrToIntDef(const S: AnsiString; Default: Integer): Integer;
+function  ALTryStrToUInt(const S: AnsiString; out Value: Cardinal): Boolean;
+function  ALStrToUInt(const S: AnsiString): Cardinal;
+function  ALStrToUIntDef(const S: Ansistring; Default: Cardinal): Cardinal;
 function  ALTryStrToInt64(const S: AnsiString; out Value: Int64): Boolean;
 function  ALStrToInt64(const S: AnsiString): Int64;
 function  ALStrToInt64Def(const S: AnsiString; const Default: Int64): Int64;
@@ -514,8 +461,12 @@ function  ALIntToBit(value: Integer; digits: integer): ansistring;
 function  AlBitToInt(Value: ansiString): Integer;
 function  AlInt2BaseN(NumIn: UInt64; const charset: array of ansiChar): ansistring;
 function  AlBaseN2Int(const Str: ansiString; const charset: array of ansiChar): UInt64;
-var       ALBase64EncodeString: function(const S: AnsiString): AnsiString;
-var       ALBase64DecodeString: function(const S: AnsiString): AnsiString;
+function  ALBase64EncodeString(const P: PansiChar; const ln: Integer): AnsiString; overload;
+function  ALBase64EncodeString(const S: AnsiString): AnsiString; overload;
+function  ALBase64DecodeString(const P: PansiChar; const ln: Integer): AnsiString; overload;
+function  ALBase64DecodeString(const S: AnsiString): AnsiString; overload;
+function  ALBase64EncodeStringMIME(const S: AnsiString): AnsiString;
+function  ALBase64DecodeStringMIME(const S: AnsiString): AnsiString;
 function  ALIsDecimal(const S: AnsiString; const RejectPlusMinusSign: boolean = False): boolean;
 Function  ALIsInt64 (const S: AnsiString): Boolean;
 Function  ALIsInteger (const S: AnsiString): Boolean;
@@ -578,9 +529,9 @@ function  ALCopyStr(const aSourceString: AnsiString;
 function  ALStringReplace(const S, OldPattern, NewPattern: AnsiString; Flags: TReplaceFlags): AnsiString;
 {$ENDIF}
 
+Function  ALNewGUIDBytes: TBytes;
 function  ALGUIDToStringU(const Guid: TGUID; const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): string;
 Function  ALNewGUIDStringU(const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): String;
-function  ALIfThenU(AValue: Boolean; const ATrue: String; AFalse: String = ''): String; overload; inline;
 function  ALFormatU(const Format: String; const Args: array of const): String; overload;
 procedure ALFormatU(const Format: String; const Args: array of const; var Result: String); overload;
 function  ALFormatU(const Format: String; const Args: array of const; const AFormatSettings: TALFormatSettingsU): String; overload;
@@ -623,10 +574,13 @@ Function  ALTryBinToHexU(const aBin; aBinSize : Cardinal; out Value: String): bo
 Function  ALBinToHexU(const aBin; aBinSize : Cardinal): String; overload;
 Function  ALTryHexToBinU(const aHex: String; out Value: Tbytes): boolean;
 Function  ALHexToBinU(const aHex: String): Tbytes;
-var       ALBase64EncodeStringU: function(const S: String; const AEncoding: TEncoding = nil): String;
-var       ALBase64DecodeStringU: function(const S: String; const AEncoding: TEncoding = nil): String;
-var       ALBase64EncodeBytesU: function(const Bytes: Tbytes): String;
-var       ALBase64DecodeBytesU: function(const S: String): Tbytes;
+Function  ALBase64EncodeStringU(const S: String; const AEncoding: TEncoding = nil): String;
+Function  ALBase64DecodeStringU(const S: String; const AEncoding: TEncoding = nil): String;
+Function  ALBase64EncodeBytesU(const Bytes: Tbytes): String; overload;
+{$IF CompilerVersion >= 31} // berlin
+Function  ALBase64EncodeBytesU(const Bytes: pointer; const Size: Integer): String; overload;
+{$IFEND}
+Function  ALBase64DecodeBytesU(const S: String): Tbytes;
 function  ALIsDecimalU(const S: String; const RejectPlusMinusSign: boolean = False): boolean;
 Function  ALIsInt64U(const S: String): Boolean;
 Function  ALIsIntegerU(const S: String): Boolean;
@@ -765,8 +719,10 @@ function  ALRandomStr(const aLength: Longint; const aCharset: Array of ansiChar)
 function  ALRandomStr(const aLength: Longint): AnsiString; overload;
 function  ALNEVExtractName(const S: AnsiString): AnsiString;
 function  ALNEVExtractValue(const s: AnsiString): AnsiString;
+function  ALGetBytesFromFile(const filename: ansiString; const ShareMode: Word = fmShareDenyWrite): Tbytes;
 function  ALGetStringFromFile(const filename: AnsiString; const ShareMode: Word = fmShareDenyWrite): AnsiString;
 function  ALGetStringFromFileWithoutUTF8BOM(const filename: AnsiString; const ShareMode: Word = fmShareDenyWrite): AnsiString;
+procedure ALAppendStringToFile(const Str: AnsiString; const FileName: AnsiString);
 procedure ALSaveStringtoFile(const Str: AnsiString; const filename: AnsiString);
 {$IF defined(MSWINDOWS)}
 Function  ALWideNormalize(const S: Widestring;
@@ -798,8 +754,8 @@ function  ALUTF8CharCount(const S: AnsiString): Integer;
 Function  ALUTF8ByteTrunc(const s:AnsiString; const Count: Integer): AnsiString;
 Function  ALUTF8CharTrunc(const s:AnsiString; const Count: Integer): AnsiString;
 Function  ALUTF8UpperFirstChar(const s:AnsiString): AnsiString;
-Function  ALUTF8TitleCase(const s:AnsiString): AnsiString;
-Function  ALUTF8SentenceCase(const s:AnsiString): AnsiString;
+Function  ALTitleCase(const s:AnsiString): AnsiString;
+Function  ALSentenceCase(const s:AnsiString): AnsiString;
 {$IF defined(MSWINDOWS)}
 Function  ALStringToWideString(const S: RawByteString; const aCodePage: Word): WideString;
 function  AlWideStringToString(const WS: WideString; const aCodePage: Word): AnsiString;
@@ -816,7 +772,7 @@ function  ALExtractExpression(const S: AnsiString;
                               Const EscapeQuoteChar: ansiChar; // ex: '\' or #0 to ignore
                               var StartPos: integer;
                               var EndPos: integer): boolean;
-function  ALHTTPEncode(const AStr: AnsiString): AnsiString; inline;
+function  ALHTTPEncode(const AStr: AnsiString): AnsiString;
 function  ALHTTPDecode(const AStr: AnsiString): AnsiString;
 procedure ALExtractHeaderFields(Separators,
                                 WhiteSpace,
@@ -842,6 +798,9 @@ function  ALGetStringFromFileU(const filename: String; const ADefaultEncoding: T
 procedure ALSaveStringtoFileU(const Str: String; const filename: String; AEncoding: TEncoding; const WriteBOM: boolean = False);
 function  ALRandomStrU(const aLength: Longint; const aCharset: Array of Char): String; overload;
 function  ALRandomStrU(const aLength: Longint): String; overload;
+Function  ALTitleCaseU(const s: String): String;
+Function  ALSentenceCaseU(const s: String): String;
+function  ALHTTPEncodeU(const AStr: String): String;
 function  ALHTTPDecodeU(const AStr: String): String;
 {$WARN SYMBOL_DEPRECATED OFF}
 procedure ALExtractHeaderFieldsWithQuoteEscapedU(Separators,
@@ -861,36 +820,32 @@ Const cAlUTF8Bom = ansiString(#$EF) + ansiString(#$BB) + ansiString(#$BF);
       cAlUTF32BigEndianBom = ansiString(#$00) + ansiString(#$00) + ansiString(#$FE) + ansiString(#$FF);
 {$ENDIF}
 
-Procedure ALStringInitialization;
+//deprecated functions
+{$IFNDEF NEXTGEN}
+Function  ALUTF8TitleCase(const s:AnsiString): AnsiString; deprecated 'use ALTitleCase instead';
+Function  ALUTF8SentenceCase(const s:AnsiString): AnsiString; deprecated 'use ALSentenceCase instead';
+{$ENDIF}
 
 implementation
 
 uses System.SysConst,
      System.RTLConsts,
      System.StrUtils,
+     {$IF (not defined(NEXTGEN)) and (CompilerVersion <= 32)}{Delphi Tokyo}
      System.RegularExpressionsAPI,
      System.RegularExpressionsConsts,
+     {$IFEND}
+     {$IF CompilerVersion >= 31} // berlin
+     system.netencoding,
+     {$IFEND}
      {$IFNDEF NEXTGEN}
      System.Ansistrings,
      {$ENDIF}
      System.Character,
      System.Math,
-     ALcommon,
-     ALMime;
+     ALcommon;
 
 {$IFNDEF NEXTGEN}
-
-{*****************************************************}
-constructor EALException.Create(const Msg: AnsiString);
-begin
-  inherited create(String(Msg));
-end;
-
-{************************************************************************************}
-constructor EALException.CreateFmt(const Msg: ansistring; const Args: array of const);
-begin
-  inherited CreateFmt(String(Msg), Args);
-end;
 
 {************************************************************}
 constructor TALStringStream.Create(const AString: AnsiString);
@@ -909,7 +864,7 @@ begin
   // because in original we will have a call to uniqueString on FDataString :(
   // https://forums.embarcadero.com/thread.jspa?threadID=119103
   // ALMove(PAnsiChar(@FDataString[FPosition + SizeOf(AnsiChar)])^, Buffer, Result * SizeOf(AnsiChar));
-  ALMove(Pbyte(FDataString)[FPosition + SizeOf(AnsiChar) - 1], Buffer, Result * SizeOf(AnsiChar));
+  ALMove(Pbyte(FDataString)[FPosition], Buffer, Result * SizeOf(AnsiChar));
 
   Inc(FPosition, Result);
 end;
@@ -1185,6 +1140,18 @@ Begin
 End;
 
 {$ENDIF !NEXTGEN}
+
+{*******************************}
+Function  ALNewGUIDBytes: TBytes;
+Var aGUID: TGUID;
+Begin
+  if CreateGUID(aGUID) <> S_OK then RaiseLastOSError;
+  SetLength(Result, 16);
+  ALMove(aGuid.D1, Result[0], 4); // D1: Cardinal;
+  ALMove(aGuid.D2, Result[4], 2); // D2: Word;
+  ALMove(aGuid.D3, Result[6], 2); // D3: Word;
+  ALMove(aGuid.D4[0], Result[8], 8); // D4: array[0..7] of Byte;
+End;
 
 {********************************************************************************************************************************}
 function  ALGUIDToStringU(const Guid: TGUID; const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): string;
@@ -1506,6 +1473,10 @@ begin
   end;
 end;
 
+{$ENDIF !NEXTGEN}
+
+{$IF (not defined(NEXTGEN)) and (CompilerVersion <= 32)}{Delphi Tokyo}
+
 {****************************************************}
 function ALPerlRegExFirstCap(const S: string): string;
 begin
@@ -1541,7 +1512,6 @@ begin
   end;
 end;
 
-{$IFDEF AL_PCRE}
 {*****************************}
 procedure TALPerlRegEx.CleanUp;
 begin
@@ -2389,81 +2359,8 @@ begin
   ARegEx.Subject := FSubject;
   ARegEx.Start := FStart;
 end;
-{$ENDIF}
 
-{***********************************************************************************************}
-function ALIfThen(AValue: Boolean; const ATrue: AnsiString; AFalse: AnsiString = ''): AnsiString;
-begin
-  if AValue then
-    Result := ATrue
-  else
-    Result := AFalse;
-end;
-
-{$ENDIF !NEXTGEN}
-
-{************************************************************************************}
-function ALIfThenU(AValue: Boolean; const ATrue: String; AFalse: String = ''): String;
-begin
-  if AValue then
-    Result := ATrue
-  else
-    Result := AFalse;
-end;
-
-{***************************************************************************************}
-function ALIfThen(AValue: Boolean; const ATrue: Integer; const AFalse: Integer): Integer;
-begin
-  if AValue then
-    Result := ATrue
-  else
-    Result := AFalse;
-end;
-
-{*********************************************************************************}
-function ALIfThen(AValue: Boolean; const ATrue: Int64; const AFalse: Int64): Int64;
-begin
-  if AValue then
-    Result := ATrue
-  else
-    Result := AFalse;
-end;
-
-{************************************************************************************}
-function ALIfThen(AValue: Boolean; const ATrue: UInt64; const AFalse: UInt64): UInt64;
-begin
-  if AValue then
-    Result := ATrue
-  else
-    Result := AFalse;
-end;
-
-{************************************************************************************}
-function ALIfThen(AValue: Boolean; const ATrue: Single; const AFalse: Single): Single;
-begin
-  if AValue then
-    Result := ATrue
-  else
-    Result := AFalse;
-end;
-
-{************************************************************************************}
-function ALIfThen(AValue: Boolean; const ATrue: Double; const AFalse: Double): Double;
-begin
-  if AValue then
-    Result := ATrue
-  else
-    Result := AFalse;
-end;
-
-{******************************************************************************************}
-function ALIfThen(AValue: Boolean; const ATrue: Extended; const AFalse: Extended): Extended;
-begin
-  if AValue then
-    Result := ATrue
-  else
-    Result := AFalse;
-end;
+{$IFEND} // {$IF (not defined(NEXTGEN)) and (CompilerVersion <= 32)}{Delphi Tokyo}
 
 {$IFNDEF NEXTGEN}
 
@@ -2480,8 +2377,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.SysUtils.FormatError is still the same and adjust the IFDEF'}
 {$IFEND}
 procedure ALFormatError(ErrorCode: Integer; Format: PChar; FmtLen: Cardinal);
 const
@@ -2499,8 +2396,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.SysUtils.AnsiFormatError is still the same and adjust the IFDEF'}
 {$IFEND}
 procedure ALAnsiFormatError(ErrorCode: Integer; Format: PAnsiChar; FmtLen: Cardinal);
 var
@@ -2511,8 +2408,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.SysUtils.FormatVarToStr is still the same and adjust the IFDEF'}
 {$IFEND}
 procedure ALFormatVarToStr(var S: AnsiString; const V: TVarData);
 begin
@@ -2523,8 +2420,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.AnsiStrings.FormatClearStr is still the same and adjust the IFDEF'}
 {$IFEND}
 procedure ALFormatClearStr(var S: AnsiString);
 begin
@@ -2532,28 +2429,28 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.SysUtils.GetGOT is still the same and adjust the IFDEF'}
 {$IFEND}
-{$IF not defined(ANDROID) and not defined(LINUX64) and not Defined(CPUARM)}
+{$IFDEF X86ASM}
 {$IFDEF PIC}
 { Do not remove export or the begin block. }
-function ALGetGOT: Pointer; export;
+function ALGetGOT: Pointer;
 begin
   asm
         MOV     Result,EBX
   end;
 end;
 {$ENDIF}
-{$IFEND ANDROID}
+{$ENDIF X86ASM}
 
 {***}
 const
   cALDCon10: Integer = 10;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.SysUtils.PutExponent is still the same and adjust the IFDEF'}
 {$IFEND}
 {$IFDEF X86ASM}
 procedure ALPutExponent;
@@ -2632,8 +2529,8 @@ end;
 {$ENDIF X86ASM}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.SysUtils.InternalFloatToText is still the same and adjust the IFDEF'}
 {$IFEND}
 {$IFDEF PUREPASCAL}
 function ALInternalFloatToText(
@@ -2650,7 +2547,7 @@ const
   CMaxExtPrecision = 18;
 {$ELSE !EXTENDEDHAS10BYTES}
   CMaxExtPrecision = 17;
-{$ENDIF EXTENDEDHAS10BYTES}
+{$ENDIF !EXTENDEDHAS10BYTES}
 
   CCurrPrecision = 19;
   CGenExpDigits = 9999;
@@ -2875,8 +2772,8 @@ begin
 {$IFDEF EXTENDEDHAS10BYTES}
   LExponent := UInt16(FloatRec.Exponent) - $7FFF;
 {$ELSE !EXTENDEDHAS10BYTES}
-  LExponent := UInt16(Int16(FloatRec.Exponent) - $7FF);
-{$ENDIF EXTENDEDHAS10BYTES}
+  LExponent := UInt16(FloatRec.Exponent) - $7FF;
+{$ENDIF !EXTENDEDHAS10BYTES}
 
   { Check for INF or NAN}
   if LExponent < 2 then
@@ -3022,8 +2919,8 @@ end;
 {$ENDIF PUREPASCAL}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.AnsiStrings.FloatToText is still the same and adjust the IFDEF'}
 {$IFEND}
 function ALFloatToText(BufferArg: PAnsiChar; const Value; ValueType: TFloatValue;
   Format: TFloatFormat; Precision, Digits: Integer;
@@ -3421,8 +3318,8 @@ end;
 {$ENDIF !PUREPASCAL}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.SysUtils.CvtInt is still the same and adjust the IFDEF'}
 {$IFEND}
 {$IFDEF X86ASM}
 procedure ALCvtInt;
@@ -3480,8 +3377,8 @@ end;
 {$ENDIF X86ASM}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.SysUtils.CvtInt64 is still the same and adjust the IFDEF'}
 {$IFEND}
 {$IFDEF X86ASM}
 procedure ALCvtInt64;
@@ -3584,8 +3481,8 @@ end;
 {$ENDIF X86ASM}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.AnsiStrings.FormatBuf is still the same and adjust the IFDEF'}
 {$IFEND}
 function ALFormatBuf(var Buffer; BufLen: Cardinal; const Format;
   FmtLen: Cardinal; const Args: array of const;
@@ -4529,8 +4426,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if System.AnsiStrings.FmtStr is still the same and adjust the IFDEF'}
 {$IFEND}
 procedure ALFmtStr(var Result: AnsiString; const Format: AnsiString;
   const Args: array of const; const AFormatSettings: TALFormatSettings);
@@ -4792,8 +4689,8 @@ end;
 {$ENDIF MACOS}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.DateTimeToString is still the same and adjust the IFDEF'}
 {$IFEND}
 procedure ALDateTimeToString(var Result: AnsiString; const Format: AnsiString;
   DateTime: TDateTime; const AFormatSettings: TALFormatSettings);
@@ -5357,8 +5254,8 @@ type
   TALDateOrder = (doMDY, doDMY, doYMD);
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.ScanBlanks is still the same and adjust the IFDEF'}
 {$IFEND}
 procedure ALScanBlanks(const S: AnsiString; var Pos: Integer);
 var
@@ -5370,8 +5267,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.ScanNumber is still the same and adjust the IFDEF'}
 {$IFEND}
 function ALScanNumber(const S: AnsiString; var Pos: Integer;
   var Number: Word; var CharCount: Byte): Boolean;
@@ -5399,8 +5296,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.ScanString is still the same and adjust the IFDEF'}
 {$IFEND}
 function ALScanString(const S: AnsiString; var Pos: Integer;
   const Symbol: AnsiString): Boolean;
@@ -5419,8 +5316,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.ScanChar is still the same and adjust the IFDEF'}
 {$IFEND}
 function ALScanChar(const S: AnsiString; var Pos: Integer; Ch: AnsiChar): Boolean;
 begin
@@ -5434,8 +5331,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.GetDateOrder is still the same and adjust the IFDEF'}
 {$IFEND}
 function ALGetDateOrder(const DateFormat: AnsiString): TALDateOrder;
 var
@@ -5459,8 +5356,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.ScanToNumber is still the same and adjust the IFDEF'}
 {$IFEND}
 procedure ALScanToNumber(const S: AnsiString; var Pos: Integer);
 begin
@@ -5474,8 +5371,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.ScanDate is still the same and adjust the IFDEF'}
 {$IFEND}
 function ALScanDate(const S: AnsiString; var Pos: Integer; var Date: TDateTime;
   const AFormatSettings: TALFormatSettings): Boolean; overload;
@@ -5569,8 +5466,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.ScanTime is still the same and adjust the IFDEF'}
 {$IFEND}
 function ALScanTime(const S: AnsiString; var Pos: Integer; var Time: TDateTime;
   const AFormatSettings: TALFormatSettings): Boolean; overload;
@@ -5653,8 +5550,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.TryStrToDateTime is still the same and adjust the IFDEF'}
 {$IFEND}
 function ALTryStrToDateTime(const S: AnsiString; out Value: TDateTime;
   const AFormatSettings: TALFormatSettings): Boolean;
@@ -5760,8 +5657,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system._ValLong is still the same and adjust the IFDEF'}
 {$IFEND}
 // Hex : ( '$' | 'X' | 'x' | '0X' | '0x' ) [0-9A-Fa-f]*
 // Dec : ( '+' | '-' )? [0-9]*
@@ -5778,7 +5675,7 @@ begin
   I := FirstIndex;
   Sign := False;
   Result := 0;
-  {$IF CompilerVersion < 32} // tokyo
+  {$IF CompilerVersion <= 31} // berlin
     {$IF not (defined(CPUX64) and not defined(EXTERNALLINKER))}
     Dig := 0;
     {$IFEND}
@@ -6008,8 +5905,8 @@ end;
 {$ENDIF}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system._ValInt64 is still the same and adjust the IFDEF'}
 {$IFEND}
 function _ALValInt64(const s: AnsiString; var code: Integer): Int64;
 const
@@ -6023,7 +5920,7 @@ begin
   I := FirstIndex;
   Sign := False;
   Result := 0;
-  {$IF CompilerVersion < 32} // tokyo
+  {$IF CompilerVersion <= 31} // berlin
     {$IF not (defined(CPUX64) and not defined(EXTERNALLINKER))}
     Dig := 0;
     {$IFEND}
@@ -6103,8 +6000,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system._ValUInt64 is still the same and adjust the IFDEF'}
 {$IFEND}
 function _ALValUInt64(const s: ansistring; var code: Integer): UInt64;
 const
@@ -6116,7 +6013,7 @@ var
   empty: Boolean;
 begin
   i := FirstIndex;
-  {$IF CompilerVersion < 32} // tokyo
+  {$IF CompilerVersion <= 31} // berlin
     // avoid E1036: Variable 'dig' might not have been initialized
     {$IF not (defined(CPUX64) and not defined(EXTERNALLINKER))}
     dig := 0;
@@ -6218,6 +6115,42 @@ begin
   if E <> 0 then Result := Default;
 end;
 
+{**************************************************************************}
+function  ALTryStrToUInt(const S: AnsiString; out Value: Cardinal): Boolean;
+var
+  I64: Int64;
+  E: Integer;
+begin
+  I64 := _ALValInt64(S, E);
+  Value := I64;
+  Result := (E = 0) and (Cardinal.MinValue <= I64) and (I64 <= Cardinal.MaxValue);
+end;
+
+{***************************************************}
+function  ALStrToUInt(const S: AnsiString): Cardinal;
+var
+  I64: Int64;
+  E: Integer;
+begin
+  I64 := _ALValInt64(S, E);
+  if (E <> 0) or not((Cardinal.MinValue <= I64) and (I64 <= Cardinal.MaxValue)) then
+    raise EConvertError.CreateResFmt(@System.SysConst.SInvalidInteger, [S]);
+  Result := I64;
+end;
+
+{*************************************************************************}
+function  ALStrToUIntDef(const S: Ansistring; Default: Cardinal): Cardinal;
+var
+  I64: Int64;
+  E: Integer;
+begin
+  I64 := _ALValInt64(S, E);
+  if (E <> 0) or not((Cardinal.MinValue <= I64) and (I64 <= Cardinal.MaxValue)) then
+    Result := Default
+  else
+    Result := I64;
+end;
+
 {***********************************************************************}
 function ALTryStrToInt64(const S: AnsiString; out Value: Int64): Boolean;
 var
@@ -6260,8 +6193,8 @@ const
      '90','91','92','93','94','95','96','97','98','99');
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils._IntToStr32 is still the same and adjust the IFDEF'}
 {$IFEND}
 function _ALIntToStr32(Value: Cardinal; Negative: Boolean): AnsiString;
 var
@@ -6305,8 +6238,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils._IntToStr64 is still the same and adjust the IFDEF'}
 {$IFEND}
 function _ALIntToStr64(Value: UInt64; Negative: Boolean): AnsiString;
 var
@@ -6615,13 +6548,27 @@ begin
   Result := _ALIntToHex(Value, digits);
 end;
 
+{**************************************************************************}
+procedure _ALBinToHex(Buffer: PAnsiChar; Text: PAnsiChar; BufSize: Integer); overload;
+const
+  Convert: array[0..15] of AnsiChar = AnsiString('0123456789abcdef');
+var
+  I: Integer;
+begin
+  for I := 0 to BufSize - 1 do
+  begin
+    Text[0] := Convert[Byte(Buffer[I]) shr 4];
+    Text[1] := Convert[Byte(Buffer[I]) and $F];
+    Inc(Text, 2);
+  end;
+end;
+
 {******************************************************************************}
 Function  ALTryBinToHex(const aBin: AnsiString; out Value: AnsiString): boolean;
 begin
   if aBin = '' then exit(false);
   setlength(Value,length(aBin) * 2);
-  BintoHex(PansiChar(aBin),pansiChar(Value),length(aBin));
-  Value := ALlowerCase(Value);
+  _ALBinToHex(PansiChar(aBin),pansiChar(Value),length(aBin));
   result := true;
 end;
 
@@ -6637,8 +6584,7 @@ Function  ALTryBinToHex(const aBin; aBinSize : Cardinal; out Value: AnsiString):
 begin
   if aBinSize = 0 then exit(false);
   setlength(Value, aBinSize * 2);
-  BintoHex(@aBin,pansiChar(Value),aBinSize);
-  Value := ALlowerCase(Value);
+  _ALBinToHex(@aBin,pansiChar(Value),aBinSize);
   result := true;
 end;
 
@@ -6668,19 +6614,32 @@ end;
 
 {$ENDIF !NEXTGEN}
 
+{*********************************************************************************************************************}
+procedure _ALBinToHex(const Buffer: TBytes; BufOffset: Integer; var Text: TBytes; TextOffset: Integer; Count: Integer); overload;
+const
+  B2HConvert: array[0..15] of Byte = ($30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $61, $62, $63, $64, $65, $66);
+var
+  I: Integer;
+begin
+  for I := 0  to Count - 1 do
+  begin
+    Text[TextOffset + I * 2] := B2HConvert[Buffer[BufOffset + I] shr 4];
+    Text[TextOffset + I * 2 + 1] := B2HConvert[Buffer[BufOffset + I] and $0F];
+  end;
+end;
+
 {***********************************************************************}
 Function  ALTryBinToHexU(const aBin: TBytes; out Value: String): boolean;
 var bufOut: TBytes;
 begin
   if length(aBin) = 0 then exit(false);
   setlength(bufOut,length(aBin) * 2);
-  BintoHex(aBin, // Buffer: TBytes
-           0, // BufOffset: Integer;
-           bufOut, // Text: TBytes;
-           0, // TextOffset: Integer;
-           length(aBin)); // Count: Integer
+  _ALBintoHex(aBin, // Buffer: TBytes
+              0, // BufOffset: Integer;
+              bufOut, // Text: TBytes;
+              0, // TextOffset: Integer;
+              length(aBin)); // Count: Integer
   Value := Tencoding.UTF8.GetString(bufOut); // UTF8 is good because bufOut must contain only low ascii chars
-  Value := AlLowerCaseU(Value);
   result := true;
 end;
 
@@ -6697,13 +6656,12 @@ var bufOut: TBytes;
 begin
   if aBinSize = 0 then exit(false);
   setlength(bufOut,aBinSize * 2);
-  BintoHex(Tbytes(@aBin), // Buffer: TBytes
-           0, // BufOffset: Integer;
-           bufOut, // Text: TBytes;
-           0, // TextOffset: Integer;
-           aBinSize); // Count: Integer
+  _ALBintoHex(Tbytes(@aBin), // Buffer: TBytes
+              0, // BufOffset: Integer;
+              bufOut, // Text: TBytes;
+              0, // TextOffset: Integer;
+              aBinSize); // Count: Integer
   Value := Tencoding.UTF8.GetString(bufOut); // UTF8 is good because bufOut must contain only low ascii chars
-  Value := AlLowerCaseU(Value);
   result := true;
 end;
 
@@ -6854,11 +6812,372 @@ begin
 
 end;
 
+/////////////////////////////////
+////// Base64 (ansiString) //////
+/////////////////////////////////
+
+//
+// Taken from https://github.com/synopse/mORMot.git
+// https://synopse.info
+// http://mormot.net
+//
+
+{$IF CompilerVersion > 34} // sydney
+  {$MESSAGE WARN 'Check if https://github.com/synopse/mORMot.git SynCommons.pas was not updated from references\mORMot\SynCommons.pas and adjust the IFDEF'}
+{$IFEND}
+
+type
+  TBase64Enc = array[0..63] of AnsiChar;
+  PBase64Enc = ^TBase64Enc;
+  TBase64Dec = array[AnsiChar] of shortint;
+  PBase64Dec = ^TBase64Dec;
+const
+  b64enc: TBase64Enc =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+var
+  /// a conversion table from Base64 text into binary data
+  // - used by Base64ToBin/IsBase64 functions
+  // - contains -1 for invalid char, -2 for '=', 0..63 for b64enc[] chars
+  ConvertBase64ToBin: TBase64Dec;
+
+const
+  sInvalidbase64String = 'Invalid base64 string';
+
+{********************************************************************************************}
+function Base64AnyDecode(const decode: TBase64Dec; sp,rp: PAnsiChar; len: NativeInt): boolean;
+var c, ch: NativeInt;
+begin
+  result := false;
+  while len>=4 do begin
+    c := decode[sp[0]];
+    if c<0 then
+      exit;
+    c := c shl 6;
+    ch := decode[sp[1]];
+    if ch<0 then
+      exit;
+    c := (c or ch) shl 6;
+    ch := decode[sp[2]];
+    if ch<0 then
+      exit;
+    c := (c or ch) shl 6;
+    ch := decode[sp[3]];
+    if ch<0 then
+      exit;
+    c := c or ch;
+    rp[2] := AnsiChar(c);
+    c := c shr 8;
+    rp[1] := AnsiChar(c);
+    c := c shr 8;
+    rp[0] := AnsiChar(c);
+    dec(len,4);
+    inc(rp,3);
+    inc(sp,4);
+  end;
+  if len>=2 then begin
+    c := decode[sp[0]];
+    if c<0 then
+      exit;
+    c := c shl 6;
+    ch := decode[sp[1]];
+    if ch<0 then
+      exit;
+    if len=2 then
+      rp[0] := AnsiChar((c or ch) shr 4) else begin
+      c := (c or ch) shl 6;
+      ch := decode[sp[2]];
+      if ch<0 then
+        exit;
+      c := (c or ch) shr 2;
+      rp[1] := AnsiChar(c);
+      rp[0] := AnsiChar(c shr 8);
+    end;
+  end;
+  result := true;
+end;
+
+{*******************************************************************}
+function Base64EncodeMain(rp, sp: PAnsiChar; len: cardinal): integer;
+var c: cardinal;
+    enc: PBase64Enc; // use local register
+begin
+  enc := @b64enc;
+  len := len div 3;
+  result := len;
+  if len<>0 then
+    repeat
+      c := (ord(sp[0]) shl 16) or (ord(sp[1]) shl 8) or ord(sp[2]);
+      rp[0] := enc[(c shr 18) and $3f];
+      rp[1] := enc[(c shr 12) and $3f];
+      rp[2] := enc[(c shr 6) and $3f];
+      rp[3] := enc[c and $3f];
+      inc(rp,4);
+      inc(sp,3);
+      dec(len);
+    until len=0;
+end;
+
+{***********************************************************************}
+procedure Base64EncodeTrailing(rp, sp: PAnsiChar; len: cardinal); inline;
+var c: cardinal;
+    enc: PBase64Enc; // use local register
+begin
+  enc := @b64enc;
+  case len of
+    1: begin
+      c := ord(sp[0]) shl 4;
+      rp[0] := enc[(c shr 6) and $3f];
+      rp[1] := enc[c and $3f];
+      PWord(rp+2)^ := ord('=')+ord('=') shl 8;
+    end;
+    2: begin
+      c := (ord(sp[0]) shl 10) or (ord(sp[1]) shl 2);
+      rp[0] := enc[(c shr 12) and $3f];
+      rp[1] := enc[(c shr 6) and $3f];
+      rp[2] := enc[c and $3f];
+      rp[3] := '=';
+    end;
+  end;
+end;
+
+{*******************************************************}
+procedure Base64Encode(rp, sp: PAnsiChar; len: cardinal);
+var main: cardinal;
+begin
+  main := Base64EncodeMain(rp,sp,len);
+  Base64EncodeTrailing(rp+main*4,sp+main*3,len-main*3);
+end;
+
+{******************************************************}
+function BinToBase64Length(len: NativeUInt): NativeUInt;
+begin
+  result := ((len+2)div 3)*4;
+end;
+
+{*******************************************************************}
+function Base64ToBinLength(sp: PAnsiChar; len: NativeInt): NativeInt;
+var dec: PBase64Dec;
+begin
+  result := 0;
+  if (len=0) or (len and 3<>0) then
+    exit;
+  dec := @ConvertBase64ToBin;
+  if dec[sp[len-2]]>=0 then
+    if dec[sp[len-1]]>=0 then
+      result := 0 else
+      result := 1 else
+      result := 2;
+  result := (len shr 2)*3-result;
+end;
+
+{*************************************************************************************}
+function Base64ToBinSafe(sp: PAnsiChar; len: NativeInt; var data: AnsiString): boolean;
+var resultLen: NativeInt;
+begin
+  resultLen := Base64ToBinLength(sp,len);
+  if resultLen<>0 then begin
+    SetString(data,nil,resultLen);
+    if ConvertBase64ToBin[sp[len-2]]>=0 then
+      if ConvertBase64ToBin[sp[len-1]]>=0 then else
+        dec(len) else
+        dec(len,2); // adjust for Base64AnyDecode() algorithm
+    result := Base64AnyDecode(ConvertBase64ToBin,sp,pointer(data),len);
+    if not result then
+      data := '';
+  end else begin
+    result := false;
+    data := '';
+  end;
+end;
+
+{********************************************************************************}
+function  ALBase64EncodeString(const P: PansiChar; const ln: Integer): AnsiString;
+begin
+  result := '';
+  if ln=0 then
+    exit;
+  SetString(result,nil,BinToBase64Length(ln));
+  Base64Encode(pointer(result),P,ln);
+end;
+
+{**************************************************************}
+function  ALBase64EncodeString(const S: AnsiString): AnsiString;
+var len: integer;
+begin
+  result := '';
+  len := length(s);
+  if len=0 then
+    exit;
+  SetString(result,nil,BinToBase64Length(len));
+  Base64Encode(pointer(result),pointer(s),len);
+end;
+
+{********************************************************************************}
+function  ALBase64DecodeString(const P: PansiChar; const ln: Integer): AnsiString;
+begin
+  if ln=0 then exit('');
+  if not Base64ToBinSafe(P,ln,result) then
+    raise Exception.Create(sInvalidbase64String);
+end;
+
+{**************************************************************}
+function  ALBase64DecodeString(const S: AnsiString): AnsiString;
+begin
+  if S='' then exit('');
+  if not Base64ToBinSafe(pointer(s),length(s),result) then
+    raise Exception.Create(sInvalidbase64String);
+end;
+
+{*********************}
+{$ZEROBASEDSTRINGS OFF} // << the guy who introduce zero base string in delphi is just a mix of a Monkey and a Donkey !
+function  ALBase64EncodeStringMIME(const S: AnsiString): AnsiString;
+var Ln: integer;
+    CountOfCRLF: integer;
+    CurrentPos: integer;
+    TmpStr: AnsiString;
+    i: integer;
+const maximumLineLength = 76;
+begin
+
+  //https://en.wikipedia.org/wiki/Base64
+  //MIME does not specify a fixed length for Base64-encoded lines, but it does specify a maximum line length of
+  //76 characters. Additionally it specifies that any extra-alphabetic characters must be ignored by a
+  //compliant decoder, although most implementations use a CR/LF newline pair to delimit encoded lines.
+
+  result := ALBase64EncodeString(s);
+  Ln := length(result);
+  CountOfCRLF := (ln div maximumLineLength);
+  if (ln mod maximumLineLength) = 0 then dec(CountOfCRLF);
+  if CountOfCRLF > 0 then begin
+    setlength(TmpStr, ln + (CountOfCRLF * 2));
+    CurrentPos := 0;
+    for I := 0 to CountOfCRLF - 1 do begin
+      AlMove(pbyte(result)[CurrentPos], pbyte(TmpStr)[CurrentPos + (i * 2)], maximumLineLength); // pbyte(Result) to not jump inside uniqueString (Result is already unique thanks to previous SetLength))
+      currentPos := currentPos + maximumLineLength;
+      pbyte(TmpStr)[CurrentPos + (i * 2)] := 13;
+      pbyte(TmpStr)[CurrentPos + (i * 2) +1] := 10;
+    end;
+    AlMove(pbyte(result)[CurrentPos], pbyte(TmpStr)[CurrentPos + (CountOfCRLF * 2)], ln-CurrentPos);
+    result := TmpStr;
+  end;
+
+end;
+{$IF defined(_ZEROBASEDSTRINGS_ON)}
+  {$ZEROBASEDSTRINGS ON}
+{$IFEND}
+
+{******************************************************************}
+function  ALBase64DecodeStringMIME(const S: AnsiString): AnsiString;
+begin
+
+  //https://en.wikipedia.org/wiki/Base64
+  //MIME specifies that any extra-alphabetic characters must be ignored by a
+  //compliant decoder, but here we just ignore the #13#10
+
+  result := ALBase64DecodeString(AlStringReplace(s, #13#10, '', [rfReplaceAll]));
+
+end;
+
+////////////////////////////////////
+////// Base64 (UnicodeString) //////
+////////////////////////////////////
+
+{$ENDIF !NEXTGEN}
+{$IF CompilerVersion >= 31} // berlin
+
+{*}
+var
+  _Base64Encoding: TBase64Encoding;
+
+{****************************************}
+function _GetBase64Encoding: TNetEncoding;
+var LEncoding: TBase64Encoding;
+begin
+  if _Base64Encoding = nil then begin
+    LEncoding := TBase64Encoding.Create(0); // this constructor to omits line breaks
+    if AtomicCmpExchange(Pointer(_Base64Encoding), Pointer(LEncoding), nil) <> nil then ALFreeAndNil(LEncoding)
+    {$IFDEF AUTOREFCOUNT}
+    else _Base64Encoding.__ObjAddRef;
+    {$ENDIF AUTOREFCOUNT}
+  end;
+  Result := _Base64Encoding;
+end;
+
+{*****************************************************************************************}
+Function  ALBase64EncodeStringU(const S: String; const AEncoding: TEncoding = nil): String;
+var BufIn: TBytes;
+begin
+  if assigned(AEncoding) then BufIn := AEncoding.GetBytes(S)
+  else BufIn := TEncoding.unicode.GetBytes(S);
+  result := _GetBase64Encoding.EncodeBytesToString(BufIn);
+end;
+
+{*****************************************************************************************}
+Function  ALBase64DecodeStringU(const S: String; const AEncoding: TEncoding = nil): String;
+var BufOut: TBytes;
+begin
+  BufOut := _GetBase64Encoding.DecodeStringToBytes(S);
+  if assigned(AEncoding) then result := AEncoding.GetString(BufOut)
+  else result := TEncoding.unicode.GetString(BufOut);
+end;
+
+{**********************************************************}
+Function  ALBase64EncodeBytesU(const Bytes: Tbytes): String;
+begin
+  result := _GetBase64Encoding.EncodeBytesToString(Bytes);
+end;
+
+{********************************************************************************}
+Function  ALBase64EncodeBytesU(const Bytes: pointer; const Size: Integer): String;
+begin
+  result := _GetBase64Encoding.EncodeBytesToString(Bytes, Size);
+end;
+
+{******************************************************}
+Function  ALBase64DecodeBytesU(const S: String): Tbytes;
+begin
+  result := _GetBase64Encoding.DecodeStringToBytes(S);
+end;
+
+{$IFEND CompilerVersion >= 31}
+
+{$IFNDEF NEXTGEN}
+
+{$IF CompilerVersion <= 30} // seattle
+
+{*****************************************************************************************}
+function ALBase64EncodeStringU(const S: String; const AEncoding: TEncoding = nil): String;
+begin
+  result := String(ALBase64EncodeString(AnsiString(S)));
+end;
+
+{*****************************************************************************************}
+function ALBase64DecodeStringU(const S: String; const AEncoding: TEncoding = nil): String;
+begin
+  result := String(ALBase64DecodeString(AnsiString(S)));
+end;
+
+{**********************************************************}
+function ALBase64EncodeBytesU(const Bytes: Tbytes): String;
+begin
+  result := String(ALBase64EncodeString(AnsiString(StringOf(Bytes))));
+end;
+
+{******************************************************}
+function ALBase64DecodeBytesU(const S: String): Tbytes;
+begin
+  result := BytesOf(String(ALBase64DecodeString(AnsiString(S))));
+end;
+
+{$IFEND}
+
 {*********************************************************************************************}
 function ALIsDecimal(const S: AnsiString; const RejectPlusMinusSign: boolean = False): boolean;
 var i: integer;
 begin
   result := true;
+  if S = '' then Exit(false);
   for i := low(s) to high(S) do begin
     if (not RejectPlusMinusSign) and (i=low(s)) then begin
       if not (S[i] in ['0'..'9','-','+']) then begin
@@ -6899,6 +7218,7 @@ Function  ALIsFloat (const S: AnsiString; const AFormatSettings: TALFormatSettin
 var i: integer;
     aDouble: Double;
 begin
+  if S = '' then Exit(false);
   for i := low(s) to high(s) do begin
     if not (S[i] in ['0'..'9','-',AFormatSettings.DecimalSeparator]) then begin
       result := false;
@@ -6944,6 +7264,7 @@ function ALIsDecimalU(const S: String; const RejectPlusMinusSign: boolean = Fals
 var i: integer;
 begin
   result := true;
+  if S = '' then Exit(false);
   for i := low(s) to high(S) do begin
     if (not RejectPlusMinusSign) and (i=low(s)) then begin
       if not CharInSet(S[i], ['0'..'9','-','+']) then begin
@@ -6986,6 +7307,7 @@ Function  ALIsFloatU(const S: String; const AFormatSettings: TALFormatSettingsU)
 var i: integer;
     aDouble: Double;
 begin
+  if S = '' then Exit(false);
   for i := low(s) to high(s) do begin
     if not CharInSet(S[i], ['0'..'9','-',AFormatSettings.DecimalSeparator]) then begin
       result := false;
@@ -7020,8 +7342,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if declaration below in system.Sysutils is still the same and adjust the IFDEF'}
 {$IFEND}
 const
 // 8087/SSE status word masks
@@ -7056,8 +7378,8 @@ const
 {$ENDIF CPUX64}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.TestAndClearFPUExceptions is still the same and adjust the IFDEF'}
 {$IFEND}
 {$IFDEF CPUX86}
 function ALTestAndClearFPUExceptions(AExceptionMask: Word): Boolean;
@@ -7080,11 +7402,11 @@ end;
 {$ENDIF CPUX86}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.TestAndClearSSEExceptions is still the same and adjust the IFDEF'}
 {$IFEND}
 {$WARN SYMBOL_PLATFORM OFF}
-{$IFDEF CPUX64}
+{$IF Defined(CPUX64) and not Defined(EXTERNALLINKER)}
 function ALTestAndClearSSEExceptions(AExceptionMask: UInt32): Boolean;
 var
   MXCSR: UInt32;
@@ -7093,12 +7415,12 @@ begin
   Result := ((MXCSR and $003F) and AExceptionMask) = 0;
   ResetMXCSR;
 end;
-{$ENDIF CPUX64}
+{$IFEND CPUX64}
 {$WARN SYMBOL_PLATFORM ON}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.InternalTextToExtended is still the same and adjust the IFDEF'}
 {$IFEND}
 //this function is not threadsafe because of Set8087CW
 //!! this is amazing !!
@@ -7112,18 +7434,18 @@ const
   CMaxExponent = 4999;
 {$ELSE !EXTENDEDHAS10BYTES}
   CMaxExponent = 1024;
-{$ENDIF EXTENDEDHAS10BYTES}
+{$ENDIF !EXTENDEDHAS10BYTES}
 
   CExponent = 'E'; // DO NOT LOCALIZE;
   CPlus = '+';     // DO NOT LOCALIZE;
   CMinus = '-';    // DO NOT LOCALIZE;
 
 var
-{$IFDEF NEXTGEN}
+{$IFDEF EXTERNALLINKER}
 //  SavedRoundMode: Int32;
 //  LSavedFlags: Word;
 //  LDummyFlags: Word;
-{$ELSE !NEXTGEN}
+{$ELSE !EXTERNALLINKER}
 {$IFDEF CPUX86}
   LSavedCtrlWord: Word;
 {$ENDIF CPUX86}
@@ -7195,31 +7517,33 @@ var
     Result := Result * LSign;
   end;
 
+var
+  IntPart, FracPart: Integer;
 begin
   { Prepare }
   Result := False;
   NextChar();
 
-{$IFDEF NEXTGEN}
+{$IFDEF EXTERNALLINKER}
 
 //  FEnvGetExceptFlag(LSavedFlags, fe_ALL_EXCEPT);
 //  FEnvSetExceptFlag(LSavedFlags, fe_ALL_EXCEPT);
 //  SavedRoundMode := FEnvGetRound;
 //  FEnvSetRound(fe_TONEAREST);
-{$ELSE  NEXTGEN}
+{$ELSE  EXTERNALLINKER}
 {$IFDEF CPUX86}
   { Prepare the FPU }
   LSavedCtrlWord := Get8087CW();
   ALTestAndClearFPUExceptions(0);
   Set8087CW(CWNear);
 {$ENDIF CPUX86}
-{$IFDEF CPUX64}
+{$IF Defined(CPUX64)}
   { Prepare the FPU }
   LSavedMXCSR := GetMXCSR;
   ALTestAndClearSSEExceptions(0);
   SetMXCSR(MXCSRNear);
-{$ENDIF CPUX64}
-{$ENDIF NEXTGEN}
+{$IFEND Defined(CPUX64)}
+{$ENDIF EXTERNALLINKER}
 
   { Skip white spaces }
   SkipWhitespace();
@@ -7235,11 +7559,14 @@ begin
       LResult := 0;
 
       { Read the integer and fractionary parts }
-      ReadNumber(LResult);
+      IntPart := ReadNumber(LResult);
+      FracPart := 0;
+
       if LCurrChar = AFormatSettings.DecimalSeparator then
       begin
         NextChar();
-        LPower := -ReadNumber(LResult);
+        FracPart := ReadNumber(LResult);
+        LPower := -FracPart;
       end else
         LPower := 0;
 
@@ -7250,6 +7577,9 @@ begin
         Inc(LPower, ReadExponent());
       end;
 
+      if (IntPart = 0) and (FracPart = 0) then
+        exit; // Reject "E3" or ".E1" case.
+
       { Skip white spaces }
       SkipWhitespace();
 
@@ -7257,7 +7587,7 @@ begin
       if LCurrChar = #0 then
       begin
         { Calculate the final number }
-      {$IFDEF NEXTGEN}
+      {$IFDEF EXTERNALLINKER}
         try
           LResult := Power10(LResult, LPower) * LSign;
           AValue := LResult;
@@ -7265,17 +7595,17 @@ begin
         except
           Result := False;
         end;
-      {$ELSE  NEXTGEN}
+      {$ELSE !EXTERNALLINKER}
         LResult := Power10(LResult, LPower) * LSign;
         AValue := LResult;
-      {$ENDIF NEXTGEN}
+      {$ENDIF EXTERNALLINKER}
 
 
-{$IFDEF NEXTGEN}
+{$IFDEF EXTERNALLINKER}
 
 
 //        Result := True;
-{$ELSE  NEXTGEN}
+{$ELSE !EXTERNALLINKER}
 {$IFDEF CPUX86}
         { Final check that everything went OK }
         Result := ALTestAndClearFPUExceptions(mIE + mOE);
@@ -7284,30 +7614,30 @@ begin
         { Final check that everything went OK }
         Result := ALTestAndClearSSEExceptions(mIE + mOE);
 {$ENDIF CPUX64}
-{$ENDIF NEXTGEN}
+{$ENDIF EXTERNALLINKER}
       end;
     end;
   end;
 
   { Clear Math Exceptions }
-{$IFDEF NEXTGEN}
+{$IFDEF EXTERNALLINKER}
 
 //  FEnvSetRound(SavedRoundMode);
 //  FEnvSetExceptFlag(LDummyFlags, LSavedFlags);
-{$ELSE  NEXTGEN}
+{$ELSE  EXTERNALLINKER}
 {$IFDEF CPUX86}
   Set8087CW(LSavedCtrlWord);
 {$ENDIF CPUX86}
 {$IFDEF CPUX64}
   SetMXCSR(LSavedMXCSR);
 {$ENDIF CPUX64}
-{$ENDIF NEXTGEN}
+{$ENDIF EXTERNALLINKER}
 end;
 {$WARN SYMBOL_PLATFORM ON}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.InternalTextToCurrency is still the same and adjust the IFDEF'}
 {$IFEND}
 //this function is not threadsafe because of Set8087CW
 //!! this is amazing !!
@@ -7315,20 +7645,24 @@ function ALInternalTextToCurrency(
   ABuffer: PansiChar;
   var AValue: Currency;
   const AFormatSettings: TALFormatSettings): Boolean;
-{$IFDEF EXTENDEDHAS10BYTES}
+{$IF Defined(EXTENDEDHAS10BYTES) and not Defined(Linux64)}
 const
   CMaxExponent = 4999;
   CExponent = 'E'; // DO NOT LOCALIZE;
   CPlus = '+';     // DO NOT LOCALIZE;
   CMinus = '-';    // DO NOT LOCALIZE;
 var
-{$IFDEF NEXTGEN}
+{$IFDEF EXTERNALLINKER}
 
-{$ELSE !NEXTGEN}
+{$ELSE  EXTERNALLINKER}
 {$IFDEF CPUX86}
+{$IF defined(CPUX86) and not defined(EXTENDEDHAS10BYTES)}
   LSavedCtrlWord: Word;
+{$IFEND CPUX86 and !EXTENDEDHAS10BYTES}
+{$ELSE}
+  {$MESSAGE ERROR 'Unknown platform'}
 {$ENDIF CPUX86}
-{$ENDIF NEXTGEN}
+{$ENDIF EXTERNALLINKER}
   LPower: Integer;
   LSign: SmallInt;
   LResult: Extended;
@@ -7391,21 +7725,25 @@ var
     Result := Result * LSign;
   end;
 
+var
+  IntPart, FracPart: Integer;
 begin
   { Prepare }
   Result := False;
   NextChar();
 
-{$IFDEF NEXTGEN}
+{$IFDEF EXTENDEDHAS10BYTES}
 
-{$ELSE  NEXTGEN}
+{$ELSE !EXTENDEDHAS10BYTES}
 {$IFDEF CPUX86}
   { Prepare the FPU }
   LSavedCtrlWord := Get8087CW();
   ALTestAndClearFPUExceptions(0);
   Set8087CW(CWNear);
+{$ELSE}
+  {$MESSAGE ERROR 'Unknown platform'}
 {$ENDIF CPUX86}
-{$ENDIF NEXTGEN}
+{$ENDIF EXTENDEDHAS10BYTES}
 
   { Skip white spaces }
   SkipWhitespace();
@@ -7421,11 +7759,14 @@ begin
       LResult := 0;
 
       { Read the integer and fractionary parts }
-      ReadNumber(LResult);
+      IntPart := ReadNumber(LResult);
+      FracPart := 0;
+
       if LCurrChar = AFormatSettings.DecimalSeparator then
       begin
         NextChar();
-        LPower := -ReadNumber(LResult);
+        FracPart := ReadNumber(LResult);
+        LPower := -FracPart;
       end else
         LPower := 0;
 
@@ -7435,6 +7776,9 @@ begin
         NextChar();
         Inc(LPower, ReadExponent());
       end;
+
+      if (IntPart = 0) and (FracPart = 0) then
+        exit; // Reject "E3" or ".E1" case.
 
       { Skip white spaces }
       SkipWhitespace();
@@ -7447,39 +7791,41 @@ begin
 
         Currency(AValue) := LResult;
 
-{$IFDEF NEXTGEN}
+{$IFDEF EXTENDEDHAS10BYTES}
 
 
         Result := true;
-{$ELSE  NEXTGEN}
+{$ELSE !EXTENDEDHAS10BYTES}
 {$IFDEF CPUX86}
         { Final check that everything went OK }
         Result := ALTestAndClearFPUExceptions(mIE + mOE);
+{$ELSE}
+  {$MESSAGE ERROR 'Unknown platform'}
 {$ENDIF CPUX86}
-{$ENDIF NEXTGEN}
+{$ENDIF EXTENDEDHAS10BYTES}
       end;
     end;
   end;
 
   { Clear Math Exceptions }
-{$IFDEF NEXTGEN}
+{$IFDEF EXTENDEDHAS10BYTES}
 
-{$ELSE  NEXTGEN}
+{$ELSE !EXTENDEDHAS10BYTES}
 {$IFDEF CPUX86}
   Set8087CW(LSavedCtrlWord);
+{$ELSE}
+  {$MESSAGE ERROR 'Unknown platform'}
 {$ENDIF CPUX86}
-{$ENDIF NEXTGEN}
+{$ENDIF EXTENDEDHAS10BYTES}
 end;
 {$ELSE !EXTENDEDHAS10BYTES}
 const
   CExponent = 'E'; // DO NOT LOCALIZE;
   CPlus = '+';     // DO NOT LOCALIZE;
   CMinus = '-';    // DO NOT LOCALIZE;
-  Int64MaxDiv10 = $CCCCCCCCCCCCCCC;
 var
   LPower: Integer;
   LSign: SmallInt;
-  LValue: UInt64;
   BufIndex: Integer;
 
   procedure SkipWhitespace;
@@ -7501,19 +7847,12 @@ var
     end;
   end;
 
-  function ReadNumber(var aValue: UInt64): Integer;
+  function ReadNumberPart: ansistring;
   begin
-    Result := 0;
+    Result := '';
     while ABuffer[BufIndex] in ['0'..'9'] do
     begin
-      if aValue >= Int64MaxDiv10 then
-      begin
-        if aValue > Int64MaxDiv10 then break
-        else if ABuffer[BufIndex] > '7' then break
-      end;
-      aValue := aValue * 10;
-      aValue := aValue + Ord(ABuffer[BufIndex]) - Ord('0');
-      Inc(Result);
+      Result := Result + ABuffer[BufIndex];
       Inc(BufIndex);
     end;
     // Skip remaining numbers.
@@ -7536,6 +7875,11 @@ var
     Result := Result * LSign;
   end;
 
+var
+  I: Integer;
+  U64: UInt64;
+  RoundUp: Boolean;
+  IntPart, FracPart: ansistring;
 begin
   { Prepare }
   BufIndex := 0;
@@ -7550,24 +7894,24 @@ begin
     LSign := ReadSign;
     if ABuffer[BufIndex] <> #0 then
     begin
-      { De result }
-      LValue := 0;
-
       { Read the integer and fractionary parts }
-      ReadNumber(LValue);
+      IntPart := ReadNumberPart;
       if ABuffer[BufIndex] = AFormatSettings.DecimalSeparator then
       begin
         Inc(BufIndex);
-        LPower := -ReadNumber(LValue);
-      end else
-        LPower := 0;
+        FracPart := ReadNumberPart;
+      end;
 
+      LPower := 0;
       { Read the exponent and adjust the power }
       if Char(Word(ABuffer[BufIndex]) and $FFDF) = CExponent then
       begin
         Inc(BufIndex);
-        Inc(LPower, ReadExponent);
+        LPower := ReadExponent;
       end;
+
+      if (IntPart = '') and (FracPart = '') then
+        Exit;
 
       { Skip white spaces }
       SkipWhitespace();
@@ -7578,34 +7922,69 @@ begin
         { Calculate the final number }
         LPower := LPower + 4; // Add Currency's offset digit
 
-        while LPower > 0 do
+        if LPower > 0 then
         begin
-          if LValue > Int64MaxDiv10 then
-            Exit(False); // overflow.
-          LValue := LValue * 10;
-          Dec(LPower);
-        end;
-        while LPower < 0 do
+          if Length(FracPart) < LPower then
+            FracPart := FracPart + StringOfChar(AnsiChar('0'), LPower);
+          IntPart := IntPart + Copy(FracPart, Low(ansiString), LPower);
+          FracPart := Copy(FracPart, Low(ansiString) + LPower);
+        end
+        else if LPower < 0 then
         begin
-          LValue := LValue div 10;
-          Inc(LPower);
+          LPower := - LPower;
+          if Length(IntPart) < LPower then
+            IntPart := StringOfChar(AnsiChar('0'), LPower) + IntPart;
+          FracPart := Copy(IntPart, Low(ansiString) + (Length(IntPart) - LPower), LPower) + FracPart;
+          IntPart := Copy(IntPart, Low(ansiString), Length(IntPart) - LPower);
         end;
 
-        PUInt64(@AValue)^ := LValue;
+        if IntPart = '' then
+          IntPart := '0';
+        U64 := _ALValInt64(IntPart, I);
+        if I <> 0 then
+          Exit; // error
+        if U64 > UInt64(Int64.MaxValue)+1 then
+          Exit; // overflow error
+
+        if (FracPart <> '') and (FracPart[low(FracPart)] >= '5') then
+        begin
+          RoundUp := True;
+          // exact half -> False / more than half -> True
+          if FracPart[low(FracPart)] = '5' then
+          begin
+            RoundUp := False;
+            for I := low(FracPart) + 1 to high(FracPart) do
+              if FracPart[I] <> '0' then
+              begin
+                RoundUp := True;
+                Break;
+              end;
+            RoundUp := RoundUp or (IntPart[length(IntPart)] in ['1', '3', '5', '7', '9']);
+          end;
+          if RoundUp then
+            Inc(U64); // U64 is UInt64. no overflow.
+        end;
 
         if LSign < 0 then
-          AValue := -AValue;
-
+        begin
+          if U64 > UInt64(Int64.MaxValue) + 1 then
+            Exit;
+          U64 := (not U64) + 1; // negate
+        end
+        else
+          if U64 > Int64.MaxValue then
+            Exit;
+        PUInt64(@AValue)^ := U64;
         Result := True;
       end;
     end;
   end;
 end;
-{$ENDIF EXTENDEDHAS10BYTES}
+{$IFEND !EXTENDEDHAS10BYTES}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.TextToFloat is still the same and adjust the IFDEF'}
 {$IFEND}
 {$WARN SYMBOL_DEPRECATED OFF}
 function ALTextToFloat(Buffer: PAnsiChar; var Value;
@@ -7792,8 +8171,8 @@ end;
 {$WARN SYMBOL_DEPRECATED ON}
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.SysUtils.InternalFloatToTextFmt is still the same and adjust the IFDEF'}
 {$IFEND}
 {$IFDEF PUREPASCAL}
 function InternalFloatToTextFmt(Buf: PByte; const Value; ValueType: TFloatValue; Format: PByte;
@@ -8262,11 +8641,11 @@ begin
     (FloatValue.Exponent = $7FF) or (FloatValue.Exponent = $800) then
 {$IFNDEF NEXTGEN}
     //if Unicode then
-    //  Result := FloatToText(PWideChar(Buf), Value, ValueType, ffGeneral, 15, 0)
+    //  Result := FloatToText(PWideChar(Buf), Value, ValueType, ffGeneral, 15, 0, AFormatSettings)
     //else
-      Result := System.Ansistrings.FloatToText(PAnsiChar(Buf), Value, ValueType, ffGeneral, 15, 0)
+      Result := ALFloatToText(PAnsiChar(Buf), Value, ValueType, ffGeneral, 15, 0, AFormatSettings)
 {$ELSE NEXTGEN}
-    Result := FloatToText(PWideChar(Buf), Value, ValueType, ffGeneral, 15, 0)
+    Result := FloatToText(PWideChar(Buf), Value, ValueType, ffGeneral, 15, 0, AFormatSettings)
 {$ENDIF !NEXTGEN}
   else
     ApplyFormat;
@@ -8283,8 +8662,8 @@ begin
 end;
 
 {************************}
-{$IF CompilerVersion > 32} // tokyo
-  {$MESSAGE WARN 'Check if function is still the same and adjust the IFDEF'}
+{$IF CompilerVersion > 33} // rio
+  {$MESSAGE WARN 'Check if system.sysUtils.FloatToTextFmt is still the same and adjust the IFDEF'}
 {$IFEND}
 function ALFloatToTextFmt(Buf: PAnsiChar; const Value; ValueType: TFloatValue;
   Format: PAnsiChar; const AFormatSettings: TALFormatSettings): Integer;
@@ -9633,6 +10012,34 @@ begin
   Result := ALRandomStrU(aLength,['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']);
 end;
 
+{*********************************************}
+//the first letter of each word is capitalized,
+//the rest are lower case
+Function ALTitleCaseU(const s: String): String;
+var i: integer;
+begin
+  Result := ALSentenceCaseU(s);
+  for i:= low(result)+1 to high(Result) do
+    if (Result[i-1].IsInArray(['&', ' ', '-', ''''])) and
+       (
+        (i = high(Result)) or
+        (
+         ((Result[i+1] <> ' ') or (Result[i-1] = '&')) and // Agenge L&G Prestige - Maison à Vendre - A Prendre Ou a Laisser
+         (Result[i+1] <> '''') // Avenue de l'Elysée
+        )
+       )
+    then Result[i] := Result.Chars[i-low(result)].ToUpper;
+end;
+
+{***************************************************************}
+//first letter of the sentence capitalized, all others lower case
+Function ALSentenceCaseU(const s: String): String;
+begin
+  Result := S.ToLower;
+  if length(Result) = 0 then exit;
+  result[low(result)] := Result.Chars[0].ToUpper;
+end;
+
 {$IFNDEF NEXTGEN}
 
 {*********************************************************}
@@ -10370,6 +10777,18 @@ begin
 
 end;
 
+{********************************************************************************************************}
+function ALGetBytesFromFile(const filename: ansiString; const ShareMode: Word = fmShareDenyWrite): Tbytes;
+Var AFileStream: TfileStream;
+begin
+  AFileStream := TFileStream.Create(string(filename),fmOpenRead or ShareMode);
+  try
+    Result := ALGetBytesFromStream(AFileStream);
+  finally
+    ALFreeAndNil(AfileStream);
+  end;
+end;
+
 {*************************************************************************************************************}
 function ALGetStringFromFile(const filename: AnsiString; const ShareMode: Word = fmShareDenyWrite): AnsiString;
 Var AFileStream: TfileStream;
@@ -10421,11 +10840,25 @@ begin
   end;
 end;
 
+{********************************************************************************}
+procedure ALAppendStringToFile(const Str: AnsiString; const FileName: AnsiString);
+var aFileStream: TFileStream;
+begin
+  if FileExists(String(FileName)) then aFileStream := TFileStream.Create(String(FileName), fmOpenReadWrite)
+  else                                 aFileStream := TFileStream.Create(String(FileName), fmCreate);
+  try
+    aFileStream.Position := aFileStream.Size;
+    aFileStream.WriteBuffer(Pointer(Str)^, Length(Str));
+  finally
+    aFileStream.Free;
+  end;
+end;
+
 {******************************************************************************}
 procedure ALSaveStringtoFile(const Str: AnsiString; const filename: AnsiString);
 Var AFileStream: TFileStream;
 begin
-  AFileStream := TFileStream.Create(String(filename),fmCreate);
+  AFileStream := TFileStream.Create(String(filename), fmCreate);
   try
     AFileStream.WriteBuffer(Pointer(Str)^, Length(Str));
   finally
@@ -11008,39 +11441,18 @@ end;
 {*********************************************}
 //the first letter of each word is capitalized,
 //the rest are lower case
-Function ALUTF8TitleCase(const s:AnsiString): AnsiString;
-var tmpWideStr: WideString;
-    i: integer;
+Function ALTitleCase(const s:AnsiString): AnsiString;
 begin
-  TmpWideStr := UTF8ToWideString(S);
-  if length(TmpWideStr) = 0 then begin
-    result := '';
-    exit;
-  end;
-  TmpWideStr := WideUpperCase(copy(TmpWideStr,1,1)) + WidelowerCase(copy(TmpWideStr,2,MaxInt));
-  for i:= 2 to length(TmpWideStr) do
-    if ((TmpWideStr[i-1] = WideChar('&')) or
-        (TmpWideStr[i-1] = WideChar(' ')) or
-        (TmpWideStr[i-1] = WideChar('-')) or
-        (TmpWideStr[i-1] = WideChar('''')))
-       and
-       (
-        (i = length(TmpWideStr)) or
-        (
-         ((TmpWideStr[i+1] <> ' ') or (TmpWideStr[i-1] = '&')) and // Agenge L&G Prestige - Maison à Vendre - A Prendre Ou a Laisser
-         (TmpWideStr[i+1] <> '''') // Avenue de l'Elysée
-        )
-       )
-    then TmpWideStr[i] := WideUpperCase(TmpWideStr[i])[1];
-  result := utf8encode(TmpWideStr);
+  result := ansiString(ALTitleCaseU(string(s))); // in such function, use of the ansiString is
+                                                 // painfull, so convert to unicode and do the job
 end;
 
 {****************************************************************}
 // first letter of the sentence capitalized, all others lower case
-Function ALUTF8SentenceCase(const s:AnsiString): AnsiString;
+Function ALSentenceCase(const s:AnsiString): AnsiString;
 begin
-  Result := AlUtf8LowerCase(S);
-  Result := ALUTF8UpperFirstChar(Result);
+  result := ansiString(ALSentenceCaseU(string(s))); // in such function, use of the ansiString is
+                                                    // painfull, so convert to unicode and do the job
 end;
 
 {***************************************************************}
@@ -12058,28 +12470,66 @@ end;
 
 {$ENDIF}
 
+{**************************************************}
+function  ALHTTPEncodeU(const AStr: String): String;
+// The NoConversion set contains characters as specificed in RFC 1738 and
+// should not be modified unless the standard changes.
+const
+  NoConversion = [Ord('A')..Ord('Z'),Ord('a')..Ord('z'),Ord('*'),Ord('@'),Ord('.'),Ord('_'),Ord('-'),
+                  Ord('0')..Ord('9'),Ord('$'),Ord('!'),Ord(''''),Ord('('),Ord(')')];
+var
+  Sb: Tbytes;
+  Rp: PChar;
+  ln: integer;
+  i: integer;
+begin
+  Sb := Tencoding.UTF8.GetBytes(aStr);
+  ln := length(Sb);
+  SetLength(Result, ln * 3);
+  Rp := PChar(Result);
+  i := 0;
+  while i <= ln - 1 do
+  begin
+    if Sb[i] in NoConversion then
+      Rp^ := Char(Sb[i])
+    else
+      if Sb[i] = Ord(' ') then
+        Rp^ := '+'
+      else
+      begin
+        FormatBuf(Rp, 3, String('%%%.2x'), 6, [Sb[i]]);
+        Inc(Rp,2);
+      end;
+    Inc(Rp);
+    Inc(i);
+  end;
+  SetLength(Result, Rp - PChar(Result));
+end;
+
 {************************************************************}
 //the difference between this function and the delphi function
 //HttpApp.HttpDecode is that this function will not raise any
 //error (EConvertError) when the url will contain % that
 //are not encoded
 function ALHTTPDecodeU(const AStr: String): String;
-var Sp, Rp, Cp, Tp: PChar;
+var Rb: Tbytes;
+    Sp, Cp, Tp: PChar;
     int: integer;
     S: String;
+    i: integer;
 begin
-  SetLength(Result, Length(AStr));
+  SetLength(Rb, Length(AStr));
   Sp := PChar(AStr);
-  Rp := PChar(Result);
+  i := 0;
   while Sp^ <> #0 do begin
     case Sp^ of
-      '+': Rp^ := ' ';
+      '+': Rb[i] := ord(' ');
       '%': begin
              Tp := Sp;
              Inc(Sp);
 
              //escaped % (%%)
-             if Sp^ = '%' then Rp^ := '%'
+             if Sp^ = '%' then Rb[i] := ord('%')
 
              // %<hex> encoded character
              else begin
@@ -12087,24 +12537,24 @@ begin
                Inc(Sp);
                if (Cp^ <> #0) and (Sp^ <> #0) then begin
                  S := Char('$') + Char(Cp^) + Char(Sp^);
-                 if ALTryStrToIntU(s,int) then Rp^ := Char(int)
+                 if ALTryStrToIntU(s,int) then Rb[i] := int
                  else begin
-                   Rp^ := '%';
+                   Rb[i] := ord('%');
                    Sp := Tp;
                  end;
                end
                else begin
-                 Rp^ := '%';
+                 Rb[i] := ord('%');
                  Sp := Tp;
                end;
              end;
            end;
-      else Rp^ := Sp^;
+      else Rb[i] := ord(Sp^);
     end;
-    Inc(Rp);
+    Inc(i);
     Inc(Sp);
   end;
-  SetLength(Result, Rp - PChar(Result));
+  result := Tencoding.Utf8.GetString(Rb, 0{ByteIndex}, i{ByteCount});
 end;
 
 {**************************************************************************************}
@@ -12214,17 +12664,194 @@ end;
   {$ZEROBASEDSTRINGS ON}
 {$IFEND}
 
-{*******************************}
-Procedure ALStringInitialization;
+
+{$IFNDEF NEXTGEN}
+
+{**********}
+//deprecated
+Function ALUTF8TitleCase(const s:AnsiString): AnsiString;
+var tmpWideStr: WideString;
+    i: integer;
+begin
+  TmpWideStr := UTF8ToWideString(S);
+  if length(TmpWideStr) = 0 then begin
+    result := '';
+    exit;
+  end;
+  TmpWideStr := WideUpperCase(copy(TmpWideStr,1,1)) + WidelowerCase(copy(TmpWideStr,2,MaxInt));
+  for i:= 2 to length(TmpWideStr) do
+    if ((TmpWideStr[i-1] = WideChar('&')) or
+        (TmpWideStr[i-1] = WideChar(' ')) or
+        (TmpWideStr[i-1] = WideChar('-')) or
+        (TmpWideStr[i-1] = WideChar('''')))
+       and
+       (
+        (i = length(TmpWideStr)) or
+        (
+         ((TmpWideStr[i+1] <> ' ') or (TmpWideStr[i-1] = '&')) and // Agenge L&G Prestige - Maison à Vendre - A Prendre Ou a Laisser
+         (TmpWideStr[i+1] <> '''') // Avenue de l'Elysée
+        )
+       )
+    then TmpWideStr[i] := WideUpperCase(TmpWideStr[i])[1];
+  result := utf8encode(TmpWideStr);
+end;
+
+{**********}
+//deprecated
+Function ALUTF8SentenceCase(const s:AnsiString): AnsiString;
+begin
+  Result := AlUtf8LowerCase(S);
+  Result := ALUTF8UpperFirstChar(Result);
+end;
+
+{$ENDIF}
+
+
+{********************************}
+Procedure _ALStringInitialization;
+{$IFNDEF NEXTGEN}
+var i: integer;
+{$ENDIF}
 begin
 
   {$IFNDEF NEXTGEN}
+
+  //
+  // Taken from https://github.com/synopse/mORMot.git
+  // https://synopse.info
+  // http://mormot.net
+  //
+
+  {$IF CompilerVersion > 34} // sydney
+    {$MESSAGE WARN 'Check if https://github.com/synopse/mORMot.git SynCommons.pas was not updated from references\mORMot\SynCommons.pas and adjust the IFDEF'}
+  {$IFEND}
+
+  Fillchar(ConvertBase64ToBin,256,255); // invalid value set to -1
+  for i := 0 to high(b64enc) do
+    ConvertBase64ToBin[b64enc[i]] := i;
+  ConvertBase64ToBin['='] := -2; // special value for '='
+
+  {$ENDIF}
+
+  {$IF CompilerVersion >= 31} // berlin
+  _Base64Encoding := nil;
+  {$IFEND}
+
+  //https://stackoverflow.com/questions/50590627/tformatsettings-createen-us-returns-different-settings-on-different-platform
+  {$IFNDEF NEXTGEN}
   ALPosExIgnoreCaseInitialiseLookupTable;
   ALDefaultFormatSettings := TALFormatSettings.Create('en-US'); // 1033 {en-US}
+  ALDefaultFormatSettings.CurrencyString := '$';
+  ALDefaultFormatSettings.CurrencyFormat := 0;
+  ALDefaultFormatSettings.CurrencyDecimals := 2;
+  ALDefaultFormatSettings.DateSeparator := '/';
+  ALDefaultFormatSettings.TimeSeparator := ':';
+  ALDefaultFormatSettings.ListSeparator := ';';
+  ALDefaultFormatSettings.ShortDateFormat := 'M/d/yyyy';
+  ALDefaultFormatSettings.LongDateFormat := 'dddd, MMMM d, yyyy';
+  ALDefaultFormatSettings.TimeAMString := 'AM';
+  ALDefaultFormatSettings.TimePMString := 'PM';
+  ALDefaultFormatSettings.ShortTimeFormat := 'h:mm AMPM';
+  ALDefaultFormatSettings.LongTimeFormat := 'h:mm:ss AMPM';
+  ALDefaultFormatSettings.ShortMonthNames[1] := 'Jan';
+  ALDefaultFormatSettings.LongMonthNames [1] := 'January';
+  ALDefaultFormatSettings.ShortMonthNames[2] := 'Feb';
+  ALDefaultFormatSettings.LongMonthNames [2] := 'February';
+  ALDefaultFormatSettings.ShortMonthNames[3] := 'Mar';
+  ALDefaultFormatSettings.LongMonthNames [3] := 'March';
+  ALDefaultFormatSettings.ShortMonthNames[4] := 'Apr';
+  ALDefaultFormatSettings.LongMonthNames [4] := 'April';
+  ALDefaultFormatSettings.ShortMonthNames[5] := 'May';
+  ALDefaultFormatSettings.LongMonthNames [5] := 'May';
+  ALDefaultFormatSettings.ShortMonthNames[6] := 'Jun';
+  ALDefaultFormatSettings.LongMonthNames [6] := 'June';
+  ALDefaultFormatSettings.ShortMonthNames[7] := 'Jul';
+  ALDefaultFormatSettings.LongMonthNames [7] := 'July';
+  ALDefaultFormatSettings.ShortMonthNames[8] := 'Aug';
+  ALDefaultFormatSettings.LongMonthNames [8] := 'August';
+  ALDefaultFormatSettings.ShortMonthNames[9] := 'Sep';
+  ALDefaultFormatSettings.LongMonthNames [9] := 'September';
+  ALDefaultFormatSettings.ShortMonthNames[10] := 'Oct';
+  ALDefaultFormatSettings.LongMonthNames [10] := 'October';
+  ALDefaultFormatSettings.ShortMonthNames[11] := 'Nov';
+  ALDefaultFormatSettings.LongMonthNames [11] := 'November';
+  ALDefaultFormatSettings.ShortMonthNames[12] := 'Dec';
+  ALDefaultFormatSettings.LongMonthNames [12] := 'December';
+  ALDefaultFormatSettings.ShortDayNames[1] := 'Sun';
+  ALDefaultFormatSettings.LongDayNames [1] := 'Sunday';
+  ALDefaultFormatSettings.ShortDayNames[2] := 'Mon';
+  ALDefaultFormatSettings.LongDayNames [2] := 'Monday';
+  ALDefaultFormatSettings.ShortDayNames[3] := 'Tue';
+  ALDefaultFormatSettings.LongDayNames [3] := 'Tuesday';
+  ALDefaultFormatSettings.ShortDayNames[4] := 'Wed';
+  ALDefaultFormatSettings.LongDayNames [4] := 'Wednesday';
+  ALDefaultFormatSettings.ShortDayNames[5] := 'Thu';
+  ALDefaultFormatSettings.LongDayNames [5] := 'Thursday';
+  ALDefaultFormatSettings.ShortDayNames[6] := 'Fri';
+  ALDefaultFormatSettings.LongDayNames [6] := 'Friday';
+  ALDefaultFormatSettings.ShortDayNames[7] := 'Sat';
+  ALDefaultFormatSettings.LongDayNames [7] := 'Saturday';
+  ALDefaultFormatSettings.ThousandSeparator := ',';
+  ALDefaultFormatSettings.DecimalSeparator := '.';
+  ALDefaultFormatSettings.TwoDigitYearCenturyWindow := 50;
+  ALDefaultFormatSettings.NegCurrFormat := 0;
   {$ENDIF}
-  ALDefaultFormatSettingsU := TALFormatSettingsU.Create('en-US');
+  ALDefaultFormatSettingsU := TALFormatSettingsU.Create('en-US'); // 1033 {en-US}
+  ALDefaultFormatSettingsU.CurrencyString := '$';
+  ALDefaultFormatSettingsU.CurrencyFormat := 0;
+  ALDefaultFormatSettingsU.CurrencyDecimals := 2;
+  ALDefaultFormatSettingsU.DateSeparator := '/';
+  ALDefaultFormatSettingsU.TimeSeparator := ':';
+  ALDefaultFormatSettingsU.ListSeparator := ';';
+  ALDefaultFormatSettingsU.ShortDateFormat := 'M/d/yyyy';
+  ALDefaultFormatSettingsU.LongDateFormat := 'dddd, MMMM d, yyyy';
+  ALDefaultFormatSettingsU.TimeAMString := 'AM';
+  ALDefaultFormatSettingsU.TimePMString := 'PM';
+  ALDefaultFormatSettingsU.ShortTimeFormat := 'h:mm AMPM';
+  ALDefaultFormatSettingsU.LongTimeFormat := 'h:mm:ss AMPM';
+  ALDefaultFormatSettingsU.ShortMonthNames[1] := 'Jan';
+  ALDefaultFormatSettingsU.LongMonthNames [1] := 'January';
+  ALDefaultFormatSettingsU.ShortMonthNames[2] := 'Feb';
+  ALDefaultFormatSettingsU.LongMonthNames [2] := 'February';
+  ALDefaultFormatSettingsU.ShortMonthNames[3] := 'Mar';
+  ALDefaultFormatSettingsU.LongMonthNames [3] := 'March';
+  ALDefaultFormatSettingsU.ShortMonthNames[4] := 'Apr';
+  ALDefaultFormatSettingsU.LongMonthNames [4] := 'April';
+  ALDefaultFormatSettingsU.ShortMonthNames[5] := 'May';
+  ALDefaultFormatSettingsU.LongMonthNames [5] := 'May';
+  ALDefaultFormatSettingsU.ShortMonthNames[6] := 'Jun';
+  ALDefaultFormatSettingsU.LongMonthNames [6] := 'June';
+  ALDefaultFormatSettingsU.ShortMonthNames[7] := 'Jul';
+  ALDefaultFormatSettingsU.LongMonthNames [7] := 'July';
+  ALDefaultFormatSettingsU.ShortMonthNames[8] := 'Aug';
+  ALDefaultFormatSettingsU.LongMonthNames [8] := 'August';
+  ALDefaultFormatSettingsU.ShortMonthNames[9] := 'Sep';
+  ALDefaultFormatSettingsU.LongMonthNames [9] := 'September';
+  ALDefaultFormatSettingsU.ShortMonthNames[10] := 'Oct';
+  ALDefaultFormatSettingsU.LongMonthNames [10] := 'October';
+  ALDefaultFormatSettingsU.ShortMonthNames[11] := 'Nov';
+  ALDefaultFormatSettingsU.LongMonthNames [11] := 'November';
+  ALDefaultFormatSettingsU.ShortMonthNames[12] := 'Dec';
+  ALDefaultFormatSettingsU.LongMonthNames [12] := 'December';
+  ALDefaultFormatSettingsU.ShortDayNames[1] := 'Sun';
+  ALDefaultFormatSettingsU.LongDayNames [1] := 'Sunday';
+  ALDefaultFormatSettingsU.ShortDayNames[2] := 'Mon';
+  ALDefaultFormatSettingsU.LongDayNames [2] := 'Monday';
+  ALDefaultFormatSettingsU.ShortDayNames[3] := 'Tue';
+  ALDefaultFormatSettingsU.LongDayNames [3] := 'Tuesday';
+  ALDefaultFormatSettingsU.ShortDayNames[4] := 'Wed';
+  ALDefaultFormatSettingsU.LongDayNames [4] := 'Wednesday';
+  ALDefaultFormatSettingsU.ShortDayNames[5] := 'Thu';
+  ALDefaultFormatSettingsU.LongDayNames [5] := 'Thursday';
+  ALDefaultFormatSettingsU.ShortDayNames[6] := 'Fri';
+  ALDefaultFormatSettingsU.LongDayNames [6] := 'Friday';
+  ALDefaultFormatSettingsU.ShortDayNames[7] := 'Sat';
+  ALDefaultFormatSettingsU.LongDayNames [7] := 'Saturday';
+  ALDefaultFormatSettingsU.ThousandSeparator := ',';
+  ALDefaultFormatSettingsU.DecimalSeparator := '.';
+  ALDefaultFormatSettingsU.TwoDigitYearCenturyWindow := 50;
+  ALDefaultFormatSettingsU.NegCurrFormat := 0;
 
-  ALMove := system.Move;
   {$IFNDEF NEXTGEN}
   ALPosEx := System.AnsiStrings.PosEx;
   AlUpperCase := system.AnsiStrings.UpperCase;
@@ -12235,8 +12862,6 @@ begin
   ALSameText := system.AnsiStrings.SameText;
   ALMatchText := System.AnsiStrings.MatchText;
   ALMatchStr := System.AnsiStrings.MatchStr;
-  ALBase64EncodeString := ALMimeEncodeStringNoCRLF;
-  ALBase64DecodeString := ALMimeDecodeString;
   {$ENDIF}
 
   ALDateToStrU := system.sysutils.DateToStr;
@@ -12262,10 +12887,6 @@ begin
   ALCurrToStrU := system.sysutils.CurrToStr;
   ALFormatFloatU := system.sysutils.FormatFloat;
   ALFormatCurrU := system.sysutils.FormatCurr;
-  ALBase64EncodeStringU := ALMimeEncodeStringNoCRLFU;
-  ALBase64DecodeStringU := ALMimeDecodeStringU;
-  ALBase64EncodeBytesU := ALMimeEncodeBytesNoCRLFU;
-  ALBase64DecodeBytesU := ALMimeDecodeBytesU;
   ALStrToFloatU := system.sysutils.StrToFloat;
   ALStrToFloatDefU := system.sysutils.StrToFloatDef;
   ALStrToCurrU := system.sysutils.StrToCurr;
@@ -12288,5 +12909,21 @@ begin
   ALStringReplaceU := system.sysutils.StringReplace;
 
 end;
+
+{******************************}
+Procedure _ALStringFinalization;
+begin
+
+  {$IF CompilerVersion >= 31} // berlin
+  AlFreeAndNil(_Base64Encoding);
+  {$IFEND}
+
+end;
+
+initialization
+  _ALStringInitialization;
+
+finalization
+  _ALStringFinalization;
 
 end.

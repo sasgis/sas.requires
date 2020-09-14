@@ -1,21 +1,9 @@
 {*************************************************************
-www:          http://sourceforge.net/projects/alcinoe/              
-svn:          svn checkout svn://svn.code.sf.net/p/alcinoe/code/ alcinoe-code
-Author(s):    Stéphane Vander Clock (skype/email: svanderclock@yahoo.fr)
-							
 product:      ALQuickSortList
-Version:      4.00
-
 Description:  TALIntegerList or TALDoubleList that work exactly
               like TstringList but with integer or Double.
-
-Know bug :
-
-History :     16/06/2012: Add xe2 Support
-
-Link :
-
 **************************************************************}
+
 unit ALQuickSortList;
 
 {Exemple of a QuickSort Algorithm :
@@ -68,10 +56,7 @@ interface
   {$LEGACYIFEND ON} // http://docwiki.embarcadero.com/RADStudio/XE4/en/Legacy_IFEND_(Delphi)
 {$IFEND}
 
-Uses System.Classes,
-     System.RTLConsts,
-     System.Generics.Defaults,
-     System.Generics.Collections;
+Uses System.Classes;
 
 Type
 
@@ -146,6 +131,8 @@ Type
     function  IndexOfObject(AObject: TObject): Integer;
     function  Add(const Item: integer): Integer;
     Function  AddObject(const Item: integer; AObject: TObject): Integer;
+    function  TryAdd(const Item: integer): boolean;
+    Function  TryAddObject(const Item: integer; AObject: TObject): boolean;
     function  Find(item: Integer; var Index: Integer): Boolean;
     procedure Insert(Index: Integer; const item: integer);
     procedure InsertObject(Index: Integer; const item: integer; AObject: TObject);
@@ -155,6 +142,7 @@ Type
     function  Push(Item: Integer): Integer;
     function  Pop: Integer; inline;
     function  Peek: Integer; inline;
+    function  ToArray: TArray<Integer>;
   end;
 
   {-----------------------------------------}
@@ -183,6 +171,8 @@ Type
     function  IndexOfObject(AObject: TObject): Integer;
     function  Add(const Item: Cardinal): Integer;
     Function  AddObject(const Item: Cardinal; AObject: TObject): Integer;
+    function  TryAdd(const Item: Cardinal): boolean;
+    Function  TryAddObject(const Item: Cardinal; AObject: TObject): boolean;
     function  Find(item: Cardinal; var Index: Integer): Boolean;
     procedure Insert(Index: Integer; const item: Cardinal);
     procedure InsertObject(Index: Integer; const item: Cardinal; AObject: TObject);
@@ -192,6 +182,7 @@ Type
     function  Push(Item: Cardinal): Cardinal;
     function  Pop: Cardinal; inline;
     function  Peek: Cardinal; inline;
+    function  ToArray: TArray<Cardinal>;
   end;
 
   {-----------------------------------}
@@ -220,6 +211,8 @@ Type
     function  IndexOfObject(AObject: TObject): Integer;
     function  Add(const Item: Int64): Integer;
     Function  AddObject(const Item: Int64; AObject: TObject): Integer;
+    function  TryAdd(const Item: Int64): boolean;
+    Function  TryAddObject(const Item: Int64; AObject: TObject): boolean;
     function  Find(item: Int64; var Index: Integer): Boolean;
     procedure Insert(Index: Integer; const item: Int64);
     procedure InsertObject(Index: Integer; const item: Int64; AObject: TObject);
@@ -229,6 +222,7 @@ Type
     function  Push(Item: Int64): Int64;
     function  Pop: Int64; inline;
     function  Peek: Int64; inline;
+    function  ToArray: TArray<Int64>;
   end;
 
   {-------------------------------------------}
@@ -257,6 +251,8 @@ Type
     function  IndexOfObject(AObject: TObject): Integer;
     function  Add(const Item: NativeInt): Integer;
     Function  AddObject(const Item: NativeInt; AObject: TObject): Integer;
+    function  TryAdd(const Item: NativeInt): boolean;
+    Function  TryAddObject(const Item: NativeInt; AObject: TObject): boolean;
     function  Find(item: NativeInt; var Index: Integer): Boolean;
     procedure Insert(Index: Integer; const item: NativeInt);
     procedure InsertObject(Index: Integer; const item: NativeInt; AObject: TObject);
@@ -266,6 +262,7 @@ Type
     function  Push(Item: NativeInt): NativeInt;
     function  Pop: NativeInt; inline;
     function  Peek: NativeInt; inline;
+    function  ToArray: TArray<NativeInt>;
   end;
 
   {-------------------------------------}
@@ -294,6 +291,8 @@ Type
     function  IndexOfObject(AObject: TObject): Integer;
     function  Add(const Item: Double): Integer;
     Function  AddObject(const Item: Double; AObject: TObject): Integer;
+    function  TryAdd(const Item: Double): boolean;
+    Function  TryAddObject(const Item: Double; AObject: TObject): boolean;
     function  Find(item: Double; var Index: Integer): Boolean;
     procedure Insert(Index: Integer; const item: Double);
     procedure InsertObject(Index: Integer; const item: Double; AObject: TObject);
@@ -303,170 +302,7 @@ Type
     function  Push(Item: Double): Double;
     function  Pop: Double; inline;
     function  Peek: Double; inline;
-  end;
-
-  {------------------------}
-  {$IF CompilerVersion > 32} // tokyo
-    {$MESSAGE WARN 'Check if https://quality.embarcadero.com/browse/RSP-13502 is still not yet implemented in System.Generics.Collections.pas'}
-  {$IFEND}
-  TALDictionary<TKey,TValue> = class(TEnumerable<TPair<TKey,TValue>>)
-  private
-    type
-    TItem = record
-      HashCode: Integer;
-      Key: TKey;
-      Value: TValue;
-    end;
-    TItemArray = array of TItem;
-    private
-    FItems: TItemArray;
-    FCount: Integer;
-    FComparer: IEqualityComparer<TKey>;
-    FGrowThreshold: Integer;
-
-    {$HINTS OFF}
-    function ToArrayImpl(Count: Integer): TArray<TPair<TKey,TValue>>; // used by descendants
-    {$HINTS ON}
-    procedure Rehash(NewCapPow2: Integer);
-    procedure Grow;
-    function GetBucketIndex(const Key: TKey; HashCode: Integer): Integer;
-    function Hash(const Key: TKey): Integer;
-    function GetItem(const Key: TKey): TValue;
-    procedure SetItem(const Key: TKey; const Value: TValue);
-    procedure RehashAdd(HashCode: Integer; const Key: TKey; const Value: TValue);
-    procedure DoAdd(HashCode, Index: Integer; const Key: TKey; const Value: TValue);
-    procedure DoSetValue(Index: Integer; const Value: TValue);
-    function DoRemove(const Key: TKey; HashCode: Integer; Notification: TCollectionNotification): TValue;
-  protected
-    function DoGetEnumerator: TEnumerator<TPair<TKey,TValue>>; override;
-    procedure KeyNotify(const Key: TKey; Action: TCollectionNotification); virtual;
-    procedure ValueNotify(const Value: TValue; Action: TCollectionNotification); virtual;
-  public
-    constructor Create(ACapacity: Integer = 0); overload;
-    constructor Create(const AComparer: IEqualityComparer<TKey>); overload;
-    constructor Create(ACapacity: Integer; const AComparer: IEqualityComparer<TKey>); overload;
-    constructor Create(const Collection: TEnumerable<TPair<TKey,TValue>>); overload;
-    constructor Create(const Collection: TEnumerable<TPair<TKey,TValue>>; const AComparer: IEqualityComparer<TKey>); overload;
-    destructor Destroy; override;
-
-    procedure SetCapacity(ACapacity: Integer);
-    function TryAdd(const Key: TKey; const Value: TValue): boolean;
-    procedure Add(const Key: TKey; const Value: TValue);
-    procedure Remove(const Key: TKey);
-    function ExtractPair(const Key: TKey): TPair<TKey,TValue>;
-    procedure Clear;
-    procedure TrimExcess;
-    function TryGetValue(const Key: TKey; out Value: TValue): Boolean;
-    procedure AddOrSetValue(const Key: TKey; const Value: TValue);
-    function ContainsKey(const Key: TKey): Boolean;
-    function ContainsValue(const Value: TValue): Boolean;
-    function ToArray: TArray<TPair<TKey,TValue>>; override; final;
-
-    property Items[const Key: TKey]: TValue read GetItem write SetItem; default;
-    property Count: Integer read FCount;
-
-    type
-      TPairEnumerator = class(TEnumerator<TPair<TKey,TValue>>)
-      private
-        FDictionary: TALDictionary<TKey,TValue>;
-        FIndex: Integer;
-        function GetCurrent: TPair<TKey,TValue>;
-      protected
-        function DoGetCurrent: TPair<TKey,TValue>; override;
-        function DoMoveNext: Boolean; override;
-      public
-        constructor Create(const ADictionary: TALDictionary<TKey,TValue>);
-        property Current: TPair<TKey,TValue> read GetCurrent;
-        function MoveNext: Boolean;
-      end;
-
-      TKeyEnumerator = class(TEnumerator<TKey>)
-      private
-        FDictionary: TALDictionary<TKey,TValue>;
-        FIndex: Integer;
-        function GetCurrent: TKey;
-      protected
-        function DoGetCurrent: TKey; override;
-        function DoMoveNext: Boolean; override;
-      public
-        constructor Create(const ADictionary: TALDictionary<TKey,TValue>);
-        property Current: TKey read GetCurrent;
-        function MoveNext: Boolean;
-      end;
-
-      TValueEnumerator = class(TEnumerator<TValue>)
-      private
-        FDictionary: TALDictionary<TKey,TValue>;
-        FIndex: Integer;
-        function GetCurrent: TValue;
-      protected
-        function DoGetCurrent: TValue; override;
-        function DoMoveNext: Boolean; override;
-      public
-        constructor Create(const ADictionary: TALDictionary<TKey,TValue>);
-        property Current: TValue read GetCurrent;
-        function MoveNext: Boolean;
-      end;
-
-      TValueCollection = class(TEnumerable<TValue>)
-      private
-        [Weak] FDictionary: TALDictionary<TKey,TValue>;
-        {$HINTS OFF}
-        function ToArrayImpl(Count: Integer): TArray<TValue>; // used by descendants
-        {$HINTS ON}
-        function GetCount: Integer;
-      protected
-        function DoGetEnumerator: TEnumerator<TValue>; override;
-      public
-        constructor Create(const ADictionary: TALDictionary<TKey,TValue>);
-        function GetEnumerator: TValueEnumerator; reintroduce;
-        function ToArray: TArray<TValue>; override; final;
-        property Count: Integer read GetCount;
-      end;
-
-      TKeyCollection = class(TEnumerable<TKey>)
-      private
-        [Weak] FDictionary: TALDictionary<TKey,TValue>;
-        {$HINTS OFF}
-        function ToArrayImpl(Count: Integer): TArray<TKey>; // used by descendants
-        {$HINTS ON}
-        function GetCount: Integer;
-      protected
-        function DoGetEnumerator: TEnumerator<TKey>; override;
-      public
-        constructor Create(const ADictionary: TALDictionary<TKey,TValue>);
-        function GetEnumerator: TKeyEnumerator; reintroduce;
-        function ToArray: TArray<TKey>; override; final;
-        property Count: Integer read GetCount;
-      end;
-
-  private
-    FOnKeyNotify: TCollectionNotifyEvent<TKey>;
-    FOnValueNotify: TCollectionNotifyEvent<TValue>;
-    FKeyCollection: TKeyCollection;
-    FValueCollection: TValueCollection;
-    function GetKeys: TKeyCollection;
-    function GetValues: TValueCollection;
-  public
-    function GetEnumerator: TPairEnumerator; reintroduce;
-    property Keys: TKeyCollection read GetKeys;
-    property Values: TValueCollection read GetValues;
-    property OnKeyNotify: TCollectionNotifyEvent<TKey> read FOnKeyNotify write FOnKeyNotify;
-    property OnValueNotify: TCollectionNotifyEvent<TValue> read FOnValueNotify write FOnValueNotify;
-  end;
-
-  {------------------------------------------------------------------}
-  TALObjectDictionary<TKey,TValue> = class(TALDictionary<TKey,TValue>)
-  private
-    FOwnerships: TDictionaryOwnerships;
-  protected
-    procedure KeyNotify(const Key: TKey; Action: TCollectionNotification); override;
-    procedure ValueNotify(const Value: TValue; Action: TCollectionNotification); override;
-  public
-    constructor Create(Ownerships: TDictionaryOwnerships; ACapacity: Integer = 0); overload;
-    constructor Create(Ownerships: TDictionaryOwnerships; const AComparer: IEqualityComparer<TKey>); overload;
-    constructor Create(Ownerships: TDictionaryOwnerships; ACapacity: Integer; const AComparer: IEqualityComparer<TKey>); overload;
-    property Ownerships: TDictionaryOwnerships read fOwnerships write fOwnerships;
+    function  ToArray: TArray<Double>;
   end;
 
 resourcestring
@@ -478,10 +314,7 @@ resourcestring
 
 implementation
 
-uses System.SysUtils,
-     System.SysConst,
-     System.TypInfo,
-     System.Math,
+uses System.Math,
      ALCommon,
      ALString;
 
@@ -763,6 +596,26 @@ begin
   InsertItem(Result, Item, AObject);
 end;
 
+{***********************************************************}
+function TALIntegerList.TryAdd(const Item: integer): Boolean;
+begin
+  Result := TryAddObject(Item, nil);
+end;
+
+{***********************************************************************************}
+function TALIntegerList.TryAddObject(const Item: integer; AObject: TObject): Boolean;
+var aIndex: integer;
+begin
+  if not Sorted then aIndex := FCount
+  else if Find(Item, aIndex) then
+    case Duplicates of
+      dupIgnore,
+      dupError: Exit(False);
+    end;
+  InsertItem(aIndex, Item, AObject);
+  result := true;
+end;
+
 {*****************************************************************************************}
 procedure TALIntegerList.InsertItem(Index: Integer; const item: integer; AObject: TObject);
 Var aPALIntegerListItem: PALIntegerListItem;
@@ -928,6 +781,15 @@ begin
   Result := GetItem(Count-1);
 end;
 
+{***********************************************}
+function TALIntegerList.ToArray: TArray<Integer>;
+var i: integer;
+begin
+  SetLength(Result, Count);
+  for I := 0 to Count - 1 do
+    Result[i] := GetItem(i);
+end;
+
 {**********************************************************}
 function TALCardinalList.Add(const Item: Cardinal): Integer;
 begin
@@ -944,6 +806,26 @@ begin
       dupError: Error(@SALDuplicateItem, 0);
     end;
   InsertItem(Result, Item, AObject);
+end;
+
+{*************************************************************}
+function TALCardinalList.TryAdd(const Item: Cardinal): Boolean;
+begin
+  Result := TryAddObject(Item, nil);
+end;
+
+{*************************************************************************************}
+function TALCardinalList.TryAddObject(const Item: Cardinal; AObject: TObject): Boolean;
+var aIndex: integer;
+begin
+  if not Sorted then aIndex := FCount
+  else if Find(Item, aIndex) then
+    case Duplicates of
+      dupIgnore,
+      dupError: Exit(False);
+    end;
+  InsertItem(aIndex, Item, AObject);
+  result := true;
 end;
 
 {*******************************************************************************************}
@@ -1126,6 +1008,15 @@ begin
   Result := GetItem(Count-1);
 end;
 
+{*************************************************}
+function TALCardinalList.ToArray: TArray<cardinal>;
+var i: integer;
+begin
+  SetLength(Result, Count);
+  for I := 0 to Count - 1 do
+    Result[i] := GetItem(i);
+end;
+
 {****************************************************}
 function TALInt64List.Add(const Item: Int64): Integer;
 begin
@@ -1142,6 +1033,26 @@ begin
       dupError: Error(@SALDuplicateItem, 0);
     end;
   InsertItem(Result, Item, AObject);
+end;
+
+{*******************************************************}
+function TALInt64List.TryAdd(const Item: Int64): Boolean;
+begin
+  Result := TryAddObject(Item, nil);
+end;
+
+{*******************************************************************************}
+function TALInt64List.TryAddObject(const Item: Int64; AObject: TObject): Boolean;
+var aIndex: integer;
+begin
+  if not Sorted then aIndex := FCount
+  else if Find(Item, aIndex) then
+    case Duplicates of
+      dupIgnore,
+      dupError: Exit(False);
+    end;
+  InsertItem(aIndex, Item, AObject);
+  result := true;
 end;
 
 {*************************************************************************************}
@@ -1309,6 +1220,15 @@ begin
   Result := GetItem(Count-1);
 end;
 
+{*******************************************}
+function TALInt64List.ToArray: TArray<int64>;
+var i: integer;
+begin
+  SetLength(Result, Count);
+  for I := 0 to Count - 1 do
+    Result[i] := GetItem(i);
+end;
+
 {************************************************************}
 function TALNativeIntList.Add(const Item: NativeInt): Integer;
 begin
@@ -1325,6 +1245,26 @@ begin
       dupError: Error(@SALDuplicateItem, 0);
     end;
   InsertItem(Result, Item, AObject);
+end;
+
+{***************************************************************}
+function TALNativeIntList.TryAdd(const Item: NativeInt): Boolean;
+begin
+  Result := TryAddObject(Item, nil);
+end;
+
+{***************************************************************************************}
+function TALNativeIntList.TryAddObject(const Item: NativeInt; AObject: TObject): Boolean;
+var aIndex: integer;
+begin
+  if not Sorted then aIndex := FCount
+  else if Find(Item, aIndex) then
+    case Duplicates of
+      dupIgnore,
+      dupError: Exit(False);
+    end;
+  InsertItem(aIndex, Item, AObject);
+  result := true;
 end;
 
 {*********************************************************************************************}
@@ -1507,6 +1447,15 @@ begin
   Result := GetItem(Count-1);
 end;
 
+{***************************************************}
+function TALNativeIntList.ToArray: TArray<NativeInt>;
+var i: integer;
+begin
+  SetLength(Result, Count);
+  for I := 0 to Count - 1 do
+    Result[i] := GetItem(i);
+end;
+
 {******************************************************}
 function TALDoubleList.Add(const Item: Double): Integer;
 begin
@@ -1523,6 +1472,26 @@ begin
       dupError: Error(@SALDuplicateItem, 0);
     end;
   InsertItem(Result, Item, AObject);
+end;
+
+{*********************************************************}
+function TALDoubleList.TryAdd(const Item: Double): Boolean;
+begin
+  Result := TryAddObject(Item, nil);
+end;
+
+{*********************************************************************************}
+function TALDoubleList.TryAddObject(const Item: Double; AObject: TObject): Boolean;
+var aIndex: integer;
+begin
+  if not Sorted then aIndex := FCount
+  else if Find(Item, aIndex) then
+    case Duplicates of
+      dupIgnore,
+      dupError: Exit(False);
+    end;
+  InsertItem(aIndex, Item, AObject);
+  result := true;
 end;
 
 {***************************************************************************************}
@@ -1690,735 +1659,13 @@ begin
   Result := GetItem(Count-1);
 end;
 
-{***}
-const
-  EMPTY_HASH = -1;
-
-{******************************************************************************************}
-function TALDictionary<TKey,TValue>.ToArrayImpl(Count: Integer): TArray<TPair<TKey,TValue>>;
-var
-  Value: TPair<TKey,TValue>;
+{*********************************************}
+function TALDoubleList.ToArray: TArray<Double>;
+var i: integer;
 begin
-  // We assume our caller has passed correct Count
   SetLength(Result, Count);
-  Count := 0;
-  for Value in Self do
-  begin
-    Result[Count] := Value;
-    Inc(Count);
-  end;
-end;
-
-{***************************************************************}
-procedure TALDictionary<TKey,TValue>.Rehash(NewCapPow2: Integer);
-var
-  oldItems, newItems: TItemArray;
-  i: Integer;
-begin
-  if NewCapPow2 = Length(FItems) then
-    Exit
-  else if NewCapPow2 < 0 then
-    OutOfMemoryError;
-
-  oldItems := FItems;
-  SetLength(newItems, NewCapPow2);
-  for i := 0 to Length(newItems) - 1 do
-    newItems[i].HashCode := EMPTY_HASH;
-  FItems := newItems;
-  FGrowThreshold := NewCapPow2 shr 1 + NewCapPow2 shr 2; // 75%
-
-  for i := 0 to Length(oldItems) - 1 do
-    if oldItems[i].HashCode <> EMPTY_HASH then
-      RehashAdd(oldItems[i].HashCode, oldItems[i].Key, oldItems[i].Value);
-end;
-
-{*******************************************************************}
-procedure TALDictionary<TKey,TValue>.SetCapacity(ACapacity: Integer);
-var
-  newCap: Integer;
-begin
-  if ACapacity < Count then
-    raise EArgumentOutOfRangeException.CreateRes(@SArgumentOutOfRange);
-
-  if ACapacity = 0 then
-    Rehash(0)
-  else
-  begin
-    newCap := 4;
-    while newCap < ACapacity do
-      newCap := newCap shl 1;
-    Rehash(newCap);
-  end
-end;
-
-{****************************************}
-procedure TALDictionary<TKey,TValue>.Grow;
-var
-  newCap: Integer;
-begin
-  newCap := Length(FItems) * 2;
-  if newCap = 0 then
-    newCap := 4;
-  Rehash(newCap);
-end;
-
-{**********************************************************************************************}
-function TALDictionary<TKey,TValue>.GetBucketIndex(const Key: TKey; HashCode: Integer): Integer;
-var
-  start, hc: Integer;
-begin
-  if Length(FItems) = 0 then
-    Exit(not High(Integer));
-
-  start := HashCode and (Length(FItems) - 1);
-  Result := start;
-  while True do
-  begin
-    hc := FItems[Result].HashCode;
-
-    // Not found: return complement of insertion point.
-    if hc = EMPTY_HASH then
-      Exit(not Result);
-
-    // Found: return location.
-    if (hc = HashCode) and FComparer.Equals(FItems[Result].Key, Key) then
-      Exit(Result);
-
-    Inc(Result);
-    if Result >= Length(FItems) then
-      Result := 0;
-  end;
-end;
-
-{*****************************************************************}
-function TALDictionary<TKey,TValue>.Hash(const Key: TKey): Integer;
-const
-  PositiveMask = not Integer($80000000);
-begin
-  // Double-Abs to avoid -MaxInt and MinInt problems.
-  // Not using compiler-Abs because we *must* get a positive integer;
-  // for compiler, Abs(Low(Integer)) is a null op.
-  Result := PositiveMask and ((PositiveMask and FComparer.GetHashCode(Key)) + 1);
-end;
-
-{*******************************************************************}
-function TALDictionary<TKey,TValue>.GetItem(const Key: TKey): TValue;
-var
-  index: Integer;
-begin
-  index := GetBucketIndex(Key, Hash(Key));
-  if index < 0 then
-    raise EListError.CreateRes(@SGenericItemNotFound);
-  Result := FItems[index].Value;
-end;
-
-{*********************************************************************************}
-procedure TALDictionary<TKey,TValue>.SetItem(const Key: TKey; const Value: TValue);
-var
-  index: Integer;
-  oldValue: TValue;
-begin
-  index := GetBucketIndex(Key, Hash(Key));
-  if index < 0 then
-    raise EListError.CreateRes(@SGenericItemNotFound);
-
-  oldValue := FItems[index].Value;
-  FItems[index].Value := Value;
-
-  ValueNotify(oldValue, cnRemoved);
-  ValueNotify(Value, cnAdded);
-end;
-
-{******************************************************************************************************}
-procedure TALDictionary<TKey,TValue>.RehashAdd(HashCode: Integer; const Key: TKey; const Value: TValue);
-var
-  index: Integer;
-begin
-  index := not GetBucketIndex(Key, HashCode);
-  FItems[index].HashCode := HashCode;
-  FItems[index].Key := Key;
-  FItems[index].Value := Value;
-end;
-
-{***********************************************************************************************}
-procedure TALDictionary<TKey,TValue>.KeyNotify(const Key: TKey; Action: TCollectionNotification);
-begin
-  if Assigned(FOnKeyNotify) then
-    FOnKeyNotify(Self, Key, Action);
-end;
-
-{*****************************************************************************************************}
-procedure TALDictionary<TKey,TValue>.ValueNotify(const Value: TValue; Action: TCollectionNotification);
-begin
-  if Assigned(FOnValueNotify) then
-    FOnValueNotify(Self, Value, Action);
-end;
-
-{********************************************************************}
-constructor TALDictionary<TKey,TValue>.Create(ACapacity: Integer = 0);
-begin
-  Create(ACapacity, nil);
-end;
-
-{**************************************************************************************}
-constructor TALDictionary<TKey,TValue>.Create(const AComparer: IEqualityComparer<TKey>);
-begin
-  Create(0, AComparer);
-end;
-
-{**********************************************************************************************************}
-constructor TALDictionary<TKey,TValue>.Create(ACapacity: Integer; const AComparer: IEqualityComparer<TKey>);
-var
-  cap: Integer;
-begin
-  inherited Create;
-  if ACapacity < 0 then
-    raise EArgumentOutOfRangeException.CreateRes(@SArgumentOutOfRange);
-  FComparer := AComparer;
-  if FComparer = nil then
-    FComparer := TEqualityComparer<TKey>.Default;
-  SetCapacity(ACapacity);
-end;
-
-{*************************************************************************************************}
-constructor TALDictionary<TKey, TValue>.Create(const Collection: TEnumerable<TPair<TKey, TValue>>);
-var
-  item: TPair<TKey,TValue>;
-begin
-  Create(0, nil);
-  for item in Collection do
-    AddOrSetValue(item.Key, item.Value);
-end;
-
-{************************************************************************************************}
-constructor TALDictionary<TKey, TValue>.Create(const Collection: TEnumerable<TPair<TKey, TValue>>;
-  const AComparer: IEqualityComparer<TKey>);
-var
-  item: TPair<TKey,TValue>;
-begin
-  Create(0, AComparer);
-  for item in Collection do
-    AddOrSetValue(item.Key, item.Value);
-end;
-
-{********************************************}
-destructor TALDictionary<TKey,TValue>.Destroy;
-begin
-  Clear;
-  ALFreeAndNil(FKeyCollection);
-  ALFreeAndNil(FValueCollection);
-  inherited;
-end;
-
-{****************************************************************************************}
-function TALDictionary<TKey,TValue>.TryAdd(const Key: TKey; const Value: TValue): boolean;
-var
-  index, hc: Integer;
-begin
-  if Count >= FGrowThreshold then
-    Grow;
-
-  hc := Hash(Key);
-  index := GetBucketIndex(Key, hc);
-  if index >= 0 then exit(False);
-
-  result := true;
-  DoAdd(hc, not index, Key, Value);
-end;
-
-{*****************************************************************************}
-procedure TALDictionary<TKey,TValue>.Add(const Key: TKey; const Value: TValue);
-var
-  index, hc: Integer;
-begin
-  if Count >= FGrowThreshold then
-    Grow;
-
-  hc := Hash(Key);
-  index := GetBucketIndex(Key, hc);
-  if index >= 0 then
-    raise EListError.CreateRes(@SGenericDuplicateItem);
-
-  DoAdd(hc, not index, Key, Value);
-end;
-
-{******************************************************************************}
-function TALDictionary<TKey,TValue>.DoRemove(const Key: TKey; HashCode: Integer;
-  Notification: TCollectionNotification): TValue;
-var
-  gap, index, hc, bucket: Integer;
-  LKey: TKey;
-begin
-  index := GetBucketIndex(Key, HashCode);
-  if index < 0 then
-    Exit(Default(TValue));
-
-  // Removing item from linear probe hash table is moderately
-  // tricky. We need to fill in gaps, which will involve moving items
-  // which may not even hash to the same location.
-  // Knuth covers it well enough in Vol III. 6.4.; but beware, Algorithm R
-  // (2nd ed) has a bug: step R4 should go to step R1, not R2 (already errata'd).
-  // My version does linear probing forward, not backward, however.
-
-  // gap refers to the hole that needs filling-in by shifting items down.
-  // index searches for items that have been probed out of their slot,
-  // but being careful not to move items if their bucket is between
-  // our gap and our index (so that they'd be moved before their bucket).
-  // We move the item at index into the gap, whereupon the new gap is
-  // at the index. If the index hits a hole, then we're done.
-
-  // If our load factor was exactly 1, we'll need to hit this hole
-  // in order to terminate. Shouldn't normally be necessary, though.
-  FItems[index].HashCode := EMPTY_HASH;
-  Result := FItems[index].Value;
-  LKey := FItems[index].Key;
-
-  gap := index;
-  while True do
-  begin
-    Inc(index);
-    if index = Length(FItems) then
-      index := 0;
-
-    hc := FItems[index].HashCode;
-    if hc = EMPTY_HASH then
-      Break;
-
-    bucket := hc and (Length(FItems) - 1);
-    if not InCircularRange(gap, bucket, index) then
-    begin
-      FItems[gap] := FItems[index];
-      gap := index;
-      // The gap moved, but we still need to find it to terminate.
-      FItems[gap].HashCode := EMPTY_HASH;
-    end;
-  end;
-
-  FItems[gap].HashCode := EMPTY_HASH;
-  FItems[gap].Key := Default(TKey);
-  FItems[gap].Value := Default(TValue);
-  Dec(FCount);
-
-  KeyNotify(LKey, Notification);
-  ValueNotify(Result, Notification);
-end;
-
-{***********************************************************}
-procedure TALDictionary<TKey,TValue>.Remove(const Key: TKey);
-begin
-  DoRemove(Key, Hash(Key), cnRemoved);
-end;
-
-{***********************************************************************************}
-function TALDictionary<TKey,TValue>.ExtractPair(const Key: TKey): TPair<TKey,TValue>;
-var
-  hc, index: Integer;
-begin
-  hc := Hash(Key);
-  index := GetBucketIndex(Key, hc);
-  if index < 0 then
-    Exit(TPair<TKey,TValue>.Create(Key, Default(TValue)));
-
-  Result := TPair<TKey,TValue>.Create(Key, DoRemove(Key, hc, cnExtracted));
-end;
-
-{*****************************************}
-procedure TALDictionary<TKey,TValue>.Clear;
-var
-  i: Integer;
-  oldItems: TItemArray;
-begin
-  oldItems := FItems;
-  FCount := 0;
-  SetLength(FItems, 0);
-  SetCapacity(0);
-  FGrowThreshold := 0;
-
-  for i := 0 to Length(oldItems) - 1 do
-  begin
-    if oldItems[i].HashCode = EMPTY_HASH then
-      Continue;
-    KeyNotify(oldItems[i].Key, cnRemoved);
-    ValueNotify(oldItems[i].Value, cnRemoved);
-  end;
-end;
-
-{***********************************************************************}
-function TALDictionary<TKey, TValue>.ToArray: TArray<TPair<TKey,TValue>>;
-begin
-  Result := ToArrayImpl(Count);
-end;
-
-{**********************************************}
-procedure TALDictionary<TKey,TValue>.TrimExcess;
-begin
-  // Ensure at least one empty slot for GetBucketIndex to terminate.
-  SetCapacity(Count + 1);
-end;
-
-{*******************************************************************************************}
-function TALDictionary<TKey,TValue>.TryGetValue(const Key: TKey; out Value: TValue): Boolean;
-var
-  index: Integer;
-begin
-  index := GetBucketIndex(Key, Hash(Key));
-  Result := index >= 0;
-  if Result then
-    Value := FItems[index].Value
-  else
-    Value := Default(TValue);
-end;
-
-{*********************************************************************************************************}
-procedure TALDictionary<TKey,TValue>.DoAdd(HashCode, Index: Integer; const Key: TKey; const Value: TValue);
-begin
-  FItems[Index].HashCode := HashCode;
-  FItems[Index].Key := Key;
-  FItems[Index].Value := Value;
-  Inc(FCount);
-
-  KeyNotify(Key, cnAdded);
-  ValueNotify(Value, cnAdded);
-end;
-
-{*************************************************************************************}
-function TALDictionary<TKey, TValue>.DoGetEnumerator: TEnumerator<TPair<TKey, TValue>>;
-begin
-  Result := GetEnumerator;
-end;
-
-{***********************************************************************************}
-procedure TALDictionary<TKey,TValue>.DoSetValue(Index: Integer; const Value: TValue);
-var
-  oldValue: TValue;
-begin
-  oldValue := FItems[Index].Value;
-  FItems[Index].Value := Value;
-
-  ValueNotify(oldValue, cnRemoved);
-  ValueNotify(Value, cnAdded);
-end;
-
-{***************************************************************************************}
-procedure TALDictionary<TKey,TValue>.AddOrSetValue(const Key: TKey; const Value: TValue);
-var
-  hc: Integer;
-  index: Integer;
-begin
-  hc := Hash(Key);
-  index := GetBucketIndex(Key, hc);
-  if index >= 0 then
-    DoSetValue(index, Value)
-  else
-  begin
-    // We only grow if we are inserting a new value.
-    if Count >= FGrowThreshold then
-    begin
-      Grow;
-      // We need a new Bucket Index because the array has grown.
-      index := GetBucketIndex(Key, hc);
-    end;
-    DoAdd(hc, not index, Key, Value);
-  end;
-end;
-
-{************************************************************************}
-function TALDictionary<TKey,TValue>.ContainsKey(const Key: TKey): Boolean;
-begin
-  Result := GetBucketIndex(Key, Hash(Key)) >= 0;
-end;
-
-{******************************************************************************}
-function TALDictionary<TKey,TValue>.ContainsValue(const Value: TValue): Boolean;
-var
-  i: Integer;
-  c: IEqualityComparer<TValue>;
-begin
-  c := TEqualityComparer<TValue>.Default;
-
-  for i := 0 to Length(FItems) - 1 do
-    if (FItems[i].HashCode <> EMPTY_HASH) and c.Equals(FItems[i].Value, Value) then
-      Exit(True);
-  Result := False;
-end;
-
-{*****************************************************************}
-function TALDictionary<TKey,TValue>.GetEnumerator: TPairEnumerator;
-begin
-  Result := TPairEnumerator.Create(Self);
-end;
-
-{**********************************************************}
-function TALDictionary<TKey,TValue>.GetKeys: TKeyCollection;
-begin
-  if FKeyCollection = nil then
-    FKeyCollection := TKeyCollection.Create(Self);
-  Result := FKeyCollection;
-end;
-
-{**************************************************************}
-function TALDictionary<TKey,TValue>.GetValues: TValueCollection;
-begin
-  if FValueCollection = nil then
-    FValueCollection := TValueCollection.Create(Self);
-  Result := FValueCollection;
-end;
-
-{***********************************************************************************************************}
-constructor TALDictionary<TKey,TValue>.TPairEnumerator.Create(const ADictionary: TALDictionary<TKey,TValue>);
-begin
-  inherited Create;
-  FIndex := -1;
-  FDictionary := ADictionary;
-end;
-
-{*************************************************************************************}
-function TALDictionary<TKey, TValue>.TPairEnumerator.DoGetCurrent: TPair<TKey, TValue>;
-begin
-  Result := GetCurrent;
-end;
-
-{***********************************************************************}
-function TALDictionary<TKey, TValue>.TPairEnumerator.DoMoveNext: Boolean;
-begin
-  Result := MoveNext;
-end;
-
-{*********************************************************************************}
-function TALDictionary<TKey,TValue>.TPairEnumerator.GetCurrent: TPair<TKey,TValue>;
-begin
-  Result.Key := FDictionary.FItems[FIndex].Key;
-  Result.Value := FDictionary.FItems[FIndex].Value;
-end;
-
-{********************************************************************}
-function TALDictionary<TKey,TValue>.TPairEnumerator.MoveNext: Boolean;
-begin
-  while FIndex < Length(FDictionary.FItems) - 1 do
-  begin
-    Inc(FIndex);
-    if FDictionary.FItems[FIndex].HashCode <> EMPTY_HASH then
-      Exit(True);
-  end;
-  Result := False;
-end;
-
-{**********************************************************************************************************}
-constructor TALDictionary<TKey,TValue>.TKeyEnumerator.Create(const ADictionary: TALDictionary<TKey,TValue>);
-begin
-  inherited Create;
-  FIndex := -1;
-  FDictionary := ADictionary;
-end;
-
-{*********************************************************************}
-function TALDictionary<TKey, TValue>.TKeyEnumerator.DoGetCurrent: TKey;
-begin
-  Result := GetCurrent;
-end;
-
-{**********************************************************************}
-function TALDictionary<TKey, TValue>.TKeyEnumerator.DoMoveNext: Boolean;
-begin
-  Result := MoveNext;
-end;
-
-{******************************************************************}
-function TALDictionary<TKey,TValue>.TKeyEnumerator.GetCurrent: TKey;
-begin
-  Result := FDictionary.FItems[FIndex].Key;
-end;
-
-{*******************************************************************}
-function TALDictionary<TKey,TValue>.TKeyEnumerator.MoveNext: Boolean;
-begin
-  while FIndex < Length(FDictionary.FItems) - 1 do
-  begin
-    Inc(FIndex);
-    if FDictionary.FItems[FIndex].HashCode <> EMPTY_HASH then
-      Exit(True);
-  end;
-  Result := False;
-end;
-
-{************************************************************************************************************}
-constructor TALDictionary<TKey,TValue>.TValueEnumerator.Create(const ADictionary: TALDictionary<TKey,TValue>);
-begin
-  inherited Create;
-  FIndex := -1;
-  FDictionary := ADictionary;
-end;
-
-{*************************************************************************}
-function TALDictionary<TKey, TValue>.TValueEnumerator.DoGetCurrent: TValue;
-begin
-  Result := GetCurrent;
-end;
-
-{************************************************************************}
-function TALDictionary<TKey, TValue>.TValueEnumerator.DoMoveNext: Boolean;
-begin
-  Result := MoveNext;
-end;
-
-{**********************************************************************}
-function TALDictionary<TKey,TValue>.TValueEnumerator.GetCurrent: TValue;
-begin
-  Result := FDictionary.FItems[FIndex].Value;
-end;
-
-{*********************************************************************}
-function TALDictionary<TKey,TValue>.TValueEnumerator.MoveNext: Boolean;
-begin
-  while FIndex < Length(FDictionary.FItems) - 1 do
-  begin
-    Inc(FIndex);
-    if FDictionary.FItems[FIndex].HashCode <> EMPTY_HASH then
-      Exit(True);
-  end;
-  Result := False;
-end;
-
-{**************************************************************************************************************}
-constructor TALDictionary<TKey, TValue>.TValueCollection.Create(const ADictionary: TALDictionary<TKey, TValue>);
-begin
-  inherited Create;
-  FDictionary := ADictionary;
-end;
-
-{*****************************************************************************************}
-function TALDictionary<TKey, TValue>.TValueCollection.DoGetEnumerator: TEnumerator<TValue>;
-begin
-  Result := GetEnumerator;
-end;
-
-{************************************************************************************************}
-function TALDictionary<TKey, TValue>.TValueCollection.ToArrayImpl(Count: Integer): TArray<TValue>;
-var
-  Value: TValue;
-begin
-  // We assume our caller has passed correct Count
-  SetLength(Result, Count);
-  Count := 0;
-  for Value in Self do
-  begin
-    Result[Count] := Value;
-    Inc(Count);
-  end;
-end;
-
-{**********************************************************************}
-function TALDictionary<TKey, TValue>.TValueCollection.GetCount: Integer;
-begin
-  Result := FDictionary.Count;
-end;
-
-{************************************************************************************}
-function TALDictionary<TKey, TValue>.TValueCollection.GetEnumerator: TValueEnumerator;
-begin
-  Result := TValueEnumerator.Create(FDictionary);
-end;
-
-{****************************************************************************}
-function TALDictionary<TKey, TValue>.TValueCollection.ToArray: TArray<TValue>;
-begin
-  Result := ToArrayImpl(FDictionary.Count);
-end;
-
-{************************************************************}
-constructor TALDictionary<TKey, TValue>.TKeyCollection.Create(
-  const ADictionary: TALDictionary<TKey, TValue>);
-begin
-  inherited Create;
-  FDictionary := ADictionary;
-end;
-
-{*************************************************************************************}
-function TALDictionary<TKey, TValue>.TKeyCollection.DoGetEnumerator: TEnumerator<TKey>;
-begin
-  Result := GetEnumerator;
-end;
-
-{********************************************************************************************}
-function TALDictionary<TKey, TValue>.TKeyCollection.ToArrayImpl(Count: Integer): TArray<TKey>;
-var
-  Value: TKey;
-begin
-  // We assume our caller has passed correct Count
-  SetLength(Result, Count);
-  Count := 0;
-  for Value in Self do
-  begin
-    Result[Count] := Value;
-    Inc(Count);
-  end;
-end;
-
-{********************************************************************}
-function TALDictionary<TKey, TValue>.TKeyCollection.GetCount: Integer;
-begin
-  Result := FDictionary.Count;
-end;
-
-{********************************************************************************}
-function TALDictionary<TKey, TValue>.TKeyCollection.GetEnumerator: TKeyEnumerator;
-begin
-  Result := TKeyEnumerator.Create(FDictionary);
-end;
-
-{************************************************************************}
-function TALDictionary<TKey, TValue>.TKeyCollection.ToArray: TArray<TKey>;
-begin
-  Result := ToArrayImpl(FDictionary.Count);
-end;
-
-{*****************************************************************************************************}
-procedure TALObjectDictionary<TKey,TValue>.KeyNotify(const Key: TKey; Action: TCollectionNotification);
-begin
-  inherited;
-  if (Action = cnRemoved) and (doOwnsKeys in FOwnerships) then
-    ALFreeAndNil(PObject(@Key)^); // >> will call disposeOF if necessary
-end;
-
-{***********************************************************************************************************}
-procedure TALObjectDictionary<TKey,TValue>.ValueNotify(const Value: TValue; Action: TCollectionNotification);
-begin
-  inherited;
-  if (Action = cnRemoved) and (doOwnsValues in FOwnerships) then
-    ALFreeAndNil(PObject(@Value)^); // >> will call disposeOF if necessary
-end;
-
-{************************************************************************************}
-constructor TALObjectDictionary<TKey,TValue>.Create(Ownerships: TDictionaryOwnerships;
-  ACapacity: Integer = 0);
-begin
-  Create(Ownerships, ACapacity, nil);
-end;
-
-{************************************************************************************}
-constructor TALObjectDictionary<TKey,TValue>.Create(Ownerships: TDictionaryOwnerships;
-  const AComparer: IEqualityComparer<TKey>);
-begin
-  Create(Ownerships, 0, AComparer);
-end;
-
-{************************************************************************************}
-constructor TALObjectDictionary<TKey,TValue>.Create(Ownerships: TDictionaryOwnerships;
-  ACapacity: Integer; const AComparer: IEqualityComparer<TKey>);
-begin
-  inherited Create(ACapacity, AComparer);
-  if doOwnsKeys in Ownerships then
-  begin
-    if (TypeInfo(TKey) = nil) or (PTypeInfo(TypeInfo(TKey))^.Kind <> tkClass) then
-      raise EInvalidCast.CreateRes(@SInvalidCast);
-  end;
-
-  if doOwnsValues in Ownerships then
-  begin
-    if (TypeInfo(TValue) = nil) or (PTypeInfo(TypeInfo(TValue))^.Kind <> tkClass) then
-      raise EInvalidCast.CreateRes(@SInvalidCast);
-  end;
-  FOwnerships := Ownerships;
+  for I := 0 to Count - 1 do
+    Result[i] := GetItem(i);
 end;
 
 end.
