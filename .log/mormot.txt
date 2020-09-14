@@ -1,3 +1,669 @@
+commit 85cc86d236c94969cfc7a6a09d3e7db5b7ca3ba3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-14 09:35:14 +0200
+
+    minor refactoring and tests enhancements
+
+commit 1042f7529a33eb2759d83016cd5966ad997b2b50
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-14 09:34:11 +0200
+
+    small documentation fixes
+
+commit 2fce8cb1284e71b64fb51d29ea3877ba855d359f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-14 09:30:29 +0200
+
+    fixed Iso8601ToDateTimePUTF8CharVar/TryEncodeDate sign issue
+
+commit 02b74bfbeb6668217891249e5d0c72b74db112e1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-10 10:04:42 +0200
+
+    added explicit test of TSQLRest.OneFieldValues
+
+commit 9cbf7732dd3f4967967ef70c49460e3e5978c077
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-08 15:34:57 +0200
+
+    try to avoid Delphi 10.4.1 regression by forcing {$A+} by default
+    - see https://github.com/synopse/SynPDF/issues/40
+
+commit c9a86435524c4dc31cdc289ae1818ffe5ed1546d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-07 10:52:07 +0200
+
+    another fix for https://github.com/synopse/mORMot/issues/350
+
+commit 2637c1fa298a5138478584029e928e4e6ab01a9a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-05 08:01:11 +0200
+
+    fixed SynDBUniDAC compilation
+    - for https://github.com/synopse/mORMot/issues/350
+
+commit da993124e50a4706e56f288acb4b54821f8cd49c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-05 07:53:07 +0200
+
+    update SQLite3 static files for Delphi
+    - fix for https://github.com/synopse/mORMot/issues/351
+
+commit e38d907c2741a599616735ee7a5ed4761bdcd3fc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-03 12:05:15 +0200
+
+    fixed Darwin compilation
+
+commit 496b694c87b38abc535f8be2a9c20c5389cd9611
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-03 12:04:46 +0200
+
+    let mORMot2 static files be generated in synch
+
+commit 05c4e9a138b2c70dcfc02765b42a751995a87d53
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-02 10:03:34 +0200
+
+    small refactorings made during mORMot2 migration
+    - no functional change
+
+commit 90e62bfcb2e9bd97e3541a268bcbfea805eb91a4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-02 09:51:12 +0200
+
+    update SQLite3 static engine to latest 3.33.0 revision
+
+commit 8772d162d8fedab30bb57fbc6d6704ecd3339a77
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-24 17:46:47 +0200
+
+    let MongoDBTests report include mORMot and OS version
+
+commit af354d02ba404021b10a00ec01bc8a4567a20594
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-24 17:37:46 +0200
+
+    include floating-point ORM values to MongoDBTestCases
+
+commit 0ac02f9947a4391587b0cecbd02b9f6c14561608
+Merge: 3a3e3b68 4fafbb3f
+Author: ab <webcontact01@synopse.info>
+Date:   2020-08-24 16:42:30 +0200
+
+    Merge pull request #345 from synopse/feature/logViewNoHeader
+    
+    log view for files w/o header
+
+commit 3a3e3b688da67ae934c2c8a0f086730af4fb032a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-24 16:40:57 +0200
+
+    RemoveCommentsFromJSON() will also remove a trailing commas
+    - from https://github.com/synopse/mORMot/pull/346
+
+commit 75ca57b179cc3b7e945e97a764cd66f2d4697108
+Merge: 0fcbc782 7804182c
+Author: ab <webcontact01@synopse.info>
+Date:   2020-08-24 16:24:38 +0200
+
+    Merge pull request #346 from synopse/feature/trailingComma
+    
+    RemoveCommentsFromJSON() will also remove a trailing commas
+
+commit 7804182c63329c7e48e68b77e6e775e301fe18c0
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-08-24 17:03:11 +0300
+
+    formatting fixed
+
+commit ce3f2f3887f618853e6c6199c0c366d1f9e5d607
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-08-24 16:03:12 +0300
+
+    RemoveCommentsFromJSON will also remove a trailing commas
+    
+    Signed-off-by: pavel.mash <pavel.mash@inbase.com.ua>
+
+commit 0fcbc782c51cb616e4b7aecc3803c7a4cffc43ed
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-21 18:57:42 +0200
+
+    small SQLFromSelect() refactoring - no functional change
+
+commit 731243cef8e74ef5a9ad1e32e12b55c8e3264c2a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-21 18:56:46 +0200
+
+    disable paranoid check of MonoType fonts for SynMemoEx
+    - it is up to the user to actually check a correct font
+
+commit e60ec179b2119d70d3fdce18accb12719fbbc641
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-21 18:55:16 +0200
+
+    escape the "tilde" in URI, trusting the practice, and not the last RFC
+    - check https://synopse.info/forum/viewtopic.php?pid=32796
+
+commit 4fafbb3fda7b1f2be868e7ab36a08c97aa6644d2
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-08-21 19:09:06 +0300
+
+    LogView: recognize regular TSynLog file without header (can be removed for security reason)
+
+commit 80007c6700c74ffe5b8a75f065f19cb7277d1f68
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-08-21 19:07:21 +0300
+
+    LogView: decrease thread panel width to 200px
+
+commit c3630d717d68b945aacf3c783186ec4ef96d03c6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-21 08:40:01 +0200
+
+    some AES-GCM optimizations
+
+commit fdb3178d2231e8e5c85c801f3b95be89427471df
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-21 08:38:27 +0200
+
+    added optional timeout parameter to Bind()
+    - see https://github.com/synopse/mORMot/pull/344
+
+commit 371f887b7a6689602563ea8f9014a59bf71d1f9d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-20 16:26:34 +0200
+
+    try to properly handle connection closed in TCrtSocket.TrySockRecv
+
+commit 38ba08b516de4b11c8aaf0fbf0b2b9f99edd219b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-17 20:10:55 +0200
+
+    introducing TAESGCM AEAD encryption class
+
+commit 77b3feb38951a92f86a04bc494b8b802306e3f1c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-13 13:09:51 +0200
+
+    proven TAESGCMEngine code - including extensive unit tests
+
+commit dd90b236a4b24c5adfef2d49ca74e6bd7c3adee3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-12 21:38:03 +0200
+
+    initial TAESGCMEngine code - not tested yet!
+
+commit ece531908cbabeedc68b460c740dde66c19abc56
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-11 12:40:54 +0200
+
+    fixed TSQLDBOracleStatement.Prepare() to handle trailing ;;
+    - bug introduced by https://github.com/synopse/mORMot/pull/341/files
+
+commit 351dcfdb1eccbfe53f059f7dc8ecc70fdeb27074
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-10 17:09:08 +0200
+
+    new TSynLogFamily.RotateFileNoCompression property
+
+commit ceebf11b26d17f549cf8b9c413a704e3eebd4447
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-10 12:34:46 +0200
+
+    wait for no body for HEAD and OPTIONS requests
+    - as a try to proper fix from https://github.com/synopse/mORMot/pull/334
+
+commit fbc19aaa74f91f418570d3aef642db3d021a6c3a
+Merge: caf1617b c3721613
+Author: ab <webcontact01@synopse.info>
+Date:   2020-08-10 08:20:13 +0200
+
+    Merge pull request #337 from VitalyPopov/master
+    
+    a bit fixed TSQLRestClientURI.OnBackgroundProcess
+
+commit caf1617b4eb46d720965afaf04c8edf1840dbefe
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-10 08:16:57 +0200
+
+    new property TSQLDBStatement.SQLCurrent
+    - from https://github.com/synopse/mORMot/pull/338
+
+commit a01d075ae9878c5ad5bb18f6189073cb7309fdaf
+Merge: 77f8f17b bbfe6f7e
+Author: ab <webcontact01@synopse.info>
+Date:   2020-08-10 07:55:57 +0200
+
+    Merge pull request #338 from synopse/fix/synDBSQLPrepared
+    
+    new property TSQLDBStatement.SQLCurrent
+
+commit 77f8f17b76e54a343d007e922013001d84f181de
+Merge: 74cebf11 e7ac71f9
+Author: ab <webcontact01@synopse.info>
+Date:   2020-08-08 20:37:04 +0200
+
+    Merge pull request #341 from synopse/fix/oracleSemicolonRemoval
+    
+    Oracle: fix infinity loop in semicolon removal logic
+
+commit e7ac71f944300906ef5603335c071841308753b7
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-08-08 20:56:22 +0300
+
+    - fix infinity loop for SQLs like 'CREATE FUNCTION ... END;'#10
+    - simplify ; removal code
+    
+    Signed-off-by: pavel.mash <pavel.mash@inbase.com.ua>
+
+commit 74cebf115438e639bd898019691001cca135d391
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-07 15:54:22 +0200
+
+    fix for EchoToConsoleUseJournal
+    - from https://github.com/synopse/mORMot/pull/340
+
+commit 31a5d9b9fb7cdf579ae72048076b52df01a395b4
+Merge: f4084b1f 58821211
+Author: ab <webcontact01@synopse.info>
+Date:   2020-08-07 15:41:52 +0200
+
+    Merge pull request #340 from synopse/fix/journaldPrintf
+    
+    ExternalLibraries.sd_journal_sendv used instead of sd_journal_print
+
+commit f4084b1f41d3722ae6d5957e26a2afb569c8bdd5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-08-07 15:37:08 +0200
+
+    final fix for "ORA-00932 : inconsistent datatypes" exception
+    - from https://github.com/synopse/mORMot/pull/339
+
+commit 6cf66b224785b3c7c57470b4e75c524cbdd12998
+Merge: dd4ea99d e4aa8962
+Author: ab <webcontact01@synopse.info>
+Date:   2020-08-07 15:29:36 +0200
+
+    Merge pull request #339 from synopse/fix/ora00932
+    
+    fix "ORA-00932 : inconsistent datatypes" exception
+
+commit 58821211914a68fb017d8beedbb0bde2a96808fa
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-08-07 16:03:40 +0300
+
+    ExternalLibraries.sd_journal_sendv used instead of sd_journal_print to log into journald, because sd_journal_print expect % in message to be a printf format string (% is a placeholder), but SynLog message can contains % inside (for example thread #4 = %)
+    
+    Signed-off-by: pavel.mash <pavel.mash@inbase.com.ua>
+
+commit e4aa8962eb42743b062d174506d67080940ae8d5
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-08-07 14:50:41 +0300
+
+    fix "ORA-00932 : inconsistent datatypes" exception what happens randomly and rarely during call to StmtExecute with OCI_DESCRIBE_ONLY
+    
+    Signed-off-by: pavel.mash <pavel.mash@inbase.com.ua>
+
+commit bbfe6f7e074026e14fd79a769594dbfec4e086d8
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-08-06 10:48:41 +0300
+
+    new property TSQLDBStatement.SQLCurrent - the query text to be passed to the DB - if statement is prepared then equal to SQLPrepared, else to SQL
+    
+    Signed-off-by: pavel.mash <pavel.mash@inbase.com.ua>
+
+commit 2e47c7b36e0cd30d9cf5996fb98a05302acab510
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-08-05 18:38:30 +0300
+
+    use a getter for TSQLDBStatement.SQLPrepared property what returns an SQl statement in case prepare not called / not needed for current statement
+    
+    Signed-off-by: pavel.mash <pavel.mash@inbase.com.ua>
+
+commit c3721613bcd4e597726d8f5af280928e8d3abbd0
+Author: Vitaly Popov <vitaly@norjournal.no>
+Date:   2020-08-02 22:29:23 +0300
+
+    a bit fixed TSQLRestClientURI.OnBackgroundProcess for HTTP_NOTIMPLEMENTED status
+
+commit dd4ea99d9b7e142267ba31d7cedf0c77a9b514ff
+Merge: 5753a3ab c818b659
+Author: ab <webcontact01@synopse.info>
+Date:   2020-08-01 09:49:15 +0200
+
+    Merge pull request #336 from eugeneilyin/master
+    
+    fixed FindFiles sub-folders search under Windows
+
+commit c818b659e8ead4384ed35da9b51d5840173de186
+Author: Yevgeny Iliyn <eugene.ilyin@gmail.com>
+Date:   2020-08-01 04:02:47 +0400
+
+    Update SynCommons.pas
+    
+    fixed FindFiles for sub-folders under Windows
+
+commit 5753a3ab5bf358fce07d9a56211a824f81bc638a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-31 18:14:44 +0200
+
+    circumvent URW1111 on Delphi 2010 and URW1136 on Delphi XE
+
+commit 3df9579f1f47de90ddd4a9189b11a3038a014982
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-31 11:51:35 +0200
+
+    ensure TTimeLogBits.FullText will handle 0 value as valid date
+
+commit 7b2efb525314a984b88a5e6026e0aa29049baf2f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-31 11:50:26 +0200
+
+    fixed THttpServer.WaitStarted exception
+
+commit 82b4176a720e826d36a5645e0224954b1ad4b467
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-31 11:48:04 +0200
+
+    TSQLDBOracleStatement: allow one trailing ';' by writing ';;' in SQL
+
+commit 163f608154126149ee25da31d5936389ce2210c4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-30 12:23:51 +0200
+
+    fixed array date/time ORM binding
+
+commit 6d22270d737b71ce9e5e229a45d50e463228b7fc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-30 12:21:39 +0200
+
+    refactored ISO-8601 date/time conversion
+
+commit cbe33619aaf977000c3c2bf0da4a83fcc7bd5fe2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-30 12:20:27 +0200
+
+    enhanced TTextWriter stream flush
+
+commit 241919b445a77883808256ffbad95877edcf9c4e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-30 10:13:42 +0200
+
+    attempt to fix PostgreSQL date/time array binding
+
+commit f1c01b496cbeeb27da2fade02909f776e15f7cd9
+Merge: bf039244 0d46bea6
+Author: ab <webcontact01@synopse.info>
+Date:   2020-07-24 08:42:38 +0200
+
+    Merge pull request #333 from Dmitro25/Dmitro25-patch-1
+    
+    Corrected dialog width when using custom width
+
+commit 0d46bea6250427c5e2a600247ca44b77e0e830d8
+Author: Dmitro25 <d.v.k@mail.ru>
+Date:   2020-07-24 12:16:32 +0600
+
+    Corrected dialog width when using custom width
+    
+    When using "TaskDialogIndirect" function, "Config.cxWidth" parameter should be measured in dialog units (see https://docs.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-taskdialogconfig), but "aWidth" is in pixels (according to "Execute" function description). Therefore, we need to either correct the function description (say that "aWidth" is measured in dialog units), or the code.
+
+commit bf039244f5946baa0abe32e1893be7122574c592
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-22 11:17:34 +0200
+
+    specify how to output a '%' character via FormatUTF8()
+
+commit 05e2b22e4afeec0ad6f9835f4ea865d1356371b2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-20 09:57:16 +0200
+
+    avoid Delphi 10.4 compiler hint
+
+commit 0df29c17c83b5fd4b2cd04ec5918a288a29a31d5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-17 16:12:04 +0200
+
+    try to circumvent Delphi 10.4 optimizer bug
+
+commit 08920f2ce0c42f1baa57656a492e4cb140191c7b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-16 10:04:23 +0200
+
+    refreshed proper SVN revisions for FPC/Lazarus
+    - we now use Lazarus 2.0.10 as IDE
+
+commit 3bbd1d9dd58ae272e7d6b866109c588393e3ba66
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-14 11:47:41 +0200
+
+    register the TOleDBACEConnectionProperties class for settings
+
+commit d3387d098dffdf0c02e4dc81ab267ee779f43455
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-13 10:03:04 +0200
+
+    try to circumvent Delphi 10.4 optimization issue
+
+commit 151fdde2dabda1b1453eaf773cdb116c5e8f3ba7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-13 09:16:15 +0200
+
+    fixed Delphi and FPC sample compilation
+
+commit 56ff1a82b711e876a522364989811fae45f3e336
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-13 09:14:29 +0200
+
+    optimized TSQLTableJSON performance for single JSON use
+
+commit 0c36500e2a5dbc45398d5e55c61878a61bb180b4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-10 12:47:18 +0200
+
+    fixed long standing random GPF bug in TSQLTableJSON
+    due to PrivateCopy heisenbug move() overflow
+
+commit 92a5994202effe99fbe15b5e6a78eb52ff5e0d38
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-10 11:36:19 +0200
+
+    fixed sample 31 compilation
+    - as reported by https://github.com/synopse/mORMot/issues/330
+
+commit 3047583c60bb8f882e39e4b2aeb1b96cf8140793
+Merge: 507fb216 3327f55e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-07 16:04:18 +0200
+
+    Merge branch 'master' of https://github.com/synopse/mORMot
+
+commit 507fb216a6b859c69a2dc4194f97eae7f7bb2072
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-07 16:03:56 +0200
+
+    introducing TOleDBACEConnectionProperties
+
+commit 3327f55ebf54b0f24d18f9abb012de5966e0da82
+Author: ab <webcontact01@synopse.info>
+Date:   2020-07-02 16:39:53 +0200
+
+    enabled Funding on github
+
+commit c231bf91297287d7c9c2b90a39a48af174273054
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-01 17:03:44 +0200
+
+    enhanced FPC/LCL Windows compatibility for LogView tool
+
+commit 2b2534befdb4aaa8789470565ecbc4f6c182c030
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-01 17:02:29 +0200
+
+    fixed redundant code
+
+commit 820cd6634b90ca6c8a4b156325ca0cb3cf25f16b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-07-01 16:22:03 +0200
+
+    let TSQLDBStatementWithParams.AddParamValueAsText indentify array parameters
+
+commit cf17849f9f34b0fc7fdb0c96bc683af4a138b24a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-26 17:16:24 +0200
+
+    fixed ExistNameValue() for HTTP headers
+    - correct implementaiton of https://github.com/synopse/mORMot/pull/328
+
+commit 888ee376df95a4684d752fcf4a8c7aa973b98b6c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-26 13:13:53 +0200
+
+    refactored SynDB logging, and also SynDBOracle performance
+    - from https://github.com/synopse/mORMot/pull/310
+
+commit f6d208cbd3ca23c5c58ca6968bc2cccd83941f19
+Merge: 9295848d be3697b1
+Author: ab <webcontact01@synopse.info>
+Date:   2020-06-26 11:07:28 +0200
+
+    Merge pull request #310 from synopse/featurte/silenceDBLog
+    
+    optional feature: silence db log
+
+commit 9295848d9a38c2b193a8970117ec8d20876943cf
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-25 21:06:28 +0200
+
+    remove deprecated files
+
+commit 51dda06028834c17afa28a12252070cf6e7b8df0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-25 17:06:43 +0200
+
+    fixed Delphi compilation
+
+commit 0aa8ceb14011bb2cb0609f65cbda62d735fc1482
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-25 15:55:36 +0200
+
+    push SQLite3 static for Delphi for 3.32.3
+
+commit c99944b3ee097c0b1f1ecc15770b5fc127151ba8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-25 15:53:29 +0200
+
+    added systemd activation to sample 36
+    - from https://github.com/synopse/mORMot/pull/324
+
+commit 56c1894556208b1eac2618cbff6ce31912475a21
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-25 15:40:01 +0200
+
+    LogView LCL patch
+    - from https://github.com/synopse/mORMot/pull/324
+
+commit 19c6cc755aa77ef6c20b9d56f4dffdd5cf44426b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-25 15:39:09 +0200
+
+    introducing TSynLogFamily.EchoToConsoleUseJournal property
+    - from https://github.com/synopse/mORMot/pull/324
+
+commit bd4f943693f6ca34042e5d39eac084e216c99b2c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-25 15:22:05 +0200
+
+    introducing systemd API
+    - from https://github.com/synopse/mORMot/pull/324
+
+commit 48a4bfce2eed6d4f1be7a76ca9f22b713cf1813e
+Merge: ccce198d 325e10e6
+Author: ab <webcontact01@synopse.info>
+Date:   2020-06-25 10:53:10 +0200
+
+    Merge pull request #324 from synopse/feature/systemd_master
+    
+    Feature/systemd master
+
+commit ccce198d637d705d1ccd742a448affb42d5e89a8
+Merge: a6c44b30 d6e55406
+Author: ab <webcontact01@synopse.info>
+Date:   2020-06-25 09:56:17 +0200
+
+    Merge pull request #325 from Yn0ga/master
+    
+    THttpAPIServer : Authentication tweaks
+
+commit a6c44b309bfdf06d5c53116e1aa6859c16aacc7e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-25 09:00:34 +0200
+
+    revert patch https://github.com/synopse/mORMot/pull/313
+    - problem fixed by msodbcsql17.5.2
+
+commit abc6dbe27cd7e0649d3bb6d8a063aec019fc1238
+Merge: 635b23f5 2184c3c0
+Author: ab <webcontact01@synopse.info>
+Date:   2020-06-25 08:59:01 +0200
+
+    Merge pull request #326 from synopse/revertSynDBODBC_313
+    
+    revert patch #313 - problem fixed in msodbcsql17.5.2
+
+commit 635b23f56ee94d1c09378573733a3e293c98b425
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-25 08:57:50 +0200
+
+    avoid compiler warning in MVC Server sample
+
+commit 10cbd26b3363bd233ea95a92f7f7760550b84b4d
+Merge: 6570af09 67825364
+Author: ab <webcontact01@synopse.info>
+Date:   2020-06-25 08:56:04 +0200
+
+    Merge pull request #327 from TTomas/master
+    
+    FTS5 change in triggers compatible by FTS5 doc
+
+commit 67825364946cd78d89ee6b49753aeb9332bab3ac
+Author: Home8 <tom@halkyon.com>
+Date:   2020-06-25 00:30:23 +0200
+
+    1. FTS5 change in triggers compatible by FTS5 doc
+    2. FPC compile problem in SynDBMidasVCL and SynDBVCL. Now you can use ToClientDataSet with TBufDataset with SynDB, SynDBRemote
+
+commit 2184c3c09109fd50fb195ae12e0e862350edbae9
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-06-24 23:03:26 +0300
+
+    Revert patch #313 - problem fixed in msodbcsql17 7.5.2
+
+commit 6570af09862dfc7c604f9e7655c92fa77d41ea5f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-24 16:48:38 +0200
+
+    included static SQlite3 3.32.3 binaries - introducing FreeBSD and OpenBSD platforms
+
+commit 3808fb4a7caaf4f50ed6ce909012a0ba6ee28112
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-24 16:45:58 +0200
+
+    SQLite3 static database engine upgraded to latest 3.32.3
+
+commit 68c6fba9e5f87ed1e368d5daaeeeff56ee44d476
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-24 16:44:43 +0200
+
+    enhanced OpenBSD and FreeBSD support
+
+commit 92ac201f5923db863271ee23da3126aa0b8e1e3a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-06-24 13:46:29 +0200
+
+    let MVC web cache use FileAge() with OS-specific integer
+
 commit 571584b24575c511e113d80f11b7789d69e41a4e
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2020-06-24 11:57:59 +0200
@@ -5,12 +671,71 @@ Date:   2020-06-24 11:57:59 +0200
     fixed TPropInfo.IsDefaultOrVoid with variant property
     - and associated regression tests
 
+commit 325e10e64e331108972fa9955f864497f39f1dce
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-06-23 22:16:14 +0300
+
+    improve systemd detection in ProcessIsStartedBySystemd
+
 commit a8c8afbc4fc6c64b6d5c6b3b26457a6b9bf508ba
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2020-06-23 10:02:32 +0200
 
     not JSON serialize void class instances if woDontStore0 is set
     - with the new IsObjectDefaultOrVoid() function
+
+commit d6e55406ceb89b849864c949231010ad6b34954c
+Author: Ynoga <ynoga@protonmail.com>
+Date:   2020-06-20 22:18:14 +0200
+
+    THttpApiServer : Authentication tweaks
+    
+    * Reset Context.fAuthenticationStatus & fAuthenticatedUser between requests
+    * Close AccessToken handle after use
+
+commit 71814fff185237fbfbd8ee8fcab3ab9a6054f302
+Merge: ff1f0431 7e2adc3e
+Author: Yn0ga <ynoga@protonmail.com>
+Date:   2020-06-20 22:10:54 +0200
+
+    Merge pull request #1 from synopse/master
+    
+    Merge from upstream
+
+commit 0f9e4955730fe6db1017bfde047c51f1987eac4c
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-06-20 22:47:24 +0300
+
+    improve systemd readme
+    
+    Signed-off-by: pavel.mash <pavel.mash@inbase.com.ua>
+
+commit 48e9c324ceaffe00fc0a8b89f263985749342607
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-06-20 22:37:45 +0300
+
+    fix LogView for journald logs viewing.
+    
+    Signed-off-by: pavel.mash <pavel.mash@inbase.com.ua>
+
+commit 8ba859f3aad2f4b148cb26699b6c8704f0b7d988
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-06-20 22:20:36 +0300
+
+    - Sample 36: systemd units + service setup script
+    - set external socket ReceiveTimeout to unblock accept() periodically
+
+commit a5b921972d968bdbeb52e10f00933c5290e60038
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-06-20 18:22:24 +0300
+
+    WIP: systemd integration contribution to master
+
+commit 4b6cc38a40e994c4054f0dfd68dc80aa913741b9
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-06-20 15:44:17 +0300
+
+    adopt LogView to be compiled under Linux with FPC
 
 commit 7e2adc3ea60a72f94ae2f9ef6343b3f9ff4e7d27
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
@@ -545,6 +1270,12 @@ Date:   2020-05-28 10:47:00 +0200
 
     Added comments
 
+commit be3697b1834d6e7ad0c600b4fbb48717315fb894
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-05-20 21:41:09 +0300
+
+    reset SQLLog timer on statement Reset - for cached statements for example
+
 commit 0340bc13cd9b67bbc23e90fb2c8ae41c6c302ab7
 Author: pavel.mash <pavel.mash@inbase.com.ua>
 Date:   2020-05-20 20:44:38 +0300
@@ -697,6 +1428,12 @@ Date:   2020-05-14 00:04:18 +0200
 
     new FPCMM_LOCKLESSFREE conditional to reduce OS API calls
 
+commit 5dbcc99579083a2ce9dea284cbb6a3a306757625
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-05-13 16:29:57 +0300
+
+    fix complex Oracle statement execution. Error introduced after replacing ReplaceParamsByNames to ReplaceParamsByNumbers
+
 commit 4bf6198d0fa96e934bb84707d46dffaf81640ed4
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2020-05-13 14:34:43 +0200
@@ -798,6 +1535,21 @@ Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2020-05-05 21:42:20 +0200
 
     small fixes
+
+commit f94358bcc3d63a2eea372eb7f87c4a9a9f7edbd2
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-05-05 21:30:40 +0300
+
+    - introduce SYNDB_SILENCE define - if defined SynDB layer don't log a SQLWithInlinedParams on statement prepare and successful execution + do not logs a full statement on exception
+    - Move CacheIndex & SQLPrepared property into TSQLDBStatement class from descendants
+    - Expose SQLLogTimer SQLPrepared CacheIndex  TSQLDBStatement props via ISQLDBStatement interface
+    - TSQLDBOracleStatement will use ReplaceParamsByNumbers instead of ReplaceParamsByNames (up to x10 times faster depending on parameters count)
+
+commit fd7922308df1ef961f0d61aa1b22172b24bc723d
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-05-05 20:55:08 +0300
+
+    log StartTransaction method call for SynDBODBC & SynDBZeos to be the same as for other DB
 
 commit 30eeff205b405c6bc3767962c60094dc6b9d9646
 Author: Arnaud Bouchez <fakeaddress@synopse.info>

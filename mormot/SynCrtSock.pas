@@ -286,12 +286,14 @@ type
     // Windows by now, using the SChannel API)
     constructor Open(const aServer, aPort: SockString; aLayer: TCrtSocketLayer=cslTCP;
       aTimeOut: cardinal=10000; aTLS: boolean=false);
-    /// bind to a Port
-    // - expects the port to be specified as Ansi string, e.g. '1234'
-    // - you can optionally specify a server address to bind to, e.g.
-    // '1.2.3.4:1234'
-    // - for unix domain socket use unix:/path/to/file
-    constructor Bind(const aPort: SockString; aLayer: TCrtSocketLayer=cslTCP);
+    /// bind to an address
+    // - aAddr='1234' - bind to a port on all interfaces, the same as '0.0.0.0:1234'
+    // - aAddr='IP:port' - bind to specified interface only, e.g. '1.2.3.4:1234'
+    // - aAddr='unix:/path/to/file' - bind to unix domain socket, e.g. 'unix:/run/mormot.sock'
+    // - aAddr='' - bind to systemd descriptor on linux. See
+    // http://0pointer.de/blog/projects/socket-activation.html
+    constructor Bind(const aAddr: SockString; aLayer: TCrtSocketLayer=cslTCP;
+      aTimeOut: integer=10000);
     /// low-level internal method called by Open() and Bind() constructors
     // - raise an ECrtSocket exception on error
     // - you may ask for a TLS secured client connection (only available under
@@ -361,7 +363,7 @@ type
     procedure SockSend(P: pointer; Len: integer); overload;
     /// flush all pending data to be sent, optionally with some body content
     // - raise ECrtSocket on error
-    procedure SockSendFlush(const aBody: SockString='');
+    procedure SockSendFlush(const aBody: SockString=''); virtual;
     /// flush all pending data to be sent
     // - returning true on success
     function TrySockSendFlush: boolean;
@@ -618,6 +620,7 @@ type
   /// a genuine identifier for a given client connection on server side
   // - maps http.sys ID, or is a genuine 31-bit value from increasing sequence
   THttpServerConnectionID = Int64;
+
   /// a dynamic array of client connection identifiers, e.g. for broadcasting
   THttpServerConnectionIDDynArray = array of THttpServerConnectionID;
 
@@ -1017,7 +1020,7 @@ type
     /// a 31-bit sequential number identifying this instance on the server
     property RequestID: integer read fRequestID;
     /// the ID of the connection which called this execution context
-    // - e.g. SynCrtSock's TWebSocketProcess.NotifyCallback method would use
+    // - e.g. SynBidirSock's TWebSocketProcess.NotifyCallback method would use
     // this property to specify the client connection to be notified
     // - is set as an Int64 to match http.sys ID type, but will be an
     // increasing 31-bit integer sequence for (web)socket-based servers
@@ -1879,6 +1882,10 @@ type
     // - this constructor will raise a EHttpServer exception if binding failed
     // - expects the port to be specified as string, e.g. '1234'; you can
     // optionally specify a server address to bind to, e.g. '1.2.3.4:1234'
+    // - can listed on UDS in case port is specified with 'unix:' prefix, e.g.
+    // 'unix:/run/myapp.sock'
+    // - on Linux in case aPort is empty string will check if external fd
+    // is passed by systemd and use it (so called systemd socked activation)
     // - you can specify a number of threads to be initialized to handle
     // incoming connections. Default is 32, which may be sufficient for most
     // cases, maximum is 256. If you set 0, the thread pool will be disabled
@@ -1890,7 +1897,8 @@ type
     // THttpServer.Create()
     constructor Create(const aPort: SockString; OnStart,OnStop: TNotifyThreadEvent;
       const ProcessName: SockString; ServerThreadPoolCount: integer=32;
-      KeepAliveTimeOut: integer=30000; HeadersUnFiltered: boolean=false); reintroduce; virtual;
+      KeepAliveTimeOut: integer=30000; HeadersUnFiltered: boolean=false;
+      CreateSuspended: boolean = false); reintroduce; virtual;
     /// ensure the HTTP server thread is actually bound to the specified port
     // - TCrtSocket.Bind() occurs in the background in the Execute method: you
     // should call and check this method result just after THttpServer.Create
@@ -3717,8 +3725,10 @@ begin
     while result^>#13 do
       inc(result);
     while result^<=#13 do
-      if result^=#0 then
-        exit else
+      if result^=#0 then begin
+        result := nil;
+        exit;
+      end else
         inc(result);
   until false;
 end;
@@ -3886,7 +3896,6 @@ const
   ERROR_WINHTTP_CANNOT_CONNECT = 12029;
   ERROR_WINHTTP_TIMEOUT = 12002;
   ERROR_WINHTTP_INVALID_SERVER_RESPONSE = 12152;
-
 
 function SysErrorMessagePerModule(Code: DWORD; ModuleName: PChar): string;
 {$ifdef MSWINDOWS}
@@ -4920,22 +4929,42 @@ begin
   result := false;
 end;
 
-constructor TCrtSocket.Bind(const aPort: SockString; aLayer: TCrtSocketLayer);
+constructor TCrtSocket.Bind(const aAddr: SockString; aLayer: TCrtSocketLayer;
+   aTimeOut: integer);
 var s,p: SockString;
+    aSock: integer;
+    {$ifdef LINUXNOTBSD}
+    n: integer;
+    {$endif}
 begin
-  Create(10000);
-  if not Split(aPort,':',s,p) then begin
-    s := '0.0.0.0';
-    p := aPort;
+  Create(aTimeOut);
+  if aAddr='' then begin
+    {$ifdef LINUXNOTBSD} // try systemd
+    if not SystemdIsAvailable then
+      raise ECrtSocket.Create('Bind('''') but Systemd is not available');
+    n := ExternalLibraries.sd_listen_fds(0);
+    if n > 1 then
+      raise ECrtSocket.Create('Bind(''''): Systemd activation failed - too ' +
+        'many file descriptors received');
+    aSock := SD_LISTEN_FDS_START + 0;
+    {$else}
+    raise ECrtSocket.Create('Bind('''') is not allowed on this platform');
+    {$endif}
+  end else begin
+    aSock := -1; // force OpenBind to create listening socket
+    if not Split(aAddr,':',s,p) then begin
+      s := '0.0.0.0';
+      p := aAddr;
+    end;
+    {$ifndef MSWINDOWS}
+    if s='unix' then begin
+      aLayer := cslUNIX;
+      s := p;
+      p := '';
+    end;
+    {$endif MSWINDOWS}
   end;
-  {$ifndef MSWINDOWS}
-  if s='unix' then begin
-    aLayer := cslUNIX;
-    s := p;
-    p := '';
-  end;
-  {$endif}
-  OpenBind(s,p,{dobind=}true,-1,aLayer); // raise a ECrtSocket on error
+  OpenBind(s,p,{dobind=}true,aSock,aLayer); // raise a ECrtSocket on error
 end;
 
 constructor TCrtSocket.Open(const aServer, aPort: SockString; aLayer: TCrtSocketLayer;
@@ -4966,6 +4995,12 @@ begin
   end;
   if fSock<=0 then
     exit; // no opened connection, or Close already executed
+  {$ifdef LINUXNOTBSD}
+  if (fWasBind and (fPort='')) then begin // binded on external socket
+    fSock := -1;
+    exit;
+  end;
+  {$endif}
   {$ifdef MSWINDOWS}
   if fSecure.Initialized then
     fSecure.BeforeDisconnection(fSock);
@@ -5018,8 +5053,10 @@ begin
     SendTimeout := TimeOut;
   end;
   if aLayer=cslTCP then begin
-    TCPNoDelay := 1; // disable Nagle algorithm since we use our own buffers
-    KeepAlive := 1; // enable TCP keepalive (even if we rely on transport layer)
+    if (aSock<0) or ((aSock>0) and not doBind) then begin // do not touch externally created socket
+      TCPNoDelay := 1; // disable Nagle algorithm since we use our own buffers
+      KeepAlive := 1; // enable TCP keepalive (even if we rely on transport layer)
+    end;
     if aTLS and (aSock<=0) and not doBind then
       try
         {$ifdef MSWINDOWS}
@@ -5400,8 +5437,8 @@ begin
         TSynLog.Add.Log(sllCustom2, 'TrySockRecv: sock=% AsynchRecv=% %',
           [Sock,read,SocketErrorMessage],self);
         {$endif}
-        if WSAIsFatalError then begin
-          Close; // connection broken or socket closed gracefully
+        if (read=0) or WSAIsFatalError then begin
+          Close; // connection broken or socket closed gracefully (read=0)
           exit;
         end;
         if StopBeforeLength then
@@ -5690,7 +5727,7 @@ end;
 
 function THttpClientSocket.Request(const url, method: SockString;
   KeepAlive: cardinal; const header, Data, DataType: SockString; retry: boolean): integer;
-procedure DoRetry(Error: integer; const msg: SockString);
+  procedure DoRetry(Error: integer; const msg: SockString);
   begin
     {$ifdef SYNCRTDEBUGLOW} TSynLog.Add.Log(sllCustom2,
       'Request: % socket=% DoRetry(%) retry=%',[msg,Sock,Error,BOOL_STR[retry]],self);
@@ -5766,8 +5803,9 @@ begin
         exit;
       end;
       GetHeader(false); // read all other headers
-      if (result<>STATUS_NOCONTENT) and not IdemPChar(pointer(method),'HEAD') then
-        GetBody; // get content if necessary (not HEAD method)
+      if (result<>STATUS_NOCONTENT) and
+         (IdemPCharArray(pointer(method),['HEAD','OPTIONS'])<0) then
+        GetBody; // get content if necessary (HEAD or OPTIONS have no body)
     except
       on Exception do
         DoRetry(STATUS_NOTFOUND,'Exception');
@@ -6196,7 +6234,7 @@ end;
 constructor THttpServer.Create(const aPort: SockString; OnStart,
   OnStop: TNotifyThreadEvent; const ProcessName: SockString;
   ServerThreadPoolCount: integer; KeepAliveTimeOut: integer;
-  HeadersUnFiltered: boolean);
+  HeadersUnFiltered: boolean; CreateSuspended: boolean);
 begin
   fSockPort := aPort;
   fInternalHttpServerRespList := {$ifdef FPC}TFPList{$else}TList{$endif}.Create;
@@ -6216,7 +6254,7 @@ begin
     fHTTPQueueLength := 1000;
   end;
   fHeadersNotFiltered := HeadersUnFiltered;
-  inherited Create(false,OnStart,OnStop,ProcessName);
+  inherited Create(CreateSuspended,OnStart,OnStop,ProcessName);
 end;
 
 function THttpServer.GetAPIVersion: string;
@@ -6355,7 +6393,7 @@ begin
       exit;
     Sleep(1);
     if GetTick64 > tix then
-      raise ECrtSocket.CreateFmt('%s.WaitStarted failed after % seconds with %s',
+      raise ECrtSocket.CreateFmt('%s.WaitStarted failed after %d seconds [%s]',
         [ClassName,Seconds,fExecuteMessage]);
   until false;
 end;
@@ -6377,6 +6415,13 @@ begin
   // main server process loop
   try
     fSock := TCrtSocket.Bind(fSockPort); // BIND + LISTEN
+    {$ifdef LINUXNOTBSD}
+    // in case we started by systemd, listening socket is created by another process
+    // and do not interrupt while process got a signal. So we need to set a timeout to
+    // unblock accept() periodically and check we need terminations
+    if fSockPort = '' then // external socket
+      fSock.ReceiveTimeout := 1000; // unblock accept every second
+    {$endif}
     fExecuteState := esRunning;
     if fSock.Sock<=0 then // paranoid (Bind would have raise an exception)
       raise ECrtSocket.Create('THttpServer.Execute: TCrtSocket.Bind failed');
@@ -6611,7 +6656,7 @@ begin
         exit;
     until GetTick64>endtix;
   end;
-  result := false; // normal delay expiration
+  result := false; // abnormal delay expiration
 end;
 
 {$ifndef LVCL}
@@ -6756,7 +6801,8 @@ begin
           HandleRequestsProcess;
       end else begin
         // call from TSynThreadPoolTHttpServer -> handle first request
-        if not fServerSock.fBodyRetrieved then
+        if not fServerSock.fBodyRetrieved and
+           (IdemPCharArray(pointer(fServerSock.fMethod),['HEAD','OPTIONS'])<0) then
           fServerSock.GetBody;
         fServer.Process(fServerSock,ConnectionID,self);
         if (fServer<>nil) and fServerSock.KeepAliveClient then
@@ -7108,7 +7154,8 @@ begin
       end;
     end;
     if withBody and not (connectionUpgrade in HeaderFlags) then begin
-      GetBody;
+      if IdemPCharArray(pointer(fMethod),['HEAD','OPTIONS'])<0 then
+        GetBody;
       result := grBodyReceived;
     end else
       result := grHeaderReceived;
@@ -7564,7 +7611,8 @@ begin
         ServerSock := nil; // THttpServerResp will own and free ServerSock
       end else begin
         // no Keep Alive = multi-connection -> process in the Thread Pool
-        if not (connectionUpgrade in ServerSock.HeaderFlags) then begin
+        if not (connectionUpgrade in ServerSock.HeaderFlags) and
+           (IdemPCharArray(pointer(ServerSock.Method),['HEAD','OPTIONS'])<0) then begin
           ServerSock.GetBody; // we need to get it now
           InterlockedIncrement(fServer.fStats[grBodyReceived]);
         end;
@@ -9183,6 +9231,9 @@ begin
     repeat
       Context.fInContent := ''; // release input/output body buffers ASAP
       Context.fOutContent := '';
+      // Reset AuthenticationStatus & user between requests
+      Context.fAuthenticationStatus := hraNone; 
+      Context.fAuthenticatedUser := '';
       // retrieve next pending request, and read its headers
       fillchar(Req^,sizeof(HTTP_REQUEST),0);
       Err := Http.ReceiveHttpRequest(fReqQueue,ReqID,0,Req^,length(ReqBuf),bytesRead);
@@ -9230,8 +9281,12 @@ begin
             HttpAuthStatusSuccess:
             if AuthType>HttpRequestAuthTypeNone then begin
               byte(Context.fAuthenticationStatus) := ord(AuthType)+1;
-              if AccessToken<>0 then
+              if AccessToken<>0 then begin
                 GetDomainUserNameFromToken(AccessToken,Context.fAuthenticatedUser);
+                // Per spec https://docs.microsoft.com/en-us/windows/win32/http/authentication-in-http-version-2-0
+                // AccessToken lifecycle is application responsability and should be closed after use 
+                CloseHandle(AccessToken);
+              end;
             end;
             HttpAuthStatusFailure:
               Context.fAuthenticationStatus := hraFailed;
@@ -9814,7 +9869,8 @@ type
     hReceive, hSend
   );
 
-const sProtocolHeader: SockString = 'SEC-WEBSOCKET-PROTOCOL';
+const
+  sProtocolHeader: SockString = 'SEC-WEBSOCKET-PROTOCOL';
 
 function HttpSys2ToWebSocketHeaders(const aHttpHeaders: HTTP_REQUEST_HEADERS): WEB_SOCKET_HTTP_HEADER_ARR;
 var headerCnt: Integer;
@@ -10115,7 +10171,8 @@ begin
     fFirstEmptyConnectionIndex := index;
 end;
 
-function THttpApiWebSocketServerProtocol.Send(index: Integer; aBufferType: WEB_SOCKET_BUFFER_TYPE; aBuffer: Pointer; aBufferSize: ULONG): boolean;
+function THttpApiWebSocketServerProtocol.Send(index: Integer;
+  aBufferType: WEB_SOCKET_BUFFER_TYPE; aBuffer: Pointer; aBufferSize: ULONG): boolean;
 var conn: PHttpApiWebSocketConnection;
 begin
   result := false;
@@ -11856,7 +11913,6 @@ procedure TCurlHTTP.SetCACertFile(const aCertFile: SockString);
 begin
   fSSL.CACertFile := aCertFile;
 end;
-
 
 procedure TCurlHTTP.UseClientCertificate(
   const aCertFile, aCACertFile, aKeyName, aPassPhrase: SockString);

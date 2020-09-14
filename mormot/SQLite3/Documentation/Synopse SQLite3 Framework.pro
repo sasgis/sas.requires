@@ -9983,7 +9983,7 @@ You can therefore define complex {\f1\fs20 interface} types, as such:
 !    /// validates ArgsInputIsOctetStream raw binary upload
 !    function DirectCall(const Data: TSQLRawBlob): integer;
 !  end;
-Note how {\f1\fs20 SpecialCall} and {\f1\fs20 ComplexCall} methods have quite complex parameters definitions, including dynamic arrays, sets and records. DirectCall will use binary POST, by-passing @*Base64@ JSON encoding - see @197@. The framework will handle {\f1\fs20 const} and {\f1\fs20 var} parameters as expected, i.e. as input/output parameters, also on the client side. Any simple types of dynamic arrays (like {\f1\fs20 TIntegerDynArray}, {\f1\fs20 TRawUTF8DynArray}, or {\f1\fs20 TWideStringDynArray}) will be serialized as plain JSON arrays - the framework is able to handle any dynamic array definition, but will serialize those simple types in a more AJAX compatible way, thanks to the enhanced RTTI available since to {\i Delphi} 2010.
+Note how {\f1\fs20 SpecialCall} and {\f1\fs20 ComplexCall} methods have quite complex parameters definitions, including dynamic arrays, sets and records. {\f1\fs20 DirectCall} will use binary POST, by-passing @*Base64@ JSON encoding - see @197@. The framework will handle {\f1\fs20 const} and {\f1\fs20 var} parameters as expected, i.e. as input/output parameters, also on the client side. Any simple types of dynamic arrays (like {\f1\fs20 TIntegerDynArray}, {\f1\fs20 TRawUTF8DynArray}, or {\f1\fs20 TWideStringDynArray}) will be serialized as plain JSON arrays - the framework is able to handle any dynamic array definition, but will serialize those simple types in a more AJAX compatible way, thanks to the enhanced RTTI available since to {\i Delphi} 2010.
 :  TPersistent / TSQLRecord parameters
 As stated above, {\i mORMot} does not allow a method {\f1\fs20 function} to return a {\f1\fs20 class} instance.
 That is, you can't define such a method:
@@ -16429,11 +16429,11 @@ But since the FPC trunk may be unstable, we will propose to put in place a stabl
 For this task, don't download an existing binary release of FPC / Lazarus, but use the {\i @**fpcupdeluxe@} tool, as published at @http://wiki.freepascal.org/fpcupdeluxe - it will allow to build your environment directly from the sources, and install it in a dedicated folder. Several FPC / Lazarus installations, with dedicated revision numbers, may coexist on the same computer: just ensure you run Lazarus from the shortcut created by {\i fpcupdeluxe}.
 - Download the latest release of the tool from @https://github.com/LongDirtyAnimAlf/fpcupdeluxe/releases
 - Unpack it in a dedicated folder, and run its executable.
-- On the main screen, locate on the left the two versions listboxes. Select "fixes" for both {\i FPC version} and {\i Lazarus version}.
+- On the main screen, locate on the left the two versions listboxes. Select "3.2" for {\i FPC version} and "2.0.10" for {\i Lazarus version}.
 - Then build the FPC and Lazarus binaries directly from the latest sources, by clicking on "Install/update FPC+Laz".
-Those "fixes" branches are currently used for building our production projects, so are expected to be properly tested and supported. \line At the time of the writing of this documentation, our Lazarus IDE (on Linux) reports using:
-- FPC fixes SVN 45428 (3.2.0)
-- Lazarus fixes SVN 63179 (2.0.9).
+Those branches are currently used for building our production projects, so are expected to be properly tested and supported. \line At the time of the writing of this documentation, our Lazarus IDE (on Linux) reports using:
+- FPC SVN 45643 (3.2.0)
+- Lazarus SVN 63526 (2.0.10).
 One big advantage of {\i fpcupdeluxe} is that you can very easily install cross-compilers for the CPU / OS combinations enumerated at @202@.\line Just go to the "Cross" tab, then select the target systems, and click on "Install compiler".\line It may be needed to download the cross-compiler binaries (once): just select "Yes" when prompted.
 You could install {\i mORMot} using {\i fpcupdeluxe}, but we recommend you clone our @https://github.com/synopse/mORMot repository, and setup the expected project paths, as detailed above at @113@.
 If you don't want to define a given version, the current {\i trunk} should/could work, if it didn't include any regression at the time you get it - this is why we provide "supported" branches.\line If you want to use the {\i FPC trunk}, please modify line #262 in {\f1\fs20 Synopse.inc} to enable the {\f1\fs20 FPC_PROVIDE_ATTR_TABLE} conditional and support the latest trunk RTTI changes:

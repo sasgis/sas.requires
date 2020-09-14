@@ -1929,7 +1929,7 @@ type
       /// =$ff for a ptField address, or =$fe for a ptVirtual method
       Kind: byte;
     end;
-  {$A+} // back to normal alignment
+    {$A+} // back to normal alignment
 {$endif FPC}
 
 const
@@ -7836,9 +7836,10 @@ type
     // (no additional memory buffer is allocated)
     function ParseAndConvert(Buffer: PUTF8Char; BufferLen: integer): boolean;
     /// will check then set (if needed) internal fPrivateCopy[Hash] values
-    // - returns TRUE if content changed (then fPrivateCopy+fPrivateCopyHash
-    // will be updated using crc32c hash)
-    function PrivateCopyChanged(aJSON: PUTF8Char; aLen: integer): boolean;
+    // - returns TRUE if fPrivateCopy content changed (then fPrivateCopyHash
+    // will be updated using crc32c hash if aUpdateHash is set)
+    function PrivateCopyChanged(aJSON: PUTF8Char; aLen: integer;
+      aUpdateHash: boolean): boolean;
   public
     /// create the result table from a JSON-formated Data message
     // - the JSON data is parsed and formatted in-place
@@ -10559,8 +10560,8 @@ type
   {$M-}
 
   /// class handling interface implementation generated from source
-  // - this class targets FPC, which does not generate the expected RTTI - see
-  // http://bugs.freepascal.org/view.php?id=26774
+  // - this class targets oldest FPC, which did not generate the expected RTTI -
+  // see http://bugs.freepascal.org/view.php?id=26774
   // - mORMotWrapper.pas will generate a new inherited class, overriding abstract
   // AddMethodsFromTypeInfo() to define the interface methods
   TInterfaceFactoryGenerated = class(TInterfaceFactory)
@@ -27822,15 +27823,20 @@ end;
 
 { TSQLTableJSON }
 
-function TSQLTableJSON.PrivateCopyChanged(aJSON: PUTF8Char; aLen: integer): boolean;
+function TSQLTableJSON.PrivateCopyChanged(aJSON: PUTF8Char; aLen: integer;
+  aUpdateHash: boolean): boolean;
 var Hash: cardinal;
 begin
-  Hash := crc32c(0,pointer(aJSON),aLen);
-  result := (fPrivateCopyHash=0) or (Hash=0) or (Hash<>fPrivateCopyHash);
-  if not result then
-    exit;
-  FastSetString(fPrivateCopy,aJSON,aLen+16); // +16 for SSE4.2 read-ahead
-  fPrivateCopyHash := Hash;
+  if aUpdateHash then begin
+    Hash := crc32c(0,pointer(aJSON),aLen);
+    result := (fPrivateCopyHash=0) or (Hash=0) or (Hash<>fPrivateCopyHash);
+    if not result then
+      exit;
+    fPrivateCopyHash := Hash;
+  end else
+    result := true; // from Create() for better performance on single use
+  FastSetString(fPrivateCopy,nil,aLen+16); // +16 for SSE4.2 read-ahead
+  MoveFast(pointer(aJSON)^,pointer(fPrivateCopy)^,aLen+1); // +1 for trailing #0
 end;
 
 function TSQLTableJSON.ParseAndConvert(Buffer: PUTF8Char; BufferLen: integer): boolean;
@@ -27971,7 +27977,7 @@ function TSQLTableJSON.UpdateFrom(const aJSON: RawUTF8; var Refreshed: boolean;
 var len: Integer;
 begin
   len := length(aJSON);
-  if PrivateCopyChanged(pointer(aJSON),len) then
+  if PrivateCopyChanged(pointer(aJSON),len,{updatehash=}true) then
     if ParseAndConvert(pointer(fPrivateCopy),len) then begin
      // parse success from new aJSON data -> need some other update?
      if Assigned(fIDColumn) then begin
@@ -28002,7 +28008,7 @@ constructor TSQLTableJSON.Create(const aSQL, aJSON: RawUTF8);
 var len: integer;
 begin
   len := length(aJSON);
-  FastSetString(fPrivateCopy,pointer(aJSON),len+16); // +16 for SSE4.2 read-ahead
+  PrivateCopyChanged(pointer(aJSON),len,{updatehash=}false);
   Create(aSQL,pointer(fPrivateCopy),len);
 end;
 
@@ -28018,7 +28024,7 @@ constructor TSQLTableJSON.CreateFromTables(const Tables: array of TSQLRecordClas
 var len: integer;
 begin
   len := length(aJSON);
-  FastSetString(fPrivateCopy,pointer(aJSON),len+16);
+  PrivateCopyChanged(pointer(aJSON),len,{updatehash=}false);
   CreateFromTables(Tables,aSQL,pointer(fPrivateCopy),len);
 end;
 
@@ -28034,7 +28040,7 @@ constructor TSQLTableJSON.CreateWithColumnTypes(const ColumnTypes: array of TSQL
 var len: integer;
 begin
   len := length(aJSON);
-  FastSetString(fPrivateCopy,pointer(aJSON),len+16);
+  PrivateCopyChanged(pointer(aJSON),len,{updatehash=}false);
   CreateWithColumnTypes(ColumnTypes,aSQL,pointer(fPrivateCopy),len);
 end;
 
@@ -30252,10 +30258,10 @@ end;
 function SQLFromSelect(const TableName, Select, Where, SimpleFields: RawUTF8): RawUTF8;
 begin
   if Select='*' then
-     // don't send BLOB values to query: retrieve all other fields
-    result := 'SELECT '+SimpleFields  else
-    result := 'SELECT '+Select;
-  result := result+' FROM '+TableName+SQLFromWhere(Where);
+    // don't send BLOB values to query: retrieve simple = all non-blob fields
+    result := SimpleFields else
+    result := Select;
+  result := 'SELECT '+result+' FROM '+TableName+SQLFromWhere(Where);
 end;
 
 function SelectInClause(const PropName: RawUTF8; const Values: array of RawUTF8;
@@ -31224,9 +31230,12 @@ begin
     fields := Props.Props.Fields;
     case Props.Kind of
     rFTS3, rFTS4, rFTS5: begin
-      if (Props.fFTSWithoutContentFields<>'') and (Props.fFTSWithoutContentTableIndex>=0) then
+      if (Props.fFTSWithoutContentFields<>'') and (Props.fFTSWithoutContentTableIndex>=0) then begin
         result := FormatUTF8('%content="%",',[result,
           aModel.Tables[Props.fFTSWithoutContentTableIndex].SQLTableName]);
+        if Props.Kind = rFTS5 then
+           result := FormatUTF8('%content_rowid="ID",',[result]);
+      end;
       for i := 0 to fields.Count-1 do
         result := result+fields.List[i].Name+',';
       tokenizer := 'simple';
@@ -34503,7 +34512,7 @@ begin
 end;
 
 function TSQLRest.OneFieldValues(Table: TSQLRecordClass; const FieldName,
-  WhereClause: RawUTF8; Strings: TStrings; IDToIndex: PID=nil): Boolean;
+  WhereClause: RawUTF8; Strings: TStrings; IDToIndex: PID): Boolean;
 var Row: integer;
     aID: TID;
     T: TSQLTableJSON;
@@ -34544,7 +34553,7 @@ end;
 
 function TSQLRest.OneFieldValues(Table: TSQLRecordClass; const FieldName,
   WhereClause, Separator: RawUTF8): RawUTF8;
-var i, Len, SepLen, L: integer;
+var i, Len, SepLen, L: PtrInt;
     Lens: TIntegerDynArray;
     T: TSQLTableJSON;
     P: PUTF8Char;
@@ -34558,13 +34567,12 @@ begin
     // calculate row values CSV needed memory
     SetLength(Lens,T.fRowCount);
     SepLen := length(Separator);
-    Len := 0;
+    Len := SepLen*(T.fRowCount-1);
     for i := 1 to T.fRowCount do begin
       L := StrLen(T.fResults[i]); // ignore fResults[0] i.e. field name
-      inc(Len,L+SepLen);
+      inc(Len,L);
       Lens[i-1] := L;
     end;
-    dec(Len,SepLen);
     SetLength(result,Len);
     // add row values as CSV
     P := pointer(result);
@@ -37418,17 +37426,16 @@ begin
     exit;
   InternalURI(Call^);
   if ((Sender=nil) or OnIdleBackgroundThreadActive) and
-      not(isDestroying in fInternalState) then
+      not(isDestroying in fInternalState) then begin
     if (Call^.OutStatus=HTTP_NOTIMPLEMENTED) and (isOpened in fInternalState) then begin
       InternalClose; // force recreate connection
       Exclude(fInternalState,isOpened);
-      if ((Sender=nil) or OnIdleBackgroundThreadActive) then begin
+      if ((Sender=nil) or OnIdleBackgroundThreadActive) then
         InternalURI(Call^); // try request again
-        if Call^.OutStatus<>HTTP_NOTIMPLEMENTED then
-          Include(fInternalState,isOpened);
-      end;
-    end else
+    end;
+    if Call^.OutStatus<>HTTP_NOTIMPLEMENTED then
       Include(fInternalState,isOpened);
+  end;
 end;
 
 function TSQLRestClientURI.GetOnIdleBackgroundThreadActive: boolean;
@@ -49288,18 +49295,34 @@ begin
   fts := Props.Props.SQLTableName;
   ftsfields := Props.Props.SQLTableSimpleFieldsNoRowID;
   // see http://www.sqlite.org/fts3.html#*fts4content
-  Server.ExecuteFmt('CREATE TRIGGER %_bu BEFORE UPDATE ON % '+
-    'BEGIN DELETE FROM % WHERE docid=old.rowid; END;',
-    [main,main,fts]);
-  Server.ExecuteFmt('CREATE TRIGGER %_bd BEFORE DELETE ON % '+
-    'BEGIN DELETE FROM % WHERE docid=old.rowid; END;',
-    [main,main,fts]);
-  Server.ExecuteFmt('CREATE TRIGGER %_au AFTER UPDATE ON % '+
-    'BEGIN INSERT INTO %(docid,%) VALUES(new.rowid%); END;',
-    [main,main,fts,ftsfields,Props.fFTSWithoutContentFields]);
-  Server.ExecuteFmt('CREATE TRIGGER %_ai AFTER INSERT ON % '+
-    'BEGIN INSERT INTO %(docid,%) VALUES(new.rowid%); END;',
-    [main,main,fts,ftsfields,Props.fFTSWithoutContentFields]);
+  if Props.Kind=rFTS5 then begin
+    // In fts 5 we can't use docid only rowid, also use insert() values('delete',) to delete record
+    Server.ExecuteFmt('CREATE TRIGGER %_bu BEFORE UPDATE ON % '+
+      'BEGIN INSERT INTO %(%,rowid,%) VALUES(''delete'',old.rowid%); END;',
+      [main,main,fts,fts,ftsfields, StringReplaceAll(Props.fFTSWithoutContentFields, 'new.', 'old.')]);
+    Server.ExecuteFmt('CREATE TRIGGER %_bd BEFORE DELETE ON % '+
+      'BEGIN INSERT INTO %(%,rowid,%) VALUES(''delete'',old.rowid%); END;',
+      [main,main,fts,fts,ftsfields, StringReplaceAll(Props.fFTSWithoutContentFields, 'new.', 'old.')]);
+    Server.ExecuteFmt('CREATE TRIGGER %_au AFTER UPDATE ON % '+
+      'BEGIN INSERT INTO %(rowid,%) VALUES(new.rowid%); END;',
+      [main,main,fts,ftsfields,Props.fFTSWithoutContentFields]);
+    Server.ExecuteFmt('CREATE TRIGGER %_ai AFTER INSERT ON % '+
+      'BEGIN INSERT INTO %(rowid,%) VALUES(new.rowid%); END;',
+      [main,main,fts,ftsfields,Props.fFTSWithoutContentFields]);
+  end else begin
+    Server.ExecuteFmt('CREATE TRIGGER %_bu BEFORE UPDATE ON % '+
+      'BEGIN DELETE FROM % WHERE docid=old.rowid; END;',
+      [main,main,fts]);
+    Server.ExecuteFmt('CREATE TRIGGER %_bd BEFORE DELETE ON % '+
+      'BEGIN DELETE FROM % WHERE docid=old.rowid; END;',
+      [main,main,fts]);
+    Server.ExecuteFmt('CREATE TRIGGER %_au AFTER UPDATE ON % '+
+      'BEGIN INSERT INTO %(docid,%) VALUES(new.rowid%); END;',
+      [main,main,fts,ftsfields,Props.fFTSWithoutContentFields]);
+    Server.ExecuteFmt('CREATE TRIGGER %_ai AFTER INSERT ON % '+
+      'BEGIN INSERT INTO %(docid,%) VALUES(new.rowid%); END;',
+      [main,main,fts,ftsfields,Props.fFTSWithoutContentFields]);
+  end;
 end;
 
 

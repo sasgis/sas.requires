@@ -1632,7 +1632,7 @@ type
     // corresponding TSQLDBProxyConnectionCommand on the current connection
     procedure RemoteProcessMessage(const Input: RawByteString;
       out Output: RawByteString; Protocol: TSQLDBProxyConnectionProtocol); virtual;
-    {$endif}
+    {$endif WITH_PROXY}
 
     /// the current Date and Time, as retrieved from the server
     // - note that this value is the DB_SERVERTIME[] constant SQL value, so
@@ -1700,10 +1700,15 @@ type
     fForceBlobAsNull: boolean;
     fForceDateWithMS: boolean;
     fDBMS: TSQLDBDefinition;
+    {$ifndef SYNDB_SILENCE}
     fSQLLogLog: TSynLog;
     fSQLLogLevel: TSynLogInfo;
+    {$endif}
     fSQLWithInlinedParams: RawUTF8;
     fSQLLogTimer: TPrecisionTimer;
+    fCacheIndex: integer;
+    fSQLPrepared: RawUTF8;
+    function GetSQLCurrent: RawUTF8;
     function GetSQLWithInlinedParams: RawUTF8;
     procedure ComputeSQLWithInlinedParams;
     function GetForceBlobAsNull: boolean;
@@ -2182,11 +2187,29 @@ type
     // - follows the format expected by TSQLDBProxyStatement
     procedure ColumnsToBinary(W: TFileBufferWriter;
       Null: pointer; const ColTypes: TSQLDBFieldTypeDynArray); virtual;
+    /// low-level access to the Timer used for last DB operation
+    property SQLLogTimer: TPrecisionTimer read fSQLLogTimer;
+    /// after a call to Prepare(), contains the query text to be passed to the DB
+    // - depending on the DB, parameters placeholders are replaced by ?, :1, $1 etc
+    // - this SQL is ready to be used in any DB tool, e.g. to check the real 
+    // execution plan/timing
+    property SQLPrepared: RawUTF8 read fSQLPrepared;
+    /// the prepared SQL statement, in its current state
+    // - if statement is prepared, then equals SQLPrepared, otherwise, contains
+    // the raw SQL property content
+    // - used internally by the implementation units, e.g. for errors logging
+    property SQLCurrent: RawUTF8 read GetSQLCurrent;
+    /// low-level access to the statement cache index, after a call to Prepare()
+    // - contains >= 0 if the database supports prepared statement cache 
+    //(Oracle, Postgres) and query plan is cached; contains -1 in other cases
+    property CacheIndex: integer read fCacheIndex;
   published
     /// the prepared SQL statement, as supplied to Prepare() method
     property SQL: RawUTF8 read fSQL;
     /// the prepared SQL statement, with all '?' changed into the supplied
     // parameter values
+    // - such statement query plan usually differ from a real execution plan
+    // for prepared statements with parameters - see SQLPrepared property instead
     property SQLWithInlinedParams: RawUTF8 read GetSQLWithInlinedParams;
     /// the current row after Execute/Step call, corresponding to Column*() methods
     // - contains 0 before initial Step call, or a number >=1 during data retrieval
@@ -2826,13 +2849,18 @@ function TrimLeftSchema(const TableName: RawUTF8): RawUTF8;
 // - returns the number of ? parameters found within aSQL
 // - won't generate any SQL keyword parameters (e.g. :AS :OF :BY), to be
 // compliant with Oracle OCI expectations
-function ReplaceParamsByNames(const aSQL: RawUTF8; var aNewSQL: RawUTF8): integer;
+// - any ending ';' character is deleted, unless aStripSemicolon is unset
+function ReplaceParamsByNames(const aSQL: RawUTF8; var aNewSQL: RawUTF8;
+  aStripSemicolon: boolean=true): integer;
 
 /// replace all '?' in the SQL statement with indexed parameters like $1 $2 ...
 // - returns the number of ? parameters found within aSQL
-// - as used e.g. by PostgreSQL library
+// - as used e.g. by PostgreSQL & Oracle (:1 :2) library
+// - if AllowSemicolon is false (by default), reject any statement with ;
+// (Postgres do not allow ; inside prepared statement); it should be 
+// true for Oracle
 function ReplaceParamsByNumbers(const aSQL: RawUTF8; var aNewSQL: RawUTF8;
-  IndexChar: AnsiChar = '$'): integer;
+  IndexChar: AnsiChar = '$'; AllowSemicolon: boolean = false): integer;
 
 /// create a JSON array from an array of UTF-8 bound values
 // - as generated during array binding, i.e. with quoted strings
@@ -3308,7 +3336,7 @@ function TSQLDBFieldTypeToString(aType: TSQLDBFieldType): TShort16;
 /// retrieve the ready-to-be displayed text of proxy commands implemented by
 // TSQLDBProxyConnectionProperties.Process()
 function ToText(cmd: TSQLDBProxyConnectionCommand): PShortString; overload;
-{$endif}
+{$endif WITH_PROXY}
 
 
 implementation
@@ -3335,13 +3363,6 @@ begin
   if aType<=high(aType) then
     result := TrimLeftLowerCaseToShort(ToText(aType)) else
     FormatShort16('#%',[ord(aType)],result);
-end;
-
-function OracleSQLIso8601ToDate(Iso8601: RawUTF8): RawUTF8;
-begin
-  if (length(Iso8601)>10) and (Iso8601[11]='T') then
-    Iso8601[11] := ' '; // 'T' -> ' '
-  result := 'to_date('''+Iso8601+''',''YYYY-MM-DD HH24:MI:SS'')'; // from Iso8601
 end;
 
 
@@ -4116,9 +4137,11 @@ var Stmt: TSQLDBStatement;
       end;
     except
       on E: Exception do begin
+        {$ifndef SYNDB_SILENCE}
         with SynDBLog.Add do
           if [sllSQL,sllDB,sllException,sllError]*Family.Level<>[] then
             LogLines(sllSQL,pointer(Stmt.SQLWithInlinedParams),self,'--');
+        {$endif}
         Stmt.Free;
         result := nil;
         StringToUTF8(E.Message,fErrorMessage);
@@ -5701,21 +5724,17 @@ function TSQLDBConnectionProperties.SQLIso8601ToDate(const Iso8601: RawUTF8): Ra
 begin
   case DBMS of
   dSQLite: result := TrimTInIso;
-  dOracle: result := OracleSQLIso8601ToDate(Iso8601);
+  dOracle: result := 'to_date('''+TrimTInIso+''',''YYYY-MM-DD HH24:MI:SS'')';
   dNexusDB: result := 'DATE '+Iso8601;
   dDB2: result := 'TIMESTAMP '''+TrimTInIso+'''';
+  dPostgreSQL: result := ''''+TrimTInIso+'''';
   else  result := ''''+Iso8601+'''';
   end;
 end;
 
 function TSQLDBConnectionProperties.SQLDateToIso8601Quoted(DateTime: TDateTime): RawUTF8;
-var tmp: array[0..23] of AnsiChar;
-    P: PUTF8Char;
 begin
-  tmp[0] := '''';
-  P := DateTimeToIso8601ExpandedPChar(DateTime,@tmp[1],DateTimeFirstChar);
-  P^ := '''';
-  FastSetString(result,@tmp,PtrUInt(P)-PtrUInt(@tmp)+1);
+  result := DateTimeToIso8601(DateTime,true,DateTimeFirstChar,false,'''');
 end;
 
 function TSQLDBConnectionProperties.SQLCreate(const aTableName: RawUTF8;
@@ -6729,6 +6748,7 @@ begin
   inherited Create;
   fConnection := aConnection;
   fStripSemicolon := true;
+  fCacheIndex := -1;
   if aConnection<>nil then
     fDBMS := aConnection.fProperties.DBMS;
 end;
@@ -6965,11 +6985,17 @@ begin
     if Expanded then
       W.Add('[');
     // write rows data
+    {$ifdef SYNDB_SILENCE}
+    fSQLLogTimer.Resume; // log fetch duration
+    {$endif}
     while Step do begin
       ColumnsToJSON(W);
       W.Add(',');
       inc(result);
     end;
+    {$ifdef SYNDB_SILENCE}
+    fSQLLogTimer.Pause;
+    {$endif}
     ReleaseRows;
     if (result=0) and W.Expand then begin
       // we want the field names at least, even with no data (RowCount=0)
@@ -7018,6 +7044,9 @@ begin
     W.CancelLastChar;
     W.AddCR;
     // add CSV rows
+    {$ifdef SYNDB_SILENCE}
+    fSQLLogTimer.Resume;
+    {$endif}
     while Step do begin
       for F := 0 to FMax do begin
         ColumnToSQLVar(F,V,tmp);
@@ -7052,6 +7081,9 @@ begin
       end;
       inc(result);
     end;
+    {$ifdef SYNDB_SILENCE}
+    fSQLLogTimer.Pause;
+    {$endif}
     ReleaseRows;
     W.FlushFinal;
   finally
@@ -7304,23 +7336,35 @@ end;
 
 function TSQLDBStatement.SQLLogBegin(level: TSynLogInfo): TSynLog;
 begin
+  if level = sllDB then // prepare
+    fSQLLogTimer.Start else
+    fSQLLogTimer.Resume;
+  {$ifdef SYNDB_SILENCE}
+  result := nil;
+  {$else}
   result := SynDBLog.Add;
   if result <> nil then
     if level in result.Family.Level then
     begin
       fSQLLogLevel := level;
-      fSQLLogTimer.Start;
       if level = sllSQL then
         ComputeSQLWithInlinedParams;
     end
     else
       result := nil;
   fSQLLogLog := result;
+  {$endif}
 end;
 
 function TSQLDBStatement.SQLLogEnd(msg: PShortString): Int64;
+{$ifndef SYNDB_SILENCE}
 var tmp: TShort16;
+{$endif}
 begin
+  fSQLLogTimer.Pause;
+  {$ifdef SYNDB_SILENCE}
+  result := fSQLLogTimer.LastTimeInMicroSec;
+  {$else}
   result := 0;
   if fSQLLogLog=nil then
     exit;
@@ -7332,7 +7376,7 @@ begin
       msg := @tmp;
     end;
     fSQLLogLog.Log(fSQLLogLevel, 'ExecutePrepared %% %',
-      [fSQLLogTimer.Stop, msg^, fSQLWithInlinedParams], self)
+      [fSQLLogTimer.Time, msg^, fSQLWithInlinedParams], self)
   end
   else begin
     if msg=nil then
@@ -7341,18 +7385,28 @@ begin
   end;
   result := fSQLLogTimer.LastTimeInMicroSec;
   fSQLLogLog := nil;
+  {$endif}
 end;
 
 function TSQLDBStatement.SQLLogEnd(const Fmt: RawUTF8; const Args: array of const): Int64;
 var tmp: shortstring;
 begin
+  tmp[0] := #0;
+  {$ifndef SYNDB_SILENCE}
   result := 0;
   if fSQLLogLog=nil then
     exit;
-  if Fmt='' then
-    tmp[0] := #0 else
+  if Fmt<>'' then
     FormatShort(Fmt,Args,tmp);
+  {$endif}
   result := SQLLogEnd(@tmp);
+end;
+
+function TSQLDBStatement.GetSQLCurrent: RawUTF8;
+begin
+  if fSQLPrepared <> '' then
+    Result := fSQLPrepared else
+    Result := fSQL;
 end;
 
 function TSQLDBStatement.GetSQLWithInlinedParams: RawUTF8;
@@ -7529,7 +7583,7 @@ end;
 procedure TSQLDBStatement.Reset;
 begin
   fSQLWithInlinedParams := '';
-  // a do-nothing default method (used e.g. for OCI)
+  fSQLLogTimer.Init; // reset timer (for cached statement for example)
 end;
 
 procedure TSQLDBStatement.ReleaseRows;
@@ -7743,15 +7797,16 @@ begin
   // -> we have nothing to do but return the current value! :)
   with fParams[Param] do begin
     result := VType;
-    case VType of
-      ftInt64:     Value := {$ifdef DELPHI5OROLDER}integer{$endif}(VInt64);
-      ftDouble:    Value := unaligned(PDouble(@VInt64)^);
-      ftCurrency:  Value := PCurrency(@VInt64)^;
-      ftDate:      Value := PDateTime(@VInt64)^;
-      ftUTF8:      RawUTF8ToVariant(RawUTF8(VData),Value);
-      ftBlob:      RawByteStringToVariant(VData,Value);
-      else         SetVariantNull(Value)
-    end;
+    if VArray=nil then
+      case VType of
+        ftInt64:     Value := {$ifdef DELPHI5OROLDER}integer{$endif}(VInt64);
+        ftDouble:    Value := unaligned(PDouble(@VInt64)^);
+        ftCurrency:  Value := PCurrency(@VInt64)^;
+        ftDate:      Value := PDateTime(@VInt64)^;
+        ftUTF8:      RawUTF8ToVariant(RawUTF8(VData),Value);
+        ftBlob:      RawByteStringToVariant(VData,Value);
+        else         SetVariantNull(Value)
+      end else SetVariantNull(Value);
   end;
 end;
 {$endif}
@@ -7761,22 +7816,24 @@ procedure TSQLDBStatementWithParams.AddParamValueAsText(Param: integer; Dest: TT
 begin
   dec(Param);
   if cardinal(Param)>=cardinal(fParamCount) then
-    Dest.Add(',') else
+    Dest.AddShort('null') else
     with fParams[Param] do
-    case VType of
-      ftInt64:    Dest.Add({$ifdef DELPHI5OROLDER}integer{$endif}(VInt64));
-      ftDouble:   Dest.AddDouble(unaligned(PDouble(@VInt64)^));
-      ftCurrency: Dest.AddCurr64(VInt64);
-      ftDate:     Dest.AddDateTime(PDateTime(@VInt64),' ','''');
-      ftUTF8:     Dest.AddQuotedStr(pointer(VData),'''',MaxCharCount);
-      ftBlob:     Dest.AddU(length(VData));
-      else        Dest.AddShort('null');
-    end;
+    if VArray=nil then
+      case VType of
+        ftInt64:    Dest.Add({$ifdef DELPHI5OROLDER}integer{$endif}(VInt64));
+        ftDouble:   Dest.AddDouble(unaligned(PDouble(@VInt64)^));
+        ftCurrency: Dest.AddCurr64(VInt64);
+        ftDate:     Dest.AddDateTime(PDateTime(@VInt64),' ','''');
+        ftUTF8:     Dest.AddQuotedStr(pointer(VData),'''',MaxCharCount);
+        ftBlob:     Dest.AddU(length(VData));
+        else        Dest.AddShort('null');
+      end
+      else Dest.AddString(VArray[0]); // first item is enough in the logs
 end;
 
 procedure TSQLDBStatementWithParams.BindArray(Param: Integer;
   const Values: array of double);
-var i: integer;
+var i: PtrInt;
 begin
   with CheckParam(Param,ftDouble,paramIn,length(Values))^ do
     for i := 0 to high(Values) do
@@ -7785,7 +7842,7 @@ end;
 
 procedure TSQLDBStatementWithParams.BindArray(Param: Integer;
   const Values: array of Int64);
-var i: integer;
+var i: PtrInt;
 begin
   with CheckParam(Param,ftInt64,paramIn,length(Values))^ do
     for i := 0 to high(Values) do
@@ -7794,27 +7851,30 @@ end;
 
 procedure TSQLDBStatementWithParams.BindArray(Param: Integer;
   ParamType: TSQLDBFieldType; const Values: TRawUTF8DynArray; ValuesCount: integer);
-var i: integer;
+var i: PtrInt;
     ChangeFirstChar: AnsiChar;
+    p: PSQLDBParam;
+    v: TTimeLogBits; // faster than TDateTime
 begin
   inherited; // raise an exception in case of invalid parameter
   if fConnection=nil then
     ChangeFirstChar := 'T' else
     ChangeFirstChar := Connection.Properties.DateTimeFirstChar;
-  with CheckParam(Param,ParamType,paramIn)^ do begin
-    VArray := Values; // immediate COW reference-counted assignment
-    if (ParamType=ftDate) and (ChangeFirstChar<>'T') then
-      for i := 0 to ValuesCount-1 do // fix e.g. for PostgreSQL
-        if (length(Values[i])>11) and (Values[i][12]='T') then
-          Values[i][12] := ChangeFirstChar; // [12] since quoted 'dateTtime'
-    VInt64 := ValuesCount;
-  end;
+  p := CheckParam(Param,ParamType,paramIn);
+  p^.VInt64 := ValuesCount;
+  p^.VArray := Values; // immediate COW reference-counted assignment
+  if (ParamType=ftDate) and (ChangeFirstChar<>'T') then
+    for i := 0 to ValuesCount-1 do // fix e.g. for PostgreSQL
+      if (p^.VArray[i]<>'') and (p^.VArray[i][1]='''') then begin
+        v.From(PUTF8Char(pointer(p^.VArray[i]))+1,length(p^.VArray[i])-2);
+        p^.VArray[i] := v.FullText({expanded=}true,ChangeFirstChar,'''');
+      end;
   fParamsArrayCount := ValuesCount;
 end;
 
 procedure TSQLDBStatementWithParams.BindArray(Param: Integer;
   const Values: array of RawUTF8);
-var i: integer;
+var i: PtrInt;
     StoreVoidStringAsNull: boolean;
 begin
   StoreVoidStringAsNull := (fConnection<>nil) and
@@ -7828,7 +7888,7 @@ end;
 
 procedure TSQLDBStatementWithParams.BindArrayCurrency(Param: Integer;
   const Values: array of currency);
-var i: integer;
+var i: PtrInt;
 begin
   with CheckParam(Param,ftCurrency,paramIn,length(Values))^ do
     for i := 0 to high(Values) do
@@ -7837,7 +7897,7 @@ end;
 
 procedure TSQLDBStatementWithParams.BindArrayDateTime(Param: Integer;
   const Values: array of TDateTime);
-var i: integer;
+var i: PtrInt;
 begin
   with CheckParam(Param,ftDate,paramIn,length(Values))^ do
     for i := 0 to high(Values) do
@@ -7846,7 +7906,7 @@ end;
 
 procedure TSQLDBStatementWithParams.BindArrayRowPrepare(
   const aParamTypes: array of TSQLDBFieldType; aExpectedMinimalRowCount: integer);
-var i: integer;
+var i: PtrInt;
 begin
   fParam.Count := 0;
   for i := 0 to high(aParamTypes) do
@@ -7855,7 +7915,7 @@ begin
 end;
 
 procedure TSQLDBStatementWithParams.BindArrayRow(const aValues: array of const);
-var i: integer;
+var i: PtrInt;
 begin
   if length(aValues)<>fParamCount then
     raise ESQLDBException.CreateFmt('Invalid %.BindArrayRow call',[self]);
@@ -7883,7 +7943,7 @@ begin
 end;
 
 procedure TSQLDBStatementWithParams.BindFromRows(Rows: TSQLDBStatement);
-var F: integer;
+var F: PtrInt;
     U: RawUTF8;
 begin
   if Rows<>nil then
@@ -7994,7 +8054,8 @@ begin
     result := copy(TableName,j,maxInt);
 end;
 
-function ReplaceParamsByNames(const aSQL: RawUTF8; var aNewSQL: RawUTF8): integer;
+function ReplaceParamsByNames(const aSQL: RawUTF8; var aNewSQL: RawUTF8;
+  aStripSemicolon: boolean): integer;
 var i,j,B,L: PtrInt;
     P: PAnsiChar;
     c: array[0..3] of AnsiChar;
@@ -8003,11 +8064,13 @@ const SQL_KEYWORDS: array[0..19] of AnsiChar = 'ASATBYIFINISOFONORTO';
 begin
   result := 0;
   L := Length(aSQL);
-  while (L>0) and (aSQL[L] in [#1..' ',';']) do
-    if (aSQL[L]=';') and (L>5) and IdemPChar(@aSQL[L-3],'END') then
-      break else // allows 'END;' at the end of a statement
-      dec(L);    // trim ' ' or ';' right (last ';' could be found incorrect)
+  if aStripSemicolon then
+    while (L>0) and (aSQL[L] in [#1..' ',';']) do
+      if (aSQL[L]=';') and (L>5) and IdemPChar(@aSQL[L-3],'END') then
+        break else // allows 'END;' at the end of a statement
+        dec(L);    // trim ' ' or ';' right (last ';' could be found incorrect)
   if PosExChar('?',aSQL)>0 then begin
+    aNewSQL:= '';
     // change ? into :AA :BA ..
     c := ':AA';
     i := 0;
@@ -8048,7 +8111,7 @@ begin
 end;
 
 function ReplaceParamsByNumbers(const aSQL: RawUTF8; var aNewSQL: RawUTF8;
-  IndexChar: AnsiChar): integer;
+  IndexChar: AnsiChar; AllowSemicolon: boolean): integer;
 var
   ndx, L: PtrInt;
   s, d: PUTF8Char;
@@ -8092,7 +8155,7 @@ begin
           else
             break;
       until false;
-    end else if c = ';' then
+    end else if (c = ';') and not AllowSemicolon then
       exit; // complex expression can not be prepared
     inc(s);
   end;
@@ -8933,9 +8996,10 @@ end;
 { ESQLDBException }
 
 constructor ESQLDBException.CreateUTF8(const Format: RawUTF8; const Args: array of const);
-var msg, sql: RawUTF8;
+var msg {$ifndef SYNDB_SILENCE}, sql{$endif}: RawUTF8;
 begin
   msg := FormatUTF8(Format,Args);
+  {$ifndef SYNDB_SILENCE}
   if (length(Args)>0) and (Args[0].VType=vtObject) and (Args[0].VObject<>nil) then
     if Args[0].VObject.InheritsFrom(TSQLDBStatement) then begin
       fStatement := TSQLDBStatement(Args[0].VObject);
@@ -8948,6 +9012,7 @@ begin
         msg := msg+' - '+sql;
       end;
     end;
+  {$endif}
   inherited Create(UTF8ToString(msg));
 end;
 
