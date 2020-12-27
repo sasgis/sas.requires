@@ -1,3 +1,21 @@
+commit 7c999f8e8b29139cea4cc8e0a00a2551d467137d
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2020-12-10 15:38:42 +0100
+
+    Cherry pick into stable: Fix ReadParameters not setting parameter parser positions even though ValidateParameters does use them.
+
+commit 98755363da555a20db9cb1ddce04c748893d7f46
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2020-10-28 17:27:04 +0100
+
+    Cherry pick into stable: Fix 64 bit return values some more, using the correct method which was already used by cdRegister.
+
+commit 1657263c1413807049d51fceb43f54294ebce098
+Author: Martijn Laan <martijnlaan@gmail.com>
+Date:   2020-10-01 21:47:51 +0200
+
+    Cherry pick into stable: Fix 64 bit return values.
+
 commit 652d9075eef8726da69355fc7a5ea8fdbf5b3f08
 Author: Martijn Laan <martijnlaan@gmail.com>
 Date:   2020-08-31 07:04:32 +0200
