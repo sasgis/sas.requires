@@ -1,3 +1,245 @@
+commit 72893b0813d772cde0b709a892922f8e45c0a24a
+Merge: f262f100 7fa1caa8
+Author: zed <starmen@tut.by>
+Date:   2020-12-27 12:50:54 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 7fa1caa8bd89f132a7d6feaf3093e6f2415ce363
+Author: Anders Melander <anders@melander.dk>
+Date:   2020-11-20 13:26:34 +0100
+
+    Fixes #147: Eliminated reference to TCIEXYZTriple from TBitmapV4Header and TBitmapV5Header records for FPC compatibility.
+
+commit c4678dd71a0e47594e670dd0d822f4d42b2523a9
+Merge: 2771d932 c85421e3
+Author: Anders Melander <github@melander.dk>
+Date:   2020-10-27 20:46:26 +0100
+
+    Merge pull request #146 from graphics32/loadfromstream-backward-compatible
+    
+    Fixes #145: TCustomBitmap32.LoadFromFile and LoadFromStream now works as before for Delphi 10.1 and older.
+    TCustomBitmap32.LoadFromFile falls back to TPicture.LoadFromFile.
+    TCustomBitmap32.LoadFromStream falls back to TBitmap.LoadFromStream.
+
+commit c85421e379a26c98d857f3b53f789c02fe1d9ad5
+Author: Anders Melander <anders@melander.dk>
+Date:   2020-10-15 21:49:29 +0200
+
+    Fixes #145: TCustomBitmap32.LoadFromFile and LoadFromStream now works as before for Delphi 10.1 and older.
+    TCustomBitmap32.LoadFromFile falls back to TPicture.LoadFromFile.
+    TCustomBitmap32.LoadFromStream falls back to TBitmap.LoadFromStream.
+
+commit 2771d932cc71096a5f31c3bd6eb61e3a4c881583
+Merge: 5677d5b9 2ffb8980
+Author: Anders Melander <github@melander.dk>
+Date:   2020-10-12 12:05:17 +0200
+
+    Merge pull request #144 from graphics32/BI_BITFIELDS-support
+    
+    Fixes #143: Added support for BI_BITFIELDS BMP format.
+
+commit 2ffb8980c7fb697fefc6a124575e912ce5a6163f
+Author: Anders Melander <anders@melander.dk>
+Date:   2020-10-11 13:46:57 +0200
+
+    Fixes #143: Added support for BI_BITFIELDS BMP format.
+    Refactored SaveToStream.
+    Changed LoadFromResource* to use new internal DIB reader.
+
+commit 5677d5b9a736b66b630fad3e411f482f97b8a2e8
+Merge: a33f019f 46668002
+Author: Anders Melander <github@melander.dk>
+Date:   2020-09-28 00:50:47 +0200
+
+    Merge pull request #141 from graphics32/LoadFromStream_fallback
+    
+    Fixes #109: TCustomBitmap32.LoadFromFile TPicture based fallback mechanism moved to TCustomBitmap32.LoadFromStream.
+    TCustomBitmap32.LoadFromFile now just calls TCustomBitmap32.LoadfromStream with no additional logic as is the norm.
+
+commit 466680025cd5b236427feffd4d1a3409ffb05786
+Author: Anders Melander <anders@melander.dk>
+Date:   2020-09-28 00:39:06 +0200
+
+    Fixes #109: TCustomBitmap32.LoadFromFile TPicture based fallback mechanism moved to TCustomBitmap32.LoadFromStream.
+    TCustomBitmap32.LoadFromFile now just calls TCustomBitmap32.LoadfromStream with no additional logic as is the norm.
+
+commit a33f019fa43a87b7a262498c9eaaafe617994a08
+Author: Anders Melander <anders@melander.dk>
+Date:   2020-09-27 12:48:00 +0200
+
+    Fixes #127: Conversion from a TGraphic to TBitmap32 via Assign will now perform conversion using the same backend as the target bitmap.
+
+commit f262f100fbf8cd1a0d4fd6f621f9e61b48730287
+Merge: d811f924 45cb16f3
+Author: zed <starmen@tut.by>
+Date:   2020-09-22 10:39:13 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 45cb16f3db71fe7920423b97a6d9edaca4218022
+Author: Anders Melander <anders@melander.dk>
+Date:   2020-09-21 10:00:36 +0200
+
+    Fixes #139: Removed unnecessary assignment and test for nil in TPatternSampler.
+
+commit b5e0db7440342bd0c1ff91b98360914e84b829af
+Author: Anders Melander <anders@melander.dk>
+Date:   2020-09-21 09:56:53 +0200
+
+    Fixes #138: ColorModulate_Pas did nothing due to copy paste bug.
+
+commit 27a5f43202dd1a6d463c9752cf85a0661db0cd1f
+Author: Anders Melander <anders@melander.dk>
+Date:   2020-09-17 17:15:41 +0200
+
+    Fixes #136: Copy/paste bug in TBitmap32.RenderText caused clipped text height to be applied to the text width instead.
+
+commit cdb82a5570d83a932f223d1341f3f710ed16e277
+Author: Anders Melander <anders@melander.dk>
+Date:   2020-09-17 17:06:21 +0200
+
+    Fixes #135: TBitmap32.SaveToStream reversed the meaning of the BMP top-down/bottom-up flag thus causing the saved bitmap to be flipped vertically.
+    Added check for supported bitmap info header version in TBitmap32.LoadFromStream.
+    Added handling of unsupported bitmap info header fields and color table in TBitmap32.LoadFromStream.
+
+commit 6c0a8da8e174074e6f71f3aa0a06c04a56038678
+Merge: 0c39bd7c 13b7583a
+Author: Anders Melander <github@melander.dk>
+Date:   2020-08-14 10:30:01 +0200
+
+    Merge pull request #134 from mWaltari/master
+    
+    Few minor optimizations and few coding convention fixes (+ 10.4 Sydney support)
+
+commit 13b7583ad541e6d334d0b466ce53512eeae4fed0
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-14 06:59:18 +0300
+
+    Remove FixInsight config file from global ignore
+
+commit 918ffd48a17eb485990d49c93edbc798dce005f1
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 13:30:27 +0300
+
+    inlined LineTo implemented too early, can't be inlined by compiler
+
+commit a8f2c667fe1d7290e2d337687d43a17c88792b37
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 13:29:44 +0300
+
+    Variable hides class field etc
+
+commit 44299e8169a8117ad32d6e074323f9778b9fbfe9
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 13:26:01 +0300
+
+    Variable hides class field etc
+
+commit 9305d9f80db3f7871724270f82cf378dbb4f2598
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 13:23:12 +0300
+
+    Variable hides a class field, method or property
+
+commit 7d5a982d1cdea0c5341bcaac8dd6087983221b1d
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 13:18:29 +0300
+
+    inlined FloatPointToFixedPoint and HorizontalLineToRelative implemented too late
+    
+    Compiler can't inline if implemented too late
+
+commit 92d2ac1948da3b067f2a821aa92f9469b840cd7a
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 12:43:05 +0300
+
+    Small optimization, inlined TCustomPath.LineTo implemented too late
+    
+    Can't be inlined by compiler
+
+commit 158fb2b5b2885551f7f746aaa2349bb82fb131f6
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 12:40:53 +0300
+
+    Small Optimization, inlined MicroTilesClear implemented too late
+    
+    Can't be inlined by compiler
+
+commit 1b5a7f2bc3887f80eaed52b91f1141e59325fcb5
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 12:39:21 +0300
+
+    Small optimization inlined FixedPointToFloatPoint implemented too late
+    
+    Compiler can't inline routine if implemetation is before the usage
+
+commit 18e7dfd4b51f34f96c0f3cb62afd942b972b8087
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 12:35:52 +0300
+
+    Ignore history files
+
+commit b755df29460a9cc8861f9489e83e50ad9d61a936
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 12:34:06 +0300
+
+    Git Ignore
+
+commit e60afb61af93767564360f50f4b26eadca8d13ae
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 12:33:52 +0300
+
+    Smaal optimization, inlined IsRectEmpty was implemented too late for compiler to inline it
+
+commit 618f511f1ed0b2a5e96d632e88f4853d31fcc988
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 12:26:19 +0300
+
+    Fixed VER_LATEST define to default 10.4 Sydney insted of 10.3 Rio
+
+commit 371a38af07f58ba81cff84f40e1290a691751c63
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 12:24:26 +0300
+
+    10.4 Sydney support
+
+commit c7e6c888c16c8ece72ebacedb4192dadb00bdcfb
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2020-08-13 12:12:36 +0300
+
+    Minor optimization
+
+commit 0c39bd7c937399cb1fdb2f54e06bad15c0013413
+Author: Anders Melander <anders@melander.dk>
+Date:   2020-07-24 16:25:13 +0200
+
+    Improved change event control.
+    Fixed some formatting.
+
+commit 058e4f86b2dcd8318981756a820b4c5bf88974a0
+Merge: 8e45dbc5 6b3a6954
+Author: Anders Melander <github@melander.dk>
+Date:   2020-07-24 16:09:30 +0200
+
+    Merge pull request #132 from tednilsen/patch-1
+    
+    GR32_Dsgn_ColorPicker TFormColorPicker all issues fixed
+
+commit 6b3a695463c740438cce1dab6a1aac3c72e29aa7
+Author: Ted Roberth Nilsen <tednilsen@gmail.com>
+Date:   2020-07-24 15:10:29 +0200
+
+    GR32_Dsgn_ColorPicker TFormColorPicker all issues fixed
+    
+    fixed * sliding the RGBA pickers resets other components
+    fixed * preserve alpha component
+    fixed * too much onchanged events
+    optimized * EditColor.Text from 4 IntToHex to 1 IntToHex
+    renamed * setcolor that belongs to form to setcolor32
+    
+    TFormColorPicker component works as expected now
+
 commit d811f9242a04828c225a911a86ace262dca3770c
 Merge: 9583a97d 8e45dbc5
 Author: zed <starmen@tut.by>
