@@ -1,3 +1,24 @@
+commit d9eaaf2edddb7a968a0f9c90ebbcfe0e21a10f27
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2020-09-28 00:19:59 +0200
+
+    Fixed an issues with missing inherit calls (thanks to Thomas Müller)
+
+commit 13e2b750e7647d5862e2cf00915518b10a0d9bf5
+Merge: a670e02 c79d216
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2020-09-27 16:20:24 +0200
+
+    Merge pull request #163 from DmLam/master
+    
+    Fixed range error in SynHighlighterECMAScript
+
+commit c79d21630ee54d7767ba9e0a4bb7612f67ef0498
+Author: LamdanDY <LamdanDY@yanos.slavneft.ru>
+Date:   2020-09-23 08:48:00 +0300
+
+    Fixed range error in SynHighlighterECMAScript
+
 commit a670e027349a85029fe3d6972f5d76ce66d7b1ca
 Merge: e6679ff be027b9
 Author: Christian Budde <Christian@savioursofsoul.de>
