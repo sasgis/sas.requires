@@ -1354,7 +1354,6 @@ type
     fRegisteredUnicodeUrl: array of SockUnicode;
     fServerSessionID: HTTP_SERVER_SESSION_ID;
     fUrlGroupID: HTTP_URL_GROUP_ID;
-    fExecuting: boolean;
     fLogData: pointer;
     fLogDataStorage: array of byte;
     fLoggingServiceName: SockString;
@@ -2560,6 +2559,10 @@ function HttpGetAuth(const aURI, aAuthToken: SockString;
 
 /// send some data to a remote web server, using the HTTP/1.1 protocol and POST method
 function HttpPost(const server, port: SockString; const url, Data, DataType: SockString;
+  outData: PSockString=nil; const auth: SockString=''): boolean;
+
+/// send some data to a remote web server, using the HTTP/1.1 protocol and PUT method
+function HttpPut(const server, port: SockString; const url, Data, DataType: SockString;
   outData: PSockString=nil; const auth: SockString=''): boolean;
 
 /// compute the 'Authorization: Bearer ####' HTTP header of a given token value
@@ -5228,7 +5231,7 @@ begin
     exit;
   if ResultClass=nil then
     ResultClass := TCrtSocket;
-  result := ResultClass.Create;
+  result := ResultClass.Create(Timeout);
   result.AcceptRequest(client,@sin);
   result.CreateSockIn; // use SockIn with 1KB input buffer: 2x faster
 end;
@@ -5916,6 +5919,23 @@ begin
   if Http<>nil then
   try
     result := Http.Post(url,Data,DataType,0,AuthorizationBearer(auth)) in
+      [STATUS_SUCCESS,STATUS_CREATED,STATUS_NOCONTENT];
+    if outdata<>nil then
+      outdata^ := Http.Content;
+  finally
+    Http.Free;
+  end;
+end;
+
+function HttpPut(const server, port: SockString; const url, Data, DataType: SockString;
+  outData: PSockString; const auth: SockString): boolean;
+var Http: THttpClientSocket;
+begin
+  result := false;
+  Http := OpenHttp(server,port);
+  if Http<>nil then
+  try
+    result := Http.Put(url,Data,DataType,0,AuthorizationBearer(auth)) in
       [STATUS_SUCCESS,STATUS_CREATED,STATUS_NOCONTENT];
     if outdata<>nil then
       outdata^ := Http.Content;
@@ -7000,7 +7020,7 @@ begin
         PWord(@line[len])^ := 13+10 shl 8; // CR + LF
         SockSend(@line,len+2);
       end else
-        SockSend(s);
+        SockSend(s); // SockSend() internal buffer is used as temporary buffer
   until false;
   Headers := copy(fSndBuf, 1, fSndBufLen);
   fSndBufLen := 0;
@@ -8966,7 +8986,7 @@ begin
        Http.CloseUrlGroup(fUrlGroupID);
        fUrlGroupID := 0;
      end;
-     CloseHandle(FReqQueue);
+     CloseHandle(fReqQueue);
      if fServerSessionID<>0 then begin
        Http.CloseServerSession(fServerSessionID);
        fServerSessionID := 0;
@@ -8977,6 +8997,10 @@ begin
       CloseHandle(fReqQueue); // will break all THttpApiServer.Execute
     end;
     fReqQueue := 0;
+    {$ifdef FPC}
+    for i := 0 to length(fClones)-1 do
+      WaitForSingleObject(fClones[i].Handle,30000); // sometimes needed on FPC
+    {$endif FPC}
     for i := 0 to length(fClones)-1 do
       fClones[i].Free;
     fClones := nil;
@@ -8985,18 +9009,14 @@ begin
 end;
 
 destructor THttpApiServer.Destroy;
-var endtix: Int64;
 begin
   Terminate; // for Execute to be notified about end of process
   try
     if (fOwner=nil) and (Http.Module<>0) then // fOwner<>nil for cloned threads
       DestroyMainThread;
-    if fExecuting then begin
-      endtix := GetTick64+5000; // never wait forever
-      repeat
-        sleep(1);
-      until not fExecuting or (GetTick64>endtix); // ensure Execute has ended
-    end;
+    {$ifdef FPC}
+    WaitForSingleObject(Handle,30000); // wait the main Execute method on FPC
+    {$endif FPC}
   finally
     inherited Destroy;
   end;
@@ -9211,7 +9231,6 @@ var Req: PHTTP_REQUEST;
 begin
   if Terminated then
      exit;
-  fExecuting := true;
   Context := nil;
   try
     // THttpServerGeneric thread preparation: launch any OnHttpThreadStart event
@@ -9397,7 +9416,6 @@ begin
     until Terminated;
   finally
     Context.Free;
-    fExecuting := false;
   end;
 end;
 
@@ -12084,7 +12102,7 @@ begin
   else
     try
       if (fHttp = nil) or (fHttp.Server <> Uri.Server) or
-         (fHttp.Port <> Uri.Port) then begin
+         (fHttp.Port <> Uri.Port) or (connectionClose in fHttp.HeaderFlags) then begin
         FreeAndNil(fHttps);
         FreeAndNil(fHttp); // need a new HTTP connection
         fHttp := THttpClientSocket.Open(Uri.Server,Uri.Port,cslTCP,5000,Uri.Https);

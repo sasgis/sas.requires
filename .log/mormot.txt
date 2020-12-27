@@ -1,3 +1,494 @@
+commit 23ad0676c76037a41c955464a0c29ab384e94218
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-24 18:22:10 +0100
+
+    ensure SQlite3-64.dll will include FTS5 for the next compilation
+
+commit 3ab2c88608eeb0e2d72f4d851b406185f314556b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-22 11:29:00 +0100
+
+    properly handle the fact that a HTTP server may close the connection after a few requests (e.g. nginx keepalive_requests)
+
+commit e3f0f2a2ecc940d94bb1dc78bc1b366bb0fb624c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-22 11:27:25 +0100
+
+    follow mpv proposal about THttpApiServer shutdown
+
+commit caeb7bdf13c220291990c9533ef028acb2fb7583
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-22 09:41:11 +0100
+
+    another attempt to fix THttpApiServer proper shutdown
+
+commit 4c3b2abdd94a038f91086e74585d5afb5e98b84c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-21 13:14:55 +0100
+
+    small TQueryValue.GetAsWideString refactoring
+
+commit 397a03a474694860773a8e4e6083c41a0a9e7772
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-21 13:14:00 +0100
+
+    it is better with the actual files
+
+commit 37fdaf9fb6879d18f3592c432e8b840537ec8c95
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-21 11:55:15 +0100
+
+    try to circumvent FPC problem at http.sys server shutdown
+
+commit 3207788d06ef7b4902e7bb76e3dee37673035006
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-12 18:05:18 +0100
+
+    ensure TSQLRest.Retrieve only get the first row of data
+    - fix for https://github.com/synopse/mORMot/issues/370
+
+commit 58df3619408902901aa6ab001249a547566c5914
+Merge: 060f996c 3e2b5cd3
+Author: ab <webcontact01@synopse.info>
+Date:   2020-12-11 20:49:30 +0100
+
+    Merge pull request #369 from synopse/fix/OraTrailingSemicolon
+    
+    SynDBOracle - fix removing of ending semicolon
+
+commit 3e2b5cd3c93b32836f35f5bd1e22d5981e44c18f
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-12-11 19:49:40 +0200
+
+    SynDBOracle - fix removing of ending semicolon for statements ends with END what is part of an identitier
+
+commit 060f996cb2f2309d09ca6e83b7b062852ce02fcd
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-11 14:22:54 +0100
+
+    fixed GPF if ICU is not installed on the OS and cwstring is used as fallback
+
+commit 1ec9feef21799ac2a0de0576e88b7a8bb68d965f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-10 14:47:51 +0100
+
+    fixed div128bits9digits() compilation
+
+commit 2b89c8797d0f71aa5602a9e7f25d9cb21d663bca
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-10 14:47:17 +0100
+
+    fixed GPF in VarRecToTempUTF8()
+
+commit 5fbfc44bb0298dd97d7f1c17e96d390344324f2b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-09 19:44:42 +0100
+
+    circumvent bug in TDecimal128.ToText at least with FPC 3.2 on Win32/Linux386
+
+commit 649740daa86b46cd423b29de7e2879288e1a9913
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-09 15:34:34 +0100
+
+    cwstring is disabled by default since we now use our own ICU-based process
+    - includes stand-alone UpperCaseUnicode/LowerCaseUnicode functions and some tests refactoring
+
+commit b8d389d095e864fb07315946453077910b42b5da
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-09 14:53:55 +0100
+
+    Unicode conversions and comparisons will use the fast ICU API on POSIX
+
+commit a3b00d9d1a9e8bc467db1694e8b5e6b0bac7a4de
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-08 15:54:15 +0100
+
+    another fix for SynLZdecomp() cross-platform
+
+commit a9625d0bc855e201d9eacbff8b92e100e8adf2f3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-07 17:51:42 +0100
+
+    fixed SynCrossPlatformSynLZ on Delphi Android ;)
+
+commit 4569f78a3d69890394a7223112b4149a5a524cc9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-06 14:48:51 +0100
+
+    include 3.34.0 statics for Android/FPC
+
+commit fa491f0fceba9e28c8908e7d21dfbc3c8f432947
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-03 17:41:12 +0100
+
+    included the SQLite3 engine statis at 3.34.0 revision
+
+commit fac82547456a635ae396f86a88868ec5949515e3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-03 17:31:49 +0100
+
+    upgraded the statically linked SQLite3 engine to latest 3.34.0 revision
+
+commit c52e1212d7bad9fe046ecf07b121906966f40f9b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-03 17:29:18 +0100
+
+    recognized 'TServiceFactory' in the thread names
+
+commit abfb3316831b29022f49570a51591ba485804975
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-03 17:28:38 +0100
+
+    documentations/comments enhancements
+
+commit 92a34a7831c5767917c8fdbdff7a7edd018fbfb6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-03 17:26:28 +0100
+
+    fixed some SQLite3 cross-compiler scripts
+
+commit 81b1a68322ab4d1815ff77afa3dcc5d74ca831a9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-24 19:06:08 +0100
+
+    FTS5 knows only ascii/porter/unicode61 tokenizers
+
+commit 1deb3916823bae223be7d1510a69c58da87f6f0c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-23 10:35:22 +0100
+
+    add another note in doc so that cross-compilers from Win64 should NOT be used
+
+commit 0af9f7af6407d2b28c60293f9f5b4a004e285338
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-20 21:27:06 +0100
+
+    small consistency fix for TTextWriter.FlushToStream
+
+commit de67fbf2c90b6210e6bf10d3f5695c9cb67bd8df
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-20 21:25:45 +0100
+
+    published EComplete class type from SynMemoEx
+
+commit 52ddda4ddce2746ce18719ec3c9c6697c1e8490f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-20 21:24:46 +0100
+
+    small reformating with no functional change
+
+commit c2b45edcb6ab9d8eea8f0bd78c3b28fbdc9408b9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-20 21:20:37 +0100
+
+    validate floats even when stored as varCurrency by default in _Json()
+
+commit 2804cba41e4d2efcb83c3d3478df80785fea6e42
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-11 10:32:22 +0100
+
+    get rid of the overloaded Trim() function with UnicodeString
+    - it was not a good idea with existing code
+
+commit 90e74b03667e000fe4780c9e46d6528ed47cbf38
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-09 21:04:35 +0100
+
+    enabled overloaded UnicodeString version of Trim() only for Delphi 2009+
+
+commit 45d31f34be4532349e6ed8666f0012d3593bd330
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-09 10:28:21 +0100
+
+    small refactoring after mORMot 2 SSPI/GSSAPI introduction
+
+commit e9da3e9ca890314830714429f6fe7a6f743788c3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-09 10:22:28 +0100
+
+    introducing TSQLDataBase.UseCacheSize property
+
+commit c1613fef2468e3747820a6a229a6444201444106
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-09 10:17:18 +0100
+
+    new overloaded UnicodeString version of Trim()
+
+commit 1c9d86862c8c2ff08dd31e89cbb23994ec390f75
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-05 13:48:04 +0100
+
+    use optimized Intel's sha256_sse4.asm for whole blocks
+
+commit e7f3510184d563db7afc52e5db3f14f50827c86b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-04 18:14:17 +0100
+
+    no functional change
+
+commit 87ee2b464830cbc0654c1387701fa18500dc96a4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-04 18:12:36 +0100
+
+    fixed GetDiskPartitionsText() on Windows
+
+commit ae358df821340ea50e6469e54d88e60b31f984a6
+Merge: c712f299 b35d19d2
+Author: ab <webcontact01@synopse.info>
+Date:   2020-11-04 16:10:39 +0100
+
+    Merge pull request #364 from danielkuettner/patch-5
+    
+    Update SynWinSock.pas
+
+commit b35d19d27d39b1ae4ccd45327ea0898850d2f4ac
+Author: danielkuettner <68011955+danielkuettner@users.noreply.github.com>
+Date:   2020-11-04 15:04:10 +0100
+
+    Update SynWinSock.pas
+    
+    important in case of using self signed certs to prevent SEC_E_UNTRUSTED_ROOT result in HandshakeLoop
+
+commit c712f2994068a4bc12e5ea788f39750288856b3a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-03 14:58:53 +0100
+
+    code cleaning - no functional change
+
+commit d4685cb339b5b5041d86c44f94c76a938d0758bc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-03 14:57:40 +0100
+
+    implementing missing TSQLRestStorageMongoDB.SearchField method
+
+commit e7eba1d18d668aa8e89248cc7828415d26e30e4a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-11-02 15:50:15 +0100
+
+    update SynMongoDB.pas for using all connections of a cluster
+    - integration of https://github.com/synopse/mORMot/pull/362 and https://github.com/synopse/mORMot/pull/363
+
+commit 364e8f42dc450237df3ba8fe517fe32a97940e3a
+Merge: b15e1ec9 01555adc
+Author: ab <webcontact01@synopse.info>
+Date:   2020-11-02 15:41:15 +0100
+
+    Merge pull request #362 from danielkuettner/patch-3
+    
+    Update SynMongoDB.pas
+
+commit b15e1ec93fd814d175f6f64dc114742249cb4e0f
+Merge: 7f9dbf87 fa4398eb
+Author: ab <webcontact01@synopse.info>
+Date:   2020-11-02 15:17:31 +0100
+
+    Merge pull request #363 from danielkuettner/patch-4
+    
+    update SynMongoDB.pas for using all connections of a cluster
+
+commit 7f9dbf873e58d23fb0bf7a7de782cb5f4bac30c8
+Merge: c154530e 75e89ba7
+Author: ab <webcontact01@synopse.info>
+Date:   2020-11-02 15:09:58 +0100
+
+    Merge pull request #360 from synopse/fix/sqliteHangOnComment
+    
+    fix hangs of sqlite3 prepare for statement like '/**'
+
+commit fa4398ebe20bb4d5402d4d4087da3d8b92887fe2
+Author: danielkuettner <68011955+danielkuettner@users.noreply.github.com>
+Date:   2020-11-01 17:43:21 +0100
+
+    Update SynMongoDB.pas
+    
+    Hi Arnaud,
+    with these changes (I've pasted all manually over Web, hope there are not too much mistakes) alle Connections of a Client Cluster could be used. The rpNearest is a new constant for Mongo 4.4 and I wanted to intruduce it for further using. Atm it should be a load balancing of using all Connections evenly. This could be usefull when many client are connecting to a Atlas Cluster in case of readings.
+    If you have questions, Email me.
+    
+    Daniel
+
+commit 01555adc50300bcb4cac6fbecf50c52e07ff9bc3
+Author: danielkuettner <68011955+danielkuettner@users.noreply.github.com>
+Date:   2020-11-01 13:56:04 +0100
+
+    Update SynMongoDB.pas
+    
+    Hi Arnaud,
+    
+    I just wanted to know, how I can read from Slaves and save that information.
+    
+    Daniel
+
+commit c154530e5ed54d4a4b9f7beab058c52f5e0246ff
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-30 12:47:46 +0100
+
+    support SEC_I_INCOMPLETE_CREDENTIALS
+    - from https://github.com/synopse/mORMot/pull/361
+
+commit c8feb281d9dfa24df3f8a35c6e43fa1d58184975
+Merge: b99609c1 f0b2468a
+Author: ab <webcontact01@synopse.info>
+Date:   2020-10-30 12:41:20 +0100
+
+    Merge pull request #361 from danielkuettner/patch-2
+    
+    fixed SynWinSock.pas to support client credential requests
+
+commit f0b2468a65d7b1ff41d9d7e5a3f9d69e5a70ec89
+Author: danielkuettner <68011955+danielkuettner@users.noreply.github.com>
+Date:   2020-10-30 10:43:36 +0100
+
+    Update SynWinSock.pas
+    
+    Greetings,
+    Daniel
+
+commit 75e89ba7438059a5fa68603ecf8e29a997689e37
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-10-28 21:22:59 +0200
+
+    fix hangs of sqlite3 prepare for statement like '/**'
+
+commit b99609c1824467b8456a9610756c25b00931bfcc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-25 18:58:55 +0100
+
+    minor refactoring of mORMot.pas unit
+
+commit ba9791afe82ee1c9487fb16ae6942b12483cde42
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-25 18:53:20 +0100
+
+    no need to XOR TAESPRNG.FillRandom output with other parts of the TAESBlock
+    since AES is a permutation algorithm
+    - it also reduce forensic risk
+
+commit ecc375adc96e5b78d63dd58a88418874a0f622d8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-19 19:15:14 +0200
+
+    some Delphi revisions have trouble with "object" as own method parameters (e.g. IsEqual)
+    so we force to use "record" type if possible for TSynDate and TSynSystemTime
+
+commit 769e127a600b19e9d41b694694039eeec435a3fd
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-15 19:26:50 +0200
+
+    introducing TrimU() function alias to Trim() for RawUTF8
+
+commit 674a2a485c5454c015e6f09ca285d2fed476265e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-15 19:25:33 +0200
+
+    some fixed to PasZip.pas
+
+commit 8391fdd85a9c0f21e67e510fee8b553e36f9d3af
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-15 10:31:24 +0200
+
+    loop optimization
+
+commit 9cdb98db00a369aa08b7fcc7b24970c0ebeef8dc
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-12 16:29:05 +0200
+
+    minor comments refactoring
+
+commit 7f1a9493422e315386b4448a51373c5e72448925
+Merge: ddbb50d6 0555d7ea
+Author: ab <webcontact01@synopse.info>
+Date:   2020-10-12 16:15:38 +0200
+
+    Merge pull request #359 from synopse/fix/sqlServerODBCVarchar
+    
+    SQL Server ODBC: set length for varchar parameters
+
+commit 0555d7ea71fd858318744937119f605623dccc76
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-10-09 22:28:17 +0300
+
+    SQL Server ODBC: set length for varchar parameters - required for some statement types
+
+commit ddbb50d6defd0fb118f445887c1599c7fde5174f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-07 21:26:46 +0200
+
+    do not create a TSQLRestCache instance if not needed
+
+commit 2871a649457b6de4e7dd05be61ce33665dd330e6
+Merge: ccfca024 31295e73
+Author: ab <webcontact01@synopse.info>
+Date:   2020-10-07 21:23:31 +0200
+
+    Merge pull request #358 from synopse/fix/socketTimeout
+    
+    lets accepted socket inherit timeout value from binded one
+
+commit 31295e73314e0424bddd39574669c78fddad0fba
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-10-07 18:31:41 +0300
+
+    lets accepted socket inherit timeout value from binded one
+
+commit ccfca0247c1bd6f23e606347fb260bb86315ea07
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-07 15:09:52 +0200
+
+    new HttpPut() function
+
+commit 1535f4bc0110154d6443fe8e51e26039eff0cab6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-10-05 14:33:55 +0200
+
+    small refactoring done during mORMot2 port
+
+commit 652fc20788a4167817cba36162fb663184176634
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-28 10:39:45 +0200
+
+    published TTextWriter.HumanReadableLevel
+
+commit 5a57d809f4de42bbab8e66a7933b31fb9a2a3ca4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-28 10:38:55 +0200
+
+    fixed TTextWriter.AddJSONToXML
+
+commit 50685c94caed6fa867b31c066f36504fca71a0be
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-28 10:37:55 +0200
+
+    minor tweaks
+
+commit 12fba5f246371bdebdfc8d99f498cfd078076aa6
+Merge: 004541a8 9b49b9c0
+Author: ab <webcontact01@synopse.info>
+Date:   2020-09-17 12:58:10 +0200
+
+    Merge pull request #354 from wxinix/master
+    
+    added SynOleDB.pas in interface USES section; its CoInit and CoUnInit functions are referenced
+
+commit 9b49b9c05b293a9186b8a44775f3be4e79f6654a
+Merge: 8f57a6d4 004541a8
+Author: wxinix <xinwuping007@gmail.com>
+Date:   2020-09-16 10:39:21 -0400
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 004541a8bd8911a7fc3d8fef5f90523daf38e0e0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-09-16 10:01:03 +0200
+
+    enhanced the documentation to state about E1025 compilation issue with packages
+
+commit 8f57a6d416c05be591af49eb438776ea150ee175
+Author: wxinix <xinwuping007@gmail.com>
+Date:   2020-09-14 09:11:21 -0400
+
+    added SynOleDB.pas in interface USES section; its CoInit and CoUnInit functions are referenced
+
 commit 85cc86d236c94969cfc7a6a09d3e7db5b7ca3ba3
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2020-09-14 09:35:14 +0200

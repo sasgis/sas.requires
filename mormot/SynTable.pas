@@ -12360,7 +12360,7 @@ begin
   if result=0 then
     exit;
   count := result;
-  if count>length(Values) then // only set length is not big enough
+  if count>length(Values) then // change Values[] length only if not big enough
     SetLength(Values,count);
   PI := pointer(Values);
   fixedsize := ReadVarUInt32;
@@ -16640,7 +16640,7 @@ var i: integer;
      if not withfreespace or not GetDiskInfo(p.mounted,av,fr,tot) then
        {$ifdef MSWINDOWS}
        FormatShort('%: % (%)',[p.mounted[1],p.name,KB(p.size,nospace)],result) else
-       FormatShort(F[nospace],[p.mounted[1],p.name,KB(p.size,nospace)],result);
+       FormatShort(F[nospace],[p.mounted[1],p.name,KB(fr,nospace),KB(tot,nospace)],result);
        {$else}
        FormatShort('% % (%)',[p.mounted,p.name,KB(p.size,nospace)],result) else
        FormatShort(F[nospace],[p.mounted,p.name,KB(fr,nospace),KB(tot,nospace)],result);
