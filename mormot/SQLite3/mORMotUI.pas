@@ -6,7 +6,7 @@ unit mORMotUI;
 (*
     This file is part of Synopse mORMot framework.
 
-    Synopse mORMot framework. Copyright (C) 2020 Arnaud Bouchez
+    Synopse mORMot framework. Copyright (C) 2021 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit mORMotUI;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2020
+  Portions created by the Initial Developer are Copyright (C) 2021
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -2347,7 +2347,7 @@ end;
 
 procedure TUIComponentsPersist.TrackControls(const ctrls: array of TComponent);
 var
-  i: integer;
+  i: PtrInt;
 begin
   for i := 0 to high(ctrls) do
     ObjArrayAddOnce(fTracked, ctrls[i]);
@@ -2358,6 +2358,13 @@ procedure Register;
 begin
   RegisterComponents('Synopse',[TSynLabeledEdit]);
 end;
+
+
+initialization
+  {$ifdef FPC}
+  // LCL/Lazarus components expect UTF-8 encoding for strings
+  CurrentAnsiConvert := UTF8AnsiConvert;
+  {$endif FPC}
 
 end.
 

@@ -1,3 +1,839 @@
+commit f00c5cab00f7ea9e20d5dfa0b8299e89166d88f1
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-06-06 17:58:30 +0200
+
+    fixed mORMot.pas unit compilation
+
+commit b9f5e4a560619a75ae48b8d03349a39a78346f15
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-06-06 17:57:54 +0200
+
+    backport of mormot.core.fpcx64mm.pas latest improvements
+
+commit b13d2a7f77c60c73fc06c6bd4dd5f5eb2a37541e
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-06-01 22:05:41 +0200
+
+    backport of mORMot 2 TDynArrayHasher.ReHash optimization
+
+commit b4dd2a053881ae151642fb9b95acc22b1da14177
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-21 16:34:09 +0200
+
+    include .rpm to be recognized as a compressed file extension
+
+commit 9cd80779ab82c31f3144beea9379030c46240f01
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-21 16:32:49 +0200
+
+    FPC 3.2.2. compatibility :)
+
+commit f345aa91044411c27aaee1045de6da4499bc4571
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-10 09:27:22 +0200
+
+    assume ar/.deb files are compressed
+
+commit cb0563028fa1dbecf37c42c44a9797f7739f3a23
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-09 12:32:05 +0200
+
+    any ending/trailing single quote will be removed by Iso8601ToDateTime*() functions
+
+commit b396867cb8d1369f07070ba53e00cac20a3109ff
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-09 12:31:20 +0200
+
+    ensure milliseconds are supported for TDateTime SQL values
+    - fix for https://github.com/synopse/mORMot/issues/397
+
+commit e340c6129086782ab9d3a9db05b5c3fa6a1d378b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-06 08:48:03 +0200
+
+    ensure ReleaseRows is called when the SQL resultset is done
+
+commit 749ac2d73dd0cd49fd5a8e20f704c2842f381e66
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-05 19:05:31 +0200
+
+    hardened TSynThread.DoTerminate
+    - a closing thread should not jeopardize the whole process
+
+commit 9d4ac4fb04b05e22d25c994f1e44e34c8d9abcfc
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-05 18:40:50 +0200
+
+    some RedirectServerRootUriForExactCase URI fix
+
+commit 97c77dd2fdadc51829f197db0fae71d33df65477
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-05 11:45:07 +0200
+
+    backport of latest mORMOt 2 x64 MM modifications
+
+commit f3c4413f28b3d7eb2916dc92db7cfae8c23d5218
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-05 08:13:26 +0200
+
+    fixed Delphi compilation
+    - broken by https://github.com/synopse/mORMot/pull/395
+
+commit bde05d184c95a097be0414b5e50584de4d8aee27
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-05 08:13:02 +0200
+
+    fixed Delphi compilation
+    - broken by https://github.com/synopse/mORMot/pull/395
+
+commit 8d95a1e1dff7d9b40a4bbf104fca1fac96c4f23a
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-05-04 07:18:11 +0200
+
+    update Delphi SQLite3 static files
+
+commit de01f584993fe4d6df37cf5e907b78525cd12451
+Merge: afaee0a8 38ddb099
+Author: ab <webcontact01@synopse.info>
+Date:   2021-05-01 11:33:27 +0200
+
+    Merge pull request #395 from synopse/feature/odbcQueryTimeout
+    
+    TODBCConnectionProperties.SQLStatementTimeoutSec + ODNB doubles binds
+
+commit 38ddb0997c7cfac4c371bbe4412ab82f8db03c76
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2021-05-01 10:17:40 +0300
+
+    introduce TODBCConnectionProperties.SQLStatementTimeoutSec; fix SQL server binding for doubles in range (-1; 1)
+
+commit afaee0a8eb088793e3f6d2b41330408d57f42824
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-30 11:27:03 +0200
+
+    fixed EConvertError missing raise
+    - see https://github.com/synopse/mORMot/issues/394
+
+commit d92362628800fb6c355d00d2309d3e24260571f6
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-29 14:27:12 +0200
+
+    add jpeg direct via metafile comment
+    - from https://github.com/synopse/SynPDF/pull/47
+
+commit 7cbc38ab815a8c45d5bcade4a02cb4c0d6217a5f
+Merge: 116af563 f1334820
+Author: ab <webcontact01@synopse.info>
+Date:   2021-04-29 12:25:26 +0200
+
+    Merge pull request #393 from dhewg/pdf
+    
+    fix scaling of emf images in pdf files
+
+commit f1334820e3d846a40707351882cc77d4f0e654a0
+Author: Andre Heider <a.heider@gmail.com>
+Date:   2021-04-29 08:19:30 +0200
+
+    fix scaling of emf images in pdf files
+    
+    "Custom" has already been used to modify the world matrix, see above.
+    Use the result and not the modifier for scaling.
+    
+    The test from #42 still works with this fix too.
+    
+    Fixes: eefbbdb5 "rotated text SynPdf drawing"
+
+commit 116af56366bc24e77cc93d64894ba7aeb9bb4812
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-28 21:25:40 +0200
+
+    merged https://github.com/synopse/SynPDF/pull/46
+
+commit 2b99d754e8a6c963033911a14e04ba6dc1f947ad
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-28 14:26:38 +0200
+
+    new rsoMethodUnderscoreAsSlashURI REST Server Option
+    - decode e.g. 'Method_Name' from 'ModelRoot/Method/Name' URI
+
+commit a8c85a1c4d2933f60015b6c4d64ab076d9b6ec23
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-24 11:26:43 +0200
+
+    refine ServiceDefine/ServiceRegister documentation
+
+commit a7be4539b908b22d5c825b93a826c7246dfd78ae
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-23 19:52:35 +0200
+
+    updated SQLite3 database engine to latest 3.35.5 revision
+
+commit 4f2666649f47fcb613c190c123d99b68af5e59fe
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-21 10:59:42 +0200
+
+    fixed overloaded TStream.Seek() calls
+
+commit d29ab1fd6ebd31dbda0e791e0b9b1b4a9fae382d
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-20 21:59:17 +0200
+
+    fixed TSChannelClient
+
+commit 4c7137345dd930873282802e0949a8281ceaeab1
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-17 10:15:36 +0200
+
+    from https://github.com/synopse/mORMot/pull/391
+
+commit fb4f026dbe6807f24c14be92f67568a441d1b21f
+Merge: 10688ace 658cbd0e
+Author: ab <webcontact01@synopse.info>
+Date:   2021-04-17 10:13:05 +0200
+
+    Merge pull request #391 from synopse/fix/secondsInDate
+    
+    use the same pattern for Date and DateTime serialization
+
+commit 658cbd0e383aac97c3deda5d6a886110d424fe63
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2021-04-17 09:07:38 +0300
+
+    use the same pattern for Date and DateTime serialization
+
+commit 10688ace3a1dc1dc1436d5e92231c01ddc77b68a
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-15 16:17:58 +0200
+
+    LCL/Lazarus components expect UTF-8 encoding for strings
+
+commit 6c08e82d110b0a5f2854605d80e43bc446e24ef7
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-15 13:50:17 +0200
+
+    circumvent new paranoid Mustache test
+
+commit 3be20f0e89ab09489b2780b3de7db3b96a1451cc
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-12 21:26:06 +0200
+
+    CURL_LOCK_DATA_CONNECT bug seems fixed in 7.68
+
+commit 973a170323de5db6cc976e0c7a6c45ad158e4069
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-12 21:22:04 +0200
+
+    fixed '_' support in ZDBC table names
+
+commit 01ee8a237eabf0c548f6b0adb9489d6e4d35389f
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-09 09:27:59 +0200
+
+    enabled CURL_LOCK_DATA_CONNECT on libcurl >= 7.72
+    - circumvent https://github.com/curl/curl/issues/4544
+
+commit f5851fdcbde3b866c295f98d74892e8d8f54eb61
+Merge: e3ec9aa1 4e0a9bf0
+Author: ab <webcontact01@synopse.info>
+Date:   2021-04-08 09:35:17 +0200
+
+    Merge pull request #389 from wxinix/master
+    
+    added dPostgreSQL to DB_HANDLECREATEINDEXIFNOTEXISTS.  PostgreSQL supports CREATE INDEX IF NOT EXISTS. See https://www.postgresql.org/docs/9.5/sql-createindex.html
+
+commit 4e0a9bf01db76d5ca164dc9fcc657ef46cc3f21f
+Author: wxinix <xinwuping007@gmail.com>
+Date:   2021-04-07 21:09:31 -0400
+
+    Added dPostgreSQL to DB_HANDLECREATEINDEXIFNOTEXISTS.  PostgreSQL supports CREATE INDEX IF NOT EXISTS. See https://www.postgresql.org/docs/9.5/sql-createindex.html
+
+commit e3ec9aa1e95377bdede8fc4df947071175b73c72
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-04-07 22:36:05 +0200
+
+    fixed libcurl
+    - avoid GPF on Debian 10
+
+commit 2190c532323777d90abfa70d98d1d0a92ba37929
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-04-06 12:38:34 +0200
+
+    fixed TDynArray.LoadFromJSON() when input has white spaces
+
+commit a9536b04ef6f62addff595de896770690398b378
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-04-03 09:18:38 +0200
+
+    upgraded SQLite3 static version to latest 3.35.4
+
+commit a6c2fadbd6c0b6ef6beaf79f6e67a80baa44c98b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-30 08:44:46 +0200
+
+    try to fix SynDBUniDAC support
+
+commit 0b4a89e4b81d826a5281e8292d29008ac8e66434
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-29 22:17:31 +0200
+
+    updated static files
+
+commit 2027e1eba885627fafc00e5eaa7bed1a71f03cf7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-29 22:12:15 +0200
+
+    updated SQlite3 scripts and static binary
+    - avoid SQLITE_NO_THREAD define on FPC Win32/Win64
+    - also new Android scripts and binaries
+
+commit 45dfffcf581e51c9506a22228ade66c34ce68cd8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-28 15:14:56 +0200
+
+    updated SQlite3 to the latest 3.35.3 revision
+
+commit 81d6ddb503b9f5ac701c4457eeb2415667bcd032
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-27 15:26:41 +0100
+
+    updated SQlite3 to the latest 3.35.3 revision
+
+commit bbd9010a89f88d93ba79080147b7e2945cd876fe
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-27 10:31:43 +0100
+
+    changed regression tests after ObjectToJSON() yesterday fix
+
+commit 7d12c56093fb15df0e8269024f0d35049c146d27
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-26 09:14:21 +0100
+
+    fix ObjectToJSON() serialization of nested ORM joins instances
+    - as reported by Chaa
+
+commit 20624f3c992301579f9a854be9ae508b62c89ebf
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-23 09:11:04 +0100
+
+    fixed TQuery.Execute exception
+
+commit 207baef39ddf83a681fef8d48107a175dc8d8bcd
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-20 17:21:46 +0100
+
+    GetNextFieldProp will ignore any comment like '/*nocache*/'
+
+commit ee11a2cf21723844bc028aaaf2068110eb98208e
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-17 08:48:18 +0100
+
+    TSQLDBConnectionProperties.StatementMaxMemory with 512MB as default
+    - to implement https://github.com/synopse/mORMot/pull/387
+
+commit 65b467e907886038c615e50e326d21c74c5accc5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-12 19:11:07 +0100
+
+    Batch operations in UniDAC - thanks Matkov!
+    - from https://github.com/synopse/mORMot/pull/384
+
+commit 34a86be5bf15070aafc40c57081ea14193c8b1f0
+Merge: 3db60375 5acec453
+Author: ab <webcontact01@synopse.info>
+Date:   2021-03-12 18:45:54 +0100
+
+    Merge pull request #384 from matkov/patch-3
+    
+    support for Batch operations in UniDAC
+
+commit 3db60375b0322a8a604892740afcdc259c022122
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-12 14:31:04 +0100
+
+    backport of TSynLog.ManualEnter/ManualLeave from mORMot2
+    - from https://github.com/synopse/mORMot/pull/385
+
+commit f3197c6cd04644e8d2a007bbc40558bf2c53264e
+Merge: 73b2383a 1a28aa9b
+Author: ab <webcontact01@synopse.info>
+Date:   2021-03-12 14:28:23 +0100
+
+    Merge pull request #385 from synopse/feature/synLogManualEnter
+    
+    backport of TSynLog.ManualEnter/ManualLeave from mORMot2
+
+commit 1a28aa9b2eeb72e44b8288f66d96f98f67416a4d
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2021-03-12 15:25:12 +0200
+
+    backport of TSynLog.ManualEnter/ManualLeave from mORMot2 848ce1ba
+
+commit 73b2383affc40e1bacc4e26381d486b7f63f7997
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-10 09:12:52 +0100
+
+    let TSynBinaryDataSet retrieve column size from existing FieldDefs
+    - as propoed by BenTen in https://synopse.info/forum/viewtopic.php?pid=34563#p34563
+
+commit b8fa0c56825e688c8ab9226fb20311a399f87bbb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-08 11:09:13 +0100
+
+    normalize TTextWriter.Add(boolean) JSON output
+    - boolean may not be in expected 0,1 range
+
+commit b7622b8584661d6fce6fe6b971476eff6f3e3a4b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-05 15:57:15 +0100
+
+    fixed TSQLRestStorageInMemory.SearchField
+    - backport from mORMot 2
+
+commit 5acec4538e9da541d04de3a4dc06a4797b9b1746
+Author: matkov <boris.matkov@gmail.com>
+Date:   2021-03-05 12:45:46 +0200
+
+    Support for Batch operations in UniDAC
+    
+    1. Support for batch operations in the UniDAC is added
+    2. Specific option 'UseUnicode' for SQLite is set to True to avoid broken chars that are not from current locale
+    3. Do not set specific option 'UseUnicode' for FPC because UniDAC returns all strings in UTF8 encoding for FPC (to avoid convertation UTF8 -> UTF16 -> UTF8)
+    4. Calling the Prepare method is added for TUniQuery that improves performance
+    5. Fix metadata returning for Oracle provider
+
+commit 568adb06daf7d59b3b4c24714d946be125d8c7e0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-03 09:09:04 +0100
+
+    enhanced SQLite3 compilation scripts to include all features
+
+commit 77af91f1b12893437ddd065cf8db8d6636b7e7e5
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-02 19:38:59 +0100
+
+    another Zeos/ZDBC fix by Michael
+    - backport from mORMot 2
+
+commit 7f168956697a0b40ea67581de99e290a53614b34
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-03-01 08:50:18 +0100
+
+    some Zeos/ZDBC fixes
+    - backport from mORMot 2
+
+commit dcb1a718fd9e3123a717d5769d951ff2c7655ad0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-25 19:51:42 +0100
+
+    follow HTTP/1.1 rules but still handle HTTP/1.0 old servers
+    - see https://synopse.info/forum/viewtopic.php?pid=34447#p34447
+
+commit 514ff5e435bb13a570aba821c808f8c46637d98b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-25 16:49:07 +0100
+
+    enable SQLITE_ENABLE_NORMALIZE conditional
+    for the next SQlite3 engine compilation cycles
+
+commit da55ccc6483a6e608c6a2b35566d01168079b39f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-25 14:25:08 +0100
+
+    fixed TECDHEProtocol.FromKey()
+
+commit f40affe7b7f0c7b8125f1efc36d987bf5ac4afd1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-25 14:24:29 +0100
+
+    new officially supported Lazarus version is 2.0.12
+
+commit 0b46067560951e4422afaa9fdb732fbc18eabcac
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-24 11:18:19 +0100
+
+    fixed potential buffer overflow if GetJsonField() caller don't check PDest=nil
+
+commit e7c60063fdf85ff3690a91266e31e17ed62ddf44
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-24 09:13:57 +0100
+
+    refine how a TSQLVirtualTable descendant compute the module name
+
+commit 686cf4e0b59259d0be75f91363df82d0352e60cf
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-21 14:31:53 +0100
+
+    fixed HTTP client automated reconnection
+    - on Windows, some border cases where not handled properly
+
+commit 9d527ac514697e0deeedfa0a0a512a63b0f68c78
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-21 12:10:23 +0100
+
+    finally fixed SChannel implementation :)
+    - no random SEC_E_INVALID_TOKEN any more !
+
+commit c2fe903d422dcea63eba23abc9e108499217c913
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-20 21:20:51 +0100
+
+    fixed THttpClientSocket.Request
+    to actually recreate a connection when the server closed the connection
+    (e.g. after KeepAlive timeout or too many connections)
+
+commit cf5a1f7ad45a302ae8b24ec207ef5b815d04a3b0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-19 17:28:45 +0100
+
+    fixed TECCSignatureCertified.SaveToDERBinary/File methods
+    - backport from mORMot 2
+
+commit cc01d5dc6439b1fce4d6d71bfe8514b88933a31b
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-15 11:59:22 +0100
+
+    fixed TrimCopy() when input S is the same as the result
+
+commit c14b241f6d88234d8b0f2ced76f05cf19a200963
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-15 11:21:31 +0100
+
+    several documentation fixes
+
+commit a04b4c4a0eebb334260d7d41c8324d5d8b4da0bd
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-08 21:48:31 +0100
+
+    merged https://github.com/synopse/mORMot/pull/379
+
+commit af5114717382ac674af6b2d2e746fa304ff15465
+Merge: 3f44c9ac c4f05255
+Author: ab <webcontact01@synopse.info>
+Date:   2021-02-08 21:47:28 +0100
+
+    Merge pull request #379 from mdbs99/master
+    
+    fix: it brings ftGuid as string
+
+commit 3f44c9ac6214dbe3eb128574a782df0e7924f649
+Merge: 60aeaba6 ba68ddb3
+Author: ab <webcontact01@synopse.info>
+Date:   2021-02-08 21:45:44 +0100
+
+    Merge pull request #380 from synopse/fix/curlInit
+    
+    ensure curl share interface is initialized after curl_global_init
+
+commit ba68ddb389bb8d916a1729183067d64d5f1024b5
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2021-02-08 21:46:22 +0200
+
+    ensure curl share interface is initialized after curl_global_init
+
+commit 60aeaba63d770dcad2841aa0fe9e234d1982b51a
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-08 16:05:14 +0100
+
+    refactored TSynThreadPool
+    - according to https://github.com/synopse/mORMot/pull/378 proposal
+
+commit c4f05255f1a3851ba6dbe3a4e95c5a7442dbde88
+Author: Marcos Douglas <md@delfire.net>
+Date:   2021-02-07 22:44:04 -0300
+
+    fix: it brings ftGuid as string
+
+commit 6343d44c647f29cd27ab1e8b659edb55994a5226
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-07 00:27:52 +0100
+
+    ensure WSAEINTR/EINTR errors stop socket waiting
+
+commit f790c5dc4d9566cf234668f309c5e096bebf3ae9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-04 17:45:16 +0100
+
+    try to fix TPdfEncryptionRC4MD5
+    - https://github.com/synopse/SynPDF/issues/32
+
+commit 48cf10ae71f380ce7eea2c2bf66bcc02f818ff7b
+Merge: 50a477ee a4672f85
+Author: ab <webcontact01@synopse.info>
+Date:   2021-02-03 14:39:07 +0100
+
+    Merge pull request #348 from synopse/fix/lazLogViewBottomMemo
+    
+    add PanelBottom to the lfm
+
+commit 50a477ee2de7f4019f389fb0f6c04b8998c25ac9
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-03 14:36:48 +0100
+
+    update outdated sqlite3.o/.obj static files
+
+commit 160dda52c8f6ef43d781464cc8e694cf38f338db
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-03 09:46:34 +0100
+
+    update SynDBFireDAC.pas to avoid unexpected login prompt
+    - from https://github.com/synopse/mORMot/pull/377
+
+commit 87eaf43279de9aa06e5d62c99a20ad9308ae0ed8
+Merge: 4d351031 a73796af
+Author: ab <webcontact01@synopse.info>
+Date:   2021-02-03 09:42:37 +0100
+
+    Merge pull request #377 from juanter/patch-1
+    
+    update SynDBFireDAC.pas to avoid unexpected login prompt
+
+commit 4d3510310c84ef716fab2fca64e10364167afa02
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-03 09:24:48 +0100
+
+    optimized and include unit test for https://github.com/synopse/mORMot/pull/349
+
+commit adfabd137a076e8d03da242056d23e3887bb9daf
+Merge: 9f405f6c ad7cabd2
+Author: ab <webcontact01@synopse.info>
+Date:   2021-02-03 09:05:25 +0100
+
+    Merge pull request #349 from synopse/fix/trailingCommaBeforeComment
+    
+    RemoveCommentsFromJSON will remove trailing comma followed by comment
+
+commit a73796afae514184d740d306f5bdd1ea4d46a54b
+Author: Juan Manuel Míguez Vázquez <juanmmiguez@gmail.com>
+Date:   2021-02-03 01:21:55 +0100
+
+    Update SynDBFireDAC.pas
+    
+    Init with LoginPrompt=false
+
+commit 9f405f6c841d2f6ee3a9b009ad3f6e87650c3826
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-02 18:37:12 +0100
+
+    a MessageBox() from DisplayFatalError() is not a good idea e.g. for a service
+
+commit b214135bab943ee769fd4c02b10be663b9a43c26
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-02 18:34:31 +0100
+
+    added missing files for 3.34.1 SQLite3 static revision
+
+commit 7d71834ec86c194dab7d8b392496c437cb0e3d0d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-01 17:36:02 +0100
+
+    LibCurl global share is now enabled by default
+    - follow up of https://github.com/synopse/mORMot/pull/376
+
+commit a4bd2430582ef6b134e340afd624d2db1d9c5f02
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-02-01 17:28:04 +0100
+
+    added share interface support for LibCurl
+    - from https://github.com/synopse/mORMot/pull/376
+
+commit d8cdeb6f6834b4de5d61c96587227db1f089aa67
+Merge: 6a1f637c abc11547
+Author: ab <webcontact01@synopse.info>
+Date:   2021-02-01 17:21:44 +0100
+
+    Merge pull request #376 from synopse/feature/curlShare
+    
+    added share interface support for LibCurl
+
+commit abc11547c72f5bf936112a7e91cb1a3110c8f553
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2021-01-31 17:16:46 +0200
+
+    added share interface support. If enabled using CurlEnableGlobalShare then TCurlHTTP will share DNS cache, TLS session cache and connection cache between all requesrs. Thread safe
+
+commit 6a1f637c145f63172f9eb453dfb257051f3e4b8d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-28 22:03:12 +0100
+
+    fixed nasty Heisenbug in TSynMapFile - not seen on Delphi!
+
+commit 0829378bb67227780f3cceffeaf20348a0e58b49
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-28 11:26:14 +0100
+
+    fixed TSynMapFile to properly trim left 'Unit.Name.' for each symbol
+
+commit d6ab2f108dd49cbc39a07c3f839dcdf8a3a876a2
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-25 14:15:16 +0100
+
+    upgrade SQlite3 to latest 3.34.1 revision
+
+commit 571e66b55c859c64f2230a6a10ad890190822db0
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-25 14:14:13 +0100
+
+    include GeoPoly, Sessions and RegExp extensions to SQLite3
+    - also fixes some cross-compilation scripts
+
+commit 4776db545db1fd4edba052c2eccc66b8c5344065
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-24 17:16:42 +0100
+
+    MVC Web Blog sample: allow logged user to change its password
+
+commit cc9abb620db24aad90d32214b9d4d1c393f75e53
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-23 20:02:26 +0100
+
+    deep enhancement of the Sample 30 - MVC Web Blog
+    - purpose is to use it for https://blog.synopse.info
+
+commit aaa3f98bce923214f7abb88c9509e0ae5e78c4b3
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-23 20:00:56 +0100
+
+    give access to ILockedDocVariant internal lock
+
+commit 0ed0b820eb7b8da12a33f36c2c7184936ea9f04c
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-23 19:58:50 +0100
+
+    ensure TMVCApplication.Start flush the cache to setup some preliminary custom values
+
+commit 6f65e596099738590fa11e9d9b80f93b45593d55
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-23 19:58:00 +0100
+
+    fixed TSQLRestServerURIContext.Returns() HTTP 304 double-quoted Etag
+
+commit 6e1b65c7ca520bc0f173b9aecb58bd41d3322feb
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-21 23:22:12 +0100
+
+    fixed a border-case of TSQLHttpServer URI redirection
+
+commit 550f17583e399fd8825ec9f019945c26ec9f94ad
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-21 23:21:30 +0100
+
+    several enhancements to the MVC Blog sample
+
+commit 92945cb2b04eccf1fb5f018af839c9b41459ee97
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-21 21:52:28 +0100
+
+    introducing rsoNoTableURI in TSQLRestServerOptions
+
+commit 1e01091327cf5791501e389f5ad8d5647d23e996
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-21 16:31:09 +0100
+
+    enhanced some comments
+
+commit 7c47e191067f54629c9acad630d438ef0ef8c462
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-21 16:30:02 +0100
+
+    don't override default TSynDaemonSettings.LogPath value on Linux
+
+commit 60864ac61454deb653dfb8c84b1972ffc5c18455
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-21 16:29:26 +0100
+
+    fixed SQL where clause computation
+
+commit 94043792d8461276ff95a36d2a2256f2c3b53ac6
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-19 14:13:21 +0100
+
+    enhanced GetFileNameWithoutExt() documentation
+
+commit f8fc447fab49ef8b432141a2b39034c87d65da5d
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-19 10:28:27 +0100
+
+    move TZipWrite.AddFromZip to TZipWriteAbstract
+    - from https://github.com/synopse/mORMot/pull/375
+
+commit 193001ac05a8efd37f73f7ecc71d86a1f132d969
+Merge: c1a508e4 3f89c716
+Author: ab <webcontact01@synopse.info>
+Date:   2021-01-19 09:33:11 +0100
+
+    Merge pull request #375 from dhewg/zip
+    
+    move TZipWrite.AddFromZip to TZipWriteAbstract.AddFromZip
+
+commit 3f89c71666f22fcd04abcab967569250d4f7b79b
+Author: Andre Heider <a.heider@gmail.com>
+Date:   2021-01-19 08:18:42 +0100
+
+    move TZipWrite.AddFromZip to TZipWriteAbstract.AddFromZip
+    
+    This allows e.g. TZipWriteToStream.AddFromZip() to be used.
+
+commit c1a508e4eb7528d3edc21ef67590c317d906db8f
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-15 09:37:28 +0100
+
+    fixed TSynTableStatement parsing
+
+commit 4bf2f0171a7f475450e5a07b20f81d1d1abccf38
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-10 10:31:47 +0100
+
+    fixed compilation ;)
+
+commit d2d11555c3c9eb51ee5484cd0c9c302615572c40
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-04 15:53:11 +0100
+
+    TAutoFree/TSynLog.Enter documentation information about Delphi 10.4 issue
+
+commit 61e9c4a3c08ba9bd317c3c3006dd20fb2c9d43df
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-02 15:17:59 +0100
+
+    Happy new Year 2021 to all!
+
+commit 99d22cbecc3a79e749f343f4bda2e6e5c165ffa7
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2021-01-02 12:03:10 +0100
+
+    fixed typo
+
+commit ce81f702e8cef7aee19227565aac4d00f272f6c8
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-31 10:27:28 +0100
+
+    fixed TSQLRestServer.SessionDeleteDeprecated
+
+commit 02f856a6bf59bbc6a12d4343f6e5d869d93df772
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-30 10:22:26 +0100
+
+    introducing TSQLRestServer.SessionDeleteDeprecated
+
+commit c194c108ba896e7ce1104eae394939c04dd033d1
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-30 10:17:22 +0100
+
+    fixed SynPdf constants not defined in earlier Delphi revisions
+
+commit eefbbdb5bff5bd742859182b7d6b25b38406ffc4
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-29 16:43:47 +0100
+
+    rotated text SynPdf drawing
+    - from https://github.com/synopse/SynPDF/pull/43
+
+commit 6ddff0125e6c4c447ac46ee469b58353507b9a67
+Author: Arnaud Bouchez <fakeaddress@synopse.info>
+Date:   2020-12-28 10:41:44 +0100
+
+    enable Sessions in the future builds of our SQLite3 static
+
 commit 23ad0676c76037a41c955464a0c29ab384e94218
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2020-12-24 18:22:10 +0100
@@ -552,6 +1388,12 @@ Date:   2020-09-03 12:04:46 +0200
 
     let mORMot2 static files be generated in synch
 
+commit ad7cabd2d848c402fb5064f93557b79811ded272
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-09-02 14:57:58 +0300
+
+    RemoveCommentsFromJSON will also remove trailing comma followed by comment
+
 commit 05c4e9a138b2c70dcfc02765b42a751995a87d53
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2020-09-02 10:03:34 +0200
@@ -564,6 +1406,14 @@ Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2020-09-02 09:51:12 +0200
 
     update SQLite3 static engine to latest 3.33.0 revision
+
+commit a4672f8568490e44840a8d4c9781d1c46348ef71
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2020-08-27 13:20:54 +0300
+
+    Add PanelBottom to the lfm (most likely Alfred lost in 2015 while converting dfm to lfm). This adds a bottom memo to a form (as in Delphi version)
+    
+    Signed-off-by: pavel.mash <pavel.mash@inbase.com.ua>
 
 commit 8772d162d8fedab30bb57fbc6d6704ecd3339a77
 Author: Arnaud Bouchez <fakeaddress@synopse.info>

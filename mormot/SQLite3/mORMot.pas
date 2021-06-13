@@ -6,7 +6,7 @@ unit mORMot;
 (*
     This file is part of Synopse mORMot framework.
 
-    Synopse mORMot framework. Copyright (C) 2020 Arnaud Bouchez
+    Synopse mORMot framework. Copyright (C) 2021 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit mORMot;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2020
+  Portions created by the Initial Developer are Copyright (C) 2021
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -4971,6 +4971,9 @@ type
     /// the optional Blob field name as specified in URI
     // - e.g. retrieved from "ModelRoot/TableName/TableID/BlobFieldName"
     URIBlobFieldName: RawUTF8;
+    /// decoded URI for rsoMethodUnderscoreAsSlashURI in Server.Options
+    // - e.g. 'Method_Name' from 'ModelRoot/Method/Name' URI
+    URIUnderscoreAsSlash: RawUTF8;
     /// position of the &session_signature=... text in Call^.url string
     URISessionSignaturePos: integer;
     /// the Table as specified at the URI level (if any)
@@ -15842,6 +15845,9 @@ type
   // unless rsoGetUserRetrieveNoBlobData is defined
   // - rsoNoInternalState could be state to avoid transmitting the
   // 'Server-InternalState' header, e.g. if the clients wouldn't need it
+  // - rsoNoTableURI will disable any /root/tablename URI for safety
+  // - rsoMethodUnderscoreAsSlashURI will try to decode /root/method/name
+  // as 'method_name' method
   TSQLRestServerOption = (
     rsoNoAJAXJSON,
     rsoGetAsJsonNotAsString,
@@ -15857,7 +15863,9 @@ type
     rsoTimestampInfoURIDisable,
     rsoHttpHeaderCheckDisable,
     rsoGetUserRetrieveNoBlobData,
-    rsoNoInternalState);
+    rsoNoInternalState,
+    rsoNoTableURI,
+    rsoMethodUnderscoreAsSlashURI);
   /// allow to customize the TSQLRestServer process via its Options property
   TSQLRestServerOptions = set of TSQLRestServerOption;
 
@@ -16017,6 +16025,13 @@ type
     // - will perform any needed clean-up, and log the event
     // - this method is not thread-safe: caller should use Sessions.Lock/Unlock
     procedure SessionDelete(aSessionIndex: integer; Ctxt: TSQLRestServerURIContext);
+    /// SessionAccess will detect and delete outdated sessions, but you can call
+    // this method to force checking for deprecated session now
+    // - may be used e.g. from OnSessionCreate to limit the number of active sessions
+    // - this method is not thread-safe: caller should use Sessions.Lock/Unlock
+    // - you can call it often: it will seek for outdated sessions once per second
+    // - returns the current system Ticks number (at second resolution)
+    function SessionDeleteDeprecated: cardinal;
     /// returns TRUE if this table is worth caching (e.g. already in memory)
     // - this overridden implementation returns FALSE for TSQLRestStorageInMemory
     function CacheWorthItForTable(aTableIndex: cardinal): boolean; override;
@@ -16654,11 +16669,12 @@ type
     // can be used if you need an overridden constructor
     // - instance implementation pattern will be set by the appropriate parameter
     // - will return the first of the registered TServiceFactoryServer created
-    // on success (i.e. the one corresponding to the first item of the aInterfaces
-    // array), or nil if registration failed (e.g. if any of the supplied interfaces
+    // on success (i.e. corresponding to aInterfaces[0] - not to the others),
+    // or nil if registration failed (e.g. if any of the supplied interfaces
     // is not implemented by the given class)
-    // - you can use the returned TServiceFactoryServer instance to set the
-    // expected security parameters associated with this interface
+    // - you can use the returned TServiceFactoryServer instance to set
+    // the expected security parameters for aInterfaces[0] - warning: only the
+    // the first interface options are returned
     // - the same implementation class can be used to handle several interfaces
     // (just as Delphi allows to do natively)
     function ServiceRegister(aImplementationClass: TInterfacedClass;
@@ -16674,8 +16690,10 @@ type
     // on success (i.e. the one corresponding to the first item of the aInterfaces
     // array), or nil if registration failed (e.g. if any of the supplied interfaces
     // is not implemented by the given class)
-    // - you can use the returned TServiceFactoryServer instance to set the
-    // expected security parameters associated with this interface
+    // - will return the first of the registered TServiceFactoryServer created
+    // on success (i.e. corresponding to aInterfaces[0] - not to the others),
+    // or nil if registration failed (e.g. if any of the supplied interfaces
+    // is not implemented by the given class)
     // - the same implementation class can be used to handle several interfaces
     // (just as Delphi allows to do natively)
     function ServiceRegister(aSharedImplementation: TInterfacedObject;
@@ -16700,6 +16718,10 @@ type
     /// register a Service class on the server side
     // - this method expects the interface(s) to have been registered previously:
     // ! TInterfaceFactory.RegisterInterfaces([TypeInfo(IMyInterface),...]);
+    // - will return the first of the registered TServiceFactoryServer created
+    // on success (i.e. corresponding to aInterfaces[0] - not to the others),
+    // or nil if registration failed (e.g. if any of the supplied interfaces
+    // is not implemented by the given class)
     function ServiceDefine(aImplementationClass: TInterfacedClass;
       const aInterfaces: array of TGUID;
       aInstanceCreation: TServiceInstanceImplementation=sicSingle;
@@ -16708,6 +16730,10 @@ type
     // - this method expects the interface(s) to have been registered previously:
     // ! TInterfaceFactory.RegisterInterfaces([TypeInfo(IMyInterface),...]);
     // - the supplied aSharedImplementation will be owned by this Server instance
+    // - will return the first of the registered TServiceFactoryServer created
+    // on success (i.e. corresponding to aInterfaces[0] - not to the others),
+    // or nil if registration failed (e.g. if any of the supplied interfaces
+    // is not implemented by the given class)
     function ServiceDefine(aSharedImplementation: TInterfacedObject;
       const aInterfaces: array of TGUID; const aContractExpected: RawUTF8=''): TServiceFactoryServer; overload;
     /// register a remote Service via its interface
@@ -30249,7 +30275,7 @@ end;
 
 function SQLWhereIsEndClause(const Where: RawUTF8): boolean;
 begin
-  result := IdemPCharArray(pointer(Where),['ORDER BY ','GROUP BY ',
+  result := IdemPCharArray(GotoNextNotSpace(pointer(Where)),['ORDER BY ','GROUP BY ',
     'LIMIT ','OFFSET ','LEFT ','RIGHT ','INNER ','OUTER ','JOIN '])>=0;
 end;
 
@@ -31172,9 +31198,9 @@ begin
     // no simple field to write -> quick return
     result := '' else
   if UsingStream<>nil then begin
-    UsingStream.Seek(0,soFromBeginning);
+    UsingStream.Seek(0,soBeginning);
     GetJSONValues(UsingStream,Expand,withID,Occasion,SQLRecordOptions);
-    FastSetString(result,UsingStream.Memory,UsingStream.Seek(0,soFromCurrent));
+    FastSetString(result,UsingStream.Memory,UsingStream.Seek(0,soCurrent));
   end else begin
     J := TRawByteStringStream.Create;
     try
@@ -35558,7 +35584,7 @@ begin
     exit;
   if BlobStream.Write(pointer(BlobData)^,length(BlobData))<>length(BlobData) then
     result := false;
-  BlobStream.Seek(0,soFromBeginning); // rewind
+  BlobStream.Seek(0,soBeginning); // rewind
 end;
 
 function TSQLRest.UpdateBlob(Table: TSQLRecordClass; aID: TID;
@@ -35569,9 +35595,9 @@ begin
   result := false;
   if (self=nil) or (BlobData=nil) then
     exit;
-  L := BlobData.Seek(0,soFromEnd);
+  L := BlobData.Seek(0,soEnd);
   SetLength(Blob,L);
-  BlobData.Seek(0,soFromBeginning);
+  BlobData.Seek(0,soBeginning);
   if BlobData.Read(pointer(Blob)^,L)<>L then
     exit;
   result := UpdateBlob(Table,aID,BlobFieldName,Blob);
@@ -38203,7 +38229,7 @@ begin
   aMethodName := trim(aMethodName);
   if aMethodName='' then
     raise EServiceException.CreateUTF8('%.ServiceMethodRegister('''')',[self]);
-  if Model.GetTableIndex(aMethodName)>=0 then
+  if not(rsoNoTableURI in fOptions) and (Model.GetTableIndex(aMethodName)>=0) then
     raise EServiceException.CreateUTF8('Published method name %.% '+
       'conflicts with a Table in the Model!',[self,aMethodName]);
   with PSQLRestServerMethod(fPublishedMethods.AddUniqueName(aMethodName,
@@ -39496,7 +39522,9 @@ end;
 procedure TSQLRestServerURIContext.InternalSetTableFromTableName(TableName: PUTF8Char);
 begin
   TableEngine := Server;
-  InternalSetTableFromTableIndex(Server.Model.GetTableIndexPtr(TableName));
+  if rsoNoTableURI in Server.Options then
+    TableIndex := -1 else
+    InternalSetTableFromTableIndex(Server.Model.GetTableIndexPtr(TableName));
   if TableIndex<0 then
     exit;
   Static := Server.GetStaticTableIndex(TableIndex,StaticKind);
@@ -39561,6 +39589,13 @@ begin // expects 'ModelRoot[/TableName[/TableID][/URIBlobFieldName]][?param=...]
         TableID := GetCardinalDef(pointer(PtrInt(URIBlobFieldName)+j),cardinal(-1));
         SetLength(URIBlobFieldName,j-1);
       end;
+    end else if rsoMethodUnderscoreAsSlashURI in Server.Options then begin
+      URIUnderscoreAsSlash := URI;
+      i := slash; // set e.g. 'Method_Name' from 'ModelRoot/Method/Name' URI
+      repeat
+        URIUnderscoreAsSlash[i] := '_';
+        i := PosEx('/',URI,i+1);
+      until i=0;
     end;
     SetLength(URI,slash-1);
   end else
@@ -39579,8 +39614,12 @@ end;
 procedure TSQLRestServerURIContext.URIDecodeSOAByMethod;
 begin
   if Table=nil then
+  begin
     // check URI as 'ModelRoot/MethodName'
-    MethodIndex := Server.fPublishedMethods.FindHashed(URI) else
+    MethodIndex := Server.fPublishedMethods.FindHashed(URI);
+    if (MethodIndex<0) and (URIUnderscoreAsSlash<>'') then
+      MethodIndex := Server.fPublishedMethods.FindHashed(URIUnderscoreAsSlash);
+  end else
   if URIBlobFieldName<>'' then
     // check URI as 'ModelRoot/TableName[/TableID]/MethodName'
     MethodIndex := Server.fPublishedMethods.FindHashed(URIBlobFieldName) else
@@ -39794,6 +39833,7 @@ procedure TSQLRestServerURIContext.ExecuteSOAByMethod;
 var timeStart,timeEnd: Int64;
     sessionstat: TSynMonitorInputOutput;
 begin
+  if MethodIndex >= 0 then
   with Server.fPublishedMethod[MethodIndex] do begin
     if mlMethods in Server.StatLevels then begin
       {$ifdef LINUX}QueryPerformanceMicroSeconds{$else}QueryPerformanceCounter{$endif}(timeStart);
@@ -40302,7 +40342,7 @@ var OK: boolean;
     Blob: PPropInfo;
     SQLSelect, SQLWhere, SQLSort, SQLDir: RawUTF8;
 begin
-  if MethodIndex=Server.fPublishedMethodBatchIndex then begin
+  if (MethodIndex>=0) and (MethodIndex=Server.fPublishedMethodBatchIndex) then begin
     ExecuteSOAByMethod; // run the BATCH process in execORMWrite context
     exit;
   end;
@@ -40898,7 +40938,7 @@ begin
        (Length(Result)>64) then begin
       FindNameValue(Call.InHead,'IF-NONE-MATCH: ',clientHash);
       if ServerHash='' then
-        ServerHash := '"'+crc32cUTF8ToHex(Result)+'"';
+        ServerHash := crc32cUTF8ToHex(Result);
       ServerHash := '"'+ServerHash+'"';
       if clientHash<>ServerHash then
         Call.OutHead := Call.OutHead+#13#10'ETag: '+ServerHash else begin
@@ -42033,7 +42073,7 @@ end;
 procedure TSQLRestServer.SessionDelete(aSessionIndex: integer;
   Ctxt: TSQLRestServerURIContext);
 var sess: TAuthSession;
-begin
+begin // caller made fSessions.Safe.Lock
   if (self<>nil) and (cardinal(aSessionIndex)<cardinal(fSessions.Count)) then begin
     sess := fSessions.List[aSessionIndex];
     if Services<>nil then
@@ -42050,38 +42090,48 @@ begin
   end;
 end;
 
+function TSQLRestServer.SessionDeleteDeprecated: cardinal;
+var i: PtrInt;
+begin // caller made fSessions.Safe.Lock
+  result := GetTickCount64 shr 10;
+  if (self<>nil) and (fSessions<>nil) then begin
+    if result<>fSessionsDeprecatedTix then begin
+      fSessionsDeprecatedTix := result; // check sessions every second
+      for i := fSessions.Count-1 downto 0 do
+        if result>TAuthSession(fSessions.List[i]).TimeOutTix then
+          SessionDelete(i,nil);
+    end;
+  end;
+end;
+
 function TSQLRestServer.SessionAccess(Ctxt: TSQLRestServerURIContext): TAuthSession;
 var i: integer;
     tix, session: cardinal;
     sessions: ^TAuthSession;
-begin // caller of RetrieveSession() made fSessions.Safe.Lock
+begin // caller made fSessions.Safe.Lock
   if (self<>nil) and (fSessions<>nil) then begin
-    tix := GetTickCount64 shr 10;
-    if tix<>fSessionsDeprecatedTix then begin
-      fSessionsDeprecatedTix := tix; // check deprecated sessions every second
-      for i := fSessions.Count-1 downto 0 do
-        if tix>TAuthSession(fSessions.List[i]).TimeOutTix then
-          SessionDelete(i,nil);
-    end;
+    // check deprecated sessions every second
+    tix := SessionDeleteDeprecated;
     // retrieve session from its ID
     sessions := pointer(fSessions.List);
     session := Ctxt.Session;
-    for i := 1 to fSessions.Count do
-      if sessions^.IDCardinal=session then begin
-        result := sessions^;
-        result.fTimeOutTix := tix+result.TimeoutShr10;
-        Ctxt.fSession := result; // for TSQLRestServer internal use
-        // make local copy of TAuthSession information
-        Ctxt.SessionUser := result.User.fID;
-        Ctxt.SessionGroup := result.User.GroupRights.fID;
-        Ctxt.SessionUserName := result.User.LogonName;
-        if (result.RemoteIP<>'') and (Ctxt.fRemoteIP='') then
-          Ctxt.fRemoteIP := result.RemoteIP;
-        Ctxt.fSessionAccessRights := result.fAccessRights;
-        Ctxt.Call^.RestAccessRights := @Ctxt.fSessionAccessRights;
-        exit;
-      end else
-        inc(sessions);
+    if session>CONST_AUTHENTICATION_NOT_USED then
+      for i := 1 to fSessions.Count do
+        if sessions^.IDCardinal=session then begin
+          result := sessions^;
+          result.fTimeOutTix := tix+result.TimeoutShr10;
+          Ctxt.fSession := result; // for TSQLRestServer internal use
+          // make local copy of TAuthSession information
+          Ctxt.SessionUser := result.User.fID;
+          Ctxt.SessionGroup := result.User.GroupRights.fID;
+          Ctxt.SessionUserName := result.User.LogonName;
+          if (result.RemoteIP<>'') and (Ctxt.fRemoteIP='') then
+            Ctxt.fRemoteIP := result.RemoteIP;
+          Ctxt.fSessionAccessRights := result.fAccessRights;
+          Ctxt.Call^.RestAccessRights := @Ctxt.fSessionAccessRights;
+          exit;
+        end else
+          inc(sessions);
   end;
   result := nil;
 end;
@@ -45228,7 +45278,7 @@ begin // now fValue[] contains the just loaded data
     cf := 'ID' else
     for f := 0 to high(fUnique) do
       if f in fIsUnique then begin
-        c := fUnique[f].Hasher.ReHash({forced=}true,{grow=}false);
+        c := fUnique[f].Hasher.ReHash({forced=}true);
         if c>0 then begin
           cf := fUnique[f].PropInfo.Name;
           break;
@@ -45946,6 +45996,7 @@ begin
       n := FindWhereEqual(WhereField,FieldValue,DoAddToListEvent,match,0,0);
       if n=0 then
         exit;
+      result := true;
       SetLength(ResultID,n);
       for i := 0 to n-1 do
         ResultID[i] := TSQLRecord(match.List[i]).fID;
@@ -47320,7 +47371,7 @@ begin
     FreeAndNil(fLogTableStorage);
     exit;
   end;
-  fLogTableStorage.Seek(0,soFromBeginning);
+  fLogTableStorage.Seek(0,soBeginning);
   fLogTableStorage.WriteBuffer(Pointer(aJSON)^,L-2);
 end;
 
@@ -50910,7 +50961,7 @@ var Added: boolean;
             AddDateTime(D64);
             if woDateTimeWithZSuffix in Options then
               if frac(D64)=0 then // FireFox can't decode short form "2017-01-01Z"
-                AddShort('T00:00Z') else
+                AddShort('T00:00:00Z') else // the same pattern for date and dateTime
                 Add('Z');
             Add('"');
           end;
@@ -50987,11 +51038,12 @@ var Added: boolean;
       {$endif NOVARIANTS}
       tkClass: begin
         Obj := P^.GetObjProp(Value);
-        if not(woDontStore0 in Options) or not IsObjectDefaultOrVoid(Obj) then
+        if Obj<>nil then
           if PropIsIDTypeCastedField(P,IsObj,Value) then begin
             HR(P);
             Add(PtrInt(Obj)); // not true instances, but ID
-          end else if Obj<>nil then begin
+          end else
+          if not(woDontStore0 in Options) or not IsObjectDefaultOrVoid(Obj) then begin
             HR(P); // TPersistent or any class defined with $M+
             WriteObject(Obj,Options);
           end;

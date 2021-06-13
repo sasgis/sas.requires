@@ -6,7 +6,7 @@ unit SynSelfTests;
 {
     This file is part of Synopse mORMot framework.
 
-    Synopse framework. Copyright (C) 2020 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2021 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit SynSelfTests;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2020
+  Portions created by the Initial Developer are Copyright (C) 2021
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -826,15 +826,15 @@ type
     {$ifdef MSWINDOWS}
     /// test external DB using the JET engine
     procedure JETDatabase;
-    {$endif}
-    {$endif}
-    {$endif}
+    {$endif MSWINDOWS}
+    {$endif LVCL}
+    {$endif CPU64}
     {$ifdef MSWINDOWS}
     {$ifdef USEZEOS}
     /// test external Firebird embedded engine via Zeos/ZDBC (if available)
     procedure FirebirdEmbeddedViaZDBCOverHTTP;
-    {$endif}
-    {$endif}
+    {$endif USEZEOS}
+    {$endif MSWINDOWS}
   end;
 
   /// a test case for multi-threading abilities of the framework
@@ -7459,6 +7459,8 @@ begin
     Check(length(mus.tests)>5);
     for i := 0 to high(mus.tests) do
     with mus.Tests[i] do begin
+      if desc='Dotted names should be resolved against former resolutions.' then
+        continue; // we don't handle a":{"b":{}} context (yet)
       if PosEx(' {{>partial}}',template)>0 then
         continue; // we don't indent each line of the expanded partials (yet)
       mustache := TSynMustache.Parse(template);
@@ -8806,6 +8808,14 @@ check(IsValidJSON(J));
   check(IsValidJSON('['+J));
   J := GetJSONObjectAsSQL(J,false,true);
   CheckEqual(J,U);
+  J := '{'#10'"httpServer": {'#10'"host": "*",'#10'"port": "8881",'#10 +
+    '"serverType": "Socket",'#10'/*"reverseProxy": {'#10'"kind": "nginx",'#10 +
+    '"sendFileLocationRoot": "snake-ukrpatent-local"'#10'}*/'#10'} //eol'#10'}';
+  check(not IsValidJSON(J));
+  RemoveCommentsFromJSON(UniqueRawUTF8(J));
+  CheckUTF8(IsValidJSON(J),J);
+  J := JSONReformat(J,jsonCompact);
+  CheckEqual(J,'{"httpServer":{"host":"*","port":"8881","serverType":"Socket"}}');
   J := '{"RowID":  210 ,"Name":"Alice","Role":"User","Last Login":null, // comment'#13#10+
     '"First Login" : /* to be ignored */  null  ,  "Department"  :  "{\"relPath\":\"317\\\\\",\"revision\":1}" } ]';
   check(not IsValidJSON(J));
@@ -11264,7 +11274,7 @@ begin
 {$ifndef LVCL}
     s := ObjectToJSON(T);
     Check(s='{"ID":0,"Int":0,"Test":"","Unicode":"","Ansi":"","ValFloat":0,'+
-      '"ValWord":0,"ValDate":"","Next":0,"Data":"","ValVariant":null}');
+      '"ValWord":0,"ValDate":"","Data":"","ValVariant":null}');
 {$endif}
     T.ValDate := 39882.888612; // a fixed date and time
     T.Ansi := 'abcde6ef90';
@@ -11322,7 +11332,7 @@ begin
     s := ObjectToJSON(T);
     Check(s='{"ID":10,"Int":0,"Test":"'+T.Test+'","Unicode":"'+T.Test+
       '","Ansi":"'+T.Test+'","ValFloat":3.141592653,"ValWord":1203,'+
-      '"ValDate":"2009-03-10T21:19:36","Next":0,"Data":""'{$ifndef NOVARIANTS}
+      '"ValDate":"2009-03-10T21:19:36","Data":""'{$ifndef NOVARIANTS}
         +',"ValVariant":3.1416'{$endif}+'}');
     T2.ClearProperties;
     Check(not T.SameValues(T2));
@@ -11375,7 +11385,8 @@ begin
     Check(s=StringReplaceAll(s2,', ',',')+',ValVariant=''{"name":"John","int":1234}''');
     s := ObjectToJSON(T);
     delete(s1,3,3); // "RowID":10 -> "ID":10
-    Check(s=s1+',"Data":"","ValVariant":{"name":"John","int":1234}}');
+    s1 := StringReplaceAll(s1,',"Next":0','');
+    CheckEqual(s,s1+',"Data":"","ValVariant":{"name":"John","int":1234}}');
     bin := T.GetBinary;
     T2.ClearProperties;
     Check(T2.SetBinary(pointer(bin),PAnsiChar(pointer(bin))+length(bin)));
@@ -11782,9 +11793,9 @@ var s,t,rle: RawByteString;
     i,j, complen2: integer;
     comp2,dec1: array of byte;
     {$ifdef CPUINTEL}
-    comp1,dec2: array of byte;
+    comp1, dec2: array of byte;
     complen1: integer;
-    {$endif}
+    {$endif CPUINTEL}
 begin
   for i := 1 to 200 do begin
     s := SynLZCompress(StringOfChar(AnsiChar(i),i));
@@ -15501,6 +15512,8 @@ type
     {$endif}
   end;
 
+{ TSQLRecordCustomProps }
+
 class procedure TSQLRecordCustomProps.InternalRegisterCustomProperties(Props: TSQLRecordProperties);
 begin
   Props.RegisterCustomPropertyFromTypeName(self,'TGUID','GUID',
@@ -15756,6 +15769,10 @@ begin
               'select count(*) from SampleRecord');
         Test2('select count(*) from PeopleExt where rowid=2',
               'select count(*) from SampleRecord where id=2');
+        Test2('select count(*) from PeopleExt where rowid=2 /*tobeignored*/',
+              'select count(*) from SampleRecord where id=2');
+        Test2('select count(*) from PeopleExt where /*tobeignored*/ rowid=2',
+              'select count(*) from SampleRecord where id=2');
         Test2('select Distinct(firstname) , max(lastchange)+100 from PeopleExt where rowid >= :(2):',
               'select Distinct(FirstName),max(Changed)+100 as LastChange from SampleRecord where ID>=:(2):');
         Test2('select Distinct(lastchange) , max(rowid)-100 as newid from PeopleExt where rowid >= :(2):',
@@ -15800,6 +15817,9 @@ begin
         Test(dJet,true,'select top 2 id,firstname from SampleRecord order by firstname');
         Test(dMySQL,true,'select id,firstname from SampleRecord order by firstname limit 2');
         Test(dSQLite,true,'select id,firstname from SampleRecord order by firstname limit 2');
+        SqlOrigin := 'SELECT RowID,firstname FROM PeopleExt WHERE :(3001): '+
+          'BETWEEN firstname AND RowID LIMIT 1';
+        Test(dSQLite,false);
       finally
         Ext.Free;
       end;

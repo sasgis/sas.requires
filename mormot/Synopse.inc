@@ -1,7 +1,7 @@
 {
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2020 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2021 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -20,7 +20,7 @@
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2020
+  Portions created by the Initial Developer are Copyright (C) 2021
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -213,11 +213,15 @@
     {$define ISFPC27}
     {$define ISFPC30}
     {$define ISFPC32}
+    {$ifdef VER3_2_2}
+      {$define HASTTHREADTERMINATESET} // introduced TThread.TerminateSet
+    {$endif VER3_2_2}
   {$endif}
   {$ifdef VER3_3} // trunk before 3.4
     {$define ISFPC27}
     {$define ISFPC30}
     {$define ISFPC32}
+    {$define HASTTHREADTERMINATESET} // introduced TThread.TerminateSet
   {$endif}
   {$ifdef VER3_4}
     {$define ISFPC27}
@@ -225,6 +229,7 @@
     {$define ISFPC32}
     {$define ISFPC34}
     {$define FPC_PROVIDE_ATTR_TABLE} // introducing TTypeData.AttributeTable
+    {$define HASTTHREADTERMINATESET} // introduced TThread.TerminateSet
   {$endif}
   {$if not defined(VER3_0) and not defined(VER3_2) and not defined(VER2)}
     {.$define FPC_PROVIDE_ATTR_TABLE} // to be defined since SVN 42356-42411

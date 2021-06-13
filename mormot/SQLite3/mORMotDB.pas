@@ -6,7 +6,7 @@ unit mORMotDB;
 {
     This file is part of Synopse mORMot framework.
 
-    Synopse mORMot framework. Copyright (C) 2020 Arnaud Bouchez
+    Synopse mORMot framework. Copyright (C) 2021 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit mORMotDB;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2020
+  Portions created by the Initial Developer are Copyright (C) 2021
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -999,6 +999,7 @@ function TSQLRestStorageExternal.EngineLockedNextID: TID;
     if (rows<>nil) and rows.Step then
       fEngineLockedMaxID := rows.ColumnInt(0) else
       fEngineLockedMaxID := 0;
+    rows.ReleaseRows; 
   end;
 
 var handled: boolean;
@@ -1360,8 +1361,10 @@ begin
     result := false else begin
     rows := ExecuteDirect(pointer(fSelectTableHasRowsSQL),[],[],true);
     if rows=nil then
-      result := false else
+      result := false else begin
       result := rows.Step;
+      rows.ReleaseRows; 
+    end;
   end;
 end;
 
@@ -1371,9 +1374,13 @@ begin
   if (self=nil) or (Table<>fStoredClass) then
     result := 0 else begin
     rows := ExecuteDirect('select count(*) from %',[fTableName],[],true);
-    if (rows=nil) or not rows.Step then
-      result := 0 else
-      result := rows.ColumnInt(0);
+    if rows=nil then
+      result := 0 else begin
+      if not rows.Step then
+        result := 0 else
+        result := rows.ColumnInt(0);
+      rows.ReleaseRows;
+    end;
   end;
 end;
 

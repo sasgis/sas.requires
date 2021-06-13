@@ -6,7 +6,7 @@ unit SynDB;
 {
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2020 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2021 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit SynDB;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2020
+  Portions created by the Initial Developer are Copyright (C) 2021
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -903,6 +903,7 @@ type
     {$ifndef UNICODE}
     fVariantWideString: boolean;
     {$endif}
+    fStatementMaxMemory: Int64;
     fForeignKeys: TSynNameValue;
     fSQLCreateField: TSQLDBFieldTypeDefinition;
     fSQLCreateFieldMax: cardinal;
@@ -1433,6 +1434,12 @@ type
     // - will cache only statements containing ? parameters or a SELECT with no
     // WHERE clause within
     property UseCache: boolean read fUseCache write fUseCache;
+    /// maximum bytes allowed for FetchAllToJSON/FetchAllToBinary methods
+    // - if a result set exceeds this limit, an ESQLDBException is raised
+    // - default is 512 shl 20, i.e. 512MB which is very high
+    // - avoid unexpected OutOfMemory errors when incorrect statement is run
+    property StatementMaxMemory: Int64
+      read fStatementMaxMemory write fStatementMaxMemory;
     /// if UseCache is true, how many statement replicates can be generated
     // if the cached ISQLDBStatement is already used
     // - such replication is normally not needed in a per-thread connection,
@@ -3300,7 +3307,7 @@ const
     (Position: posAfter;  InsertFmt:' first % '));                { dInformix   }
 
   /// the known database engines handling CREATE INDEX IF NOT EXISTS statement
-  DB_HANDLECREATEINDEXIFNOTEXISTS = [dSQLite];
+  DB_HANDLECREATEINDEXIFNOTEXISTS = [dSQLite, dPostgreSQL];
 
   /// the known database engines handling CREATE INDEX on BLOB columns
   // - SQLite3 does not have any issue about indexing any column
@@ -3648,7 +3655,10 @@ end;
 procedure TQuery.Close;
 begin
   try
-    fPrepared := nil;
+    if Assigned(fPrepared) then begin
+      fPrepared.ReleaseRows;
+      fPrepared := nil;
+    end;
   finally
     //fSQL.Clear; // original TQuery expect SQL content to be preserved
     fParam.Clear;
@@ -3879,7 +3889,7 @@ begin
   req := Trim(StringToUTF8(SQL.Text));
   P := pointer(req);
   if P=nil then
-    ESQLQueryException.Create('No SQL statement');
+    raise ESQLQueryException.Create('No SQL statement');
   col := 0;
   repeat
     B := P;
@@ -4521,7 +4531,7 @@ begin // follow TSQLDBRemoteConnectionPropertiesAbstract.Process binary layout
       if ExecuteWithResults then begin
         Data := TRawByteStringStream.Create(msgOutput);
         try
-          Data.Seek(0,soFromEnd); // include header
+          Data.Seek(0,soEnd); // include header
           case header.Command of
           cExecuteToBinary:
             Stmt.FetchAllToBinary(Data);
@@ -4572,6 +4582,7 @@ begin
   fRollbackOnDisconnect := true; // enabled by default
   fUseCache := true;
   fLoggedSQLMaxSize := 2048; // log up to 2KB of inlined SQL by default
+  fStatementMaxMemory := 512 shl 20; // fetch to JSON/Binary up to 512MB
   SetInternalProperties; // virtual method used to override default parameters
   aDBMS := GetDBMS;
   if aDBMS in [dSQLite, dDB2, dPostgreSQL] then // for SQLDateToIso8601Quoted()
@@ -4616,8 +4627,8 @@ end;
 
 function TSQLDBConnectionProperties.Execute(const aSQL: RawUTF8;
   const Params: array of const
-  {$ifndef LVCL}{$ifndef DELPHI5OROLDER}; RowsVariant: PVariant=nil{$endif}{$endif};
-  ForceBlobAsNull: boolean=false): ISQLDBRows;
+  {$ifndef LVCL}{$ifndef DELPHI5OROLDER}; RowsVariant: PVariant{$endif}{$endif};
+  ForceBlobAsNull: boolean): ISQLDBRows;
 var Stmt: ISQLDBStatement;
 begin
   Stmt := NewThreadSafeStatementPrepared(aSQL,true,true);
@@ -6971,12 +6982,14 @@ end;
 function TSQLDBStatement.FetchAllToJSON(JSON: TStream; Expanded: boolean): PtrInt;
 var W: TJSONWriter;
     col: integer;
+    maxmem: PtrUInt;
     tmp: TTextWriterStackBuffer;
 begin
   result := 0;
   W := TJSONWriter.Create(JSON,Expanded,false,nil,0,@tmp);
   try
     Connection.InternalProcess(speActive);
+    maxmem := Connection.Properties.StatementMaxMemory;
     // get col names and types
     SetLength(W.ColNames,ColumnCount);
     for col := 0 to ColumnCount-1 do
@@ -6992,6 +7005,9 @@ begin
       ColumnsToJSON(W);
       W.Add(',');
       inc(result);
+      if (maxmem>0) and (W.WrittenBytes>maxmem) then // TextLength is slower
+        raise ESQLDBException.CreateUTF8('%.FetchAllToJSON: overflow %',
+          [self, KB(maxmem)]);
     end;
     {$ifdef SYNDB_SILENCE}
     fSQLLogTimer.Pause;
@@ -7017,6 +7033,7 @@ function TSQLDBStatement.FetchAllToCSVValues(Dest: TStream; Tab: boolean;
 const NULL: array[boolean] of string[7] = ('"null"','null');
       BLOB: array[boolean] of string[7] = ('"blob"','blob');
 var F, FMax: integer;
+    maxmem: PtrUInt;
     W: TTextWriter;
     tmp: RawByteString;
     V: TSQLVar;
@@ -7028,6 +7045,7 @@ begin
   if Tab then
     CommaSep := #9;
   FMax := ColumnCount-1;
+  maxmem := Connection.Properties.StatementMaxMemory;
   W := TTextWriter.Create(Dest,65536);
   try
     if AddBOM then
@@ -7080,6 +7098,9 @@ begin
           W.Add(CommaSep);
       end;
       inc(result);
+      if (maxmem>0) and (W.WrittenBytes>maxmem) then // TextLength is slower
+        raise ESQLDBException.CreateUTF8('%.FetchAllToCSVValues: overflow %',
+          [self, KB(maxmem)]);
     end;
     {$ifdef SYNDB_SILENCE}
     fSQLLogTimer.Pause;
@@ -7154,13 +7175,14 @@ const
 function TSQLDBStatement.FetchAllToBinary(Dest: TStream; MaxRowCount: cardinal;
   DataRowPosition: PCardinalDynArray): cardinal;
 var F, FMax, FieldSize, NullRowSize: integer;
-    StartPos: Int64;
+    StartPos, MaxMem: Int64;
     W: TFileBufferWriter;
     ft: TSQLDBFieldType;
     ColTypes: TSQLDBFieldTypeDynArray;
     Null: TByteDynArray;
 begin
   result := 0;
+  MaxMem := Connection.Properties.StatementMaxMemory;
   W := TFileBufferWriter.Create(Dest);
   try
     W.WriteVarUInt32(FETCHALLTOBINARY_MAGIC);
@@ -7210,6 +7232,9 @@ begin
         // then write data values
         ColumnsToBinary(W,pointer(Null),ColTypes);
         inc(result);
+        if (MaxMem>0) and (W.TotalWritten>MaxMem) then // Stream.Position is slower
+          raise ESQLDBException.CreateUTF8('%.FetchAllToBinary: overflow %',
+            [self, KB(MaxMem)]);
         if (MaxRowCount>0) and (result>=MaxRowCount) then
           break;
       until not Step;
@@ -7854,7 +7879,6 @@ procedure TSQLDBStatementWithParams.BindArray(Param: Integer;
 var i: PtrInt;
     ChangeFirstChar: AnsiChar;
     p: PSQLDBParam;
-    v: TTimeLogBits; // faster than TDateTime
 begin
   inherited; // raise an exception in case of invalid parameter
   if fConnection=nil then
@@ -7865,10 +7889,10 @@ begin
   p^.VArray := Values; // immediate COW reference-counted assignment
   if (ParamType=ftDate) and (ChangeFirstChar<>'T') then
     for i := 0 to ValuesCount-1 do // fix e.g. for PostgreSQL
-      if (p^.VArray[i]<>'') and (p^.VArray[i][1]='''') then begin
-        v.From(PUTF8Char(pointer(p^.VArray[i]))+1,length(p^.VArray[i])-2);
-        p^.VArray[i] := v.FullText({expanded=}true,ChangeFirstChar,'''');
-      end;
+      if (p^.VArray[i]<>'') and (p^.VArray[i][1]='''') then
+        // not only replace 'T'->ChangeFirstChar, but force expanded format
+        DateTimeToIso8601(Iso8601ToDateTime(p^.VArray[i]),
+          {expanded=}true, ChangeFirstChar, {ms=}fForceDateWithMS, '''');
   fParamsArrayCount := ValuesCount;
 end;
 
