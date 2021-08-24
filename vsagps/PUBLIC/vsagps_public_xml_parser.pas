@@ -393,7 +393,7 @@ end;
 {$ifend}
 
 {$if defined(VSAGPS_USE_SOME_KIND_OF_XML_IMPORT)}
-function VSAGPS_Parse_Scale14(
+function VSAGPS_Parse_LabelScale(
   const ADOMNode: IDOMNode;
   const ABuffer: PDWORD;
   const fs: TFormatSettings 
@@ -408,8 +408,10 @@ begin
     Exit;
   if VSAGPS_WideString_to_Double(VValue, VResult, fs) then begin
     Inc(Result);
-    if (ABuffer <> nil) then begin
-      ABuffer^ := Round(VResult*14);
+    if (ABuffer <> nil) then begin      
+      // http://www.sasgis.org/mantis/view.php?id=3779
+      // TODO: return scale as absolute Double value 
+      ABuffer^ := Round(VResult*11);
     end;
   end;
 end;
@@ -1041,7 +1043,7 @@ For more information on this map, visit us online at http://goto.arcgisonline.co
           end else if WideSameText(V_sub_Name, 'scale') then begin
             // scale
             if (pData^.kml_data.current_tag = kml_LabelStyle) then begin
-              if VSAGPS_Parse_Scale14(ASubNode, @(pData^.kml_data.fValues.tileSize), AFS) then begin
+              if VSAGPS_Parse_LabelScale(ASubNode, @(pData^.kml_data.fValues.tileSize), AFS) then begin
                 Include(pData^.kml_data.fAvail_params, kml_tileSize);
               end;
             end else begin

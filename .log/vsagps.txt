@@ -1,3 +1,9 @@
+commit d86e752fe0fc04c277e247a5c95bb7386fbcd819
+Author: zed <starmen@tut.by>
+Date:   2021-08-24 11:45:12 +0300
+
+    3779: Дефолтный размер шрифта в SAS 11-й
+
 commit 8febd10d92a956cc8d181cfbb7d1c8b31eb5b89b
 Author: zed <starmen@tut.by>
 Date:   2019-05-11 00:18:52 +0300

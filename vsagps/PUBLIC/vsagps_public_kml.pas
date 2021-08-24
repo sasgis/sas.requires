@@ -197,7 +197,7 @@ type
     //south: Double; // 37.46543388598137 for LatLonBox
     tessellate: Byte; // 0 or 1
     textColor: DWORD; // ff000000 for BalloonStyle // for <LabelStyle><color>
-    tileSize: DWORD; // for ImagePyramid  // for <LabelStyle><scale> (double*14)
+    tileSize: DWORD; // for ImagePyramid  // for <LabelStyle><scale> (double*11)
     //tilt: Double; // 65.74454495876547
     //topFov: Double; // for ViewVolume
     visibility: Byte; // 0 or 1
