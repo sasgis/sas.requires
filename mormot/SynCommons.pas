@@ -522,6 +522,30 @@ type
 
 { ************ fast UTF-8 / Unicode / Ansi types and conversion routines **** }
 
+// some constants used for UTF-8 conversion, including surrogates
+const
+  UTF16_HISURROGATE_MIN = $d800;
+  UTF16_HISURROGATE_MAX = $dbff;
+  UTF16_LOSURROGATE_MIN = $dc00;
+  UTF16_LOSURROGATE_MAX = $dfff;
+  UTF8_EXTRABYTES: array[$80..$ff] of byte = (
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,0,0);
+  UTF8_EXTRA: array[0..6] of record
+    offset, minimum: cardinal;
+  end = ( // http://floodyberry.wordpress.com/2007/04/14/utf-8-conversion-tricks
+    (offset: $00000000;  minimum: $00010000),
+    (offset: $00003080;  minimum: $00000080),
+    (offset: $000e2080;  minimum: $00000800),
+    (offset: $03c82080;  minimum: $00010000),
+    (offset: $fa082080;  minimum: $00200000),
+    (offset: $82082080;  minimum: $04000000),
+    (offset: $00000000;  minimum: $04000000));
+  UTF8_EXTRA_SURROGATE = 3;
+  UTF8_FIRSTBYTE: array[2..6] of byte = ($c0,$e0,$f0,$f8,$fc);
+
 type
   /// kind of adding in a TTextWriter
   TTextWriterKind = (twNone, twJSONEscape, twOnSameLine);
@@ -1139,18 +1163,6 @@ function UTF8ToWideChar(dest: PWideChar; source: PUTF8Char;
 // - count may not match the UCS4 glyphs number, in case of UTF-16 surrogates
 // - faster than System.UTF8ToUnicode with dest=nil
 function Utf8ToUnicodeLength(source: PUTF8Char): PtrUInt;
-
-/// returns TRUE if the supplied buffer has valid UTF-8 encoding
-// - will stop when the buffer contains #0
-function IsValidUTF8(source: PUTF8Char): Boolean; overload;
-
-/// returns TRUE if the supplied buffer has valid UTF-8 encoding
-// - will also refuse #0 characters within the buffer
-function IsValidUTF8(source: PUTF8Char; sourcelen: PtrInt): Boolean; overload;
-
-/// returns TRUE if the supplied buffer has valid UTF-8 encoding
-// - will also refuse #0 characters within the buffer
-function IsValidUTF8(const source: RawUTF8): Boolean; overload;
 
 /// returns TRUE if the supplied buffer has valid UTF-8 encoding with no #1..#31
 // control characters
@@ -12078,27 +12090,30 @@ type
   /// the potential features, retrieved from an Intel CPU
   // - see https://en.wikipedia.org/wiki/CPUID#EAX.3D1:_Processor_Info_and_Feature_Bits
   // - is defined on all platforms, since an ARM desktop could browse Intel logs
-  TIntelCpuFeature =
-   ( { CPUID 1 in EDX }
-   cfFPU, cfVME, cfDE, cfPSE, cfTSC, cfMSR, cfPAE, cfMCE,
-   cfCX8, cfAPIC, cf_d10, cfSEP, cfMTRR, cfPGE, cfMCA, cfCMOV,
-   cfPAT, cfPSE36, cfPSN, cfCLFSH, cf_d20, cfDS, cfACPI, cfMMX,
-   cfFXSR, cfSSE, cfSSE2, cfSS, cfHTT, cfTM, cfIA64, cfPBE,
+  TIntelCpuFeature = (
+   { CPUID 1 in EDX }
+   cfFPU,  cfVME,   cfDE,   cfPSE,   cfTSC,  cfMSR, cfPAE,  cfMCE,
+   cfCX8,  cfAPIC,  cf_d10, cfSEP,   cfMTRR, cfPGE, cfMCA,  cfCMOV,
+   cfPAT,  cfPSE36, cfPSN,  cfCLFSH, cf_d20, cfDS,  cfACPI, cfMMX,
+   cfFXSR, cfSSE,   cfSSE2, cfSS,    cfHTT,  cfTM,  cfIA64, cfPBE,
    { CPUID 1 in ECX }
-   cfSSE3, cfCLMUL, cfDS64, cfMON, cfDSCPL, cfVMX, cfSMX, cfEST,
-   cfTM2, cfSSSE3, cfCID, cfSDBG, cfFMA, cfCX16, cfXTPR, cfPDCM,
-   cf_c16, cfPCID, cfDCA, cfSSE41, cfSSE42, cfX2A, cfMOVBE, cfPOPCNT,
-   cfTSC2, cfAESNI, cfXS, cfOSXS, cfAVX, cfF16C, cfRAND, cfHYP,
-   { extended features CPUID 7 in EBX, ECX, DL }
-   cfFSGS, cf_b01, cfSGX, cfBMI1, cfHLE, cfAVX2, cf_b06, cfSMEP,
-   cfBMI2, cfERMS, cfINVPCID, cfRTM, cfPQM, cf_b13, cfMPX, cfPQE,
+   cfSSE3, cfCLMUL, cfDS64, cfMON,   cfDSCPL, cfVMX,  cfSMX,   cfEST,
+   cfTM2,  cfSSSE3, cfCID,  cfSDBG,  cfFMA,   cfCX16, cfXTPR,  cfPDCM,
+   cf_c16, cfPCID,  cfDCA,  cfSSE41, cfSSE42, cfX2A,  cfMOVBE, cfPOPCNT,
+   cfTSC2, cfAESNI, cfXS,   cfOSXS,  cfAVX,   cfF16C, cfRAND,  cfHYP,
+   { extended features CPUID 7 in EBX, ECX, EDX }
+   cfFSGS, cfTSCADJ, cfSGX,     cfBMI1,  cfHLE, cfAVX2, cfFDPEO, cfSMEP,
+   cfBMI2, cfERMS,   cfINVPCID, cfRTM,   cfPQM, cf_b13, cfMPX,   cfPQE,
    cfAVX512F, cfAVX512DQ, cfRDSEED, cfADX, cfSMAP, cfAVX512IFMA, cfPCOMMIT, cfCLFLUSH,
-   cfCLWB, cfIPT, cfAVX512PF, cfAVX512ER, cfAVX512CD, cfSHA, cfAVX512BW, cfAVX512VL,
-   cfPREFW1, cfAVX512VBMI, cfUMIP, cfPKU, cfOSPKE, cf_c05, cfAVX512VBMI2, cf_c07,
+   cfCLWB,  cfIPT, cfAVX512PF, cfAVX512ER, cfAVX512CD, cfSHA, cfAVX512BW, cfAVX512VL,
+   cfPREFW1, cfAVX512VBMI, cfUMIP, cfPKU, cfOSPKE, cf_c05, cfAVX512VBMI2, cfCETSS,
    cfGFNI, cfVAES, cfVCLMUL, cfAVX512NNI, cfAVX512BITALG, cf_c13, cfAVX512VPC, cf_c15,
-   cf_cc16, cf_c17, cf_c18, cf_c19, cf_c20, cf_c21, cfRDPID, cf_c23,
-   cf_c24, cf_c25, cf_c26, cf_c27, cf_c28, cf_c29, cfSGXLC, cf_c31,
-   cf_d0, cf_d1, cfAVX512NNIW, cfAVX512MAS, cf_d4, cf_d5, cf_d6, cf_d7);
+   cfFLP, cf_c17, cf_c18, cf_c19, cf_c20, cf_c21, cfRDPID, cf_c23,
+   cf_c24, cfCLDEMOTE, cf_c26, cfMOVDIRI, cfMOVDIR64B, cfENQCMD, cfSGXLC, cfPKS,
+   cf_d0, cf_d1, cfAVX512NNIW, cfAVX512MAPS, cfFSRM, cf_d5, cf_d6, cf_d7,
+   cfAVX512VP2I, cfSRBDS, cfMDCLR, cf_d11, cf_d12, cfTSXFA, cfSER, cfHYBRID,
+   cfTSXLDTRK,   cf_d17,  cfPCFG,  cfLBR,  cfIBT,  cf_d21,  cfAMXBF16, cf_d23,
+   cfAMXTILE, cfAMXINT8, cfIBRSPB, cfSTIBP, cfL1DFL, cfARCAB, cfCORCAB, cfSSBD);
 
   /// all features, as retrieved from an Intel CPU
   TIntelCpuFeatures = set of TIntelCpuFeature;
@@ -13705,7 +13720,7 @@ type
   {$ifdef FPC} // FPC already use heap instead of GlobalAlloc()
   THeapMemoryStream = TMemoryStream;
   {$else}
-  {$ifdef MSWINDOWS}
+  {$ifndef UNICODE} // old Delphi used GlobalAlloc()
   THeapMemoryStream = class(TMemoryStream)
   protected
     function Realloc(var NewCapacity: longint): Pointer; override;
@@ -16930,30 +16945,6 @@ var
   // internal list of TSynAnsiConvert instances
   SynAnsiConvertList: TSynObjectList = nil;
 
-// some constants used for UTF-8 conversion, including surrogates
-const
-  UTF16_HISURROGATE_MIN = $d800;
-  UTF16_HISURROGATE_MAX = $dbff;
-  UTF16_LOSURROGATE_MIN = $dc00;
-  UTF16_LOSURROGATE_MAX = $dfff;
-  UTF8_EXTRABYTES: array[$80..$ff] of byte = (
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,0,0);
-  UTF8_EXTRA: array[0..6] of record
-    offset, minimum: cardinal;
-  end = ( // http://floodyberry.wordpress.com/2007/04/14/utf-8-conversion-tricks
-    (offset: $00000000;  minimum: $00010000),
-    (offset: $00003080;  minimum: $00000080),
-    (offset: $000e2080;  minimum: $00000800),
-    (offset: $03c82080;  minimum: $00010000),
-    (offset: $fa082080;  minimum: $00200000),
-    (offset: $82082080;  minimum: $04000000),
-    (offset: $00000000;  minimum: $04000000));
-  UTF8_EXTRA_SURROGATE = 3;
-  UTF8_FIRSTBYTE: array[2..6] of byte = ($c0,$e0,$f0,$f8,$fc);
-
 {$ifdef HASINLINE}
 {$ifdef USE_VTYPE_STATIC} // circumvent weird bug on BSD + ARM (Alfred)
 procedure VarClear(var v: variant); // defined here for proper inlining
@@ -18424,56 +18415,6 @@ Quit:
 NoSource:
   if not NoTrailingZero then
     dest^ := #0; // always append a WideChar(0) to the end of the buffer
-end;
-
-function IsValidUTF8(source: PUTF8Char): Boolean;
-var extra, i: integer;
-    c: cardinal;
-begin
-  result := false;
-  if source<>nil then
-  repeat
-    c := byte(source^);
-    inc(source);
-    if c=0 then break else
-    if c and $80<>0 then begin
-      extra := UTF8_EXTRABYTES[c];
-      if extra=0 then exit else // invalid leading byte
-      for i := 1 to extra do
-        if byte(source^) and $c0<>$80 then
-          exit else
-          inc(source); // check valid UTF-8 content
-    end;
-  until false;
-  result := true;
-end;
-
-function IsValidUTF8(const source: RawUTF8): Boolean;
-begin
-  result := IsValidUTF8(pointer(Source),length(Source));
-end;
-
-function IsValidUTF8(source: PUTF8Char; sourcelen: PtrInt): Boolean;
-var extra, i: integer;
-    c: cardinal;
-begin
-  result := false;
-  inc(sourcelen,PtrInt(source));
-  if source<>nil then
-    while PtrInt(PtrUInt(source))<sourcelen do begin
-      c := byte(source^);
-      inc(source);
-      if c=0 then exit else
-      if c and $80<>0 then begin
-        extra := UTF8_EXTRABYTES[c];
-        if extra=0 then exit else // invalid leading byte
-        for i := 1 to extra do
-          if (PtrInt(PtrUInt(source))>=sourcelen) or (byte(source^) and $c0<>$80) then
-            exit else
-            inc(source); // check valid UTF-8 content
-      end;
-    end;
-  result := true;
 end;
 
 function IsValidUTF8WithoutControlChars(source: PUTF8Char): Boolean;
@@ -34761,7 +34702,7 @@ procedure CSVToRawUTF8DynArray(const CSV,Sep,SepEnd: RawUTF8; var Result: TRawUT
 var offs,i: integer;
 begin
   offs := 1;
-  while offs<length(CSV) do begin
+  while offs<=length(CSV) do begin
     SetLength(Result,length(Result)+1);
     i := PosEx(Sep,CSV,offs);
     if i=0 then begin
@@ -41108,7 +41049,7 @@ end;
 
 {$ifndef LVCL}
 {$ifndef FPC}
-{$ifdef MSWINDOWS}
+{$ifndef UNICODE}
 
 const
   MemoryDelta = $8000; // 32 KB granularity (must be a power of 2)
@@ -41145,7 +41086,7 @@ begin
   end;
 end;
 
-{$endif MSWINDOWS}
+{$endif UNICODE}
 {$endif FPC}
 {$endif LVCL}
 
@@ -59283,7 +59224,7 @@ begin
     {$elseif defined(VER320)}'Delphi 10.2 Tokyo'
     {$elseif defined(VER330)}'Delphi 10.3 Rio'
     {$elseif defined(VER340)}'Delphi 10.4 Sydney'
-    {$elseif defined(VER350)}'Delphi 10.5 Next'
+    {$elseif defined(VER350)}'Delphi 11 Next'
     {$ifend}
   {$endif CONDITIONALEXPRESSIONS}
 {$endif FPC}
@@ -62872,7 +62813,7 @@ begin
   GetCPUID(7,regs);
   PIntegerArray(@CpuFeatures)^[2] := regs.ebx;
   PIntegerArray(@CpuFeatures)^[3] := regs.ecx;
-  PByte(@PIntegerArray(@CpuFeatures)^[4])^ := regs.edx;
+  PIntegerArray(@CpuFeatures)^[4] := regs.edx;
   {$ifdef DISABLE_SSE42} // paranoid execution on Darwin x64 (as reported by alf)
   CpuFeatures := CpuFeatures-[cfSSE42,cfAESNI];
   {$endif DISABLE_SSE42}

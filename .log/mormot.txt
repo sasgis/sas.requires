@@ -1,3 +1,115 @@
+commit 526170d93294d801a5ae59088ec0ca959036de7c
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-08-19 08:12:02 +0200
+
+    fixed CsvToRawUtf8DynArray()
+    - thanks Eugene for the feedback!
+
+commit a6092f891c772bb86dc2725123ddb3efc1023268
+Merge: e35b6716 353414a7
+Author: ab <webcontact01@synopse.info>
+Date:   2021-08-13 11:03:23 +0200
+
+    Merge pull request #401 from synopse/fix/ZipAddFromZip
+    
+    use storedName from original ZipEntry instead ob zipName
+
+commit 353414a709ded50750a5ad607f33771bcb5e0891
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2021-08-13 11:43:11 +0300
+
+    use storedName from original ZipEntry instead ob zipName where directory separators are replaced to \
+
+commit e35b6716560a98351c7541210b63b7251ed9aefa
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-08-08 08:39:53 +0200
+
+    fixed Android compilation
+
+commit 41322b3dd01a6cd81b81bd7b8e971a63469bcae2
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-07-31 16:41:30 +0200
+
+    Haswell CPUs will use simdjson AVX2 asm for IsValidUtf8()
+    - backport from mORMot 2
+    - as proposed by https://github.com/synopse/mORMot/pull/400
+
+commit 2796794a1e51a90b5eb9e51f8cdffbedc8c0f837
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-07-24 14:06:36 +0200
+
+    introducing TTestLowLevelTypes.JSONBenchmark
+
+commit 935e9cc4143567a3e641aad482a737abebfd9f4b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-07-24 14:04:20 +0200
+
+    some documentation fixes
+
+commit a990da395c8b9bcd64617917689b96ae79b79fda
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-07-20 21:16:23 +0200
+
+    added missing file
+
+commit dd526cac2941d93348c6ad49950450f650f02e9b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-07-20 21:16:04 +0200
+
+    we were officially announced that the next Delphi revision is 11 not 10.5 :)
+
+commit dcb1b8819b4eb32cb19aa834edb16cbe023cbf32
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-07-05 16:42:00 +0200
+
+    ensure CpuFeatures includes all known CPUID flags
+
+commit 29be1ae547935785ecebaa9bd3a003768be9b847
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-07-05 14:42:01 +0200
+
+    properly fix https://github.com/synopse/mORMot/pull/399
+
+commit a7efa6cd87ef18e83ff9d2bc3be71ee7ccc84df6
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-07-05 13:42:44 +0200
+
+    some fixes
+
+commit 5702aabc0118dd985f938605948d5c28e9ffec66
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-07-05 13:39:17 +0200
+
+    don't overwrite THeapMemoryStream on newest Delphi editions which already use the heap
+
+commit 634e95fc11062643f83a78f04ec4d54a9608d6b2
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-07-05 13:21:07 +0200
+
+    let TZipWriteAbstract.AddFromZip properly use source TZipRead information
+
+commit 2b96fca9001c5a38a6193f13b5e7bc63ecf87690
+Merge: 7023fdb7 5419db97
+Author: ab <webcontact01@synopse.info>
+Date:   2021-06-19 11:49:07 +0200
+
+    Merge pull request #104 from yonojoy/master
+    
+    support for XE4 for third-party SynTaskDialog4Lazarus
+
+commit 7023fdb77a053aabf7a7dde95ef99fc3f8ff9774
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-06-19 10:52:55 +0200
+
+    micro-ecc is the current name of our ECC reference library
+    - fix for https://github.com/synopse/mORMot/issues/398
+
+commit fc28548e1267930a1fd5fbfbe0df1ec89edd6b9d
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-06-17 17:10:42 +0200
+
+    enhance TIntelCpuFeature with latest CPUID flags
+
 commit f00c5cab00f7ea9e20d5dfa0b8299e89166d88f1
 Author: Arnaud Bouchez <ab@synopse.info>
 Date:   2021-06-06 17:58:30 +0200
@@ -15806,6 +15918,12 @@ Author: Arnaud Bouchez <fakeaddress@synopse.info>
 Date:   2018-04-05 16:35:00 +0200
 
     circumvent random GPF at TWebSocketProcessClientThread ending
+
+commit 5419db974abdcaa975b10cac0cd3adff610e6bda
+Author: yonojoy <yonojoy@gmail.com>
+Date:   2018-04-05 11:33:55 +0200
+
+    Support for XE4 for SynTaskDialog4Lazarus
 
 commit f4488498e36b518eec570df388421a090abc4477
 Author: Arnaud Bouchez <fakeaddress@synopse.info>
