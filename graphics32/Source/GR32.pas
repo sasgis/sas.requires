@@ -661,6 +661,8 @@ type
   TCustomBackend = class;
   TCustomBackendClass = class of TCustomBackend;
 
+  { TCustomBitmap32 }
+
   TCustomBitmap32 = class(TCustomMap)
   private
     FBackend: TCustomBackend;
@@ -712,6 +714,9 @@ type
     procedure SetPenPos(const Value: TPoint);
     function GetPenPosF: TFixedPoint;
     procedure SetPenPosF(const Value: TFixedPoint);
+{$IFDEF RGBA_FORMAT}
+    procedure SwapRB;
+{$ENDIF}
   protected
     WrapProcHorz: TWrapProcEx;
     WrapProcVert: TWrapProcEx;
@@ -2678,16 +2683,29 @@ procedure TCustomBitmap32.Assign(Source: TPersistent);
     Canvas: TCanvas;
     DeviceContextSupport: IDeviceContextSupport;
     CanvasSupport: ICanvasSupport;
+    InteroperabilitySupport: IInteroperabilitySupport;
   begin
     if not Assigned(SrcGraphic) then
       Exit;
-    RequireBackendSupport(TargetBitmap, [IDeviceContextSupport, ICanvasSupport], romOr, True, SavedBackend);
+    RequireBackendSupport(TargetBitmap, [IDeviceContextSupport, ICanvasSupport,
+      IInteroperabilitySupport], romOr, True, SavedBackend);
     try
       TargetBitmap.SetSize(SrcGraphic.Width, SrcGraphic.Height);
       if TargetBitmap.Empty then Exit;
 
       TargetBitmap.Clear(FillColor);
 
+      if Supports(TargetBitmap.Backend, IInteroperabilitySupport, InteroperabilitySupport) then
+      begin
+        InteroperabilitySupport.CopyFrom(SrcGraphic);
+        InteroperabilitySupport := nil;
+      end else
+      if Supports(TargetBitmap.Backend, ICanvasSupport, CanvasSupport) then
+      begin
+        TGraphicAccess(SrcGraphic).Draw(CanvasSupport.Canvas,
+          MakeRect(0, 0, TargetBitmap.Width, TargetBitmap.Height));
+        CanvasSupport := nil;
+      end else
       if Supports(TargetBitmap.Backend, IDeviceContextSupport, DeviceContextSupport) then
       begin
         Canvas := TCanvas.Create;
@@ -2705,12 +2723,6 @@ procedure TCustomBitmap32.Assign(Source: TPersistent);
           Canvas.Free;
         end;
         DeviceContextSupport := nil;
-      end else
-      if Supports(TargetBitmap.Backend, ICanvasSupport, CanvasSupport) then
-      begin
-        TGraphicAccess(SrcGraphic).Draw(CanvasSupport.Canvas,
-          MakeRect(0, 0, TargetBitmap.Width, TargetBitmap.Height));
-        CanvasSupport := nil;
       end else
         raise Exception.Create(RCStrInpropriateBackend);
 
@@ -2923,6 +2935,21 @@ procedure TCustomBitmap32.SetPenPosF(const Value: TFixedPoint);
 begin
   MoveTo(Value.X, Value.Y);
 end;
+
+{$IFDEF RGBA_FORMAT}
+procedure TCustomBitmap32.SwapRB;
+var
+  Index : Integer;
+  Temp: Byte;
+begin
+  for Index := 0 to FHeight * FWidth - 1 do
+  begin
+    Temp := TColor32Entry(FBits[Index]).R;
+    TColor32Entry(FBits[Index]).R := TColor32Entry(FBits[Index]).B;
+    TColor32Entry(FBits[Index]).B := Temp;
+  end;
+end;
+{$ENDIF}
 
 procedure TCustomBitmap32.SetPixel(X, Y: Integer; Value: TColor32);
 begin
@@ -5756,8 +5783,8 @@ begin
   if (BitmapHeader.InfoHeader.biCompression <> BI_RGB) and (BitmapHeader.InfoHeader.biCompression <> BI_BITFIELDS) then
     exit;
 
-  // We only support 32-bit bitmaps
-  if (BitmapHeader.InfoHeader.biBitCount <> 32 ) then
+  // We only support 24-bit and 32-bit bitmaps
+  if not (BitmapHeader.InfoHeader.biBitCount in [24, 32]) then
     exit;
 
   // Planes must be 1
@@ -5771,6 +5798,9 @@ begin
   // Validate compression and fetch RGBA masks
   if (BitmapHeader.InfoHeader.biCompression = BI_BITFIELDS) then
   begin
+    // reject invalid 24-bit bitfields
+    if BitmapHeader.InfoHeader.biBitCount = 24 then
+      exit;
 
     // For version > v1 the RGB color mask is part of the header so it has already
     // been read as part of the header. For version = v1 it is stored just after
@@ -5839,7 +5869,8 @@ begin
   end;
 
   // Make sure there's enough data left for the pixels
-  Dec(Size, BitmapHeader.InfoHeader.biWidth * Abs(BitmapHeader.InfoHeader.biHeight) * SizeOf(DWORD));
+  with BitmapHeader.InfoHeader do
+    Dec(Size, biWidth * Abs(biHeight) * biBitCount shr 3);
   if (Size < 0) then
     exit;
 
@@ -5851,23 +5882,51 @@ begin
     // Check whether the bitmap is saved top-down or bottom-up:
     // - Negavive height: top-down
     // - Positive height: bottom-up
-    if (BitmapHeader.InfoHeader.biHeight > 0) then
-    begin
-      // Bitmap is stored bottom-up: Read one row at a time
-      ChunkSize := Width * SizeOf(DWORD);
-      for i := Height - 1 downto 0 do
-        Stream.ReadBuffer(Scanline[i]^, ChunkSize);
-    end
-    else
-      // Bitmap is stored top-down: Read all rows in one go
-      Stream.ReadBuffer(Bits^, Width * Height * SizeOf(DWORD));
+    case BitmapHeader.InfoHeader.biBitCount of
+      24:
+        if (BitmapHeader.InfoHeader.biHeight > 0) then
+        begin
+          // Bitmap is stored bottom-up: Read one row at a time
+          // ChunkSize := Width * BitmapHeader.InfoHeader.biBitCount shr 3;
+          for i := Height - 1 downto 0 do
+            for j := 0 to Width - 1 do
+            begin
+              // read RGB data and reset alpha
+              Stream.ReadBuffer(Scanline[i]^[j], 3);
+              TColor32Entry(Scanline[i]^[j]).A := $FF;
+            end;
+        end
+        else
+        begin
+          // Bitmap is stored top-down: Read one row at a time
+          // ChunkSize := Width * BitmapHeader.InfoHeader.biBitCount shr 3;
+          for i := 0 to Height - 1 do
+            for j := 0 to Width - 1 do
+            begin
+              // read RGB data and reset alpha
+              Stream.ReadBuffer(Scanline[i]^[j], 3);
+              TColor32Entry(Scanline[i]^[j]).A := $FF;
+            end;
+        end;
+      32:
+        if (BitmapHeader.InfoHeader.biHeight > 0) then
+        begin
+          // Bitmap is stored bottom-up: Read one row at a time
+          ChunkSize := Width * BitmapHeader.InfoHeader.biBitCount shr 3;
+          for i := Height - 1 downto 0 do
+            Stream.ReadBuffer(Scanline[i]^, ChunkSize);
+        end
+        else
+          // Bitmap is stored top-down: Read all rows in one go
+          Stream.ReadBuffer(Bits^, Width * Height * SizeOf(DWORD))
+    end;
 
     if (InfoHeaderVersion < InfoHeaderVersion3) then
       EnsureAlpha;
 
 {$IFDEF RGBA_FORMAT}
-    // TODO : Swap R and B channels
-    // We can't use ColorSwap since it resets the A channel
+    // swap R and B channels
+    SwapRB;
 {$ENDIF RGBA_FORMAT}
   end else
   begin
@@ -5935,11 +5994,11 @@ end;
 procedure TCustomBitmap32.LoadFromStream(Stream: TStream);
 var
   SavePos: Int64;
-{$ifdef COMPILERRX2_UP}
+{$ifdef LOADFROMSTREAM}
   P: TPicture;
-{$else COMPILERRX2_UP}
+{$else LOADFROMSTREAM}
   B: TBitmap;
-{$endif COMPILERRX2_UP}
+{$endif LOADFROMSTREAM}
 begin
   SavePos := Stream.Position;
 
@@ -5947,9 +6006,10 @@ begin
   begin
     Stream.Position := SavePos;
 
-{$ifdef COMPILERRX2_UP}
+{$ifdef LOADFROMSTREAM}
 
-    // TPicture.LoadFromStream requires TGraphic.CanLoadFromStream. Introduced in Delphi 10.2
+    // TPicture.LoadFromStream requires TGraphic.CanLoadFromStream.
+    // Introduced in Delphi 10.2 and present in FPC as well
     // See issue #145
     P := TPicture.Create;
     try
@@ -5959,7 +6019,7 @@ begin
       P.Free;
     end;
 
-{$else COMPILERRX2_UP}
+{$else LOADFROMSTREAM}
 
     // Fallback to TBitmap for Delphi 10.1 and older
     B := TBitmap.Create;
@@ -5970,7 +6030,7 @@ begin
       B.Free;
     end;
 
-{$endif COMPILERRX2_UP}
+{$endif LOADFROMSTREAM}
   end;
 
   Changed;
@@ -6038,18 +6098,18 @@ end;
 procedure TCustomBitmap32.LoadFromFile(const FileName: string);
 var
   FileStream: TFileStream;
-{$ifndef COMPILERRX2_UP}
+{$ifndef LOADFROMSTREAM}
   P: TPicture;
-{$endif COMPILERRX2_UP}
+{$endif LOADFROMSTREAM}
 begin
   FileStream := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
   try
 
-{$ifdef COMPILERRX2_UP}
+{$ifdef LOADFROMSTREAM}
 
     LoadFromStream(FileStream);
 
-{$else COMPILERRX2_UP}
+{$else LOADFROMSTREAM}
 
     if (LoadFromBMPStream(FileStream, FileStream.Size)) then
     begin
@@ -6057,13 +6117,13 @@ begin
       exit;
     end;
 
-{$endif COMPILERRX2_UP}
+{$endif LOADFROMSTREAM}
 
   finally
     FileStream.Free;
   end;
 
-{$ifndef COMPILERRX2_UP}
+{$ifndef LOADFROMSTREAM}
   // Fallback to determing file format based on file type for Delphi 10.1. and older
   // See issue #145
   P := TPicture.Create;
@@ -6073,7 +6133,7 @@ begin
   finally
     P.Free;
   end;
-{$endif COMPILERRX2_UP}
+{$endif LOADFROMSTREAM}
 end;
 
 procedure TCustomBitmap32.SaveToFile(const FileName: string; SaveTopDown: Boolean = False);
@@ -6966,7 +7026,7 @@ begin
     lfCharSet := Byte(Font.Charset);
 
     if AnsiCompareText(Font.Name, 'Default') = 0 then  // do not localize
-      StrPLCopy(lfFaceName, DefFontData.Name, LF_FACESIZE-1)
+      StrPLCopy(lfFaceName, string(DefFontData.Name), LF_FACESIZE-1)
     else
       StrPLCopy(lfFaceName, Font.Name, LF_FACESIZE-1);
 

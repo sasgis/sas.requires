@@ -1,3 +1,271 @@
+commit 5f8ea4f2cb11a6eb158728bbeba6e2a982b6f2d2
+Merge: 14885a44 a3d658e4
+Author: zed <starmen@tut.by>
+Date:   2021-08-24 12:01:04 +0300
+
+    Merge branch 'master' into sasgis
+
+commit a3d658e4b4aa9417f7d9c73018c66626f6d23497
+Merge: 85d5b965 f3b915ee
+Author: Anders Melander <github@melander.dk>
+Date:   2021-07-24 22:56:07 +0200
+
+    Merge pull request #167 from mWaltari/master
+    
+    Fixed couple of Compiler hints
+
+commit f3b915eecbbf708e32f9f3be86a2c242db6490d7
+Author: Tommi Prami <tommi.prami@suonentieto.fi>
+Date:   2021-07-22 08:50:43 +0300
+
+    Debug code was leaking into the Release build
+
+commit bffa0b17643a767f63a28597d516bacf6ee8fb9a
+Author: Tommi Prami <tommi.prami@suonentieto.fi>
+Date:   2021-07-22 08:50:24 +0300
+
+    Commented out unused variable
+
+commit 512ffce116de66504b8f1358b8bc401d586f2544
+Author: Tommi Prami <tommi.prami@suonentieto.fi>
+Date:   2021-07-22 08:50:11 +0300
+
+    Fixed compiler warning about noninitialized function return value
+    
+    This might give hint on other compiler versions tough. There has been inconsistency about these. I used 10.4.2
+
+commit 73f9861c2b9c932e16d2f2e50ae2c5ae78c6a304
+Author: Tommi Prami <tommi.prami@suonentieto.fi>
+Date:   2021-07-22 08:48:38 +0300
+
+    Compiler hints
+    
+    - SwapRB was outside of define it's used in
+     - Commented out unused ChunkSize := Width *... Calculations
+
+commit 85d5b96532571a358e421d35fbe4b59cc8351aba
+Author: CWBudde <Christian@pcjv.de>
+Date:   2021-07-02 15:24:35 +0200
+
+    ... again ...
+
+commit d774ed7fa57f306ed160e7245a7275746a84ec9a
+Author: CWBudde <Christian@pcjv.de>
+Date:   2021-07-02 15:21:55 +0200
+
+    Added a special direct copy for TFPImageBitmap files (JPEG, PNG, ...) based on the new interoperability interface
+
+commit 0ef54f60026e2ee7f72b9b67dd05981227c13262
+Author: CWBudde <Christian@pcjv.de>
+Date:   2021-07-02 14:17:04 +0200
+
+    ... when will I ever learn how to use git on Ubuntu properly ...
+
+commit df6b183531ac1084871d7c5c427cb9c74ead0e44
+Author: CWBudde <Christian@pcjv.de>
+Date:   2021-07-02 14:16:02 +0200
+
+    Streamlined GTK backend again (after merge failure)
+
+commit 7906f2615f0008d67c1a5219010cc483a0d74613
+Merge: e9bc841e 9f5f2e70
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-07-02 14:05:10 +0200
+
+    Merged LCL Gtk backend
+
+commit e9bc841e266136b6ed2b5586d63a80008b632116
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-07-02 13:09:43 +0200
+
+    Introduced a new backend interface (not implemented and tested everywhere so far, but it is used where tested and where it works). More to come later...
+
+commit 9f5f2e70e8b55a14834e54b5fa685022f418803a
+Author: CWBudde <Christian@pcjv.de>
+Date:   2021-07-02 11:35:41 +0200
+
+    streamlined linux GTK backend implementation
+
+commit 50dba43de454386ea154a37b29c4302228cc102c
+Merge: 11ccc095 e27b5a39
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-07-02 00:21:50 +0200
+
+    Merge branch 'master' of https://github.com/graphics32/graphics32
+
+commit 11ccc095a3a7047ebaa1210d5a25ed66a104c8ef
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-07-02 00:21:28 +0200
+
+    Added alpha handling for 24 bit Bitmaps, and a sanity check to ensure 24 bit bitfields are invalid
+
+commit e27b5a39bbc3b59e0b67c6df1561440abd36f24b
+Author: CWBudde <Christian@pcjv.de>
+Date:   2021-07-01 16:44:43 +0200
+
+    Fixed minor typos
+
+commit 37ed46a3b74bbf0432ec3b52f126b73169cfa7e8
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-07-01 16:34:53 +0200
+
+    Updated GTK backend
+
+commit 095b957ecdcd31c3c3fc095e418a0f1c7139dcfd
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-07-01 14:50:52 +0200
+
+    Fixed auto-"corrected" code from Lazarus
+
+commit 6ac9b9055ad439eb34eccd81a703b72478776ca6
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-07-01 14:47:06 +0200
+
+    Fixed missing color swap implementation
+
+commit 3afaa07e51c4287ac0b287d236294dc2241ece45
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-07-01 13:52:06 +0200
+
+    Native support for 24-bit bitmaps (avoids TPicture fallback)
+
+commit 8cd1fd98eb32a4daa4325e737a05501992b67680
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-07-01 13:11:13 +0200
+
+    LoadFromStream is supported in Lazarus as well
+
+commit f379ff7f7be686365b1207bf2aed32687f98d8ed
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-30 11:28:53 +0200
+
+    Fixed PixelF example for Lazarus
+
+commit 97cfcf09dddef0ae61f05e8b8bf437d0063c7796
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-30 11:25:14 +0200
+
+    Fixed NestedSampling example for Lazarus
+
+commit c04bc2c2a7401102e9c3d3da2606f4a8f1a88d1c
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 19:44:03 +0200
+
+    Removed unnecessary dependency
+
+commit 24361d4e48579d89f1b00afb72067d4b322dc1a7
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 18:29:40 +0200
+
+    Fixed compilation with Lazarus
+
+commit e0d5cb8a82250d0fa3efeab570462d13948273ff
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 18:19:12 +0200
+
+    Added a few hints for the FPC compiler. This is necessary so that the compiler doesn't try to load the value as integer and convert it right away to floating point. Performance wise it's not an issue, but eventually there will be an out of range error
+
+commit e683bbdc0ee5068b96cd51186cb603195fec9a7d
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 18:16:18 +0200
+
+    Added a few comments for easier debugging in the future (especially for #163 and #53)
+
+commit f287a796853300028c5d8fae9e51d144310e83ed
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 15:03:51 +0200
+
+    Fixed mesh gradient example
+
+commit 298ed957ee909681e16e95cd45f69620ca3b0737
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 12:04:40 +0200
+
+    Added a missing unit for Lazarus
+
+commit 9775428abfea4be30a6633189c1d2c5c7659abf3
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 11:58:17 +0200
+
+    Refactored the FPC only code to GR32_Math_FPC unit as suggested in #155
+
+commit 811227914b47c79cd86c150f7a4de0bbd53d366d
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 11:50:55 +0200
+
+    Added a few missing units for Lazarus
+
+commit db16552ad8aa254fe8451479aa68c991da8b125a
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 11:49:53 +0200
+
+    Added Lazarus project group similar to the one present in Delphi
+
+commit 9839b0858b1b92f580f89046328e832ecbc27ae3
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 02:07:19 +0200
+
+    Fixed Lazarus blur example
+
+commit 5c9113f08426a51827054a0c3c49e3a89873a4a2
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 01:37:00 +0200
+
+    More FPC/Lazarus
+
+commit 14059bbf16c7d0d11914f547ee541bea1962114f
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-29 00:57:21 +0200
+
+    Some more Lazarus adaptions. The native x64 code is still not fully working, but at least it compiles...
+
+commit 31123ed1cdc3287792f47b1d07606500fa0c4f5a
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-28 18:58:27 +0200
+
+    FPC improvements
+
+commit 6d2026e5f5b6a295fdbdc47792c23f77af05632f
+Merge: 1c45ac85 50b32cf7
+Author: CWBudde <Christian@pcjv.de>
+Date:   2021-06-28 16:01:35 +0200
+
+    Merge branch 'master' of https://github.com/graphics32/graphics32
+
+commit 50b32cf7e71394828438dd8f7ef6390e64faf6e2
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-06-28 15:49:56 +0200
+
+    Fixes #162
+    TCustomLayer.Tag property changed from Integer to NativeInt
+
+commit 1c45ac85d0c25496db76690b81c7d773d148f53a
+Author: CWBudde <Christian@pcjv.de>
+Date:   2021-06-28 15:41:15 +0200
+
+    More cleanup and FPC fixes
+
+commit c506bccb31b6ae2e8c4c31300a4a1c5b20c1674b
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-28 15:03:43 +0200
+
+    Include file cleanup
+
+commit ebf64818412e06bdd09aaf1c54760177b6a577cf
+Merge: cd214fe2 b6c86a5e
+Author: Anders Melander <github@melander.dk>
+Date:   2021-06-13 22:59:49 +0200
+
+    Merge pull request #160 from pnxtm/patch-1
+    
+    Fixed page address
+
+commit b6c86a5e801679a3b29e71c7fc393c01784ffdae
+Author: SAM <mousavy.system2005@gmail.com>
+Date:   2021-06-13 22:53:47 +0430
+
+    Fix page address
+
 commit 14885a449efc4038e87b6839561d09b6777bd58b
 Merge: 72893b08 cd214fe2
 Author: zed <starmen@tut.by>

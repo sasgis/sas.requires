@@ -814,7 +814,7 @@ end;
 {$IFNDEF OMIT_SSE2}
 
 {$IFNDEF PUREPASCAL}
-function Linear3PointInterpolation_SSE2(A, B, C: TColor32; WA, WB, WC: Single): TColor32; {$IFDEF FPC}assembler;{$ENDIF}
+function Linear3PointInterpolation_SSE2(A, B, C: TColor32; WA, WB, WC: Single): TColor32; {$IFDEF FPC}assembler; {$ENDIF}
 asm
 {$IFDEF TARGET_X86}
         PXOR      XMM3,XMM3
@@ -854,9 +854,18 @@ asm
 {$IFDEF TARGET_X64}
         MOVQ      XMM0,XMM3
         SHUFPS    XMM0,XMM0,0
+
+{$IFDEF FPC}
+        MOVD      XMM1,[RBP + $30]
+{$ELSE}
         MOVD      XMM1,WB
+{$ENDIF}
         SHUFPS    XMM1,XMM1,0
+{$IFDEF FPC}
+        MOVD      XMM2,[RBP + $38]
+{$ELSE}
         MOVD      XMM2,WC
+{$ENDIF}
         SHUFPS    XMM2,XMM2,0
 
         PXOR      XMM3,XMM3
@@ -885,7 +894,7 @@ asm
 {$ENDIF}
 end;
 
-function Linear4PointInterpolation_SSE2(A, B, C, D: TColor32; WA, WB, WC, WD: Single): TColor32;
+function Linear4PointInterpolation_SSE2(A, B, C, D: TColor32; WA, WB, WC, WD: Single): TColor32; {$IFDEF FPC}assembler; {$ENDIF}
 asm
 {$IFDEF TARGET_X86}
         PXOR      XMM7,XMM7
@@ -948,12 +957,20 @@ asm
         PUNPCKLWD XMM1,XMM7
         CVTDQ2PS  XMM1,XMM1
 
+{$IFDEF FPC}
+        MOV       EAX, [RBP + $30]
+{$ELSE}
         MOV       EAX, WA
+{$ENDIF}
         MOVD      XMM4,EAX
         SHUFPS    XMM4,XMM4,0
         MULPS     XMM0,XMM4
 
+{$IFDEF FPC}
+        MOV       EDX, [RBP + $38]
+{$ELSE}
         MOV       EDX, WB
+{$ENDIF}
         MOVD      XMM5,EDX
         SHUFPS    XMM5,XMM5,0
         MULPS     XMM1,XMM5
@@ -968,12 +985,20 @@ asm
         PUNPCKLWD XMM3,XMM7
         CVTDQ2PS  XMM3,XMM3
 
+{$IFDEF FPC}
+        MOV       EAX, [RBP + $40]
+{$ELSE}
         MOV       EAX, WC
+{$ENDIF}
         MOVD      XMM4,EAX
         SHUFPS    XMM4,XMM4,0
         MULPS     XMM2,XMM4
 
+{$IFDEF FPC}
+        MOV       EDX, [RBP + $48]
+{$ELSE}
         MOV       EDX, WD
+{$ENDIF}
         MOVD      XMM5,EDX
         SHUFPS    XMM5,XMM5,0
         MULPS     XMM3,XMM5
@@ -1568,7 +1593,7 @@ begin
   Temp.Y := Y - FColorPoints[2].Point.Y;
   U := FDists[0].Y * Temp.X + FDists[0].X * Temp.Y;
   V := FDists[1].Y * Temp.X + FDists[1].X * Temp.Y;
-  W := 1 - U - V;
+  W := 1.0 - U - V;
 end;
 
 function TBarycentricGradientSampler.GetSampleFloat(X, Y: TFloat): TColor32;
@@ -1761,7 +1786,7 @@ begin
 
   Result := Linear4PointInterpolationProc(FColorPoints[0].Color32,
     FColorPoints[1].Color32, FColorPoints[2].Color32, FColorPoints[3].Color32,
-    (1 - u) * (1 - v), u * (1 - v), u * v, (1 - u) * v);
+    (1.0 - u) * (1.0 - v), u * (1.0 - v), u * v, (1.0 - u) * v);
 end;
 
 procedure TBilinearGradientSampler.PrepareSampling;
@@ -2065,20 +2090,26 @@ begin
     Temp := Sqr(X - Point.X) + Sqr(Y - Point.Y);
   if FUsePower then
     Temp := Math.Power(Temp, FScaledPower);
-  FDists[0] := 1 / Max(1, Temp);
+  if Abs(Temp) > MaxSingle then
+    FDists[0] := 0
+  else
+    FDists[0] := 1 / Max(1.0, Temp);
   DistSum := FDists[0];
+
   for Index := 1 to Count - 1 do
     with FColorPoints[Index] do
     begin
       Temp := Sqr(X - Point.X) + Sqr(Y - Point.Y);
       if FUsePower then
         Temp := Math.Power(Temp, FScaledPower);
-      FDists[Index] := 1 / Max(1, Temp);
+      if Abs(Temp) > MaxSingle then
+        FDists[Index] := 0
+      else
+        FDists[Index] := 1 / Max(1.0, Temp);
       DistSum := DistSum + FDists[Index];
     end;
 
-  Assert(DistSum <> 0);
-  DistSum := 1 / DistSum;
+  DistSum := 1.0 / (1E-30 + DistSum);
   Scale := FDists[0] * DistSum;
 
   case Count of
@@ -3700,7 +3731,7 @@ var
   Offset: array [0 .. 1] of TFloat;
 begin
   Offset[0] := FGradient.FGradientColors[Index].Offset;
-  Offset[1] := 1 - Offset[0];
+  Offset[1] := 1.0 - Offset[0];
   Result := Offset[1] * FStartPoint.X + Offset[0] * FEndPoint.X + FIncline *
     (Offset[1] * (FStartPoint.Y - Y) + Offset[0] * (FEndPoint.Y - Y));
 end;
@@ -4539,7 +4570,7 @@ begin
   // Because the slope of vertical lines is infinite, we need to find where a
   // vertical line through the FocalPoint intersects with the Ellipse, and
   // store the distances from the focal point to these 2 intersections points
-  FVertDist := FRadius.Y * FastSqrtBab1(1 - Sqr(FFocalPt.X) / Sqr(FRadius.X));
+  FVertDist := FRadius.Y * FastSqrtBab1(1.0 - Sqr(FFocalPt.X) / Sqr(FRadius.X));
 end;
 
 procedure TSVGRadialGradientPolygonFiller.BeginRendering;
