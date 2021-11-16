@@ -1,3 +1,247 @@
+commit 74fe6dbbf9db68a455e83a7b52a6a719eda795ab
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-11-15 17:59:46 +0100
+
+    synched SynFPCx64MM with latest mORMot 2 enhancements
+    - a lot of optimizations, and also better Realloc support, especially on Win64
+
+commit 32dd4e325807431830f3f6e04810f4a616813d71
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-11-11 18:08:23 +0100
+
+    fixed TDocVariantData.GetValueIndex when aName=''
+    - see https://synopse.info/forum/viewtopic.php?id=6049
+
+commit ba965121778aa8744f22449bec2667edf4b6d218
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-11-03 12:20:03 +0100
+
+    new twoDateTimeWithZ option
+    to append an ending 'Z' to TDateTime/TDateTimeMS values
+
+commit de8026c2323ebdebfb2dce7511bf2bacda5fc506
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-11-03 12:18:37 +0100
+
+    fixed (c) note
+
+commit 1c0cd1e6e90feaf977da8381b0c5d1732057a8b5
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-28 18:11:06 +0200
+
+    some contributor feedback is always welcome!
+
+commit a87fb14b6f151a6a1f31e05c62800f7567d10237
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-28 17:10:44 +0200
+
+    fixed WinHttp error handling
+    - as reported by https://github.com/synopse/mORMot/issues/413
+
+commit 49b5dc58c850fbc55d6ba8c24ef9b4bbc973c2c6
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-28 17:02:28 +0200
+
+    enhanced WinHttp security exception message
+    - as proposed by https://github.com/synopse/mORMot/issues/412
+
+commit f5cb6f998e0b08deb149f8274b43bf70099916f4
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-28 16:51:45 +0200
+
+    fixed SynCrtSock.SysErrorMessagePerModule on non-English systems
+    - as reported by https://github.com/synopse/mORMot/issues/411
+
+commit 849408107e5200653889c3da0634b5976de975f4
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-19 18:54:53 +0200
+
+    try to fix TSynTimeZone UtcToLocal()
+    - see https://synopse.info/forum/viewtopic.php?pid=36081#p36081
+
+commit 4993e16e50e8b4203382e7ad0d8b78f190f5371d
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-18 10:54:52 +0200
+
+    fixed comment as reported by https://github.com/synopse/mORMot/issues/410
+
+commit 8002cb5c99e7fef7966949040d1f3e64ef1dd876
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-18 10:54:26 +0200
+
+    sync SynFPCx64MM with mORMot 2 source
+
+commit 5e0245819e93e6c3cd4611418b2a2c06e37defac
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-11 17:25:03 +0200
+
+    synch with latest mormot.core.fpcx64mm enhancements
+
+commit 460e1cfed9beea607a1cb9d5d6c860cd87b80908
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-07 10:56:44 +0200
+
+    added some missing files needed to properly re-compile SQLite3
+    - especially the custom regexp and cipher extensions
+
+commit 193bf6edaa38e2f4f08a4136e9b581bc2457343a
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-06 15:42:16 +0200
+
+    backport TServiceFactoryServer.CreateInstance refcount from mORMot 2
+    - as reported on https://synopse.info/forum/viewtopic.php?id=6014
+
+commit 0af7bd0848a93724290a0a721fb701b1297d2d33
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-05 12:23:12 +0200
+
+    documentation update (and regeneration)
+
+commit bfc9de570fb81c9e2234c0b1072e2d09d37bc9de
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-05 12:05:16 +0200
+
+    make explicit that dvoAllowDoubleValue option is not included by default
+    - also introducing _JsonFastFloat() wrapper
+
+commit ca9893fa449f6f4047c0807ab96b042b2be05ec2
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-10-04 11:02:43 +0200
+
+    new TWinHTTP.InternalGetProtocols virtual method
+    - can be overriden e.g. to disable/enable some protocols
+    - properly implement https://github.com/synopse/mORMot/pull/406
+
+commit dea799e1dc496398fd19156b8df0a960b0cd51da
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-30 17:46:16 +0200
+
+    enhanced 406 "bad input" error message
+    - to clearly state that records should be initialized at input for proper JSON to be received (e.g. enumerates or TDateTime)
+
+commit 77ace7f6dbec27d95e84b7e7a9909fc9958d6b89
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-28 10:30:05 +0200
+
+    disabled deprecated and usafe WINHTTP_FLAG_SECURE_PROTOCOL_SSL3
+
+commit c575bb6e947cda6f11e74050bce74cdc8953b9d6
+Merge: c9757aea 7d8169dc
+Author: ab <webcontact01@synopse.info>
+Date:   2021-09-27 13:24:09 +0200
+
+    Merge pull request #408 from ysair/fix-SyNode
+    
+    Fix SynNode compile error
+
+commit 7d8169dc87eae221cd6e0aa2fff9befd63ba7f5f
+Author: yangsai <yangsair@gmail.com>
+Date:   2021-09-27 16:48:59 +0800
+
+    Fix SynNode compile error
+
+commit c9757aea7b86b9e8d75817b7a28088195d3704b2
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-23 21:22:41 +0200
+
+    let TSQLDBPostgresConnection handle 'host:port' as ServerName
+    - backport of https://github.com/synopse/mORMot2/commit/0972493b35efe169e9372d245f793074b23999b5
+
+commit 821f7f0c6cfd040118264428184baf5d74c18b61
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-15 08:36:15 +0200
+
+    another fix for IsValidUtf8Avx2() on Win64
+    - wrong conditional was used ;)
+
+commit 08844eb9ef1a24ad6650c5b29ae6e3ec6fb49776
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-14 17:52:39 +0200
+
+    fixed IsValidUtf8Avx2() on Win64
+
+commit a9971ba0dba371a4eeecf2c2759029e48c0aef92
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-13 14:20:30 +0200
+
+    fixed TCurlHTTP after https://github.com/synopse/mORMot/pull/404
+
+commit d5ec9898a57a81f8678b318477097c05f8303f2a
+Merge: 2ea4abdb 499454a2
+Author: ab <webcontact01@synopse.info>
+Date:   2021-09-13 14:10:37 +0200
+
+    Merge pull request #404 from synopse/fix/curlTimeout
+    
+    set a curl timeout as SendTimeout+ReceiveTimeout
+
+commit 499454a26b0da6ab348b3e19f4eb806b64166da6
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2021-09-13 13:50:42 +0300
+
+    set a curl timeout as SendTimeout+ReceiveTimeout to prevent request to wait forever; use *_TIMEOUT_MS (available since 2007y)
+
+commit 2ea4abdbf3e0ba5329de093b45ae85b8e8240ea5
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-13 11:43:10 +0200
+
+    preliminary Windows 11 identification
+
+commit b5c04529a01b36e5658b7ddfe37e40bbf0fb186e
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-13 11:32:14 +0200
+
+    fixed UnCompressStream as reported by https://github.com/synopse/mORMot/issues/403
+
+commit 6a92f1f2b80d1eeb8067d703c609782a81c0bd71
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-10 13:31:47 +0200
+
+    Delphi 11 Alexandria is officially out
+
+commit 61538385b6a092fca7cad289928eae43d1957040
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-06 08:00:10 +0200
+
+    better type support in SynFpcLinux
+
+commit 2212d03045e03ecc4f02bfbaddfd9df99d5ebe29
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-02 13:38:11 +0200
+
+    fixed TGDIPages.AppendRichEdit on Win64
+
+commit 464a2dd7707654f367bdebcf761c1fa52ebc226f
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-09-02 13:37:35 +0200
+
+    small refactoring - no functional change
+
+commit cde4c51ed5fae700e8f37abda775bb065ebeabb1
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-08-31 14:22:28 +0200
+
+    updates Delphi SQLite3 .o/.obj
+
+commit 9ac469e80873acd13590ca0bbddcc89b075a4161
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-08-29 14:01:14 +0200
+
+    new optional USE_PDFALEVEL conditional for SynPdf
+
+commit 7277766e29bc5513d1a07e531c85e30430a45186
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-08-26 14:43:50 +0200
+
+    fixed TJSONVariantData internal size increase
+    - as reported by https://github.com/synopse/mORMot/pull/402
+
+commit c7a6bcf3ec6fabe01b61c16bd4f5a45a1a50dda6
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-08-24 11:56:15 +0200
+
+    updated SQLite3 Database engine to its latest 3.36.0 revision
+
 commit 526170d93294d801a5ae59088ec0ca959036de7c
 Author: Arnaud Bouchez <ab@synopse.info>
 Date:   2021-08-19 08:12:02 +0200

@@ -5185,13 +5185,21 @@ const
   /// some convenient TDocVariant options, as JSON_OPTIONS[CopiedByReference]
   // - JSON_OPTIONS[false] is e.g. _Json() and _JsonFmt() functions default
   // - JSON_OPTIONS[true] are used e.g. by _JsonFast() and _JsonFastFmt() functions
+  // - warning: exclude dvoAllowDoubleValue so won't parse any float, just currency
   JSON_OPTIONS: array[Boolean] of TDocVariantOptions = (
     [dvoReturnNullForUnknownProperty],
     [dvoReturnNullForUnknownProperty,dvoValueCopiedByReference]);
 
   /// same as JSON_OPTIONS[true], but can not be used as PDocVariantOptions
+  // - warning: exclude dvoAllowDoubleValue so won't parse any float, just currency
+  // - as used by _JsonFast()
   JSON_OPTIONS_FAST =
     [dvoReturnNullForUnknownProperty,dvoValueCopiedByReference];
+
+  /// same as JSON_OPTIONS_FAST, but including dvoAllowDoubleValue to parse any float
+  // - as used by _JsonFastFloat()
+  JSON_OPTIONS_FAST_FLOAT =
+    [dvoReturnNullForUnknownProperty,dvoValueCopiedByReference,dvoAllowDoubleValue];
 
   /// TDocVariant options which may be used for plain JSON parsing
   // - this won't recognize any extended syntax
@@ -8487,6 +8495,7 @@ type
   // - twoIgnoreDefaultInRecord will force custom record serialization to avoid
   // writing the fields with default values, i.e. enable soWriteIgnoreDefault
   // when TJSONCustomParserRTTI.WriteOneLevel is called
+  // - twoDateTimeWithZ appends an ending 'Z' to TDateTime/TDateTimeMS values
   TTextWriterOption = (
     twoStreamIsOwned,
     twoFlushToStreamNoAutoResize,
@@ -8498,7 +8507,8 @@ type
     twoForceJSONStandard,
     twoEndOfLineCRLF,
     twoBufferIsExternal,
-    twoIgnoreDefaultInRecord);
+    twoIgnoreDefaultInRecord,
+    twoDateTimeWithZ);
   /// options set for a TTextWriter instance
   // - allows to override e.g. AddRecordJSON() and AddDynArrayJSON() behavior;
   // or set global process customization for a TTextWriter
@@ -8637,17 +8647,20 @@ type
     procedure AddUnixMSTime(Value: PInt64; WithMS: boolean=false);
     /// append a TDateTime value, expanded as Iso-8601 encoded text
     // - use 'YYYY-MM-DDThh:mm:ss' format (with FirstChar='T')
+    // - if twoDateTimeWithZ CustomOption is set, will append an ending 'Z'
     // - if WithMS is TRUE, will append '.sss' for milliseconds resolution
     // - if QuoteChar is not #0, it will be written before and after the date
     procedure AddDateTime(Value: PDateTime; FirstChar: AnsiChar='T'; QuoteChar: AnsiChar=#0;
       WithMS: boolean=false); overload;
     /// append a TDateTime value, expanded as Iso-8601 encoded text
     // - use 'YYYY-MM-DDThh:mm:ss' format
+    // - if twoDateTimeWithZ CustomOption is set, will append an ending 'Z'
     // - append nothing if Value=0
     // - if WithMS is TRUE, will append '.sss' for milliseconds resolution
     procedure AddDateTime(const Value: TDateTime; WithMS: boolean=false); overload;
     /// append a TDateTime value, expanded as Iso-8601 text with milliseconds
     // and Time Zone designator
+    // - twoDateTimeWithZ CustomOption is ignored in favor of the TZD parameter
     // - i.e. 'YYYY-MM-DDThh:mm:ss.sssZ' format
     // - TZD is the ending time zone designator ('', 'Z' or '+hh:mm' or '-hh:mm')
     procedure AddDateTimeMS(const Value: TDateTime; Expanded: boolean=true;
@@ -11027,7 +11040,8 @@ type
     // - will handle vtPointer/vtClass/vtObject/vtVariant kind of arguments,
     // appending class name for any class or object, the hexa value for a
     // pointer, or the JSON representation of any supplied TDocVariant
-    constructor CreateLastOSError(const Format: RawUTF8; const Args: array of const);
+    constructor CreateLastOSError(const Format: RawUTF8; const Args: array of const;
+      const Trailer: RawUtf8 = 'OSError');
     {$ifndef NOEXCEPTIONINTERCEPT}
     /// can be used to customize how the exception is logged
     // - this default implementation will call the DefaultSynLogExceptionToStr()
@@ -13313,7 +13327,8 @@ type
     wSeven, wSeven_64, wServer2008_R2, wServer2008_R2_64,
     wEight, wEight_64, wServer2012, wServer2012_64,
     wEightOne, wEightOne_64, wServer2012R2, wServer2012R2_64,
-    wTen, wTen_64, wServer2016, wServer2016_64, wServer2019_64);
+    wTen, wTen_64, wServer2016, wServer2016_64,
+    wEleven, wEleven_64, wServer2019_64);
   /// the running Operating System, encoded as a 32-bit integer
   TOperatingSystemVersion = packed record
     case os: TOperatingSystem of
@@ -13331,11 +13346,12 @@ const
     '7', '7 64bit', 'Server 2008 R2', 'Server 2008 R2 64bit',
     '8', '8 64bit', 'Server 2012', 'Server 2012 64bit',
     '8.1', '8.1 64bit', 'Server 2012 R2', 'Server 2012 R2 64bit',
-    '10', '10 64bit', 'Server 2016', 'Server 2016 64bit', 'Server 2019 64bit');
+    '10', '10 64bit', 'Server 2016', 'Server 2016 64bit',
+    '11', '11 64bit', 'Server 2019 64bit');
   /// the recognized Windows versions which are 32-bit
   WINDOWS_32 = [w2000, wXP, wServer2003, wServer2003_R2, wVista, wServer2008,
     wSeven, wServer2008_R2, wEight, wServer2012, wEightOne, wServer2012R2,
-    wTen, wServer2016];
+    wTen, wServer2016, wEleven];
   /// translate one operating system (and distribution) into a single character
   // - may be used internally e.g. for a HTTP User-Agent header, as with
   // TFileVersion.UserAgent
@@ -14440,6 +14456,7 @@ type
     // properties can be slow - if you expect the data to be read-only or not
     // propagated into another place, add dvoValueCopiedByReference in Options
     // will increase the process speed a lot
+    // - warning: exclude dvoAllowDoubleValue so won't parse any float, just currency
     // - in practice, you should better use the function _Json()/_JsonFast()
     // which are handy wrappers around this class method
     class function NewJSON(const JSON: RawUTF8;
@@ -15508,6 +15525,7 @@ function _Arr(const Items: array of const;
 // from a supplied (extended) JSON content
 // - this global function is an alias to TDocVariant.NewJSON(), and
 // will return an Unassigned variant if JSON content was not correctly converted
+// - warning: exclude dvoAllowDoubleValue so won't parse any float, just currency
 // - object or array will be initialized from the supplied JSON content, e.g.
 // ! aVariant := _Json('{"id":10,"doc":{"name":"John","birthyear":1972}}');
 // ! // now you can access to the properties via late binding
@@ -15542,6 +15560,7 @@ function _Json(const JSON: RawUTF8;
 // - wrapper around the _Json(FormatUTF8(...,JSONFormat=true)) function,
 // i.e. every Args[] will be inserted for each % and Params[] for each ?,
 // with proper JSON escaping of string values, and writing nested _Obj() /
+// - warning: exclude dvoAllowDoubleValue so won't parse any float, just currency
 // _Arr() instances as expected JSON objects / arrays
 // - typical use (in the context of SynMongoDB unit) could be:
 // ! aVariant := _JSONFmt('{%:{$in:[?,?]}}',['type'],['food','snack']);
@@ -15571,6 +15590,7 @@ procedure _JsonFmt(const Format: RawUTF8; const Args,Params: array of const;
 // from a supplied (extended) JSON content
 // - this global function is an alias to TDocVariant.NewJSON(), and
 // will return TRUE if JSON content was correctly converted into a variant
+// - warning: exclude dvoAllowDoubleValue so won't parse any float, just currency
 // - in addition to the JSON RFC specification strict mode, this method will
 // handle some BSON-like extensions, e.g. unquoted field names or ObjectID()
 // - by default, every internal value will be copied, so access of nested
@@ -15602,14 +15622,21 @@ function _ArrFast(const Items: array of const): variant; overload;
 
 /// initialize a variant instance to store some document-based content
 // from a supplied (extended) JSON content
+// - warning: exclude dvoAllowDoubleValue so won't parse any float, just currency
 // - this global function is an handy alias to:
-// ! _Json(JSON,JSON_OPTIONS[true]);
+// ! _Json(JSON,JSON_OPTIONS[true]); or _Json(JSON,JSON_OPTIONS_FAST)
 // so it will return an Unassigned variant if JSON content was not correct
 // - so all created objects and arrays will be handled by reference, for best
 // speed - but you should better write on the resulting variant tree with caution
 // - in addition to the JSON RFC specification strict mode, this method will
 // handle some BSON-like extensions, e.g. unquoted field names or ObjectID()
 function _JsonFast(const JSON: RawUTF8): variant;
+  {$ifdef HASINLINE}inline;{$endif}
+
+/// initialize a variant instance to store some document-based content
+// from a supplied (extended) JSON content, parsing any kind of float
+// - use JSON_OPTIONS_FAST_FLOAT including the dvoAllowDoubleValue option
+function _JsonFastFloat(const JSON: RawUTF8): variant;
   {$ifdef HASINLINE}inline;{$endif}
 
 /// initialize a variant instance to store some extended document-based content
@@ -15620,6 +15647,7 @@ function _JsonFastExt(const JSON: RawUTF8): variant;
 
 /// initialize a variant instance to store some document-based content
 // from a supplied (extended) JSON content, with parameters formating
+// - warning: exclude dvoAllowDoubleValue so won't parse any float, just currency
 // - this global function is an handy alias e.g. to:
 // ! aVariant := _JSONFmt('{%:{$in:[?,?]}}',['type'],['food','snack'],JSON_OPTIONS[true]);
 // - so all created objects and arrays will be handled by reference, for best
@@ -27330,9 +27358,10 @@ begin
       inc(Vers,2); // e.g. wEight -> wServer2012
       if (Vers=wServer2016) and (OSVersionInfo.dwBuildNumber>=17763) then
         Vers := wServer2019_64; // https://stackoverflow.com/q/53393150
-    end;
+    end else if (Vers=wTen) and (OSVersionInfo.dwBuildNumber>=22000) then
+      Vers := wEleven; // waiting for an official mean of Windows 11 identification
     if (SystemInfo.wProcessorArchitecture=PROCESSOR_ARCHITECTURE_AMD64) and
-       (Vers < wServer2019_64) then
+       (Vers<wServer2019_64) then
       inc(Vers);   // e.g. wEight -> wEight64
   end;
   OSVersion := Vers;
@@ -47823,7 +47852,7 @@ function TDocVariantData.GetValueIndex(aName: PUTF8Char; aNameLen: PtrInt;
   aCaseSensitive: boolean): integer;
 var err: integer;
 begin
-  if (integer(VType)=DocVariantVType) and (VCount>0) then
+  if (integer(VType)=DocVariantVType) and (VCount>0) and (aName<>nil) and(aNameLen>0) then
     if dvoIsArray in VOptions then begin // try index text in array document
       result := GetInteger(aName,err);
       if (err<>0) or (cardinal(result)>=cardinal(VCount)) then
@@ -49041,6 +49070,11 @@ end;
 function _JsonFast(const JSON: RawUTF8): variant;
 begin
   _Json(JSON,result,JSON_OPTIONS_FAST);
+end;
+
+function _JsonFastFloat(const JSON: RawUTF8): variant;
+begin
+  _Json(JSON,result,JSON_OPTIONS_FAST_FLOAT);
 end;
 
 function _JsonFastExt(const JSON: RawUTF8): variant;
@@ -53841,7 +53875,7 @@ procedure TTextWriter.AddDateTime(Value: PDateTime; FirstChar: AnsiChar;
 begin
   if (Value^=0) and (QuoteChar=#0) then
     exit;
-  if BEnd-B<=25 then
+  if BEnd-B<=26 then
     FlushToStream;
   inc(B);
   if QuoteChar<>#0 then
@@ -53855,6 +53889,10 @@ begin
       B := TimeToIso8601PChar(Value^,B,true,FirstChar,WithMS);
     dec(B);
   end;
+  if twoDateTimeWithZ in fCustomOptions then begin
+    inc(B);
+    B^ := 'Z';
+  end;
   if QuoteChar<>#0 then begin
     inc(B);
     B^ := QuoteChar;
@@ -53865,14 +53903,16 @@ procedure TTextWriter.AddDateTime(const Value: TDateTime; WithMS: boolean);
 begin
   if Value=0 then
     exit;
-  if BEnd-B<=23 then
+  if BEnd-B<=24 then
     FlushToStream;
   inc(B);
   if trunc(Value)<>0 then
     B := DateToIso8601PChar(Value,B,true);
   if frac(Value)<>0 then
     B := TimeToIso8601PChar(Value,B,true,'T',WithMS);
-  dec(B);
+  if twoDateTimeWithZ in fCustomOptions then
+    B^ := 'Z' else
+    dec(B);
 end;
 
 procedure TTextWriter.AddDateTimeMS(const Value: TDateTime; Expanded: boolean;
@@ -59224,7 +59264,8 @@ begin
     {$elseif defined(VER320)}'Delphi 10.2 Tokyo'
     {$elseif defined(VER330)}'Delphi 10.3 Rio'
     {$elseif defined(VER340)}'Delphi 10.4 Sydney'
-    {$elseif defined(VER350)}'Delphi 11 Next'
+    {$elseif defined(VER350)}'Delphi 11 Alexandria'
+    {$elseif defined(VER360)}'Delphi 11.1 Next'
     {$ifend}
   {$endif CONDITIONALEXPRESSIONS}
 {$endif FPC}
@@ -61931,13 +61972,14 @@ begin
   inherited Create(msg);
 end;
 
-constructor ESynException.CreateLastOSError(const Format: RawUTF8; const Args: array of const);
+constructor ESynException.CreateLastOSError(
+  const Format: RawUTF8; const Args: array of const; const Trailer: RawUtf8);
 var tmp: RawUTF8;
     error: integer;
 begin
   error := GetLastError;
   FormatUTF8(Format,Args,tmp);
-  CreateUTF8('OSError % [%] %',[error,SysErrorMessage(error),tmp]);
+  CreateUTF8('% % [%] %',[Trailer,error,SysErrorMessage(error),tmp]);
 end;
 
 {$ifndef NOEXCEPTIONINTERCEPT}
