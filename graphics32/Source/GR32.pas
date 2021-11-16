@@ -272,11 +272,11 @@ procedure ModifyAlpha(var Color32: TColor32; NewAlpha: Byte); {$IFDEF USEINLININ
 procedure ScaleAlpha(var Color32: TColor32; Scale: Single); {$IFDEF USEINLINING} inline; {$ENDIF}
 
 // Color space conversion
-function HSLtoRGB(H, S, L: Single): TColor32; overload;
+function HSLtoRGB(H, S, L: Single; A: Integer = 255): TColor32; overload;
 procedure RGBtoHSL(RGB: TColor32; out H, S, L : Single); overload;
-function HSLtoRGB(H, S, L: Integer; A: Integer = $ff): TColor32; overload;
+function HSLtoRGB(H, S, L: Integer; A: Integer = 255): TColor32; overload;
 procedure RGBtoHSL(RGB: TColor32; out H, S, L: Byte); overload;
-function HSVtoRGB(H, S, V: Single): TColor32;
+function HSVtoRGB(H, S, V: Single; A: Integer = 255): TColor32;
 procedure RGBToHSV(Color: TColor32; out H, S, V: Single);
 
 {$IFNDEF PLATFORM_INDEPENDENT}
@@ -1478,7 +1478,7 @@ end;
 
 { Color space conversions }
 
-function HSLtoRGB(H, S, L: Single): TColor32;
+function HSLtoRGB(H, S, L: Single; A: Integer): TColor32;
 const
   OneOverThree = 1 / 3;
 var
@@ -1502,7 +1502,7 @@ var
 begin
   if S = 0 then
   begin
-    Result := Gray32(Round($FF * L));
+    Result := Gray32(Round($FF * L), A);
     Exit;
   end;
 
@@ -1514,7 +1514,8 @@ begin
   Result := Color32(
     HueToColor(H + OneOverThree),
     HueToColor(H),
-    HueToColor(H - OneOverThree));
+    HueToColor(H - OneOverThree),
+    A);
 end;
 
 procedure RGBtoHSL(RGB: TColor32; out H, S, L : Single);
@@ -1626,49 +1627,50 @@ begin
   end;
 end;
 
-function HSVtoRGB(H, S, V: Single): TColor32;
+function HSVtoRGB(H, S, V: Single; A: Integer): TColor32;
 var
-  Tmp: TFloat;
+  Fraction: Single;
   Sel, Q, P: Integer;
 begin
   V := 255 * V;
+
   if S = 0 then
   begin
-    Result := Gray32(Trunc(V));
+    Result := Gray32(Trunc(V), A);
     Exit;
-  end;  
+  end;
 
-  H := H - Floor(H);
-  Tmp := 6 * H - Floor(6 * H);
+  H := (H - Floor(H)) * 6; // 0 <= H < 6
+  Fraction := H - Floor(H);
 
-  Sel := Trunc(6 * H);
+  Sel := Trunc(H);
   if (Sel mod 2) = 0 then
-    Tmp := 1 - Tmp;
+    Fraction := 1 - Fraction;
 
-  Q := Trunc(V * (1 - S));
-  P := Trunc(V * (1 - S * Tmp));
+  P := Round(V * (1 - S));
+  Q := Round(V * (1 - S * Fraction));
 
   case Sel of
     0:
-      Result := Color32(Trunc(V), P, Q);
+      Result := Color32(Trunc(V), Q, P, A);
     1:
-      Result := Color32(P, Trunc(V), Q);
+      Result := Color32(Q, Trunc(V), P, A);
     2:
-      Result := Color32(Q, Trunc(V), P);
+      Result := Color32(P, Trunc(V), Q, A);
     3:
-      Result := Color32(Q, P, Trunc(V));
+      Result := Color32(P, Q, Trunc(V), A);
     4:
-      Result := Color32(P, Q, Trunc(V));
+      Result := Color32(Q, P, Trunc(V), A);
     5:
-      Result := Color32(Trunc(V), Q, P);
+      Result := Color32(Trunc(V), P, Q, A);
   else
-    Result := Gray32(0);
+    Result := Gray32(0, A);
   end;
 end;
 
 procedure RGBToHSV(Color: TColor32; out H, S, V: Single);
 var
-  Delta, Min, Max: Single;
+  Delta, RGBMin, RGBMax: integer;
   R, G, B: Integer;
 const
   COneSixth = 1 / 6;
@@ -1677,25 +1679,27 @@ begin
   G := GreenComponent(Color);
   B := BlueComponent(Color);
 
-  Min := MinIntValue([R, G, B]);
-  Max := MaxIntValue([R, G, B]);
-  V := Max / 255;
+  RGBMin := Min(R, Min(G, B));
+  RGBMax := Max(R, Max(G, B));
+  V := RGBMax * COne255th;
 
-  Delta := Max - Min;
-  if Max = 0 then
+  Delta := RGBMax - RGBMin;
+  if RGBMax = 0 then
     S := 0
   else
-    S := Delta / Max;
+    S := Delta / RGBMax;
 
   if S = 0.0 then
     H := 0
   else
   begin
-    if R = Max then
+    if R = RGBMax then
       H := COneSixth * (G - B) / Delta
-    else if G = Max then
+    else
+    if G = RGBMax then
       H := COneSixth * (2 + (B - R) / Delta)
-    else if B = Max then
+    else
+    if B = RGBMax then
       H := COneSixth * (4 + (R - G) / Delta);
 
     if H < 0.0 then
@@ -5729,6 +5733,8 @@ var
   ChannelMasks: array[TColor32Component] of TChannelMask;
   Channel: TColor32Component;
   Value, NewValue: DWORD;
+  Padding: integer;
+  ScanlineRow: PColor32Array;
 const
 {$IFNDEF RGBA_FORMAT}
   Masks: array[TColor32Component] of DWORD = ($000000FF, $0000FF00, $00FF0000, $FF000000); // BGRA
@@ -5868,57 +5874,68 @@ begin
     Stream.Seek(BitmapHeader.InfoHeader.biClrUsed * SizeOf(DWORD), soCurrent);
   end;
 
+  // Pad input rows to 32 bits
+  Padding := (SizeOf(DWORD) - (((BitmapHeader.InfoHeader.biBitCount shr 3) * BitmapHeader.InfoHeader.biWidth) and (SizeOf(DWORD)-1))) and (SizeOf(DWORD)-1);
+
   // Make sure there's enough data left for the pixels
-  with BitmapHeader.InfoHeader do
-    Dec(Size, biWidth * Abs(biHeight) * biBitCount shr 3);
+  Dec(Size, ((BitmapHeader.InfoHeader.biBitCount shr 3) * BitmapHeader.InfoHeader.biWidth + Padding) * Abs(BitmapHeader.InfoHeader.biHeight));
   if (Size < 0) then
     exit;
 
   SetSize(BitmapHeader.InfoHeader.biWidth, Abs(BitmapHeader.InfoHeader.biHeight));
 
+  // Check whether the bitmap is saved top-down or bottom-up:
+  // - Negavive height: top-down
+  // - Positive height: bottom-up
+  if (BitmapHeader.InfoHeader.biHeight > 0) then
+  begin
+    // Bitmap is stored bottom-up
+    Row := Height-1;
+    DeltaRow := -1;
+  end else
+  begin
+    // Bitmap is stored top-down
+    Row := 0;
+    DeltaRow := 1;
+  end;
+
   if (BitmapHeader.InfoHeader.biCompression = BI_RGB) then
   begin
 
-    // Check whether the bitmap is saved top-down or bottom-up:
-    // - Negavive height: top-down
-    // - Positive height: bottom-up
     case BitmapHeader.InfoHeader.biBitCount of
       24:
-        if (BitmapHeader.InfoHeader.biHeight > 0) then
+        // Read one RGB pixel at a time
+        for i := 0 to Height - 1 do
         begin
-          // Bitmap is stored bottom-up: Read one row at a time
-          // ChunkSize := Width * BitmapHeader.InfoHeader.biBitCount shr 3;
-          for i := Height - 1 downto 0 do
-            for j := 0 to Width - 1 do
-            begin
-              // read RGB data and reset alpha
-              Stream.ReadBuffer(Scanline[i]^[j], 3);
-              TColor32Entry(Scanline[i]^[j]).A := $FF;
-            end;
-        end
-        else
-        begin
-          // Bitmap is stored top-down: Read one row at a time
-          // ChunkSize := Width * BitmapHeader.InfoHeader.biBitCount shr 3;
-          for i := 0 to Height - 1 do
-            for j := 0 to Width - 1 do
-            begin
-              // read RGB data and reset alpha
-              Stream.ReadBuffer(Scanline[i]^[j], 3);
-              TColor32Entry(Scanline[i]^[j]).A := $FF;
-            end;
+          ScanlineRow := Scanline[Row];
+          for j := 0 to Width - 1 do
+          begin
+            // Read RGB data and reset alpha
+            Stream.ReadBuffer(ScanlineRow[j], 3);
+            TColor32Entry(ScanlineRow[j]).A := $FF;
+          end;
+
+          if (Padding > 0) then
+            Stream.Seek(Padding, soCurrent);
+
+          Inc(Row, DeltaRow);
         end;
+
       32:
-        if (BitmapHeader.InfoHeader.biHeight > 0) then
         begin
-          // Bitmap is stored bottom-up: Read one row at a time
-          ChunkSize := Width * BitmapHeader.InfoHeader.biBitCount shr 3;
-          for i := Height - 1 downto 0 do
-            Stream.ReadBuffer(Scanline[i]^, ChunkSize);
-        end
-        else
-          // Bitmap is stored top-down: Read all rows in one go
-          Stream.ReadBuffer(Bits^, Width * Height * SizeOf(DWORD))
+          Assert(Padding = 0);
+
+          if (BitmapHeader.InfoHeader.biHeight > 0) then
+          begin
+            // Bitmap is stored bottom-up: Read one row at a time
+            ChunkSize := Width * SizeOf(DWORD);
+            for i := Height - 1 downto 0 do
+              Stream.ReadBuffer(Scanline[i]^, ChunkSize);
+          end
+          else
+            // Bitmap is stored top-down: Read all rows in one go
+            Stream.ReadBuffer(Bits^, Width * Height * SizeOf(DWORD))
+        end;
     end;
 
     if (InfoHeaderVersion < InfoHeaderVersion3) then
@@ -5930,6 +5947,7 @@ begin
 {$ENDIF RGBA_FORMAT}
   end else
   begin
+    Assert(Padding = 0);
 
     // Determine how much we need to shift the masked color values in order
     // to get them into the desired position.
@@ -5938,18 +5956,6 @@ begin
       ChannelMasks[Channel].Shift := GetShift(BitmapHeader.Header.bmiColors[ChannelToIndex[Channel]], Masks[Channel]);
       ChannelMasks[Channel].Mask := Masks[Channel];
       ChannelMasks[Channel].Enabled := (Channel <> ccAlpha) or (InfoHeaderVersion >= InfoHeaderVersion3);
-    end;
-
-    if (BitmapHeader.InfoHeader.biHeight > 0) then
-    begin
-      // Bitmap is stored bottom-up
-      Row := Height-1;
-      DeltaRow := -1;
-    end else
-    begin
-      // Bitmap is stored top-down
-      Row := 0;
-      DeltaRow := 1;
     end;
 
     // Read one row at a time into our bitmap and then decode it in place.

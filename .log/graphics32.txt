@@ -1,3 +1,87 @@
+commit 073b27ff684ff26495d04bdabb09be42b7b825ee
+Merge: c9faf8ab 86b93ae7
+Author: zed <starmen@tut.by>
+Date:   2021-11-16 14:54:30 +0300
+
+    Merge remote-tracking branch 'upstream/master' into sasgis
+
+commit c9faf8ab615868be27eb5a059afc83e5429e0e0b
+Author: zed <starmen@tut.by>
+Date:   2021-11-16 14:40:44 +0300
+
+    Rename our extended functions with Z postfix and remove overloading (fix XE2 compilation)
+
+commit 86b93ae7547ba6b88bbcf9457a9f3d349d98377e
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-06 20:59:08 +0100
+
+    Updated for Delphi 11
+    Added Delphi 11.0 packages
+
+commit 952918fd59c0fda92536de5629359a11bd9476de
+Author: Michael Bunk <bunk@iat.uni-leipzig.de>
+Date:   2021-10-21 10:45:19 +0200
+
+    TRadialDistortionTransformation: use MinValue/MaxValue only when compiled with XE1 and up
+    
+    * fixes #153
+
+commit 0ca5c1376fad477dd32863eea9e09be6a6ece264
+Author: Michael Bunk <bunk@iat.uni-leipzig.de>
+Date:   2021-10-21 10:37:33 +0200
+
+    TRadialDistortionTransformation: add a Scale parameter
+    
+    * sometimes needed to zoom out in the resulting image to not loose information
+    * fix PrepareReverseMap() in Release mode: f3b915eecbbf708e32f9f3be86a2c242db6490d7 marked too much code for debug mode only
+
+commit c67f0951383769f3cda497aa5f3ed2d00e3d4b2f
+Author: Michael Bunk <bunk@iat.uni-leipzig.de>
+Date:   2021-10-21 10:06:15 +0200
+
+    Fix basic Mandelbrot formula in comment
+
+commit 0f8baf42bda8e7c2c9620832e67916f35e712062
+Author: Michael Bunk <bunk@iat.uni-leipzig.de>
+Date:   2021-10-21 10:05:13 +0200
+
+    Fix typo
+
+commit d946bce195f7a60d5071d9e41788e282dc09eb78
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-09-07 23:23:26 +0200
+
+    Added bitmap load/save unit test.
+
+commit cf154a70c6f5afee6a3641b4cf5759cca8415373
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-09-07 16:44:29 +0200
+
+    Fixes #170
+    LoadFromDIBStream did not take row padding into account for 24-bit bitmaps.
+    Minor clean up of LoadFromDIBStream.
+
+commit 41a95da3d53f0e2dae5709b9ccf44df9ec3f5328
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-09-01 15:10:33 +0200
+
+    Fixes #169
+    Fixed drifting values in HSL and HSV color pickers.
+
+commit 67f638b0949182177de6467d8d1ed0895a3577ae
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-09-01 15:07:17 +0200
+
+    Unified HSLtoRGB and HSVtoRGB overloads so they all take an optional Alpha parameter
+
+commit 30ba6ac6d7bbba7b522a714dada92dad21b416fa
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-08-28 21:38:51 +0200
+
+    Fixes #169
+    Fixed rounding error in HSVtoRGB.
+    Refactored HSVtoRGB and RGBtoHSV.
+
 commit 5f8ea4f2cb11a6eb158728bbeba6e2a982b6f2d2
 Merge: 14885a44 a3d658e4
 Author: zed <starmen@tut.by>
