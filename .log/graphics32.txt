@@ -1,3 +1,42 @@
+commit 0de245756ae56825e7e0210603f834d9f3664f1b
+Merge: 073b27ff 900fdcc3
+Author: zed <starmen@tut.by>
+Date:   2021-12-01 21:15:08 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 900fdcc3d9fb99bae45cbaa20db9543ebeedf3e1
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-27 01:39:25 +0100
+
+    Added HSV and HSL unit tests
+
+commit 0f75afd2ed7ef0fdb7bef8cfd0cb902b22cd1722
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-27 00:47:46 +0100
+
+    Reformat for readability
+
+commit 6552b6754b8e5b162aac58db48952c8dd965c7a9
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-27 00:47:13 +0100
+
+    Fix for HSLtoRGB not preserving alpha when returning gray.
+
+commit 5f3e1627ddd1a40c75230ee68d4f52cf2e228497
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-26 21:38:04 +0100
+
+    Fixes #172
+    Invalid $IFEND/$ENDIF mixup broke build on older Delphi compilers
+
+commit d5d3f60152cf3abe2f3aa89e48408b8ebe42070a
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-26 21:34:39 +0100
+
+    Fixes #173
+    Reserved fields in TBitmapFileHeader are now set to zero per BMP specification.
+
 commit 073b27ff684ff26495d04bdabb09be42b7b825ee
 Merge: c9faf8ab 86b93ae7
 Author: zed <starmen@tut.by>
