@@ -1,3 +1,9 @@
+commit fc203a5ebe5f87f6742592c85bb7a5ff94c37c6c
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2021-11-21 13:28:58 +0100
+
+    packages and compilation fix for 11.0 Alexandria
+
 commit 6d13951e68aab685c9522d604268bb8f3590dabb
 Merge: 59b688c 90eb89e
 Author: Christian Budde <Christian@savioursofsoul.de>
