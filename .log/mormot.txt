@@ -1,3 +1,54 @@
+commit 7eeae747b3e72d817e1d463bfcf0553fdd2bd0b2
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-12-16 10:17:09 +0100
+
+    upgrade SQLite3 to latest revision 3.37.0
+
+commit 56ccaaee198baa59e2314a256cfba4c170abbea6
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-12-10 14:33:10 +0100
+
+    proper fix for https://github.com/synopse/mORMot/pull/419
+
+commit 2f38726baeb2db2076e6a2e839f54c687d3fb8ce
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-12-03 10:28:34 +0100
+
+    fixed issue in SSPI SecDecrypt
+    - as rerpoted by https://github.com/synopse/mORMot/pull/418
+
+commit 3960050b0966cf783680ed733651506d5c3d1f5a
+Merge: 136f3b04 1b646500
+Author: ab <webcontact01@synopse.info>
+Date:   2021-12-03 10:26:50 +0100
+
+    Merge pull request #418 from achechulin/master
+    
+    Bug in SecDecrypt
+
+commit 1b646500f73de4bfed174b987006e097b1077db8
+Author: Chaa <achechulin@gmail.com>
+Date:   2021-12-03 12:17:36 +0500
+
+    Update mORMot.pas
+    
+    Corrected call to SecDecrypt
+
+commit e9b1949df4b1590114074b471c3b6c76ed37007b
+Author: achechulin <achechulin@gmail.com>
+Date:   2021-12-03 11:09:09 +0500
+
+    Update SynSSPI.pas
+    
+    Encrypted message is decrypted in place, so FreeContextBuffer is wrong
+
+commit 136f3b04dac224e50f2f16d1e92c6318601eb0f3
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-12-02 18:12:19 +0100
+
+    ensure TSynLocker.TryLock and Locked are reentrant
+    - as reported by https://github.com/synopse/mORMot/issues/416
+
 commit e6212d649ca3b3a20e360b614f4a12ddae139840
 Author: Arnaud Bouchez <ab@synopse.info>
 Date:   2021-11-30 11:46:25 +0100
