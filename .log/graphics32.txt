@@ -1,3 +1,23 @@
+commit a4a58b479edbf0f662b4f86585198a2ae8590c1a
+Merge: 0de24575 d9a3a8f1
+Author: zed <starmen@tut.by>
+Date:   2021-12-18 15:30:14 +0300
+
+    Merge branch 'master' into sasgis
+
+commit d9a3a8f10deb6cff29fb2beb0dd97c9aaea94374
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-12-15 14:26:22 +0100
+
+    TBitmap32.TileTo now takes MaxTileSize as an optional parameter.
+
+commit 662e2af2f9d8450a4bb56db6f77cb1dc25196324
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-12-15 14:25:08 +0100
+
+    Fixes #174
+    Applied Ken Adam's fix for TBitmap32.TileTo - better late than never :-/
+
 commit 0de245756ae56825e7e0210603f834d9f3664f1b
 Merge: 073b27ff 900fdcc3
 Author: zed <starmen@tut.by>

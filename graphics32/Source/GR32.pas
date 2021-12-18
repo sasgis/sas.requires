@@ -983,17 +983,17 @@ type
 {$IFDEF BCB}
     procedure DrawTo(hDst: Cardinal; DstX, DstY: Integer); overload;
     procedure DrawTo(hDst: Cardinal; const DstRect, SrcRect: TRect); overload;
-    procedure TileTo(hDst: Cardinal; const DstRect, SrcRect: TRect); overload;
+    procedure TileTo(hDst: Cardinal; const DstRect, SrcRect: TRect; MaxTileSize: integer = 1024); overload;
 {$ELSE}
     procedure DrawTo(hDst: HDC; DstX: Integer = 0; DstY: Integer = 0); overload;
     procedure DrawTo(hDst: HDC; const DstRect, SrcRect: TRect); overload;
-    procedure TileTo(hDst: HDC; const DstRect, SrcRect: TRect); overload;
+    procedure TileTo(hDst: HDC; const DstRect, SrcRect: TRect; MaxTileSize: integer = 1024); overload;
 {$ENDIF}
 
 {$IFDEF COMPILER2009_UP}
     procedure DrawTo(Dst: TControlCanvas; DstX: Integer = 0; DstY: Integer = 0); overload;
     procedure DrawTo(Dst: TControlCanvas; const DstRect, SrcRect: TRect); overload;
-    procedure TileTo(Dst: TControlCanvas; const DstRect, SrcRect: TRect); overload;
+    procedure TileTo(Dst: TControlCanvas; const DstRect, SrcRect: TRect; MaxTileSize: integer = 1024); overload;
 {$ENDIF}
 
     procedure UpdateFont;
@@ -6856,9 +6856,7 @@ begin
     (FBackend as IDeviceContextSupport).DrawTo(hDst, DstRect, SrcRect);
 end;
 
-procedure TBitmap32.TileTo(hDst: {$IFDEF BCB}Cardinal{$ELSE}HDC{$ENDIF}; const DstRect, SrcRect: TRect);
-const
-  MaxTileSize = 1024;
+procedure TBitmap32.TileTo(hDst: {$IFDEF BCB}Cardinal{$ELSE}HDC{$ENDIF}; const DstRect, SrcRect: TRect; MaxTileSize: integer);
 var
   DstW, DstH: Integer;
   TilesX, TilesY: Integer;
@@ -6897,8 +6895,8 @@ begin
           StretchTransfer(Buffer, R, ClipRect, Self, SrcRect, Resampler, DrawMode, FOnPixelCombine);
 
           DeviceContextSupport.DrawTo(hDst,
-            MakeRect(X + DstRect.Left, Y + DstRect.Top, X + ClipRect.Right,
-            Y + ClipRect.Bottom), MakeRect(0, 0, Buffer.Width, Buffer.Height)
+            MakeRect(X + DstRect.Left, Y + DstRect.Top, X + DstRect.Left+ClipRect.Right, Y + DstRect.Top+ClipRect.Bottom),
+            Buffer.BoundsRect
           );
         end;
       end;
@@ -6922,9 +6920,9 @@ begin
   DrawTo(Dst.Handle, DstRect, SrcRect);
 end;
 
-procedure TBitmap32.TileTo(Dst: TControlCanvas; const DstRect, SrcRect: TRect);
+procedure TBitmap32.TileTo(Dst: TControlCanvas; const DstRect, SrcRect: TRect; MaxTileSize: integer);
 begin
-  TileTo(Dst.Handle, DstRect, SrcRect);
+  TileTo(Dst.Handle, DstRect, SrcRect, MaxTileSize);
 end;
 {$ENDIF}
 
