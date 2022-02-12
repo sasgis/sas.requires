@@ -73,7 +73,8 @@ type
     kml_Style,
     kml_StyleMap,
     kml_TimeSpan,
-    kml_ViewVolume
+    kml_ViewVolume,
+    kml_WhenTag
   );
 
   Tvsagps_KML_attrib_param = (
@@ -311,7 +312,8 @@ const
     'Style',
     'StyleMap',
     'TimeSpan',
-    'ViewVolume'
+    'ViewVolume',
+    'when'
   );
 
   c_KML_str: array [Tvsagps_KML_str] of WideString = (

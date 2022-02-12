@@ -1,3 +1,9 @@
+commit 0f6e0be7acbf76d04cc1d5649b96c91b01cd17d1
+Author: zed <starmen@tut.by>
+Date:   2022-02-12 16:32:02 +0300
+
+    Чтение высоты и даты при импорте kml
+
 commit d86e752fe0fc04c277e247a5c95bb7386fbcd819
 Author: zed <starmen@tut.by>
 Date:   2021-08-24 11:45:12 +0300

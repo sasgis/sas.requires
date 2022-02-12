@@ -492,13 +492,28 @@ var
       V_px_state.src_fmt:=xsf_XML;
   end;
 
+  procedure _Parse_kml_when_to_Value(
+    const ANode: IDOMNode;
+    const pData: Pvsagps_XML_ParserResult
+  );
+  var
+    VTextValue: WideString;
+  begin
+    // <when>2022-02-12T06:13:07.72Z</when>
+    VTextValue := VSAGPS_XML_DOMNodeValue(ANode);
+
+    if Length(VTextValue)>0 then
+    if VSAGPS_WideString_to_ISO8601_Time(VTextValue, @pData^.kml_data.fValues.when) then begin
+      Include(pData^.kml_data.fAvail_params,kml_when);
+    end;
+  end;
+
   procedure _Parse_gx_coord_to_Values(
     const ANode: IDOMNode;
     const pData: Pvsagps_XML_ParserResult
   );
   var
-    VTextValue, VLongitude, VLatitude: WideString;
-
+    VTextValue, VLongitude, VLatitude, VAltitude: WideString;
   begin
     // <gx:coord>60.798387 56.748476 230.85376</gx:coord>
     // fetch values into longitude, latitude, and altitude fields
@@ -506,6 +521,7 @@ var
 
     VLongitude := ExtractBeforeSpaceDelimiter(VTextValue);
     VLatitude := ExtractBeforeSpaceDelimiter(VTextValue);
+    VAltitude := Trim(VTextValue);
 
     // convert
     if (Length(VLongitude)>0) and (Length(VLatitude)>0) then
@@ -514,7 +530,11 @@ var
       // ok - set flags
       Include(pData^.kml_data.fAvail_params,kml_latitude);
       Include(pData^.kml_data.fAvail_params,kml_longitude);
-      // TODO: add altitude
+
+      if Length(VAltitude)>0 then
+      if VSAGPS_WideString_to_Double(VAltitude, pData^.kml_data.fValues.altitude, AFS) then begin
+        Include(pData^.kml_data.fAvail_params,kml_altitude);
+      end;
     end;
   end;
 
@@ -549,6 +569,9 @@ var
 
         if (pData^.kml_data.current_tag in [kml_gx_coord]) then begin
           _Parse_gx_coord_to_Values(ANode, pData);
+        end else
+        if (pData^.kml_data.current_tag in [kml_WhenTag]) then begin
+          _Parse_kml_when_to_Value(ANode, pData);
         end;
       end;
 {$ifend}
@@ -1034,6 +1057,12 @@ For more information on this map, visit us online at http://goto.arcgisonline.co
             // width
             if VSAGPS_Parse_BYTE(ASubNode, @(pData^.kml_data.fValues.width)) then begin
               Include(pData^.kml_data.fAvail_params, kml_width);
+            end;
+          end else if WideSameText(V_sub_Name, 'when') then begin
+            // when
+            V_sub_Value:=VSAGPS_XML_DOMNodeValue(ASubNode);
+            if VSAGPS_WideString_to_ISO8601_Time(V_sub_Value, @(pData^.kml_data.fValues.when)) then begin
+              Include(pData^.kml_data.fAvail_params, kml_when);
             end;
           end else if WideSameText(V_sub_Name, 'fill') then begin
             // fill
