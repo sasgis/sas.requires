@@ -74,7 +74,7 @@ type
     kml_StyleMap,
     kml_TimeSpan,
     kml_ViewVolume,
-    kml_WhenTag
+    kml_when_gx // for gx:track
   );
 
   Tvsagps_KML_attrib_param = (

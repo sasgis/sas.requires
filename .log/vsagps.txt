@@ -1,3 +1,9 @@
+commit 198c7c70e9eb3b4e040834d88d80e65b7ee1c694
+Author: zed <starmen@tut.by>
+Date:   2022-02-13 10:47:05 +0300
+
+    Специальная обработка тега when нужна только внутри тега gx:Track
+
 commit 0f6e0be7acbf76d04cc1d5649b96c91b01cd17d1
 Author: zed <starmen@tut.by>
 Date:   2022-02-12 16:32:02 +0300

@@ -492,7 +492,7 @@ var
       V_px_state.src_fmt:=xsf_XML;
   end;
 
-  procedure _Parse_kml_when_to_Value(
+  procedure _Parse_kml_when_gx_to_Value(
     const ANode: IDOMNode;
     const pData: Pvsagps_XML_ParserResult
   );
@@ -503,7 +503,7 @@ var
     VTextValue := VSAGPS_XML_DOMNodeValue(ANode);
 
     if Length(VTextValue)>0 then
-    if VSAGPS_WideString_to_ISO8601_Time(VTextValue, @pData^.kml_data.fValues.when) then begin
+    if VSAGPS_WideString_to_ISO8601_Time(VTextValue, @(pData^.kml_data.fValues.when)) then begin
       Include(pData^.kml_data.fAvail_params,kml_when);
     end;
   end;
@@ -570,8 +570,8 @@ var
         if (pData^.kml_data.current_tag in [kml_gx_coord]) then begin
           _Parse_gx_coord_to_Values(ANode, pData);
         end else
-        if (pData^.kml_data.current_tag in [kml_WhenTag]) then begin
-          _Parse_kml_when_to_Value(ANode, pData);
+        if (pData^.kml_data.current_tag in [kml_when_gx]) then begin
+          _Parse_kml_when_gx_to_Value(ANode, pData);
         end;
       end;
 {$ifend}
@@ -635,6 +635,9 @@ var
 {$if defined(VSAGPS_ALLOW_IMPORT_KML)}
       xsf_KML: begin
         Result:=KML_get_main_tag_type(ASubDOMNode.nodeName, pData^.kml_data.subitem_tag);
+        if Result and (pData^.kml_data.subitem_tag = kml_when_gx) then begin
+          Result := pData^.kml_data.current_tag = kml_gx_Track;
+        end;
       end;
 {$ifend}
       xsf_XML: begin
