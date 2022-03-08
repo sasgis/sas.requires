@@ -1,3 +1,16 @@
+commit e80ce15858733642bf142dcdf402fcdda9998dd8
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2022-01-29 15:25:45 +0100
+
+    fixed design time package compilation by adding missing SynHighlighterECMAScript to runtime package for D2007 and newer
+    (it was already part of the 10.2 Tokyo and 11.0 Alexandria runtime package)
+
+commit 798654a7f097c681bf90750d0390c7b561a0e859
+Author: Uwe Schuster <jedivcs@bitcommander.de>
+Date:   2022-01-29 10:49:32 +0100
+
+    Fix for #182: removed duplicate directives introduced by 39b3d9356d07059976f1623fee849d9cb97a7c2b
+
 commit fc203a5ebe5f87f6742592c85bb7a5ff94c37c6c
 Author: Uwe Schuster <jedivcs@bitcommander.de>
 Date:   2021-11-21 13:28:58 +0100
