@@ -1,3 +1,72 @@
+commit 29191145fe457ae8809995530d89c75218d7a1fd
+Merge: a4a58b47 080a1377
+Author: zed <starmen@tut.by>
+Date:   2022-03-08 18:07:02 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 080a137779da6f728047b68ad901c55efaac1386
+Merge: 87ac4187 01d12f18
+Author: Anders Melander <github@melander.dk>
+Date:   2022-02-25 17:39:48 +0100
+
+    Merge pull request #178 from graphics32/TCanvas32-redesign
+    
+    TCanvas32 redesign
+
+commit 01d12f1836d787b2dd3840f4643a1bf09fd7ab6f
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-02-25 14:52:08 +0100
+
+    Eliminated some compiler hints.
+    Canvas deprecation directive now includes hint text suggesting alternative solution.
+    Updated examples to use new canvas.
+
+commit fee15c2913666ed90c2a233b7f3572c3f09d887d
+Author: Anders Melander <anders@melander.dk>
+Date:   2019-05-31 11:48:25 +0200
+
+    Fix for issue #82
+    
+    EndPath() now moves CurrentPoint only if Closed=True.
+
+commit ca05c0517e8ec89f966b7438e0d73eb234bda113
+Author: Anders Melander <anders@melander.dk>
+Date:   2019-04-12 16:31:48 +0200
+
+    TFlattenedPath.Polygon implementation has now been merged up to the base class impementation since they basically did the same thing.
+    TCustomPath.Polygon now implicitly starts a new path.
+
+commit 8fcb6fd7ce5248ce7096432f3b2694eaf0a65281
+Author: Anders Melander <anders@melander.dk>
+Date:   2019-04-12 15:58:51 +0200
+
+    TFlattenedPath now keeps track of which paths are closed and which are open.
+    The Closed state can be examined through the PathClosed property.
+    The Points property has been made protected since it's primarily for internal use.
+    Added PolyPolygon and PolyPolyline methods.
+
+commit 87ac4187b57b663e9a41efbdaf10668670af8753
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-02-25 17:28:37 +0100
+
+    Main development is now on version 3.0
+    Support for ancient versions of Delphi will be dropped going forward.
+
+commit 2e640d065eb0fa677f4d6cf748484cbee4dbbe36
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-02-25 15:15:54 +0100
+
+    Updated examples and added a few that were missing from the project group.
+    refs #73: Adde powershell based Example project file update script. Project files are now updated based on a template.
+    Currently only Delphi project files are supported.
+
+commit 325296ae7d841763a8cedad5e6bd2656c6f26aef
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-02-15 17:06:08 +0100
+
+    Added support for forward transformation to TTransform sampler class and Transform helper functions.
+
 commit a4a58b479edbf0f662b4f86585198a2ae8590c1a
 Merge: 0de24575 d9a3a8f1
 Author: zed <starmen@tut.by>
