@@ -1,3 +1,9 @@
+commit a16d1cfe3870b2b80155a8674ce236126f02d4cd
+Author: zed <starmen@tut.by>
+Date:   2022-03-08 16:44:30 +0300
+
+    fix for Delphi 11.0
+
 commit 407fb9a8f85ef5446c9b668b7bcb742976f811e7
 Author: zed <starmen@tut.by>
 Date:   2019-05-07 16:51:31 +0300
