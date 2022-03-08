@@ -1,3 +1,66 @@
+commit 0c1f7ebef5dbfab0d1613f8706c17c2ce63d5640
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-02-28 09:03:43 +0100
+
+    include statics binaries for SQLite3 engine in latest 3.38.0 revision
+
+commit c7aefd89badd17a9413d51dffbfbcb323e77040b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-02-28 09:01:26 +0100
+
+    updated static SQLite3 engine to latest 3.38.0 revision
+
+commit ae8260518e29c6576a6a06631a74531841f9222b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-02-03 12:41:12 +0100
+
+    allow TextCharSet='JSON' to force application/json in SendEmail
+
+commit c5a0ec93d2e3c3aac58eaa9f4e4b053d38b91b3c
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-01-31 09:47:44 +0100
+
+    support FPC trunk/3.4 AnsiString/UnicodeString header change
+    - 32-bit TAnsiRec.RefCnt even on 64-bit CPU
+    - see https://gitlab.com/freepascal.org/fpc/source/-/issues/38018
+
+commit fbcb26a9f9c95841bbae7f8c72e64547c4417cd3
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-01-22 09:53:01 +0100
+
+    update SQLite3 static engine to latest 3.37.2 revision
+
+commit 778a15b489c2c991b70289564a10b8b6c9854446
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-01-03 11:22:00 +0100
+
+    happy new mORMot year 2022! :)
+
+commit 354cb899aae0956bf926112f9b0872385597fa9f
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-01-03 11:17:02 +0100
+
+    happy new mORMot year 2022!
+
+commit 488d102a58851a97cd7791d33f18e2f0d2d1a82c
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-01-03 11:16:31 +0100
+
+    happy new mORMot year 2022!
+
+commit 45808860bf1089dd41dfae45743c805ff05ca509
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-01-03 10:34:31 +0100
+
+    happy new mORMot year 2022!
+
+commit 22f74d52026e0f2a44d522a6c4979a94e5b008a9
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2021-12-31 14:38:21 +0100
+
+    fixed SOA server-side execution
+    - avoid a temporary string allocation, and proper {} input execution
+
 commit 7eeae747b3e72d817e1d463bfcf0553fdd2bd0b2
 Author: Arnaud Bouchez <ab@synopse.info>
 Date:   2021-12-16 10:17:09 +0100

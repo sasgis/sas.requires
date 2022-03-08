@@ -6,7 +6,7 @@ unit mORMot;
 (*
     This file is part of Synopse mORMot framework.
 
-    Synopse mORMot framework. Copyright (C) 2021 Arnaud Bouchez
+    Synopse mORMot framework. Copyright (C) 2022 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit mORMot;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2021
+  Portions created by the Initial Developer are Copyright (C) 2022
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -60643,7 +60643,7 @@ begin
         inc(Par);
       '{': begin // retrieve parameters values from JSON object
         repeat inc(Par) until not(Par^ in [#1..' ']);
-        if Par<>'}' then begin
+        if Par^<>'}' then begin
           ParObjValuesUsed := true;
           FillCharFast(ParObjValues,(ArgsInLast+1)*SizeOf(pointer),0); // := nil
           a1 := ArgsInFirst;
