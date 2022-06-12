@@ -1,3 +1,9 @@
+commit 854cc0852487b1bc564cbb51fb17fc971ddf902b
+Author: zed <starmen@tut.by>
+Date:   2022-06-12 13:17:50 +0300
+
+    Чтение атрибута id для тегов Style и StyleMap
+
 commit 198c7c70e9eb3b4e040834d88d80e65b7ee1c694
 Author: zed <starmen@tut.by>
 Date:   2022-02-13 10:47:05 +0300

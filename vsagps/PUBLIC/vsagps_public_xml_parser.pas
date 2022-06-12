@@ -299,6 +299,32 @@ end;
 {$ifend}
 
 {$if defined(VSAGPS_USE_SOME_KIND_OF_XML_IMPORT)}
+function VSAGPS_Parse_Attrib_Str(
+  const ADOMNode: IDOMNode;
+  const AName: WideString;
+  var ws: WideString
+): Boolean;
+var
+  nm: IDOMNamedNodeMap;
+  mm: IDOMNode;
+begin
+  Result:=FALSE;
+
+  nm:=ADOMNode.attributes;
+  if (not Assigned(nm)) then
+    Exit;
+
+  mm:=nm.getNamedItem(AName);
+  if (not Assigned(mm)) then
+    Exit;
+
+  ws:=VSAGPS_XML_DOMNodeValue(mm);
+
+  Result := ws <> '';
+end;
+{$ifend}
+
+{$if defined(VSAGPS_USE_SOME_KIND_OF_XML_IMPORT)}
 function VSAGPS_Parse_Attrib_Double(
   const ADOMNode: IDOMNode;
   const AName: WideString;
@@ -541,7 +567,10 @@ var
   procedure _Parse_Attributes(
     const ANode: IDOMNode;
     const pData: Pvsagps_XML_ParserResult;
-    const piWideStrings: Pvsagps_XML_WideStrings);
+    const piWideStrings: Pvsagps_XML_WideStrings
+  );
+  var
+    ws: WideString;
   begin
     case V_px_state.src_fmt of
 {$if defined(VSAGPS_ALLOW_IMPORT_GPX)}
@@ -572,6 +601,16 @@ var
         end else
         if (pData^.kml_data.current_tag in [kml_when_gx]) then begin
           _Parse_kml_when_gx_to_Value(ANode, pData);
+        end else
+        if (pData^.kml_data.current_tag in [kml_Style, kml_StyleMap]) then begin
+          if VSAGPS_Parse_Attrib_Str(ANode, 'id', ws) then begin
+            if piWideStrings^.p_kml_attrib_str = nil then begin
+              New(piWideStrings^.p_kml_attrib_str);
+            end;
+            piWideStrings^.p_kml_attrib_str^.kml_attrib_buffers[kml_a_s_id] := ws;
+            pData^.kml_data.fAttribStrs[kml_a_s_id]:=PWideChar(piWideStrings^.p_kml_attrib_str^.kml_attrib_buffers[kml_a_s_id]);
+            Include(pData^.kml_data.fAvail_attrib_strs, kml_a_s_id);
+          end;
         end;
       end;
 {$ifend}
