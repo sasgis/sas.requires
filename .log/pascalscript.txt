@@ -1,3 +1,9 @@
+commit 1f24eda06ae947ca5b4f43f45fb72017e340d01b
+Author: evgenyk2 <git2@evgenysoft.com>
+Date:   2021-09-16 11:57:52 +0300
+
+    Cherry pick into stable: Delphi 11 support was added
+
 commit 7c999f8e8b29139cea4cc8e0a00a2551d467137d
 Author: Martijn Laan <martijnlaan@gmail.com>
 Date:   2020-12-10 15:38:42 +0100
