@@ -1,3 +1,9 @@
+commit 6c57329f7ebe729b9a372d5bd8c490cf20fd84bb
+Author: zed <starmen@tut.by>
+Date:   2023-04-05 10:53:19 +0300
+
+    Delphi 11.x fix
+
 commit 1c96c4d1de44e59a783bb99dde7719d74cfd5692
 Author: Yuri Plashenkov <plashenkov@gmail.com>
 Date:   2019-12-03 02:42:16 +0300

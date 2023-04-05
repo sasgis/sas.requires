@@ -1201,7 +1201,7 @@ end;
 type
 {$HINTS OFF}
 
-  {$IF CompilerVersion > 33}
+  {$IF CompilerVersion > 35}
     {$MESSAGE WARN 'Check if System.ImageList.TBaseImageList is still the same and adjust the IFDEF'}
   {$IFEND}
 
