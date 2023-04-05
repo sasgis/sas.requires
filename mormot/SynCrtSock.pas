@@ -6,7 +6,7 @@ unit SynCrtSock;
 {
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2022 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2023 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit SynCrtSock;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2022
+  Portions created by the Initial Developer are Copyright (C) 2023
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -539,7 +539,7 @@ type
     // - e.g. 'Content-Encoding: synlz' header if compressed using synlz
     // - and if Data is not '', will add 'Content-Type: ' header
     procedure CompressDataAndWriteHeaders(const OutContentType: SockString;
-      var OutContent: SockString);
+      var OutContent: SockString; OutContentLength: PtrInt = -1);
   public
     /// TCP/IP prefix to mask HTTP protocol
     // - if not set, will create full HTTP/1.0 or HTTP/1.1 compliant content
@@ -994,16 +994,16 @@ type
     property FullURL: SockUnicode read fFullURL;
     {$endif}
     /// input parameter containing the caller URI
-    property URL: SockString read fURL;
+    property URL: SockString read fURL write fUrl;
     /// input parameter containing the caller method (GET/POST...)
-    property Method: SockString read fMethod;
+    property Method: SockString read fMethod write fMethod;
     /// input parameter containing the caller message headers
-    property InHeaders: SockString read fInHeaders;
+    property InHeaders: SockString read fInHeaders write fInHeaders;
     /// input parameter containing the caller message body
     // - e.g. some GET/POST/PUT JSON data can be specified here
-    property InContent: SockString read fInContent;
+    property InContent: SockString read fInContent write fInContent;
     // input parameter defining the caller message body content type
-    property InContentType: SockString read fInContentType;
+    property InContentType: SockString read fInContentType write fInContentType;
     /// output parameter to be set to the response message body
     property OutContent: SockString read fOutContent write fOutContent;
     /// output parameter to define the reponse message body content type
@@ -1641,13 +1641,16 @@ type
 
   PHttpApiWebSocketConnectionVector = ^THttpApiWebSocketConnectionVector;
 
-  /// Event handlers for WebSocket
+  /// Event handler on THttpApiWebSocketServerProtocol Accept
   THttpApiWebSocketServerOnAcceptEvent = function(Ctxt: THttpServerRequest;
     var Conn: THttpApiWebSocketConnection): Boolean of object;
-  THttpApiWebSocketServerOnMessageEvent = procedure(const Conn: THttpApiWebSocketConnection;
+  /// Event handler on THttpApiWebSocketServerProtocol Message received
+  THttpApiWebSocketServerOnMessageEvent = procedure(var Conn: THttpApiWebSocketConnection;
     aBufferType: WEB_SOCKET_BUFFER_TYPE; aBuffer: Pointer; aBufferSize: ULONG) of object;
-  THttpApiWebSocketServerOnConnectEvent = procedure(const Conn: THttpApiWebSocketConnection) of object;
-  THttpApiWebSocketServerOnDisconnectEvent = procedure(const Conn: THttpApiWebSocketConnection;
+  /// Event handler on THttpApiWebSocketServerProtocol connection
+  THttpApiWebSocketServerOnConnectEvent = procedure(var Conn: THttpApiWebSocketConnection) of object;
+  /// Event handler on THttpApiWebSocketServerProtocol disconnection
+  THttpApiWebSocketServerOnDisconnectEvent = procedure(var Conn: THttpApiWebSocketConnection;
     aStatus: WEB_SOCKET_CLOSE_STATUS; aBuffer: Pointer; aBufferSize: ULONG) of object;
 
   /// Protocol Handler of websocket endpoints events
@@ -2544,7 +2547,7 @@ function OpenHttp(const aURI: SockString; aAddress: PSockString=nil): THttpClien
 // the overloaded HttpGet() methods
 function HttpGet(const server, port: SockString; const url: SockString;
   const inHeaders: SockString; outHeaders: PSockString=nil;
-  aLayer: TCrtSocketLayer = cslTCP): SockString; overload;
+  aLayer: TCrtSocketLayer = cslTCP; outStatus: PInteger = nil): SockString; overload;
 
 /// retrieve the content of a web page, using the HTTP/1.1 protocol and GET method
 // - this method will use a low-level THttpClientSock socket for plain http URI,
@@ -5870,14 +5873,18 @@ end;
 
 function HttpGet(const server, port: SockString; const url: SockString;
   const inHeaders: SockString; outHeaders: PSockString;
-  aLayer: TCrtSocketLayer): SockString;
+  aLayer: TCrtSocketLayer; outStatus: PInteger): SockString;
 var Http: THttpClientSocket;
+    status: integer;
 begin
   result := '';
   Http := OpenHttp(server,port,false,aLayer);
   if Http<>nil then
   try
-    if Http.Get(url,0,inHeaders) in [STATUS_SUCCESS..STATUS_PARTIALCONTENT] then begin
+    status := Http.Get(url,0,inHeaders);
+    if outStatus <> nil then
+      outStatus^ := status;
+    if status in [STATUS_SUCCESS..STATUS_PARTIALCONTENT] then begin
       result := Http.Content;
       if outHeaders<>nil then
         outHeaders^ := Http.HeaderGetText;
@@ -5908,7 +5915,7 @@ begin
       raise ECrtSocket.CreateFmt('https is not supported by HttpGet(%s)',[aURI]) else
       {$endif}
       {$endif USEWININET}
-      result := HttpGet(URI.Server,URI.Port,URI.Address,inHeaders,outHeaders,URI.Layer) else
+      result := HttpGet(URI.Server,URI.Port,URI.Address,inHeaders,outHeaders,URI.Layer,outStatus) else
     result := '';
   {$ifdef LINUX_RAWDEBUGVOIDHTTPGET}
   if result='' then
@@ -6539,6 +6546,7 @@ var ctxt: THttpServerRequest;
   var
     fs: TFileStream;
     fn: TFileName;
+    len: PtrInt;
   begin
     result := not Terminated; // true=success
     if not result then
@@ -6547,16 +6555,21 @@ var ctxt: THttpServerRequest;
     TSynLog.Add.Log(sllCustom2, 'SendResponse respsent=% code=%', [respsent,code], self);
     {$endif}
     respsent := true;
+    len := -1; // use length(ctxt.OutContent) by default
     // handle case of direct sending of static file (as with http.sys)
     if (ctxt.OutContent<>'') and (ctxt.OutContentType=HTTP_RESP_STATICFILE) then
       try
         ExtractNameValue(ctxt.fOutCustomHeaders,'CONTENT-TYPE:',ctxt.fOutContentType);
         fn := {$ifdef UNICODE}UTF8ToUnicodeString{$else}Utf8ToAnsi{$endif}(ctxt.OutContent);
-        if not Assigned(fOnSendFile) or not fOnSendFile(ctxt,fn) then begin
+        if (ctxt.Method='HEAD') or not Assigned(fOnSendFile) or not fOnSendFile(ctxt,fn) then begin
           fs := TFileStream.Create(fn,fmOpenRead or fmShareDenyNone);
           try
-            SetString(ctxt.fOutContent,nil,fs.Size);
-            fs.Read(Pointer(ctxt.fOutContent)^,length(ctxt.fOutContent));
+            if ctxt.Method='HEAD' then
+              len := fs.Size else
+            begin // regular GET or POST response
+              SetString(ctxt.fOutContent,nil,fs.Size);
+              fs.Read(Pointer(ctxt.fOutContent)^,length(ctxt.fOutContent));
+            end;
          finally
             fs.Free;
           end;
@@ -6603,7 +6616,7 @@ var ctxt: THttpServerRequest;
     ClientSock.SockSend([
       {$ifndef NOXPOWEREDNAME}XPOWEREDNAME+': '+XPOWEREDVALUE+#13#10+{$endif}
       'Server: ',fServerName]);
-    ClientSock.CompressDataAndWriteHeaders(ctxt.OutContentType,ctxt.fOutContent);
+    ClientSock.CompressDataAndWriteHeaders(ctxt.OutContentType,ctxt.fOutContent,len);
     if ClientSock.KeepAliveClient then begin
       if ClientSock.fCompressAcceptEncoding<>'' then
         ClientSock.SockSend(ClientSock.fCompressAcceptEncoding);
@@ -6624,7 +6637,7 @@ begin
   try
     respsent := false;
     with ClientSock do
-      ctxt.Prepare(URL,Method,HeaderGetText(fRemoteIP),Content,ContentType,'',ClientSock.fTLS);
+      ctxt.Prepare(URL,Method,HeaderGetText(fRemoteIP),Content,ContentType,fRemoteIP,ClientSock.fTLS);
     try
       Code := DoBeforeRequest(ctxt);
       {$ifdef SYNCRTDEBUGLOW}
@@ -7089,7 +7102,7 @@ begin
 end;
 
 procedure THttpSocket.CompressDataAndWriteHeaders(const OutContentType: SockString;
-  var OutContent: SockString);
+  var OutContent: SockString; OutContentLength: PtrInt);
 var OutContentEncoding: SockString;
 begin
   if integer(fCompressAcceptHeader)<>0 then begin
@@ -7098,7 +7111,9 @@ begin
     if OutContentEncoding<>'' then
         SockSend(['Content-Encoding: ',OutContentEncoding]);
   end;
-  SockSend(['Content-Length: ',length(OutContent)]); // needed even 0
+  if OutContentLength<0 then
+    OutContentLength := length(OutContent);
+  SockSend(['Content-Length: ',OutContentLength]); // needed even 0
   if (OutContentType<>'') and (OutContentType<>HTTP_RESP_STATICFILE) then
     SockSend(['Content-Type: ',OutContentType]);
 end;
@@ -9287,7 +9302,7 @@ begin
         // parse method and headers
         Context.fConnectionID := Req^.ConnectionId;
         Context.fHttpApiRequest := Req;
-        SetString(Context.fFullURL,Req^.CookedUrl.pFullUrl,Req^.CookedUrl.FullUrlLength);
+        Context.fFullURL := Req^.CookedUrl.pFullUrl; // FullUrlLength is in bytes
         SetString(Context.fURL,Req^.pRawUrl,Req^.RawUrlLength);
         if Req^.Verb in [low(Verbs)..high(Verbs)] then
           Context.fMethod := Verbs[Req^.Verb] else
@@ -9299,6 +9314,7 @@ begin
         InCompressAccept := ComputeContentEncoding(fCompress,pointer(InAcceptEncoding));
         Context.fUseSSL := Req^.pSslInfo<>nil;
         Context.fInHeaders := RetrieveHeaders(Req^,fRemoteIPHeaderUpper,RemoteIP);
+        Context.RemoteIP := RemoteIP;
         // compute remote connection ID
         L := length(fRemoteConnIDHeaderUpper);
         if L<>0 then begin
@@ -11647,10 +11663,6 @@ var OpenType: integer;
     CallbackRes: PtrInt absolute Callback; // for FPC compatibility
     protocols: DWORD;
 begin
-  if OSVersionInfo.dwOSVersionInfoSize=0 then begin // API call once
-    OSVersionInfo.dwOSVersionInfoSize := sizeof(OSVersionInfo);
-    GetVersionEx(OSVersionInfo);
-  end;
   if fProxyName='' then
     if (OSVersionInfo.dwMajorVersion>6) or
        ((OSVersionInfo.dwMajorVersion=6) and (OSVersionInfo.dwMinorVersion>=3)) then
@@ -13114,6 +13126,8 @@ begin
   {$ifdef USEWININET}
   FillChar(WinHttpAPI, SizeOf(WinHttpAPI), 0);
   WinHttpAPIInitialize;
+  OSVersionInfo.dwOSVersionInfoSize := sizeof(OSVersionInfo);
+  GetVersionEx(OSVersionInfo);
   {$endif}
   {$endif MSWINDOWS}
   FillChar(WsaDataOnce,sizeof(WsaDataOnce),0);

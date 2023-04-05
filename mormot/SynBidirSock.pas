@@ -6,7 +6,7 @@ unit SynBidirSock;
 {
     This file is part of the Synopse framework.
 
-    Synopse framework. Copyright (C) 2022 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2023 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit SynBidirSock;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2022
+  Portions created by the Initial Developer are Copyright (C) 2023
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -439,6 +439,8 @@ type
     /// the frame data itself
     // - is plain UTF-8 for focText kind of frame
     // - is raw binary for focBinary or any other frames
+    // - warning: the content will be masked in-place so caller should ensure
+    // this buffer can be modified (e.g. do not fill from a constant)
     payload: RawByteString;
   end;
 

@@ -1,3 +1,472 @@
+commit bd6d0057a25a35f755c87db0942cc16f887560dc
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-03-27 14:55:51 +0200
+
+    fixed Delphi compilation
+
+commit 6422efc4f8ad7faa57cd4153241d234745ef6099
+Merge: e35c8ebe 49432e38
+Author: ab <webcontact01@synopse.info>
+Date:   2023-03-23 11:27:36 +0100
+
+    Merge pull request #444 from synopse/feat/zipUnicodePathExtra
+    
+    Added support for non-english file names in Zip archives
+
+commit 49432e380ab8ca093a07056d4b985821abee8cbb
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2023-03-22 20:50:36 +0200
+
+    Added support for [Info-ZIP Unicode Path Extra Field](https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT). Will be good to be ported into mORMot2
+
+commit e35c8ebe885858d70314bf86cc26ff3bdfff6067
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-03-06 14:29:57 +0100
+
+    some fixes to the log viewer
+
+commit 2651201ed72187bbc07e0dbcabd222f81236b14b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-03-06 14:28:28 +0100
+
+    upgraded statics to SQLite3 3.41.0 database engine
+
+commit 27d662a230292d9a1b3b778331159cf0a5b74b40
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-01-16 13:57:48 +0100
+
+    mark this mORMot 1.18 repository in frozen/maintainance mode only
+
+commit 54bf242065162e677ddebbf1a97b51231168e3d6
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-01-16 13:57:09 +0100
+
+    fixed TSynLogFile when there is no exe version stored
+
+commit 2122241915a95a5b136fd15a69d4ac24ee9cb0d4
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-01-10 22:30:30 +0100
+
+    mark mORMot 2 as the new reference code
+
+commit f919412d80de89a635f24e4eca66845e0bc6f697
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-01-10 12:32:34 +0100
+
+    updated latest SynProject changes for mORMot 2 support
+    - as already reflected to https://github.com/synopse/SynProject
+
+commit 49123b49d5cac0ea95416a1815d7ac08cc7752b4
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-01-06 12:43:23 +0100
+
+    disable MEM_TOP_DOWN on Windows for SynFPCx64MM
+    - FastMM4 uses top-down allocation (MEM_TOP_DOWN) of large blocks to "reduce fragmentation", but on a 64-bit system I am not sure of this statement, and VirtualAlloc() was reported to have a huge slowdown due to this option https://randomascii.wordpress.com/2011/08/05/making-virtualalloc-arbitrarily-slower
+
+commit 77fbf375615ea9ebe27118920a9e91c134fae08d
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-01-01 18:02:36 +0100
+
+    happy new year 2023 ! :)
+
+commit 61ae908b8de4fd156e80cd5094be0a985f4267d6
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-12-15 21:29:29 +0100
+
+    TWinHTTP thread safety
+    - to fix #442
+
+commit aad97c6d418ee57af92acd500ead298832ddfc68
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-12-14 09:55:39 +0100
+
+    fixed HEAD over HTTP_RESP_STATICFILE resonse
+    - as reported by #441
+
+commit 6cdccb277ae4dc10faddabc61c36700c910e8d22
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-12-14 09:42:27 +0100
+
+    fixed HttpGet() outStatus optional value
+    - as reported by #440
+
+commit 371809f7301d8f649f9d18638615cce2a9fce873
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-12-11 11:41:13 +0100
+
+    try to circumvent Delphi optimizer bug
+    - Delphi does not seem to like inlining + goto/label
+    - FPC has no trouble about, but keep the optimized version in mORMot 2 only
+
+commit 9e222dc44893dd4af473d57963218dbf05670c00
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-12-09 09:11:57 +0100
+
+    fixed RemoteIP on THttpServer
+    - see https://github.com/synopse/mORMot/issues/439
+
+commit 74cfbc469575f35a17c76f11fc0358067485d6eb
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-12-07 17:15:17 +0100
+
+    updated documentation
+    - to state that mORMot 2 is the way to go now
+    - clarifying SQLite3 collation/index issues
+
+commit 2d9a6794a415bf8fcebfaa9403b1660b46d1f646
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-11-23 08:55:12 +0100
+
+    fixed THttpApiWebSocketServerProtocol event handlers to use "var"
+    - so that PrivateData member is accessible
+    - as requested by https://github.com/synopse/mORMot/issues/438
+
+commit fda07126792caf4d0a7f5017bf8c8f6ae7a0fb66
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-11-22 11:21:53 +0100
+
+    update SQLite3 database engine to its latest 3.40.0 revision
+
+commit 698c0b782a76a42fed52a831b7d9619547da8404
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-11-21 15:11:03 +0100
+
+    make explicit that TWebSocketFrame.payload should be writable
+    - as reported by https://github.com/synopse/mORMot/pull/434
+
+commit 8002d179baba2a9aba32f46c008ec924feae1212
+Merge: 686dc3a1 47dcd20e
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-11-21 15:09:43 +0100
+
+    Merge branch 'master' of https://github.com/synopse/mORMot
+
+commit 686dc3a16923d8f0cb6cd2d10d691c4f2d479a82
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-11-21 15:09:22 +0100
+
+    fixed THttpApiServer RemoteIP setting
+    - as reported by https://github.com/synopse/mORMot/pull/434
+
+commit 47dcd20e8aa63aa3d62c07e735d0b48a57ecd727
+Merge: 21b5856b 8a1bd70d
+Author: ab <webcontact01@synopse.info>
+Date:   2022-11-21 14:59:48 +0100
+
+    Merge pull request #437 from ASiwon/fix_TSynTableStatement_parenthesis_after
+    
+    Fix for setting ParenthesisAfter property value in TSynTableStatement…
+
+commit 8a1bd70d806e48c52656b108464b58cc3f466922
+Author: asiwon <a.siwon@gidex.com.pl>
+Date:   2022-11-21 12:37:52 +0100
+
+    Fix for setting ParenthesisAfter property value in TSynTableStatement class while parsing SQL with complex condition.
+
+commit 21b5856bac2509cb871bd413f80a0e6812857b42
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-10-26 14:27:10 +0200
+
+    fixed Service status on Win64
+    - the Handle was sometimes truncated to 32-bit
+    - see https://github.com/synopse/mORMot2/commit/66bbc6db4f80cf
+
+commit 871161c2048f962c86e8fa487fba7e36a8c3eadb
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-10-21 16:44:28 +0200
+
+    Windows service execution fixes
+
+commit 1ec2c241f837e657a5f1b8e69590d0340317c0c8
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-10-21 16:43:41 +0200
+
+    small Delphi compiler fix
+
+commit 8c6779175c6e13fc7f34b7cd7e34dfe6a3b5a964
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-10-10 18:17:54 +0200
+
+    fixed SortDynArrayVariantComp() when only one value is OleStr
+
+commit 5b6cf16d118b1472ccfd5fc855dab36be0f312ee
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-10-08 15:22:12 +0200
+
+    fixed Win64 compilation issue
+
+commit 9128f7728a143cca8d263ac59084c7c6775c3a3a
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-10-06 18:33:20 +0200
+
+    fixed TGDIPlusFull.ConvertToEmfPlus on Win64
+
+commit e28f354d9d208c40dd9ae9dba2604aee15f0899d
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-10-06 18:32:42 +0200
+
+    fixed TSQLDBConnection.NewTableFromRows with most DB connections
+
+commit 37474688a0fbba16975f30139f5232bef342b8cd
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-09-30 18:31:16 +0200
+
+    updated SQLite3 to 3.39.4 engine
+
+commit 0b101c398f3e73d7055e01844bf6188e78786156
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-09-20 17:37:56 +0200
+
+    fixed https://github.com/synopse/mORMot/issues/433
+
+commit ccabd3881aae83824f83eaf01002e88e7cad9bdc
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-09-20 17:36:32 +0200
+
+    updated documentation
+
+commit e8243f13f39429ed8243cff8cf93e578b52bdb8d
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-09-19 11:45:00 +0200
+
+    small documentation fixes
+
+commit ab691c2d67a183fdc1699d97d43ea191cb917157
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-09-19 11:42:50 +0200
+
+    statically linked SQLite3 3.39.3 engine
+
+commit eacc43c476ad13da08e4c5df695344a6fbda0db2
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-07-26 20:05:34 +0200
+
+    statically linked SQLite3 3.39.2 engine
+
+commit cc583a9c4a0501ed367fa437ede29a2a6cabf9df
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-07-26 13:02:57 +0200
+
+    fixed Delphi compilation
+
+commit 94b4226115f62a04f3aa1d7def66d52114cdcc2c
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-07-25 18:00:29 +0200
+
+    fixed SynZip file name folder delimiter
+    as reported by https://github.com/synopse/mORMot/issues/431
+    the path delimiter is forced to '/' just before writing to disk, as requested by 4.4.17 of reference PKware appnote
+
+commit 34bf46e37bb7d2b4dc91adaa4cbdc73e0106a429
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-07-19 17:55:31 +0200
+
+    fixed latest commit ;)
+
+commit 25266da6bd125a7add7bf90e91362b73750e5aac
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-07-19 17:50:30 +0200
+
+    fixed TSQLPropInfo.IsValueVoid e.g. with blobs, booleans or floats
+
+commit 08d368f869e8fba259d6a3824b93cc8de4189a8c
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-07-19 17:34:32 +0200
+
+    upgrade Statically linked SQLite3 to latest 3.39.1 revision
+
+commit 9898290d723d2c02a0473e487983382473543431
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-07-17 08:59:56 +0200
+
+    fixed "" string output with ZDBC
+
+commit 3586537670768c11f55e714c24a8538cc07d2af7
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-07-01 10:53:03 +0200
+
+    upgrade statically linked SQLite3 engine to 3.39.0
+
+commit bbc9413e05f8416a06442c410b7402c4191b56f4
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-06-06 08:32:16 +0200
+
+    fixed SynPdf compilation when NO_USE_SYNZIP is defined
+
+commit a39f8c7746b3e034694fc6f90122507af9171a30
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-06-02 13:25:21 +0200
+
+    some PDF font fixes
+
+commit 5dfaf1839730f34b7a6017c701e7ebcd4197c478
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-06-02 11:31:30 +0200
+
+    some Unicode Font fallback documentation and default changes
+
+commit 9e199ee3c6ba8fc72b7c3bcd54028c4132a29aad
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-05-17 18:33:44 +0200
+
+    rewritten TSQLRestClientURI.RetryOnceOnTimeout documentation
+    to make it expliclit that the timeout is a 408 error from the server side, not a client-side timeout, e.g. at HTTP level
+
+commit 9b01a3f88fcbc55a061233b737acb38abd359641
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-05-16 13:54:55 +0200
+
+    some other fixes to PDF font subset
+
+commit 480dea92c4417a4504910f6733e93624cb1a2b2e
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-05-16 13:23:15 +0200
+
+    fixed PDF font subset
+    - backport from mORMot 2
+
+commit 822291e067e4bfe78f159b45c86bb522966ef4c6
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-05-13 18:24:28 +0200
+
+    made THttpServerRequest URI/Method fields writable
+    - could be customized e.g. on OnBeforeRequest event handler
+
+commit 90a6b79138fa94d737b4c63f965723a46292830b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-05-13 16:51:50 +0200
+
+    fixed THttpServerRequest.FullURL
+    as reported by https://github.com/synopse/mORMot/issues/429
+
+commit 8b4f96e53ad7b16c4f0cb42f1555f08cb1f7f3f6
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-05-09 12:05:40 +0200
+
+    include SQLite 3.38.5 statics
+
+commit b112798705820bf940f546f0536294f007a83f33
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-05-09 11:52:47 +0200
+
+    upgraded SQLite statics to latest 3.38.5 engine
+
+commit c0c610d787f5657811724edb752abcbe6e0c1834
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-05-09 11:52:14 +0200
+
+    some PDF refactoring
+
+commit 8fd7735dcaec82d1a09773104b0671a661c973e9
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-29 14:45:07 +0200
+
+    ensure TPdfName.AppendPrefix use a random prefix
+
+commit beffa18f8e89e7b174ff7a1533c457b00bf31efe
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-29 14:44:01 +0200
+
+    reduce embedded font size within PDF
+
+commit 777a9cf91ffba0492f27f6cb6e661dcee29874d8
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-28 17:56:10 +0200
+
+    identify font subset in PDF content
+
+commit b3a111f2f5f338815d64ce16ac85d1df19a3fd9f
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-27 12:28:59 +0200
+
+    allow to embed symbol font subset to the pdf
+
+commit 6b6863c5e89b729eb84740a43f5a890717d58c5a
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-26 14:46:05 +0200
+
+    fixed regression after UpperCopy255Buf() last modification
+
+commit 511616c415f6622f270256c35d780df6b67bc5d5
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-25 16:50:12 +0200
+
+    new TPdfDocument.AddTrueTypeFont() method
+    - to be used e.g. when some fonts may not be enumerated in the system, e.g. after calling AddFontMemResourceEx() API
+
+commit 7deefd08c4afd381c6b7d548b426302061c2ce9b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-18 22:41:30 +0200
+
+    fixed 64-bit TID support in SynCrossPlatformREST
+
+commit e799e0c8e35faed5aa6a7bacbd3304199861e576
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-12 15:52:47 +0200
+
+    fixed TPdfCanvas.UnicodeTextWidth if MBCS is enabled
+
+commit 8e6a380c6cb6ae72c9a958b698324599d203c55c
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-12 09:18:17 +0200
+
+    updated SQlite3 static to latest 3.38.2 revision
+
+commit ca871d59d9f21e3b26ff21507ba04f12e632c5ef
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-11 17:50:28 +0200
+
+    fixed doc typo mentionned at https://github.com/synopse/mORMot/issues/427
+
+commit 89bb41bf35d1e887cdb03f198ce13c0faff616b2
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-11 12:24:28 +0200
+
+    fixed long-standing potential GPF in UpperCopy255BufPas
+    as revealed by https://github.com/synopse/SynPDF/pull/56
+
+commit 1ce77863795867a977bee2e860ad57ac89f2f2de
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-07 09:32:18 +0200
+
+    try to circumvent Delphi 11 compiler regression
+
+commit 8124e06383e553637308620be27c2b3660bb151b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-06 09:37:46 +0200
+
+    fixed delete multiple ORM with a RecordVersion property
+
+commit f9186b9d6e461993fee498ac86f96368afe9f076
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-05 16:47:02 +0200
+
+    fixed daemon/console app main thread running
+
+commit e9334683eb3b3241050bcebde6831122a4aa2557
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-04-01 10:04:01 +0200
+
+    some code formatting fixes
+
+commit f18adda91f961c53e4e58b1c09b712ef7161f86e
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-03-28 08:59:26 +0200
+
+    minor fixes with no functional change
+
+commit cd8f09b67d2e623d3a1f4d42e30d9082653cfa17
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-03-28 08:58:23 +0200
+
+    fixed JWT null payload parsing
+
+commit 041a21a33bfd06c21597551d880174552c93dc7e
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2022-03-12 15:47:28 +0100
+
+    update SQLite3 engine to latest 3.38.1
+
 commit 0c1f7ebef5dbfab0d1613f8706c17c2ce63d5640
 Author: Arnaud Bouchez <ab@synopse.info>
 Date:   2022-02-28 09:03:43 +0100

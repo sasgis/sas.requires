@@ -6,7 +6,7 @@ unit mORMotService;
 {
     This file is part of Synopse mORMot framework.
 
-    Synopse mORMot framework. Copyright (C) 2022 Arnaud Bouchez
+    Synopse mORMot framework. Copyright (C) 2023 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit mORMotService;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2022
+  Portions created by the Initial Developer are Copyright (C) 2023
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -169,7 +169,7 @@ type
   end;
 
   SC_HANDLE = THandle;
-  SERVICE_STATUS_HANDLE = DWORD;
+  SERVICE_STATUS_HANDLE = THandle;
   TServiceTableEntry = record
     lpServiceName: PChar;
     lpServiceProc: procedure(ArgCount: DWORD; Args: PPChar); stdcall;
@@ -1355,11 +1355,12 @@ begin
   if i<0 then
     exit; // avoid any GPF
   Srv := Services.Items[i];
-  for i := 1 to ArgCount-1 do begin
-    Inc(Args);
-    SetLength(Srv.FArgsList, length(Srv.FArgsList)+1);
-    Srv.FArgsList[high(Srv.FArgsList)] := Args^;
-  end;
+  if Args<>nil then // Args may be nil 
+    for i := 1 to integer(ArgCount)-1 do begin
+      Inc(Args); // first arg is name of the service
+      SetLength(Srv.FArgsList, length(Srv.FArgsList)+1);
+      Srv.FArgsList[high(Srv.FArgsList)] := Args^;
+    end;
   Srv.FStatusHandle := RegisterServiceCtrlHandler(
     pointer(Srv.fSName), @Srv.ControlHandler);
   if Srv.FStatusHandle = 0 then begin
@@ -1680,7 +1681,9 @@ begin
         ExeVersion.Version.DetailedOrVoid], daemon);
     start;
     while SynDaemonTerminated = 0 do
-      {$ifdef FPC}fpPause{$else}pause{$endif};
+      if GetCurrentThreadID = MainThreadID then
+        CheckSynchronize(100) else
+        Sleep(100);
   finally
     if log <> nil then
       log.Log(sllNewRun, 'Stop /% from Sig=%', [TXT[dofork], SynDaemonTerminated], daemon);

@@ -33,7 +33,7 @@ unit SynFPCx64MM;
 
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2022 Arnaud Bouchez
+    Synopse framework. Copyright (C) 2023 Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -52,7 +52,7 @@ unit SynFPCx64MM;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2022
+  Portions created by the Initial Developer are Copyright (C) 2023
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -498,9 +498,11 @@ end;
 
 function AllocLarge(Size: PtrInt): pointer; inline;
 begin
-  // top-down allocation of large blocks to reduce fragmentation
-  // (MEM_TOP_DOWN is not available on POSIX, but seems less needed)
-  result := VirtualAlloc(nil, Size, MEM_COMMIT or MEM_TOP_DOWN, PAGE_READWRITE);
+  // FastMM4 uses top-down allocation (MEM_TOP_DOWN) of large blocks to "reduce
+  // fragmentation", but on a 64-bit system I am not sure of this statement, and
+  // VirtualAlloc() was reported to have a huge slowdown due to this option
+  // https://randomascii.wordpress.com/2011/08/05/making-virtualalloc-arbitrarily-slower
+  result := VirtualAlloc(nil, Size, MEM_COMMIT, PAGE_READWRITE);
 end;
 
 procedure FreeMediumLarge(ptr: pointer; Size: PtrInt); inline;
