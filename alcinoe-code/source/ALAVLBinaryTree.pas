@@ -1,48 +1,15 @@
-{*************************************************************
-www:          http://sourceforge.net/projects/alcinoe/
-svn:          svn checkout svn://svn.code.sf.net/p/alcinoe/code/ alcinoe-code              
-Author(s):    Stéphane Vander Clock (skype/email: svanderclock@yahoo.fr)
-
-product:      ALAVLBinaryTree (Self-Balancing Binary Trees)
-Version:      4.00
-
-Description:  Binary trees that are self-balancing in the AVL sense
-              (the depth of any left branch differs by no more than
-              one from the depth of the right branch).
-
-Know bug :
-
-History :     27/10/2005: Rebuild of the unit
-              17/11/2005: improuve the nodecount property
-              17/12/2005: add savetostream and loadfromstream
-              10/01/2006: rebuild the unit to add AVL support
-                          rename unit from ALBinaryTree to
-                          ALAVLBinaryTree;
-              25/02/2006: Update TALCardinalKeySessionAVLBinaryTree.CreateSessionNode
-                          to delete expired node;
-              04/04/2006: add savetostream and loadfromstream to all descendant of TALBaseAVLBinaryTreeNode
-              04/04/2006: add TALIntegerKeyAVLBinaryTree
-              01/08/2006: add FindAndAcquireNode, AcquireNode, FindAndReleaseNode, ReleaseNode,
-                          CreateAndAcquireSessionNode to TALCardinalKeySessionAVLBinaryTree.
-              01/08/2012: remove the TALCardinalKeySessionAVLBinaryTree. not used anymore
-              26/06/2012: Add xe2 support
-
-Link :
-
-**************************************************************}
+{****************************************************
+Alcinoe.AVLBinaryTree (Self-Balancing Binary Trees)
+Binary trees that are self-balancing in the AVL sense
+(the depth of any left branch differs by no more than
+one from the depth of the right branch).
+****************************************************}
 unit ALAVLBinaryTree;
 
 interface
 
-{$IF CompilerVersion >= 25} {Delphi XE4}
-  {$LEGACYIFEND ON} // http://docwiki.embarcadero.com/RADStudio/XE4/en/Legacy_IFEND_(Delphi)
-{$IFEND}
-
-uses {$IF CompilerVersion >= 23} {Delphi XE2}
-     system.classes;
-     {$ELSE}
-     classes;
-     {$IFEND}
+uses
+  system.classes;
 
 type
 
@@ -51,10 +18,11 @@ type
   TALBaseAVLBinaryTree = class;
 
   {iterate function--------------------------------------------------}
-  TALAVLBinaryTreeIterateFunc = procedure(aTree: TALBaseAVLBinaryTree;
-                                          aNode: TALBaseAVLBinaryTreeNode;
-                                          aExtData: Pointer;
-                                          Var aContinue: Boolean);
+  TALAVLBinaryTreeIterateFunc = procedure(
+                                  aTree: TALBaseAVLBinaryTree;
+                                  aNode: TALBaseAVLBinaryTreeNode;
+                                  aExtData: Pointer;
+                                  Var aContinue: Boolean);
 
   {TALBaseAVLBinaryTreeNode---------------}
   TALBaseAVLBinaryTreeNode = class(Tobject)
@@ -245,14 +213,11 @@ type
 
 implementation
 
-uses {$IF CompilerVersion >= 23} {Delphi XE2}
-     System.Contnrs,
-     System.sysUtils,
-     {$ELSE}
-     Contnrs,
-     sysUtils,
-     {$IFEND}
-     ALString;
+uses
+  System.Contnrs,
+  System.sysUtils,
+  System.AnsiStrings,
+  ALString;
 
 {Following stack declarations are used to avoid recursion in all tree
  routines. Because the tree is AVL-balanced, a stack size of 40
@@ -280,10 +245,11 @@ begin
   else Result := 0;
 end;
 
-{***********************************************************************}
-procedure AlAVLBinaryTree_DelBalance(var aNode: TALBaseAVLBinaryTreeNode;
-                                     var SubTreeDec: Boolean;
-                                     CmpRes: Integer);
+{***********************************}
+procedure AlAVLBinaryTree_DelBalance(
+            var aNode: TALBaseAVLBinaryTreeNode;
+            var SubTreeDec: Boolean;
+            CmpRes: Integer);
 var N1, N2: TALBaseAVLBinaryTreeNode;
     B1, B2: Integer;
     LR: Boolean;
@@ -331,10 +297,11 @@ begin
   end;
 end;
 
-{***********************************************************************}
-procedure AlAVLBinaryTree_InsBalance(var aNode: TALBaseAVLBinaryTreeNode;
-                                     var SubTreeInc: Boolean;
-                                     CmpRes: Integer);
+{***********************************}
+procedure AlAVLBinaryTree_InsBalance(
+            var aNode: TALBaseAVLBinaryTreeNode;
+            var SubTreeInc: Boolean;
+            CmpRes: Integer);
 var N1: TALBaseAVLBinaryTreeNode;
     N2: TALBaseAVLBinaryTreeNode;
     LR: Boolean;
@@ -371,11 +338,12 @@ begin
   end;
 end;
 
-{***************************************************************************}
-procedure AlAVLBinaryTree_IterateDestroyNodeFunc(aTree: TALBaseAVLBinaryTree;
-                                                 aNode: TALBaseAVLBinaryTreeNode;
-                                                 aExtData: Pointer;
-                                                 Var aContinue: Boolean);
+{***********************************************}
+procedure AlAVLBinaryTree_IterateDestroyNodeFunc(
+            aTree: TALBaseAVLBinaryTree;
+            aNode: TALBaseAVLBinaryTreeNode;
+            aExtData: Pointer;
+            Var aContinue: Boolean);
 
 begin
   aTree.FreeNodeObj(aNode);
@@ -418,10 +386,11 @@ begin
   Inherited;
 end;
 
-{*********************************************************************************}
-procedure TALBaseAVLBinaryTree.InternalIterate(Action: TALAVLBinaryTreeIterateFunc;
-                                               Up: Boolean;
-                                               ExtData: Pointer);
+{*********************************************}
+procedure TALBaseAVLBinaryTree.InternalIterate(
+            Action: TALAVLBinaryTreeIterateFunc;
+            Up: Boolean;
+            ExtData: Pointer);
 var N1: TALBaseAVLBinaryTreeNode;
     N2: TALBaseAVLBinaryTreeNode;
     StackPos: Integer;
@@ -517,9 +486,10 @@ end;
 {*******************************************}
 procedure TALBaseAVLBinaryTree.InternalClear;
 begin
-  InternalIterate(AlAVLBinaryTree_IterateDestroyNodeFunc,
-                  True,
-                  nil);
+  InternalIterate(
+    AlAVLBinaryTree_IterateDestroyNodeFunc,
+    True,
+    nil);
   FHead := nil;
   FNodeCount := 0;
 end;
@@ -662,7 +632,7 @@ end;
 procedure TALBaseAVLBinaryTree.InternalLoadFromStream(Astream: Tstream);
 Var K:Boolean;
     LstNode: TObjectStack;
-    aParentNode, aNode: TALBaseAVLBinaryTreeNode;
+    LParentNode, LNode: TALBaseAVLBinaryTreeNode;
 begin
   {clear the binary tree}
   InternalClear;
@@ -689,35 +659,35 @@ begin
     While LstNode.Count > 0 do begin
 
       {extract the parent node of the node where we will work on}
-      aParentNode := TALBaseAVLBinaryTreeNode(LstNode.Pop);
+      LParentNode := TALBaseAVLBinaryTreeNode(LstNode.Pop);
 
       {load the data}
       AStream.ReadBuffer(k, SizeOf(k));
       if k then begin
 
         {find the good child node where we will work on}
-        If aParentNode.childNodes[cALAVLBinaryTree_LeftChild] = aParentNode then begin
-          aParentNode.childNodes[cALAVLBinaryTree_LeftChild] := CreateNode;
-          aNode := aParentNode.childNodes[cALAVLBinaryTree_LeftChild];
+        If LParentNode.childNodes[cALAVLBinaryTree_LeftChild] = LParentNode then begin
+          LParentNode.childNodes[cALAVLBinaryTree_LeftChild] := CreateNode;
+          LNode := LParentNode.childNodes[cALAVLBinaryTree_LeftChild];
         end
         else begin
-          aParentNode.childNodes[cALAVLBinaryTree_RightChild] := CreateNode;
-          aNode := aParentNode.childNodes[cALAVLBinaryTree_RightChild];
+          LParentNode.childNodes[cALAVLBinaryTree_RightChild] := CreateNode;
+          LNode := LParentNode.childNodes[cALAVLBinaryTree_RightChild];
         end;
 
-        AStream.ReadBuffer(ANode.Bal, SizeOf(ANode.Bal));
-        ANode.LoadFromStream(aStream);
+        AStream.ReadBuffer(LNode.Bal, SizeOf(LNode.Bal));
+        LNode.LoadFromStream(aStream);
         inc(FnodeCount);
-        aNode.childNodes[cALAVLBinaryTree_RightChild] := aNode; //a flag
-        aNode.childNodes[cALAVLBinaryTree_LeftChild] := aNode;  //a flag
+        LNode.childNodes[cALAVLBinaryTree_RightChild] := LNode; //a flag
+        LNode.childNodes[cALAVLBinaryTree_LeftChild] := LNode;  //a flag
         {continue the loop with the leftchild and rightChild}
-        LstNode.Push(aNode); //rightChild
-        LstNode.Push(aNode); //leftChild
+        LstNode.Push(LNode); //rightChild
+        LstNode.Push(LNode); //leftChild
       end
       else begin
         {find the good child node where we will work on}
-        If aParentNode.childNodes[cALAVLBinaryTree_LeftChild] = aParentNode then aParentNode.childNodes[cALAVLBinaryTree_LeftChild] := nil
-        else aParentNode.childNodes[cALAVLBinaryTree_RightChild] := nil;
+        If LParentNode.childNodes[cALAVLBinaryTree_LeftChild] = LParentNode then LParentNode.childNodes[cALAVLBinaryTree_LeftChild] := nil
+        else LParentNode.childNodes[cALAVLBinaryTree_RightChild] := nil;
       end
 
     end;
@@ -731,7 +701,7 @@ end;
 procedure TALBaseAVLBinaryTree.InternalSaveToStream(Astream: Tstream);
 Var K:Boolean;
     LstNode: TObjectStack;
-    aNode: TALBaseAVLBinaryTreeNode;
+    LNode: TALBaseAVLBinaryTreeNode;
 begin
   {create the TobjectStack}
   LstNode := TObjectStack.Create;
@@ -742,18 +712,18 @@ begin
 
     {start the loop}
     While LstNode.Count > 0 do begin
-      aNode := TALBaseAVLBinaryTreeNode(LstNode.Pop);
-      If assigned(aNode) then begin
+      LNode := TALBaseAVLBinaryTreeNode(LstNode.Pop);
+      If assigned(LNode) then begin
         {write that the node exist}
         K := True;
         AStream.WriteBuffer(k, SizeOf(k));
         {write the balance}
-        AStream.WriteBuffer(aNode.bal, SizeOf(aNode.bal));
+        AStream.WriteBuffer(LNode.bal, SizeOf(LNode.bal));
         {write the data}
-        Anode.SaveToStream(astream);
+        LNode.SaveToStream(astream);
         {continue the loop with the leftchild and rightChild}
-        LstNode.Push(aNode.childNodes[cALAVLBinaryTree_RightChild]);
-        LstNode.Push(aNode.childNodes[cALAVLBinaryTree_LeftChild]);
+        LstNode.Push(LNode.childNodes[cALAVLBinaryTree_RightChild]);
+        LstNode.Push(LNode.childNodes[cALAVLBinaryTree_LeftChild]);
       end
       else begin
         {write that the node doesn't exist}
@@ -769,25 +739,25 @@ end;
 
 {***********************************************************************}
 procedure TALBaseAVLBinaryTree.LoadFromFile(const AFilename: AnsiString);
-var aStream: TStream;
+var LStream: TStream;
 begin
-  aStream := TFileStream.Create(String(aFileName), fmOpenRead or fmShareDenyWrite);
+  LStream := TFileStream.Create(String(aFileName), fmOpenRead or fmShareDenyWrite);
   try
-    LoadFromStream(aStream);
+    LoadFromStream(LStream);
   finally
-    aStream.Free;
+    LStream.Free;
   end;
 end;
 
 {*********************************************************************}
 procedure TALBaseAVLBinaryTree.SaveToFile(const AFilename: AnsiString);
-var aStream: TStream;
+var LStream: TStream;
 begin
-  aStream := TFileStream.Create(String(aFileName), fmCreate);
+  LStream := TFileStream.Create(String(aFileName), fmCreate);
   try
-    SaveToStream(aStream);
+    SaveToStream(LStream);
   finally
-    aStream.Free;
+    LStream.Free;
   end;
 end;
 
@@ -1009,11 +979,11 @@ end;
 
 {********************************************************************************************************}
 function TALIntegerKeyAVLBinaryTree.CompareNode(IdVal: pointer; ANode: TALBaseAVLBinaryTreeNode): Integer;
-Var aIntKey: Integer;
+Var LIntKey: Integer;
 begin
-  aIntKey := PInteger(IdVal)^;
-  IF aIntKey = TALIntegerKeyAVLBinaryTreeNode(aNode).ID then result := 0
-  else IF aIntKey > TALIntegerKeyAVLBinaryTreeNode(aNode).ID then result := 1
+  LIntKey := PInteger(IdVal)^;
+  IF LIntKey = TALIntegerKeyAVLBinaryTreeNode(aNode).ID then result := 0
+  else IF LIntKey > TALIntegerKeyAVLBinaryTreeNode(aNode).ID then result := 1
   else result := -1;
 end;
 
@@ -1106,11 +1076,11 @@ end;
 
 {*********************************************************************************************************}
 function TALCardinalKeyAVLBinaryTree.CompareNode(IdVal: pointer; ANode: TALBaseAVLBinaryTreeNode): Integer;
-Var aCardKey: Cardinal;
+Var LCardKey: Cardinal;
 begin
-  aCardKey := PCardinal(IdVal)^;
-  IF aCardKey = TALCardinalKeyAVLBinaryTreeNode(aNode).ID then result := 0
-  else IF aCardKey > TALCardinalKeyAVLBinaryTreeNode(aNode).ID then result := 1
+  LCardKey := PCardinal(IdVal)^;
+  IF LCardKey = TALCardinalKeyAVLBinaryTreeNode(aNode).ID then result := 0
+  else IF LCardKey > TALCardinalKeyAVLBinaryTreeNode(aNode).ID then result := 1
   else result := -1;
 end;
 
@@ -1203,11 +1173,11 @@ end;
 
 {******************************************************************************************************}
 function TALInt64KeyAVLBinaryTree.CompareNode(IdVal: pointer; ANode: TALBaseAVLBinaryTreeNode): Integer;
-Var aInt64Key: Int64;
+Var LInt64Key: Int64;
 begin
-  aInt64Key := Pint64(IdVal)^;
-  IF aInt64Key = TALInt64KeyAVLBinaryTreeNode(aNode).ID then result := 0
-  else IF aInt64Key > TALInt64KeyAVLBinaryTreeNode(aNode).ID then result := 1
+  LInt64Key := Pint64(IdVal)^;
+  IF LInt64Key = TALInt64KeyAVLBinaryTreeNode(aNode).ID then result := 0
+  else IF LInt64Key > TALInt64KeyAVLBinaryTreeNode(aNode).ID then result := 1
   else result := -1;
 end;
 
@@ -1372,17 +1342,16 @@ begin
   Result := TALStringKeyAVLBinaryTreeNode(inherited Prev(aNode));
 end;
 
-
 {****************************************************************************************************}
 function TALStringKeyAVLBinaryTree.CompareKeyCaseInSensitive(const aKey1, aKey2: AnsiString): Integer;
 begin
-  Result := ALCompareText(aKey1,aKey2);
+  Result := ALCompareTextA(aKey1,aKey2);
 end;
 
 {**************************************************************************************************}
 function TALStringKeyAVLBinaryTree.CompareKeyCaseSensitive(const aKey1, aKey2: AnsiString): Integer;
 begin
-  result := ALCompareStr(aKey1,aKey2);
+  result := ALCompareStrA(aKey1,aKey2);
 end;
 
 {*************************************************************************}

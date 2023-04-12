@@ -2,38 +2,186 @@ unit ALCommon;
 
 interface
 
-uses {$IFDEF IOS}
-     iOSapi.Foundation,
-     {$ENDIF}
-     {$IFDEF MSWINDOWS}
-     Winapi.Windows,
-     {$ENDIF}
-     system.sysutils,
-     system.types;
+{$I Alcinoe.inc}
 
-{$IF CompilerVersion < 29} {Delphi XE8}
-  {$IF defined(CPUX64)} // The CPU supports the x86-64 instruction set, and is in a 64-bit environment. *New* in XE2/x64
-    {$DEFINE CPU64BITS} // The CPU is in a 64-bit environment, such as DCC64.EXE. *New* in XE8
+uses
+  {$IFDEF IOS}
+  iOSapi.Foundation,
   {$ENDIF}
-  {$IF defined(CPUX86)} // 	The CPU supports the x86-64 instruction set, and is in a 64-bit environment. *New* in XE2/x64
-    {$DEFINE CPU32BITS} // The CPU is in a 32-bit environment, such as DCC32.EXE. *New* in XE8
+  {$IFDEF MSWINDOWS}
+  Winapi.Windows,
   {$ENDIF}
-{$ENDIF}
+  system.Classes,
+  system.Generics.Collections,
+  system.SyncObjs,
+  system.sysutils,
+  system.types,
+  System.UITypes;
+
+type
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  TALWorkerThreadRefProc = reference to procedure(var AExtData: Tobject);
+  TALWorkerThreadObjProc = procedure(var AExtData: Tobject) of object;
+  TALWorkerThreadGetPriorityFunc = function(const AExtData: Tobject): Int64 of object;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  TALWorkerThreadRequest = Class(Tobject)
+  private
+    FRefProc: TALWorkerThreadRefProc;
+    FObjProc: TALWorkerThreadObjProc;
+    FExtData: Tobject;
+    FPriority: Int64;
+    FGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+    FSignal: TEvent;
+    function GetPriority: Int64; inline;
+  public
+    constructor Create(
+                  const AProc: TALWorkerThreadRefProc;
+                  const AExtData: Tobject;
+                  const APriority: Int64;
+                  const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+                  const ASignal: TEvent); overload;
+    constructor Create(
+                  const AProc: TALWorkerThreadobjProc;
+                  const AExtData: Tobject;
+                  const APriority: Int64;
+                  const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+                  const ASignal: TEvent); overload;
+    destructor Destroy; override;
+    property RefProc: TALWorkerThreadRefProc read FRefProc;
+    property ObjProc: TALWorkerThreadObjProc read FObjProc;
+    property ExtData: Tobject read FExtData;
+    property Priority: Int64 read GetPriority;
+    property Signal: TEvent read FSignal;
+  end;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  TALWorkerThreadPool = class;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  TALWorkerThread = class(TThread)
+  private
+    FWorkerThreadPool: TALWorkerThreadPool;
+    FSignal: TEvent;
+    FWaiting: Boolean;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(const aWorkerThreadPool: TALWorkerThreadPool);
+    destructor Destroy; override;
+    property Signal: TEvent read FSignal;
+    property Waiting: Boolean read fWaiting write fWaiting;
+  end;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  TALWorkerThreadPool = Class(Tobject)
+  public
+    type
+      TPriorityDirection = (lessThan, GreaterThan);
+  private
+    fMaxThreadCount: integer;
+    fPriorityStartingPoint: int64;
+    fPriorityDirection: TPriorityDirection;
+    fThreads: TObjectList<TALWorkerThread>;
+    fRequests: TObjectList<TALWorkerThreadRequest>;
+    function GetPriorityDirection: TPriorityDirection;
+    function GetPriorityStartingPoint: int64;
+    procedure SetPriorityDirection(const Value: TPriorityDirection);
+    procedure SetPriorityStartingPoint(const Value: int64);
+  protected
+    procedure EnqueueRequest(const ARequest: TALWorkerThreadRequest);
+    function DequeueRequest: TALWorkerThreadRequest;
+  public
+    constructor Create(const AMaxThreadCount: integer);
+    destructor Destroy; override;
+    //TALWorkerThreadRefProc
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadRefProc;
+                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const APriority: Int64;
+                const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+                Const AAsync: Boolean = True); overload; virtual;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadRefProc;
+                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const APriority: Int64;
+                Const AAsync: Boolean = True); overload;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadRefProc;
+                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+                Const AAsync: Boolean = True); overload;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadRefProc;
+                const APriority: Int64;
+                Const AAsync: Boolean = True); overload;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadRefProc;
+                const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+                Const AAsync: Boolean = True); overload;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadRefProc;
+                const AExtData: Tobject; // ExtData will be free by the worker thread
+                Const AAsync: Boolean = True); overload;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadRefProc;
+                Const AAsync: Boolean = True); overload;
+    //TALWorkerThreadObjProc
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadObjProc;
+                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const APriority: Int64;
+                const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+                Const AAsync: Boolean = True); overload; virtual;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadObjProc;
+                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const APriority: Int64;
+                Const AAsync: Boolean = True); overload;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadObjProc;
+                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+                Const AAsync: Boolean = True); overload;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadObjProc;
+                const APriority: Int64;
+                Const AAsync: Boolean = True); overload;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadObjProc;
+                const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+                Const AAsync: Boolean = True); overload;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadObjProc;
+                const AExtData: Tobject; // ExtData will be free by the worker thread
+                Const AAsync: Boolean = True); overload;
+    procedure ExecuteProc(
+                const AProc: TALWorkerThreadObjProc;
+                Const AAsync: Boolean = True); overload;
+    //When we Dequeue a Request, we look for the request with a priority
+    //the most closest to PriorityStartingPoint in the PriorityDirection.
+    //Exemple if we have in the queue the requests with those priorities: 25, 75, 100, 125, 150
+    //and if PriorityStartingPoint = 110, PriorityDirection = lessThan then
+    //dequeue will return the request with a priority of 100. in the opposite
+    //way if PriorityStartingPoint = 110, PriorityDirection = greaterThan then
+    //dequeue will return 125
+    property PriorityStartingPoint: int64 read GetPriorityStartingPoint write SetPriorityStartingPoint;
+    property PriorityDirection: TPriorityDirection read GetPriorityDirection write SetPriorityDirection;
+  end;
 
 {$IF CompilerVersion <= 25} // xe4
 type
-  {$SCOPEDENUMS ON}
   THorzRectAlign = (Center, Left, Right);
   TVertRectAlign = (Center, Top, Bottom);
-  {$SCOPEDENUMS OFF}
 {$IFEND}
 
 type
 
   TALPointDType = array [0..1] of Double;
 
-  {~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IF CompilerVersion > 33} // rio
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  {$IFNDEF ALCompilerVersionSupported}
     {$MESSAGE WARN 'Check if System.Types.TPointf still having the same implementation and adjust the IFDEF'}
   {$IFEND}
   PALPointD = ^TALPointD;
@@ -63,6 +211,7 @@ type
     function DotProduct(const APoint: TALPointD): Double; inline;
 
     procedure Offset(const APoint: TALPointD); overload; inline;
+    procedure Offset(const APoint: TPointf); overload; inline;
     procedure Offset(const ADeltaX, ADeltaY: Double); overload; inline;
     procedure Offset(const APoint: TPoint); overload; inline;
 
@@ -80,6 +229,7 @@ type
     function Ceiling: TPoint;
     function Truncate: TPoint;
     function Round: TPoint;
+    function ReducePrecision: TPointf;
     /// <summary> Rounds the current point to the specified scale value
     /// <param name="AScale"> The scale of scene </param>
     /// <param name="APlaceBetweenPixels"> If <c>True</c> (by default) the resulting point moves to half scale </param>
@@ -103,8 +253,8 @@ type
           Y: Double;);
   end;
 
-  {~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IF CompilerVersion > 33} // rio
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  {$IFNDEF ALCompilerVersionSupported}
     {$MESSAGE WARN 'Check if System.Types.TSizef still having the same implementation and adjust the IFDEF'}
   {$IFEND}
   PALSizeD = ^TALSizeD;
@@ -113,6 +263,7 @@ type
     cy: Double;
   public
     constructor Create(P: TALSizeD); overload;
+    constructor Create(P: TSizeF); overload;
     constructor Create(const X, Y: Double); overload;
     // operator overloads
     class operator Equal(const Lhs, Rhs: TALSizeD): Boolean;
@@ -127,6 +278,7 @@ type
     function Ceiling: TSize;
     function Truncate: TSize;
     function Round: TSize;
+    function ReducePrecision: TSizeF;
 
     // metods
     function Add(const Point: TALSizeD): TALSizeD;
@@ -140,8 +292,8 @@ type
     property Height: Double read cy write cy;
   end;
 
-  {~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IF CompilerVersion > 33} // rio
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  {$IFNDEF ALCompilerVersionSupported}
     {$MESSAGE WARN 'Check if System.Types.TRectf still having the same implementation and adjust the IFDEF'}
   {$IFEND}
   PALRectD = ^TALRectD;
@@ -155,11 +307,12 @@ type
     procedure SetSize(const Value: TALSizeD);
     function GetLocation: TALPointD;
   public
-    constructor Create(const Origin: TALPointD); overload;                               // empty rect at given origin
+    constructor Create(const Origin: TALPointD); overload;                              // empty rect at given origin
     constructor Create(const Origin: TALPointD; const Width, Height: Double); overload; // at TPoint of origin with width and height
-    constructor Create(const Left, Top, Right, Bottom: Double); overload;              // at x, y with width and height
+    constructor Create(const Left, Top, Right, Bottom: Double); overload;               // at Left, Top, Right, and Bottom
     constructor Create(const P1, P2: TALPointD; Normalize: Boolean = False); overload;  // with corners specified by p1 and p2
     constructor Create(const R: TALRectD; Normalize: Boolean = False); overload;
+    constructor Create(const R: TRectF; Normalize: Boolean = False); overload;
     constructor Create(const R: TRect; Normalize: Boolean = False); overload;
 
     // operator overloads
@@ -200,8 +353,10 @@ type
     /// <param name="AVertAlign"> The vertical arrangement, if the height of the rectangle is smaller than the height
     /// of the designated area. The <b>Center</b> by default </param>
     /// <returns> The current rectangle after transformation </returns>
-    function PlaceInto(const ADesignatedArea: TALRectD; const AHorzAlign: THorzRectAlign = THorzRectAlign.Center;
-      const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TALRectD;
+    function PlaceInto(
+               const ADesignatedArea: TALRectD;
+               const AHorzAlign: THorzRectAlign = THorzRectAlign.Center;
+               const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TALRectD;
 
     /// <summary> Rounds the location and size of the current rectangle to the specified value
     /// <param name="AScale"> The scale of scene </param>
@@ -244,10 +399,12 @@ type
     // offsets the rectangle origin relative to current position
     procedure Offset(const DX, DY: Double); overload;
     procedure Offset(const Point: TALPointD); overload;
+    procedure Offset(const Point: TPointf); overload;
 
     // sets new origin
     procedure SetLocation(const X, Y: Double); overload;
     procedure SetLocation(const Point: TALPointD); overload;
+    procedure SetLocation(const Point: TPointf); overload;
 
     // inflate by DX and DY
     procedure Inflate(const DX, DY: Double); overload;
@@ -261,6 +418,7 @@ type
     function Ceiling: TRect;
     function Truncate: TRect;
     function Round: TRect;
+    function ReducePrecision: TRectF;
 
     function EqualsTo(const R: TALRectD; const Epsilon: Double = 0): Boolean;
 
@@ -283,8 +441,8 @@ type
     1: (TopLeft, BottomRight: TALPointD);
   end;
 
-{~~~~~~~~~~~~~~~~~~~~~~~~}
-{$IF CompilerVersion > 33} // rio
+{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+{$IFNDEF ALCompilerVersionSupported}
   {$MESSAGE WARN 'Check if functions below implemented in System.Types still having the same implementation and adjust the IFDEF'}
 {$IFEND}
 function ALRectWidth(const Rect: TRect): Integer; inline; overload;
@@ -302,72 +460,72 @@ function ALRectCenter(var R: TALRectD; const Bounds: TALRectD): TALRectD; overlo
 function ALIntersectRect(out Rect: TALRectD; const R1, R2: TALRectD): Boolean;
 function ALUnionRect(out Rect: TALRectD; const R1, R2: TALRectD): Boolean;
 
-{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+{**************************************************************************************************************************}
 function ALRectFitInto(const R: TRectf; const Bounds: TRectf; const CenterAt: TpointF; out Ratio: Single): TRectF; overload;
 function ALRectFitInto(const R: TRectf; const Bounds: TRectf; const CenterAt: TpointF): TRectF; overload;
 function ALRectFitInto(const R: TRectf; const Bounds: TRectF; out Ratio: Single): TRectF; overload;
 function ALRectFitInto(const R: TRectf; const Bounds: TRectF): TRectF; overload;
-function ALRectPlaceInto(const R: TRectf;
-                         const Bounds: TRectf;
-                         const CenterAt: TpointF;
-                         out Ratio: Single): TRectF; overload;
+function ALRectPlaceInto(
+           const R: TRectf;
+           const Bounds: TRectf;
+           const CenterAt: TpointF;
+           out Ratio: Single): TRectF; overload;
 function ALRectPlaceInto(const R: TRectf; const Bounds: TRectf; const CenterAt: TpointF): TRectF; overload;
-function ALRectPlaceInto(const R: TRectf;
-                         const Bounds: TRectF;
-                         const AHorzAlign: THorzRectAlign = THorzRectAlign.Center;
-                         const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TRectF; overload;
+function ALRectPlaceInto(
+           const R: TRectf;
+           const Bounds: TRectF;
+           const AHorzAlign: THorzRectAlign = THorzRectAlign.Center;
+           const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TRectF; overload;
 
 type
 
-  {$IFNDEF NEXTGEN}
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
   EALException = class(Exception)
   public
-    constructor Create(const Msg: AnsiString);
-    constructor CreateFmt(const Msg: ansistring; const Args: array of const);
+    constructor Create(const Msg: AnsiString); overload;
+    constructor Create(const Msg: string); overload;
+    constructor CreateFmt(const Msg: ansistring; const Args: array of const); overload;
+    constructor CreateFmt(const Msg: string; const Args: array of const); overload;
   end;
-  {$ENDIF}
-  EALExceptionU = class(Exception);
 
 {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
 var ALCallStackCustomLogsMaxCount: integer = 50;
-procedure ALAddCallStackCustomLogU(Const aLog: String);
-function ALGetCallStackCustomLogsU(Const aAppendTimeStamp: boolean = True): String;
+procedure ALAddCallStackCustomLog(Const aLog: String);
+function ALGetCallStackCustomLogs(Const aPrependTimeStamp: boolean = True; Const aPrependThreadID: boolean = True): String;
 
 {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
 Type TalLogType = (VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT);
-procedure ALLog(Const Tag: String; Const msg: String; const _type: TalLogType = TalLogType.INFO);
+procedure ALLog(Const Tag: String; Const msg: String; const _type: TalLogType = TalLogType.INFO); overload;
+procedure ALLog(Const Tag: String; const _type: TalLogType = TalLogType.INFO); overload;
+Var ALEnqueueLog: Boolean; // We can use this flag to enqueue the log when the device just started and when we didn't yet
+procedure ALPrintLogQueue; // pluged the device to the monitoring tool, so that we can print the log a little later
 
 {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
 type TALCustomDelayedFreeObjectProc = procedure(var aObject: Tobject) of object;
 var ALCustomDelayedFreeObjectProc: TALCustomDelayedFreeObjectProc;
-{$IFDEF DEBUG}
-var ALFreeAndNilRefCountWarn: boolean;
-threadvar ALCurThreadFreeAndNilNORefCountWarn: boolean;
-type TALFreeAndNilCanRefCountWarnProc = function(const aObject: Tobject): boolean of object;
-var ALFreeAndNilCanRefCountWarnProc: TALFreeAndNilCanRefCountWarnProc;
+{$IF CompilerVersion >= 34} // sydney
+Procedure ALFreeAndNil(const [ref] Obj: TObject; const ADelayed: boolean = false); inline;
+{$ELSE}
+Procedure ALFreeAndNil(var Obj; const ADelayed: boolean = false); inline;
 {$ENDIF}
-Procedure ALFreeAndNil(var Obj; const adelayed: boolean = false); overload; {$IFNDEF DEBUG}inline;{$ENDIF}
-Procedure ALFreeAndNil(var Obj; const adelayed: boolean; const aRefCountWarn: Boolean); overload; {$IFNDEF DEBUG}inline;{$ENDIF}
 
-{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+{******************************************}
 Function AlBoolToInt(Value:Boolean):Integer;
 Function AlIntToBool(Value:integer):boolean;
 Function ALMediumPos(LTotal, LBorder, LObject : integer):Integer;
 
-{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+{**************************************************************************************************************}
 function  ALIfThen(AValue: Boolean; const ATrue: Integer; const AFalse: Integer = 0): Integer; overload; inline;
 function  ALIfThen(AValue: Boolean; const ATrue: Int64; const AFalse: Int64 = 0): Int64; overload; inline;
 function  ALIfThen(AValue: Boolean; const ATrue: UInt64; const AFalse: UInt64 = 0): UInt64; overload; inline;
 function  ALIfThen(AValue: Boolean; const ATrue: Single; const AFalse: Single = 0): Single; overload; inline;
 function  ALIfThen(AValue: Boolean; const ATrue: Double; const AFalse: Double = 0): Double; overload; inline;
 function  ALIfThen(AValue: Boolean; const ATrue: Extended; const AFalse: Extended = 0): Extended; overload; inline;
-{$IFNDEF NEXTGEN}
-function  ALIfThen(AValue: Boolean; const ATrue: AnsiString; AFalse: AnsiString = ''): AnsiString; overload; inline;
-{$ENDIF}
-function  ALIfThenU(AValue: Boolean; const ATrue: String; AFalse: String = ''): String; overload; inline;
+function  ALIfThenA(AValue: Boolean; const ATrue: AnsiString; AFalse: AnsiString = ''): AnsiString; overload; inline;
+function  ALIfThenW(AValue: Boolean; const ATrue: String; AFalse: String = ''): String; overload; inline;
 
 {$IFDEF MSWINDOWS}
-{$IF CompilerVersion > 33} // rio
+{$IFNDEF ALCompilerVersionSupported}
   {$MESSAGE WARN 'Check if EnumDynamicTimeZoneInformation/SystemTimeToTzSpecificLocalTimeEx/TzSpecificLocalTimeToSystemTimeEx are still not declared in Winapi.Windows and adjust the IFDEF'}
 {$ENDIF}
 {$WARNINGS OFF}
@@ -377,6 +535,7 @@ function TzSpecificLocalTimeToSystemTimeEx(lpTimeZoneInformation: PDynamicTimeZo
 {$WARNINGS ON}
 Function ALGetDynamicTimeZoneInformations: Tarray<TDynamicTimeZoneInformation>;
 Function ALGetDynamicTimeZoneInformation(const aTimeZoneKeyName: String): TDynamicTimeZoneInformation;
+function ALFileTimeToDateTime(const AFileTime: TFileTime): TDateTime;
 {$ENDIF}
 function AlLocalDateTimeToUTC(Const aLocalDateTime: TDateTime): TdateTime; overload;
 function AlUTCDateTimeToLocal(Const aUTCDateTime: TDateTime): TdateTime; overload;
@@ -394,104 +553,553 @@ function ALUnixMsToDateTime(const aValue: Int64): TDateTime;
 function ALDateTimeToUnixMs(const aValue: TDateTime): Int64;
 Function ALInc(var x: integer; Count: integer): Integer;
 var ALMove: procedure (const Source; var Dest; Count: NativeInt);
-
-{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-const ALMAXUInt64: UInt64 = 18446744073709551615;
-      ALMAXInt64: Int64 = 9223372036854775807;
-      ALMAXUInt: cardinal = 4294967295;
-      ALMAXInt: int32 = 2147483647;
-      ALNullDate = 0; // There are no TDateTime values from –1 through 0
-                      // dt := -0.5;
-                      // writeln(formatFloat('0.0', dt));                    => -0.5
-                      // writeln(DateTimeToStr(dt));                         => 1899/12/30 12:00:00.000
-                      //
-                      // dt := encodedatetime(1899,12,30,12,00,00,000);
-                      // writeln(formatFloat('0.0', dt));                    => 0.5
-                      // writeln(DateTimeToStr(dt));                         => 1899/12/30 12:00:00.000
-                      //
-                      // also -0.5 have the advantage to be in the form
-                      // m*2^e (-1*2^-1) with mean we don't need to use
-                      // samevalue to compare
-                      // https://stackoverflow.com/questions/41779801/single-double-and-precision
-                      //
-                      // but finally -0.5 have a big drawback, if you convert it to string and back
-                      // to datetime then you will obtain 0.5 ! same if you convert it to unix and
-                      // back to datetime :( so i decide that 0 if more suitable than -0.5
-
-{$IFNDEF NEXTGEN}
-
-//
-// Taken from https://github.com/synopse/mORMot.git
-// https://synopse.info
-// http://mormot.net
-//
-
-{$IF CompilerVersion > 34} // sydney
-  {$MESSAGE WARN 'Check if https://github.com/synopse/mORMot.git SynCommons.pas was not updated from references\mORMot\SynCommons.pas and adjust the IFDEF'}
-{$ENDIF}
-
+{$IFDEF MSWINDOWS}
 type
-  /// the potential features, retrieved from an Intel CPU
-  // - see https://en.wikipedia.org/wiki/CPUID#EAX.3D1:_Processor_Info_and_Feature_Bits
-  // - is defined on all platforms, since an ARM desktop could browse Intel logs
-  TALIntelCpuFeature =
-   ( { CPUID 1 in EDX }
-   cfFPU, cfVME, cfDE, cfPSE, cfTSC, cfMSR, cfPAE, cfMCE,
-   cfCX8, cfAPIC, cf_d10, cfSEP, cfMTRR, cfPGE, cfMCA, cfCMOV,
-   cfPAT, cfPSE36, cfPSN, cfCLFSH, cf_d20, cfDS, cfACPI, cfMMX,
-   cfFXSR, cfSSE, cfSSE2, cfSS, cfHTT, cfTM, cfIA64, cfPBE,
-   { CPUID 1 in ECX }
-   cfSSE3, cfCLMUL, cfDS64, cfMON, cfDSCPL, cfVMX, cfSMX, cfEST,
-   cfTM2, cfSSSE3, cfCID, cfSDBG, cfFMA, cfCX16, cfXTPR, cfPDCM,
-   cf_c16, cfPCID, cfDCA, cfSSE41, cfSSE42, cfX2A, cfMOVBE, cfPOPCNT,
-   cfTSC2, cfAESNI, cfXS, cfOSXS, cfAVX, cfF16C, cfRAND, cfHYP,
-   { extended features CPUID 7 in EBX, ECX, DL }
-   cfFSGS, cf_b01, cfSGX, cfBMI1, cfHLE, cfAVX2, cf_b06, cfSMEP,
-   cfBMI2, cfERMS, cfINVPCID, cfRTM, cfPQM, cf_b13, cfMPX, cfPQE,
-   cfAVX512F, cfAVX512DQ, cfRDSEED, cfADX, cfSMAP, cfAVX512IFMA, cfPCOMMIT, cfCLFLUSH,
-   cfCLWB, cfIPT, cfAVX512PF, cfAVX512ER, cfAVX512CD, cfSHA, cfAVX512BW, cfAVX512VL,
-   cfPREFW1, cfAVX512VBMI, cfUMIP, cfPKU, cfOSPKE, cf_c05, cfAVX512VBMI2, cf_c07,
-   cfGFNI, cfVAES, cfVCLMUL, cfAVX512NNI, cfAVX512BITALG, cf_c13, cfAVX512VPC, cf_c15,
-   cf_cc16, cf_c17, cf_c18, cf_c19, cf_c20, cf_c21, cfRDPID, cf_c23,
-   cf_c24, cf_c25, cf_c26, cf_c27, cf_c28, cf_c29, cfSGXLC, cf_c31,
-   cf_d0, cf_d1, cfAVX512NNIW, cfAVX512MAS, cf_d4, cf_d5, cf_d6, cf_d7);
+  TALConsoleColor = (
+    ccRed,
+    ccDarkRed,
+    ccBlue,
+    ccDarkBlue,
+    ccGreen,
+    ccDarkGreen,
+    ccYellow,
+    ccDarkYellow,
+    ccAqua,
+    ccDarkAqua,
+    ccPurple,
+    ccDarkPurple,
+    ccGrey,
+    ccBlack,
+    ccWhite,
+    ccDarkWhite);
 
-  /// all features, as retrieved from an Intel CPU
-  TALIntelCpuFeatures = set of TALIntelCpuFeature;
-
-var
-  /// the available CPU features, as recognized at program startup
-  ALCpuFeatures: TALIntelCpuFeatures;
-
-procedure ALInitCpuFeatures;
-
+function ALConsoleForegroundColorToCode(const AColor : TALConsoleColor): Word;
+function ALConsoleBackgroundColorToCode(const AColor : TALConsoleColor): Word;
+function ALConsoleCodeToForegroundColor(const ACode : Word): TALConsoleColor;
+function ALConsoleCodeToBackgroundColor(const ACode : Word): TALConsoleColor;
+procedure ALGetConsoleColors(out AForegroundColor: TALConsoleColor; out ABackgroundColor: TALConsoleColor);
+procedure ALSetConsoleColors(const AForegroundColor: TALConsoleColor; const ABackgroundColor: TALConsoleColor);
+Procedure ALWriteLN(const AStr: AnsiString); overload;
+Procedure ALWriteLN(const AStr: AnsiString; const aForegroundColor: TALConsoleColor); overload;
+Procedure ALWriteLN(const AStr: AnsiString; const aForegroundColor: TALConsoleColor; const aBackgroundColor: TALConsoleColor); overload;
+Procedure ALWriteLN(const AStr: String); overload;
+Procedure ALWriteLN(const AStr: String; const aForegroundColor: TALConsoleColor); overload;
+Procedure ALWriteLN(const AStr: String; const aForegroundColor: TALConsoleColor; const aBackgroundColor: TALConsoleColor); overload;
 {$ENDIF}
+
+
+{~~~}
+const
+
+  ALMAXUInt64: UInt64 = 18446744073709551615;
+  ALMAXInt64: Int64 = 9223372036854775807;
+  ALMAXUInt: cardinal = 4294967295;
+  ALMAXInt: int32 = 2147483647;
+  ALNullDate = 0; // There are no TDateTime values from –1 through 0
+                  // dt := -0.5;
+                  // writeln(formatFloat('0.0', dt));                    => -0.5
+                  // writeln(DateTimeToStr(dt));                         => 1899/12/30 12:00:00.000
+                  //
+                  // dt := encodedatetime(1899,12,30,12,00,00,000);
+                  // writeln(formatFloat('0.0', dt));                    => 0.5
+                  // writeln(DateTimeToStr(dt));                         => 1899/12/30 12:00:00.000
+                  //
+                  // also -0.5 have the advantage to be in the form
+                  // m*2^e (-1*2^-1) with mean we don't need to use
+                  // samevalue to compare
+                  // https://stackoverflow.com/questions/41779801/single-double-and-precision
+                  //
+                  // but finally -0.5 have a big drawback, if you convert it to string and back
+                  // to datetime then you will obtain 0.5 ! same if you convert it to unix and
+                  // back to datetime :( so i decide that 0 if more suitable than -0.5
 
 implementation
 
-uses system.Classes,
-     system.math,
-     system.generics.collections,
-     {$IF defined(ANDROID)}
-     Androidapi.JNI.JavaTypes,
-     Androidapi.Helpers,
-     ALAndroidApi,
-     {$ENDIF}
-     {$IF defined(IOS)}
-     Macapi.Helpers,
-     {$ENDIF}
-     system.DateUtils,
-     ALString;
+uses
+  system.math,
+  system.Rtti,
+  {$IF defined(ANDROID)}
+  Posix.Sched,
+  Androidapi.JNI.JavaTypes,
+  Androidapi.Helpers,
+  Alcinoe.AndroidApi.Common,
+  {$ENDIF}
+  {$IF defined(IOS)}
+  Posix.Sched,
+  Macapi.Helpers,
+  {$ENDIF}
+  system.DateUtils,
+  ALString;
+
+{****************************************}
+constructor TALWorkerThreadRequest.Create(
+              const AProc: TALWorkerThreadRefProc;
+              const AExtData: Tobject;
+              const APriority: Int64;
+              const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+              const ASignal: TEvent);
+begin
+  FRefProc := AProc;
+  FExtData := AExtData;
+  FPriority := APriority;
+  FGetPriorityFunc := AGetPriorityFunc;
+  FSignal := ASignal;
+end;
+
+{****************************************}
+constructor TALWorkerThreadRequest.Create(
+              const AProc: TALWorkerThreadObjProc;
+              const AExtData: Tobject;
+              const APriority: Int64;
+              const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+              const ASignal: TEvent);
+begin
+  FObjProc := AProc;
+  FExtData := AExtData;
+  FPriority := APriority;
+  FGetPriorityFunc := AGetPriorityFunc;
+  FSignal := ASignal;
+end;
+
+{****************************************}
+destructor TALWorkerThreadRequest.Destroy;
+begin
+  ALFreeAndNil(FExtData);
+  inherited;
+end;
+
+{*************************************************}
+function TALWorkerThreadRequest.GetPriority: Int64;
+begin
+  if Assigned(FGetPriorityFunc) then result := fGetPriorityFunc(FExtData)
+  else result := FPriority;
+end;
+
+{*******************************************************************************}
+constructor TALWorkerThread.Create(const aWorkerThreadPool: TALWorkerThreadPool);
+begin
+  inherited Create(True);
+  FSignal := TEvent.Create(nil{EventAttributes}, false{ManualReset}, false{InitialState}, ''{Name});
+  FWaiting := False;
+  FWorkerThreadPool := aWorkerThreadPool;
+  {$IF defined(ANDROID) or defined(IOS)}
+  Policy := SCHED_OTHER;
+  priority := sched_get_priority_min(SCHED_OTHER);
+  {$ENDIF}
+end;
+
+{*********************************}
+destructor TALWorkerThread.Destroy;
+begin
+  Terminate;
+  FSignal.setevent;
+  WaitFor;
+  ALfreeandNil(FSignal);
+  inherited;
+end;
+
+{********************************}
+procedure TALWorkerThread.Execute;
+begin
+  while not terminated do begin
+
+    //Try to get a request in the queue
+    var LWorkerThreadRequest := FWorkerThreadPool.DequeueRequest;
+    if LWorkerThreadRequest <> nil then begin
+      try
+        try
+          {$IF defined(ios)}
+          //If you write a loop that creates many temporary objects.
+          //You may use an autorelease pool block inside the loop to
+          //dispose of those objects before the next iteration. Using an
+          //autorelease pool block in the loop helps to reduce the maximum
+          //memory footprint of the application.
+          var LAutoReleasePool := TNSAutoreleasePool.Create;
+          try
+          {$ENDIF}
+            {$IFDEF DEBUG}
+            //ALLog(
+            //  ClassName + '.Execute',
+            //  'Request.Priority:' + ALIntToStrW(LWorkerThreadRequest.Priority) + ' | ' +
+            //  'PriorityStartingPoint:' + ALIntToStrW(FWorkerThreadPool.PriorityStartingPoint) + ' | ' +
+            //  'PriorityDirection:' + TRttiEnumerationType.GetName(FWorkerThreadPool.PriorityDirection),
+            //  TalLogType.verbose);
+            {$ENDIF}
+            if assigned(LWorkerThreadRequest.ObjProc) then LWorkerThreadRequest.ObjProc(LWorkerThreadRequest.FExtData)
+            else LWorkerThreadRequest.RefProc(LWorkerThreadRequest.FExtData);
+          {$IF defined(ios)}
+          finally
+            LAutoReleasePool.release;
+          end;
+          {$ENDIF}
+        finally
+          if LWorkerThreadRequest.Signal <> nil then LWorkerThreadRequest.Signal.SetEvent;
+          alFreeAndNil(LWorkerThreadRequest);
+        end;
+      except
+        //hide the exception
+      end;
+    end
+
+    // else wait the signal
+    else begin
+      FWaiting := True;
+      fSignal.WaitFor(INFINITE);
+      FWaiting := False;
+    end;
+
+  end;
+end;
+
+{*********************************************************************}
+constructor TALWorkerThreadPool.Create(const AMaxThreadCount: integer);
+begin
+  FMaxThreadCount := AMaxThreadCount;
+  fPriorityStartingPoint := 0;
+  fPriorityDirection := TPriorityDirection.GreaterThan;
+  fThreads:= TObjectList<TALWorkerThread>.create(true{aOwnObjects});
+  fRequests:= TObjectList<TALWorkerThreadRequest>.create(true{aOwnObjects});
+end;
+
+{*************************************}
+destructor TALWorkerThreadPool.Destroy;
+begin
+  ALFreeandNil(fThreads);
+  ALFreeandNil(fRequests);
+  inherited;
+end;
+
+{********************************************************************}
+function TALWorkerThreadPool.GetPriorityDirection: TPriorityDirection;
+begin
+  //sizeof fPriorityDirection is 1 that mean read and write are ATOMIC
+  //no need to use any Interlock mechanism
+  result := fPriorityDirection;
+end;
+
+{**********************************************************************************}
+procedure TALWorkerThreadPool.SetPriorityDirection(const Value: TPriorityDirection);
+begin
+  //sizeof fPriorityDirection is 1 that mean read and write are ATOMIC
+  //no need to use any Interlock mechanism
+  fPriorityDirection := Value;
+end;
+
+{***********************************************************}
+function TALWorkerThreadPool.GetPriorityStartingPoint: int64;
+begin
+  result := AtomicCmpExchange(FPriorityStartingPoint{Target},0{NewValue},0{Comparand});
+end;
+
+{*************************************************************************}
+procedure TALWorkerThreadPool.SetPriorityStartingPoint(const Value: int64);
+begin
+  AtomicExchange(FPriorityStartingPoint{Target},Value{Value});
+end;
+
+{***********************************************************************************}
+procedure TALWorkerThreadPool.EnqueueRequest(const ARequest: TALWorkerThreadRequest);
+begin
+
+  //add the request in fRequests
+  TMonitor.Enter(fRequests);
+  try
+    fRequests.Add(ARequest);
+  finally
+    TMonitor.Exit(fRequests);
+  end;
+
+  //-----
+  TMonitor.Enter(fThreads);
+  try
+
+    //look if their is a WAITING thread available
+    for var i := 0 to fThreads.Count - 1 do begin
+      if fThreads[i].Waiting then begin
+        fThreads[i].Waiting := False;
+        fThreads[i].Signal.SetEvent;
+        Exit;
+      end;
+    end;
+
+    //if their no waiting thread available AND lower than FMaxThreadCount working thread: create a new one
+    if (fThreads.Count < FMaxThreadCount) then begin
+      var LWorkerThread := TALWorkerThread.Create(self);
+      try
+        fThreads.Add(LWorkerThread);
+      except
+        ALFreeandNil(LWorkerThread);
+        raise;
+      end;
+      LWorkerThread.Start;
+    end
+
+    //else all the threads are busy just signal all of then (in case)
+    else begin
+      for var i := 0 to fThreads.Count - 1 do
+        fThreads[i].Signal.SetEvent;
+    end;
+
+  finally
+    TMonitor.Exit(fThreads);
+  end;
+
+end;
+
+{******************************************************************}
+function TALWorkerThreadPool.DequeueRequest: TALWorkerThreadRequest;
+begin
+  var LPriorityStartingPoint := GetPriorityStartingPoint;
+  TMonitor.Enter(fRequests);
+  try
+
+    var LLesserThanFoundIndex := -1;
+    Var LLesserThanFoundCompare := -ALMaxint64;
+    var LGreaterThanFoundIndex := -1;
+    Var LGreaterThanFoundCompare := ALMaxint64;
+
+    for Var I := 0 to fRequests.Count - 1 do begin
+      var LCompare := fRequests[i].Priority - LPriorityStartingPoint;
+      if (LCompare > 0) then begin
+        if (LCompare < LGreaterThanFoundCompare) then begin
+          LGreaterThanFoundCompare := LCompare;
+          LGreaterThanFoundIndex := i;
+        end
+      end
+      else if (LCompare < 0) then begin
+        if (LCompare > LLesserThanFoundCompare) then begin
+          LLesserThanFoundCompare := LCompare;
+          LLesserThanFoundIndex := i;
+        end
+      end
+      else begin
+        LGreaterThanFoundIndex := i;
+        LLesserThanFoundIndex := i;
+        break;
+      end;
+    end;
+
+    if (PriorityDirection = TPriorityDirection.GreaterThan) then begin
+      if LGreaterThanFoundIndex > -1 then result := fRequests.ExtractAt(LGreaterThanFoundIndex)
+      else if LLesserThanFoundIndex > -1 then result := fRequests.ExtractAt(LLesserThanFoundIndex)
+      else result := nil;
+    end
+    else begin
+      if LLesserThanFoundIndex > -1 then result := fRequests.ExtractAt(LLesserThanFoundIndex)
+      else if LGreaterThanFoundIndex > -1 then result := fRequests.ExtractAt(LGreaterThanFoundIndex)
+      else result := nil;
+    end;
+
+  finally
+    TMonitor.Exit(fRequests);
+  end;
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadRefProc;
+            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const APriority: Int64;
+            const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+            Const AAsync: Boolean = True);
+begin
+  Var LSignal: TEvent := nil;
+  if not AAsync then LSignal := TEvent.Create(nil{EventAttributes}, false{ManualReset}, false{InitialState}, ''{Name});
+  try
+    var LWorkerThreadRequest := TALWorkerThreadRequest.Create(
+                                  AProc,
+                                  AExtData,
+                                  APriority,
+                                  AGetPriorityFunc,
+                                  LSignal);
+    try
+      EnqueueRequest(LWorkerThreadRequest);
+    except
+      ALFreeAndNil(LWorkerThreadRequest);
+      Raise;
+    end;
+    if assigned(LSignal) then LSignal.WaitFor(INFINITE);
+  finally
+    ALFreeAndNil(LSignal);
+  end;
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadRefProc;
+            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const APriority: Int64;
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, AExtData, APriority, nil{AGetPriorityFunc}, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadRefProc;
+            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, AExtData, 0{APriority}, AGetPriorityFunc, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadRefProc;
+            const APriority: Int64;
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, nil{AExtData}, APriority, nil{AGetPriorityFunc}, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadRefProc;
+            const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, AGetPriorityFunc, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadRefProc;
+            const AExtData: Tobject; // ExtData will be free by the worker thread
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, AExtData, 0{APriority}, nil{AGetPriorityFunc}, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadRefProc;
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, nil{AGetPriorityFunc}, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadObjProc;
+            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const APriority: Int64;
+            const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+            Const AAsync: Boolean = True);
+begin
+  Var LSignal: TEvent := nil;
+  if not AAsync then LSignal := TEvent.Create(nil{EventAttributes}, false{ManualReset}, false{InitialState}, ''{Name});
+  try
+    var LWorkerThreadRequest := TALWorkerThreadRequest.Create(
+                                  AProc,
+                                  AExtData,
+                                  APriority,
+                                  AGetPriorityFunc,
+                                  LSignal);
+    try
+      EnqueueRequest(LWorkerThreadRequest);
+    except
+      ALFreeAndNil(LWorkerThreadRequest);
+      Raise;
+    end;
+    if assigned(LSignal) then LSignal.WaitFor(INFINITE);
+  finally
+    ALFreeAndNil(LSignal);
+  end;
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadObjProc;
+            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const APriority: Int64;
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, AExtData, APriority, nil{AGetPriorityFunc}, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadObjProc;
+            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, AExtData, 0{APriority}, AGetPriorityFunc, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadObjProc;
+            const APriority: Int64;
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, nil{AExtData}, APriority, nil{AGetPriorityFunc}, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadObjProc;
+            const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, AGetPriorityFunc, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadObjProc;
+            const AExtData: Tobject; // ExtData will be free by the worker thread
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, AExtData, 0{APriority}, nil{AGetPriorityFunc}, AAsync);
+end;
+
+{****************************************}
+procedure TALWorkerThreadPool.ExecuteProc(
+            const AProc: TALWorkerThreadObjProc;
+            Const AAsync: Boolean = True);
+begin
+  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, nil{AGetPriorityFunc}, AAsync);
+end;
 
 type
-  _TALCallStackCustomLogU = record
+
+  {*****************************}
+  _TALCallStackCustomLog = record
+    ThreadID: TThreadID;
     TimeStamp: TDateTime;
     log: String;
   end;
 
 var
-  _ALCallStackCustomLogsU: TList<_TALCallStackCustomLogU>;
-  _ALCallStackCustomLogsUCurrentIndex: integer = -1;
+  _ALCallStackCustomLogs: TList<_TALCallStackCustomLog>;
+  _ALCallStackCustomLogsCurrentIndex: integer = -1;
+
+type
+
+  {***********************}
+  _TALLogQueueItem = record
+  private
+    Tag: String;
+    msg: String;
+    _type: TalLogType;
+    ThreadID: TThreadID;
+  public
+    class function Create(const ATag: String; const AMsg: String; Const aType: TalLogType; Const aThreadID: TThreadID): _TALLogQueueItem; static; inline;
+  end;
+
+var
+  _ALLogQueue: TList<_TALLogQueueItem>;
+
+{****************************************************************************************************************************************************}
+class function _TALLogQueueItem.Create(const ATag: String; const AMsg: String; Const aType: TalLogType; Const aThreadID: TThreadID): _TALLogQueueItem;
+begin
+  Result.Tag := aTag;
+  Result.Msg := aMsg;
+  Result._Type := aType;
+  Result.ThreadID := aThreadID;
+end;
 
 {***********************************************}
 function ALRectWidth(const Rect: TRect): Integer;
@@ -717,10 +1325,11 @@ end;
 //   and height) to fit in the Bounds rectangle and centers the scaled rectangle in Bounds at CenterAt.
 // * Otherwise, PlaceInto just center the current rectangle in the Bounds rectangle according to CenterAt
 // * PlaceInto returns the current rectangle if any of the Bounds dimensions is zero.
-function ALRectPlaceInto(const R: TRectf;
-                         const Bounds: TRectf;
-                         const CenterAt: TpointF; // << this is used only when we need to fit the result
-                         out Ratio: Single): TRectF;
+function ALRectPlaceInto(
+           const R: TRectf;
+           const Bounds: TRectf;
+           const CenterAt: TpointF; // << this is used only when we need to fit the result
+           out Ratio: Single): TRectF;
 begin
 
   if (R.Width > Bounds.Width) or (R.Height > Bounds.Height) then Result := ALRectFitInto(R, Bounds, CenterAt, Ratio)
@@ -747,10 +1356,11 @@ end;
 
 {********************************************************************************************************************}
 //this is the same as TRectf.PlaceInto but it is here for old delphi version (like xe4) with don't have it implemented
-function ALRectPlaceInto(const R: TRectf;
-                         const Bounds: TRectF;
-                         const AHorzAlign: THorzRectAlign = THorzRectAlign.Center;
-                         const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TRectF;
+function ALRectPlaceInto(
+           const R: TRectf;
+           const Bounds: TRectF;
+           const AHorzAlign: THorzRectAlign = THorzRectAlign.Center;
+           const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TRectF;
 var
   LLocation: TPointF;
 begin
@@ -911,6 +1521,12 @@ begin
   Self := Self + APoint;
 end;
 
+{************************************************}
+procedure TALPointD.Offset(const APoint: TPointf);
+begin
+  Self.Offset(TALPointD.Create(APoint));
+end;
+
 {*********************************************************}
 procedure TALPointD.Offset(const ADeltaX, ADeltaY: Double);
 begin
@@ -961,6 +1577,13 @@ function TALPointD.Round: TPoint;
 begin
   Result.X := System.Round(X);
   Result.Y := System.Round(Y);
+end;
+
+{******************************************}
+function TALPointD.ReducePrecision: TPointf;
+begin
+  Result.X := Single(X);
+  Result.Y := Single(Y);
 end;
 
 {**************************************************************************************************}
@@ -1112,6 +1735,14 @@ begin
   if Normalize then NormalizeRect;
 end;
 
+{***************************************************************}
+constructor TALRectD.Create(const R: TRectF; Normalize: Boolean);
+begin
+  Self.Left := R.Left; Self.Top := R.Top;
+  Self.Right := R.Right; Self.Bottom := R.Bottom;
+  if Normalize then NormalizeRect;
+end;
+
 {**************************************************************}
 constructor TALRectD.Create(const R: TRect; Normalize: Boolean);
 begin
@@ -1203,9 +1834,11 @@ begin
   ALRectCenter(Result, ADesignatedArea);
 end;
 
-{********************************************************************************************}
-function TALRectD.PlaceInto(const ADesignatedArea: TALRectD; const AHorzAlign: THorzRectAlign;
-  const AVertAlign: TVertRectAlign): TALRectD;
+{**************************}
+function TALRectD.PlaceInto(
+           const ADesignatedArea: TALRectD;
+           const AHorzAlign: THorzRectAlign;
+           const AVertAlign: TVertRectAlign): TALRectD;
 var
   LLocation: TALPointD;
 begin
@@ -1407,6 +2040,13 @@ begin
 end;
 
 {**********************************************}
+procedure TALRectD.Offset(const Point: TPointf);
+begin
+  TopLeft.Offset(Point);
+  BottomRight.Offset(Point);
+end;
+
+{**********************************************}
 procedure TALRectD.Offset(const DX, DY: Double);
 begin
   TopLeft.Offset(DX, DY);
@@ -1421,6 +2061,12 @@ end;
 
 {*****************************************************}
 procedure TALRectD.SetLocation(const Point: TALPointD);
+begin
+  Offset(Point.X - Left, Point.Y - Top);
+end;
+
+{***************************************************}
+procedure TALRectD.SetLocation(const Point: TPointf);
 begin
   Offset(Point.X - Left, Point.Y - Top);
 end;
@@ -1484,6 +2130,13 @@ function TALRectD.Round: TRect;
 begin
   Result.TopLeft := TopLeft.Round;
   Result.BottomRight := BottomRight.Round;
+end;
+
+{****************************************}
+function TALRectD.ReducePrecision: TRectF;
+begin
+  Result.TopLeft := TopLeft.ReducePrecision;
+  Result.BottomRight := BottomRight.ReducePrecision;
 end;
 
 {******************************************************************}
@@ -1567,6 +2220,13 @@ begin
   cy := P.cy;
 end;
 
+{*************************************}
+constructor TALSizeD.Create(P: TSizeF);
+begin
+  cx := P.cx;
+  cy := P.cy;
+end;
+
 {*****************************************************}
 function TALSizeD.Distance(const P2: TALSizeD): Double;
 begin
@@ -1639,6 +2299,13 @@ begin
   Result.cy := Trunc(cy + 0.5);
 end;
 
+{****************************************}
+function TALSizeD.ReducePrecision: TSizeF;
+begin
+  Result.cx := Single(cx);
+  Result.cy := Single(cy);
+end;
+
 {********************************}
 function TALSizeD.Truncate: TSize;
 begin
@@ -1653,12 +2320,16 @@ begin
   Result.cy := Size.cy;
 end;
 
-{$IFNDEF NEXTGEN}
-
 {*****************************************************}
 constructor EALException.Create(const Msg: AnsiString);
 begin
   inherited create(String(Msg));
+end;
+
+{*************************************************}
+constructor EALException.Create(const Msg: string);
+begin
+  inherited create(Msg);
 end;
 
 {************************************************************************************}
@@ -1667,89 +2338,167 @@ begin
   inherited CreateFmt(String(Msg), Args);
 end;
 
-{$ENDIF !NEXTGEN}
-
-{*****************************************************}
-procedure ALAddCallStackCustomLogU(Const aLog: String);
-var LCallStackCustomLogU: _TALCallStackCustomLogU;
+{********************************************************************************}
+constructor EALException.CreateFmt(const Msg: string; const Args: array of const);
 begin
-  LCallStackCustomLogU.TimeStamp := Now;
-  LCallStackCustomLogU.log := aLog;
-  Tmonitor.enter(_ALCallStackCustomLogsU);
+  inherited CreateFmt(Msg, Args);
+end;
+
+{****************************************************}
+procedure ALAddCallStackCustomLog(Const aLog: String);
+var LCallStackCustomLog: _TALCallStackCustomLog;
+begin
+  LCallStackCustomLog.ThreadID := TThread.Current.ThreadID;
+  LCallStackCustomLog.TimeStamp := Now;
+  LCallStackCustomLog.log := aLog;
+  Tmonitor.enter(_ALCallStackCustomLogs);
   Try
-    _ALCallStackCustomLogsUCurrentIndex := (_ALCallStackCustomLogsUCurrentIndex + 1) mod ALCallStackCustomLogsMaxCount;
-    if _ALCallStackCustomLogsUCurrentIndex <= _ALCallStackCustomLogsU.Count - 1 then
-      _ALCallStackCustomLogsU[_ALCallStackCustomLogsUCurrentIndex] := LCallStackCustomLogU
+    _ALCallStackCustomLogsCurrentIndex := (_ALCallStackCustomLogsCurrentIndex + 1) mod ALCallStackCustomLogsMaxCount;
+    if _ALCallStackCustomLogsCurrentIndex <= _ALCallStackCustomLogs.Count - 1 then
+      _ALCallStackCustomLogs[_ALCallStackCustomLogsCurrentIndex] := LCallStackCustomLog
     else
-      _ALCallStackCustomLogsUCurrentIndex := _ALCallStackCustomLogsU.Add(LCallStackCustomLogU);
+      _ALCallStackCustomLogsCurrentIndex := _ALCallStackCustomLogs.Add(LCallStackCustomLog);
   Finally
-    Tmonitor.exit(_ALCallStackCustomLogsU);
+    Tmonitor.exit(_ALCallStackCustomLogs);
   End;
 end;
 
-{*********************************************************************************}
-function ALGetCallStackCustomLogsU(Const aAppendTimeStamp: boolean = True): String;
+{*************************************************************************************************************************}
+function ALGetCallStackCustomLogs(Const aPrependTimeStamp: boolean = True; Const aPrependThreadID: boolean = True): String;
 Var i: integer;
 begin
   Result := '';
-  if aAppendTimeStamp then begin
-    for i := _ALCallStackCustomLogsUCurrentIndex downto 0 do
-      Result := Result + ALFormatDateTimeU('yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''', TTimeZone.Local.ToUniversalTime(_ALCallStackCustomLogsU[i].TimeStamp), ALDefaultFormatSettingsU) + ': ' + _ALCallStackCustomLogsU[i].log + #13#10;
-    for i := _ALCallStackCustomLogsU.Count - 1 downto _ALCallStackCustomLogsUCurrentIndex + 1 do
-      Result := Result + ALFormatDateTimeU('yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''', TTimeZone.Local.ToUniversalTime(_ALCallStackCustomLogsU[i].TimeStamp), ALDefaultFormatSettingsU) + ': ' + _ALCallStackCustomLogsU[i].log + #13#10;
+  Tmonitor.enter(_ALCallStackCustomLogs);
+  Try
+    if aPrependTimeStamp and aPrependThreadID then begin
+      for i := _ALCallStackCustomLogsCurrentIndex downto 0 do
+        Result := Result + ALFormatDateTimeW('yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''', TTimeZone.Local.ToUniversalTime(_ALCallStackCustomLogs[i].TimeStamp), ALDefaultFormatSettingsW) + ' [' + ALIntToStrW(_ALCallStackCustomLogs[i].ThreadID) + ']: ' + _ALCallStackCustomLogs[i].log + #13#10;
+      for i := _ALCallStackCustomLogs.Count - 1 downto _ALCallStackCustomLogsCurrentIndex + 1 do
+        Result := Result + ALFormatDateTimeW('yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''', TTimeZone.Local.ToUniversalTime(_ALCallStackCustomLogs[i].TimeStamp), ALDefaultFormatSettingsW) + ' [' + ALIntToStrW(_ALCallStackCustomLogs[i].ThreadID) + ']: ' + _ALCallStackCustomLogs[i].log + #13#10;
+    end
+    else if aPrependTimeStamp then begin
+      for i := _ALCallStackCustomLogsCurrentIndex downto 0 do
+        Result := Result + ALFormatDateTimeW('yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''', TTimeZone.Local.ToUniversalTime(_ALCallStackCustomLogs[i].TimeStamp), ALDefaultFormatSettingsW) + ': ' + _ALCallStackCustomLogs[i].log + #13#10;
+      for i := _ALCallStackCustomLogs.Count - 1 downto _ALCallStackCustomLogsCurrentIndex + 1 do
+        Result := Result + ALFormatDateTimeW('yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''', TTimeZone.Local.ToUniversalTime(_ALCallStackCustomLogs[i].TimeStamp), ALDefaultFormatSettingsW) + ': ' + _ALCallStackCustomLogs[i].log + #13#10;
+    end
+    else if aPrependThreadID then begin
+      for i := _ALCallStackCustomLogsCurrentIndex downto 0 do
+        Result := Result + '[' + ALIntToStrW(_ALCallStackCustomLogs[i].ThreadID) + ']: ' + _ALCallStackCustomLogs[i].log + #13#10;
+      for i := _ALCallStackCustomLogs.Count - 1 downto _ALCallStackCustomLogsCurrentIndex + 1 do
+        Result := Result + '[' + ALIntToStrW(_ALCallStackCustomLogs[i].ThreadID) + ']: ' + _ALCallStackCustomLogs[i].log + #13#10;
+    end
+    else begin
+      for i := _ALCallStackCustomLogsCurrentIndex downto 0 do
+        Result := Result + _ALCallStackCustomLogs[i].log + #13#10;
+      for i := _ALCallStackCustomLogs.Count - 1 downto _ALCallStackCustomLogsCurrentIndex + 1 do
+        Result := Result + _ALCallStackCustomLogs[i].log + #13#10;
+    end;
+  Finally
+    Tmonitor.exit(_ALCallStackCustomLogs);
+  End;
+  Result := ALTrim(Result);
+end;
+
+{*********************************************************************************************************}
+procedure _ALLog(Const Tag: String; Const msg: String; const _type: TalLogType; const ThreadID: TThreadID);
+begin
+  if ALEnqueueLog then begin
+    Tmonitor.Enter(_ALLogQueue);
+    try
+      _ALLogQueue.Add(
+        _TALLogQueueItem.Create(
+          Tag, // const ATag: String;
+          Msg, // const AMsg: String;
+          _Type, // Const aType: TalLogType
+          ThreadID));
+    finally
+      Tmonitor.Exit(_ALLogQueue);
+    end;
   end
   else begin
-    for i := _ALCallStackCustomLogsUCurrentIndex downto 0 do
-      Result := Result + _ALCallStackCustomLogsU[i].log + #13#10;
-    for i := _ALCallStackCustomLogsU.Count - 1 downto _ALCallStackCustomLogsUCurrentIndex + 1 do
-      Result := Result + _ALCallStackCustomLogsU[i].log + #13#10;
+    {$IF defined(ANDROID)}
+    var LMsg: String;
+    if Msg <> '' then LMsg := msg
+    else LMsg := '<empty>';
+    if ThreadID <> MainThreadID then LMsg := '['+ALIntToStrW(ThreadID)+'] ' + LMsg;
+    case _type of
+      TalLogType.VERBOSE: TJLog.JavaClass.v(StringToJString(Tag), StringToJString(LMsg));
+      TalLogType.DEBUG: TJLog.JavaClass.d(StringToJString(Tag), StringToJString(LMsg));
+      TalLogType.INFO: TJLog.JavaClass.i(StringToJString(Tag), StringToJString(LMsg));
+      TalLogType.WARN: TJLog.JavaClass.w(StringToJString(Tag), StringToJString(LMsg));
+      TalLogType.ERROR: TJLog.JavaClass.e(StringToJString(Tag), StringToJString(LMsg));
+      TalLogType.ASSERT: TJLog.JavaClass.wtf(StringToJString(Tag), StringToJString(LMsg)); // << wtf for What a Terrible Failure but everyone know that it's for what the fuck !
+    end;
+    {$ELSEIF defined(IOS)}
+    var LMsg: String;
+    if msg <> '' then LMsg := Tag + ' => ' + msg
+    else LMsg := Tag;
+    var LThreadID: String;
+    if ThreadID <> MainThreadID then LThreadID := '['+ALIntToStrW(ThreadID)+']'
+    else LThreadID := '';
+    //On iOS NSLog is limited to 1024 Bytes so if the
+    //message is > 1024 bytes split it
+    var P: integer := 1;
+    while P <= length(LMsg) do begin
+      var LMsgPart := ALCopyStr(LMsg, P, 950); // to stay safe
+      inc(P, 950);
+      case _type of
+        TalLogType.VERBOSE: NSLog(StringToID('[V]'+LThreadID+' ' + LMsgPart));
+        TalLogType.DEBUG:   NSLog(StringToID('[D][V]'+LThreadID+' ' + LMsgPart));
+        TalLogType.INFO:    NSLog(StringToID('[I][D][V]'+LThreadID+' ' + LMsgPart));
+        TalLogType.WARN:    NSLog(StringToID('[W][I][D][V]'+LThreadID+' ' + LMsgPart));
+        TalLogType.ERROR:   NSLog(StringToID('[E][W][I][D][V]'+LThreadID+' ' + LMsgPart));
+        TalLogType.ASSERT:  NSLog(StringToID('[A][E][W][I][D][V]'+LThreadID+' ' + LMsgPart));
+      end;
+    end;
+    {$ELSEIF defined(MSWINDOWS)}
+    if _type <> TalLogType.VERBOSE  then begin // because log on windows slow down the app so skip verbosity
+      var LMsg: String;
+      if msg <> '' then LMsg := Tag + ' => ' + stringReplace(msg, '%', '%%', [rfReplaceALL]) // https://quality.embarcadero.com/browse/RSP-15942
+      else LMsg := Tag;
+      case _type of
+        TalLogType.VERBOSE: OutputDebugString(pointer('[V] ' + LMsg + ' |'));
+        TalLogType.DEBUG:   OutputDebugString(pointer('[D][V] ' + LMsg + ' |'));
+        TalLogType.INFO:    OutputDebugString(pointer('[I][D][V] ' + LMsg + ' |'));
+        TalLogType.WARN:    OutputDebugString(pointer('[W][I][D][V] ' + LMsg + ' |'));
+        TalLogType.ERROR:   OutputDebugString(pointer('[E][W][I][D][V] ' + LMsg + ' |'));
+        TalLogType.ASSERT:  OutputDebugString(pointer('[A][E][W][I][D][V] ' + LMsg + ' |'));
+      end;
+    end;
+    {$IFEND}
   end;
-  Result := ALTrimU(Result);
 end;
 
 {***********************************************************************************************}
 procedure ALLog(Const Tag: String; Const msg: String; const _type: TalLogType = TalLogType.INFO);
-{$IF defined(IOS) or defined(MSWINDOWS)}
-var aMsg: String;
-{$ENDIF}
 begin
-  {$IF defined(ANDROID)}
-  case _type of
-    TalLogType.VERBOSE: TJLog.JavaClass.v(StringToJString(Tag), StringToJString(msg));
-    TalLogType.DEBUG: TJLog.JavaClass.d(StringToJString(Tag), StringToJString(msg));
-    TalLogType.INFO: TJLog.JavaClass.i(StringToJString(Tag), StringToJString(msg));
-    TalLogType.WARN: TJLog.JavaClass.w(StringToJString(Tag), StringToJString(msg));
-    TalLogType.ERROR: TJLog.JavaClass.e(StringToJString(Tag), StringToJString(msg));
-    TalLogType.ASSERT: TJLog.JavaClass.wtf(StringToJString(Tag), StringToJString(msg)); // << wtf for What a Terrible Failure but everyone know that it's for what the fuck !
+  _ALLog(Tag, msg, _type, TThread.Current.ThreadID);
+end;
+
+{****************************************************************************}
+procedure ALLog(Const Tag: String; const _type: TalLogType = TalLogType.INFO);
+begin
+  _ALLog(Tag, '', _type, TThread.Current.ThreadID);
+end;
+
+{************************}
+procedure ALPrintLogQueue;
+var LOldEnqueueLogValue: Boolean;
+    i: integer;
+begin
+  LOldEnqueueLogValue := ALEnqueueLog;
+  ALEnqueueLog := False;
+  Tmonitor.Enter(_ALLogQueue);
+  try
+    for I := 0 to _ALLogQueue.Count - 1 do
+      with _ALLogQueue[i] do
+        _ALLog(Tag, Msg, _type, ThreadID);
+    _ALLogQueue.Clear;
+  finally
+    Tmonitor.Exit(_ALLogQueue);
+    ALEnqueueLog := LOldEnqueueLogValue;
   end;
-  {$ELSEIF defined(IOS)}
-  // https://forums.developer.apple.com/thread/4685
-  //if _type <> TalLogType.VERBOSE  then begin // because log on ios slow down the app so skip verbosity
-    if msg <> '' then aMsg := ' => ' + msg
-    else aMsg := '';
-    case _type of
-      TalLogType.VERBOSE: NSLog(StringToID('[V] ' + Tag + aMsg));
-      TalLogType.DEBUG:   NSLog(StringToID('[D][V] ' + Tag + aMsg));
-      TalLogType.INFO:    NSLog(StringToID('[I][D][V] ' + Tag + aMsg));
-      TalLogType.WARN:    NSLog(StringToID('[W][I][D][V] ' + Tag + aMsg));
-      TalLogType.ERROR:   NSLog(StringToID('[E][W][I][D][V] ' + Tag + aMsg));
-      TalLogType.ASSERT:  NSLog(StringToID('[A][E][W][I][D][V] ' + Tag + aMsg));
-    end;
-  //end;
-  {$ELSEIF defined(MSWINDOWS)}
-  if _type <> TalLogType.VERBOSE  then begin // because log on windows slow down the app so skip verbosity
-    if msg <> '' then aMsg := ' => ' + stringReplace(msg, '%', '%%', [rfReplaceALL]) // https://quality.embarcadero.com/browse/RSP-15942
-    else aMsg := '';
-    case _type of
-      TalLogType.VERBOSE: OutputDebugString(pointer('[V] ' + Tag + aMsg + ' |'));
-      TalLogType.DEBUG:   OutputDebugString(pointer('[D][V] ' + Tag + aMsg + ' |'));
-      TalLogType.INFO:    OutputDebugString(pointer('[I][D][V] ' + Tag + aMsg + ' |'));
-      TalLogType.WARN:    OutputDebugString(pointer('[W][I][D][V] ' + Tag + aMsg + ' |'));
-      TalLogType.ERROR:   OutputDebugString(pointer('[E][W][I][D][V] ' + Tag + aMsg + ' |'));
-      TalLogType.ASSERT:  OutputDebugString(pointer('[A][E][W][I][D][V] ' + Tag + aMsg + ' |'));
-    end;
-  end;
-  {$IFEND}
 end;
 
 {******************************************}
@@ -1771,10 +2520,8 @@ Begin
   result := (LTotal - (LBorder*2) - LObject) div 2 + LBorder;
 End;
 
-{$IFNDEF NEXTGEN}
-
-{***********************************************************************************************}
-function ALIfThen(AValue: Boolean; const ATrue: AnsiString; AFalse: AnsiString = ''): AnsiString;
+{************************************************************************************************}
+function ALIfThenA(AValue: Boolean; const ATrue: AnsiString; AFalse: AnsiString = ''): AnsiString;
 begin
   if AValue then
     Result := ATrue
@@ -1782,10 +2529,8 @@ begin
     Result := AFalse;
 end;
 
-{$ENDIF !NEXTGEN}
-
 {************************************************************************************}
-function ALIfThenU(AValue: Boolean; const ATrue: String; AFalse: String = ''): String;
+function ALIfThenW(AValue: Boolean; const ATrue: String; AFalse: String = ''): String;
 begin
   if AValue then
     Result := ATrue
@@ -1878,13 +2623,23 @@ var LDynamicTimeZoneInformations: Tarray<TDynamicTimeZoneInformation>;
 begin
   LDynamicTimeZoneInformations := ALGetDynamicTimeZoneInformations;
   for I := low(LDynamicTimeZoneInformations) to High(LDynamicTimeZoneInformations) do
-    if ALSameTextU(LDynamicTimeZoneInformations[i].TimeZoneKeyName, aTimeZoneKeyName) then begin
+    if ALSameTextW(LDynamicTimeZoneInformations[i].TimeZoneKeyName, aTimeZoneKeyName) then begin
       result := LDynamicTimeZoneInformations[i];
       Exit;
     end;
   raise Exception.Create('Unknown TimeZoneKeyName');
 end;
 {$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+function ALFileTimeToDateTime(Const AFileTime: TFileTime): TDateTime;
+var LSystemTime: TSystemTime;
+begin
+  if not FileTimeToSystemTime(AFileTime, LSystemTime) then raiseLastOsError;
+  result := SystemTimeToDateTime(LSystemTime);
+end;
+{$ENDIF MSWINDOWS}
 
 {************************************************************************}
 function AlLocalDateTimeToUTC(Const aLocalDateTime: TDateTime): TdateTime;
@@ -1901,7 +2656,7 @@ var LDynamicTimeZoneInformations: Tarray<TDynamicTimeZoneInformation>;
 begin
   LDynamicTimeZoneInformations := ALGetDynamicTimeZoneInformations;
   for I := low(LDynamicTimeZoneInformations) to High(LDynamicTimeZoneInformations) do begin
-    if ALSameTextU(LDynamicTimeZoneInformations[i].TimeZoneKeyName, aTimeZoneKeyName) then begin
+    if ALSameTextW(LDynamicTimeZoneInformations[i].TimeZoneKeyName, aTimeZoneKeyName) then begin
       DecodeDateTime(
         aLocalDateTime,
         LLocalTime.wYear,
@@ -1977,7 +2732,7 @@ var LDynamicTimeZoneInformations: Tarray<TDynamicTimeZoneInformation>;
 begin
   LDynamicTimeZoneInformations := ALGetDynamicTimeZoneInformations;
   for I := low(LDynamicTimeZoneInformations) to High(LDynamicTimeZoneInformations) do begin
-    if ALSameTextU(LDynamicTimeZoneInformations[i].TimeZoneKeyName, aTimeZoneKeyName) then begin
+    if ALSameTextW(LDynamicTimeZoneInformations[i].TimeZoneKeyName, aTimeZoneKeyName) then begin
       DecodeDateTime(
         aUTCDateTime,
         LSystemTime.wYear,
@@ -2064,7 +2819,7 @@ begin
   result := X;
 end;
 
-{*******************************************************}
+{******************************************************}
 {Accepts number of milliseconds in the parameter aValue,
  provides 1000 times more precise value of TDateTime}
 function ALUnixMsToDateTime(const aValue: Int64): TDateTime;
@@ -2082,19 +2837,232 @@ begin
   if aValue < UnixDateDelta then result := -result;
 end;
 
-{***************************************************************}
-Procedure ALFreeAndNil(var Obj; const adelayed: boolean = false);
+{****************}
+{$IFDEF MSWINDOWS}
+function ALConsoleForegroundColorToCode(const AColor : TALConsoleColor): Word;
+begin
+  case AColor of
+    TALConsoleColor.ccRed : Result := FOREGROUND_RED or FOREGROUND_INTENSITY;
+    TALConsoleColor.ccDarkRed : Result := FOREGROUND_RED;
+    TALConsoleColor.ccBlue : Result := FOREGROUND_BLUE or FOREGROUND_INTENSITY;
+    TALConsoleColor.ccDarkBlue : Result := FOREGROUND_BLUE;
+    TALConsoleColor.ccGreen : Result := FOREGROUND_GREEN or FOREGROUND_INTENSITY;
+    TALConsoleColor.ccDarkGreen : Result := FOREGROUND_GREEN;
+    TALConsoleColor.ccYellow : Result := FOREGROUND_GREEN or FOREGROUND_RED or FOREGROUND_INTENSITY;
+    TALConsoleColor.ccDarkYellow : Result := FOREGROUND_GREEN or FOREGROUND_RED;
+    TALConsoleColor.ccAqua : Result := FOREGROUND_GREEN or FOREGROUND_BLUE or FOREGROUND_INTENSITY;
+    TALConsoleColor.ccDarkAqua : Result := FOREGROUND_GREEN or FOREGROUND_BLUE;
+    TALConsoleColor.ccPurple : Result := FOREGROUND_BLUE or FOREGROUND_RED or FOREGROUND_INTENSITY;
+    TALConsoleColor.ccDarkPurple : Result := FOREGROUND_BLUE or FOREGROUND_RED;
+    TALConsoleColor.ccGrey : Result := FOREGROUND_INTENSITY;
+    TALConsoleColor.ccBlack : Result := 0;
+    TALConsoleColor.ccWhite : Result := FOREGROUND_BLUE or FOREGROUND_GREEN or FOREGROUND_RED or FOREGROUND_INTENSITY;
+    TALConsoleColor.ccDarkWhite : Result := FOREGROUND_BLUE or FOREGROUND_GREEN or FOREGROUND_RED;
+    else raise Exception.Create('Unknown color');
+  end;
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+function ALConsoleBackgroundColorToCode(const AColor : TALConsoleColor): Word;
+begin
+  case AColor of
+    TALConsoleColor.ccRed : Result := BACKGROUND_RED or BACKGROUND_INTENSITY;
+    TALConsoleColor.ccDarkRed : Result := BACKGROUND_RED;
+    TALConsoleColor.ccBlue : Result := BACKGROUND_BLUE or BACKGROUND_INTENSITY;
+    TALConsoleColor.ccDarkBlue : Result := BACKGROUND_BLUE;
+    TALConsoleColor.ccGreen : Result := BACKGROUND_GREEN or BACKGROUND_INTENSITY;
+    TALConsoleColor.ccDarkGreen : Result := BACKGROUND_GREEN;
+    TALConsoleColor.ccYellow : Result := BACKGROUND_GREEN or BACKGROUND_RED or BACKGROUND_INTENSITY;
+    TALConsoleColor.ccDarkYellow : Result := BACKGROUND_GREEN or BACKGROUND_RED;
+    TALConsoleColor.ccAqua : Result := BACKGROUND_GREEN or BACKGROUND_BLUE or BACKGROUND_INTENSITY;
+    TALConsoleColor.ccDarkAqua : Result := BACKGROUND_GREEN or BACKGROUND_BLUE;
+    TALConsoleColor.ccPurple : Result := BACKGROUND_BLUE or BACKGROUND_RED or BACKGROUND_INTENSITY;
+    TALConsoleColor.ccDarkPurple : Result := BACKGROUND_BLUE or BACKGROUND_RED;
+    TALConsoleColor.ccGrey : Result := BACKGROUND_INTENSITY;
+    TALConsoleColor.ccBlack : Result := 0;
+    TALConsoleColor.ccWhite : Result := BACKGROUND_BLUE or BACKGROUND_GREEN or BACKGROUND_RED or BACKGROUND_INTENSITY;
+    TALConsoleColor.ccDarkWhite : Result := BACKGROUND_BLUE or BACKGROUND_GREEN or BACKGROUND_RED;
+    else raise Exception.Create('Unknown color');
+  end;
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+function ALConsoleCodeToForegroundColor(const ACode : Word): TALConsoleColor;
+begin
+  case ACode of
+    FOREGROUND_RED or FOREGROUND_INTENSITY: Result := TALConsoleColor.ccRed;
+    FOREGROUND_RED: Result := TALConsoleColor.ccDarkRed;
+    FOREGROUND_BLUE or FOREGROUND_INTENSITY: Result := TALConsoleColor.ccBlue;
+    FOREGROUND_BLUE: Result := TALConsoleColor.ccDarkBlue;
+    FOREGROUND_GREEN or FOREGROUND_INTENSITY: Result := TALConsoleColor.ccGreen;
+    FOREGROUND_GREEN: Result := TALConsoleColor.ccDarkGreen;
+    FOREGROUND_GREEN or FOREGROUND_RED or FOREGROUND_INTENSITY: Result := TALConsoleColor.ccYellow;
+    FOREGROUND_GREEN or FOREGROUND_RED: Result := TALConsoleColor.ccDarkYellow;
+    FOREGROUND_GREEN or FOREGROUND_BLUE or FOREGROUND_INTENSITY: Result := TALConsoleColor.ccAqua;
+    FOREGROUND_GREEN or FOREGROUND_BLUE: Result := TALConsoleColor.ccDarkAqua;
+    FOREGROUND_BLUE or FOREGROUND_RED or FOREGROUND_INTENSITY: Result := TALConsoleColor.ccPurple;
+    FOREGROUND_BLUE or FOREGROUND_RED: Result := TALConsoleColor.ccDarkPurple;
+    FOREGROUND_INTENSITY: Result := TALConsoleColor.ccGrey;
+    0: Result := TALConsoleColor.ccBlack;
+    FOREGROUND_BLUE or FOREGROUND_GREEN or FOREGROUND_RED or FOREGROUND_INTENSITY: Result := TALConsoleColor.ccWhite;
+    FOREGROUND_BLUE or FOREGROUND_GREEN or FOREGROUND_RED: Result := TALConsoleColor.ccDarkWhite;
+    else raise Exception.Create('Unknown code');
+  end;
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+function ALConsoleCodeToBackgroundColor(const ACode : Word): TALConsoleColor;
+begin
+  case ACode of
+    BACKGROUND_RED or BACKGROUND_INTENSITY: Result := TALConsoleColor.ccRed;
+    BACKGROUND_RED: Result := TALConsoleColor.ccDarkRed;
+    BACKGROUND_BLUE or BACKGROUND_INTENSITY: Result := TALConsoleColor.ccBlue;
+    BACKGROUND_BLUE: Result := TALConsoleColor.ccDarkBlue;
+    BACKGROUND_GREEN or BACKGROUND_INTENSITY: Result := TALConsoleColor.ccGreen;
+    BACKGROUND_GREEN: Result := TALConsoleColor.ccDarkGreen;
+    BACKGROUND_GREEN or BACKGROUND_RED or BACKGROUND_INTENSITY: Result := TALConsoleColor.ccYellow;
+    BACKGROUND_GREEN or BACKGROUND_RED: Result := TALConsoleColor.ccDarkYellow;
+    BACKGROUND_GREEN or BACKGROUND_BLUE or BACKGROUND_INTENSITY: Result := TALConsoleColor.ccAqua;
+    BACKGROUND_GREEN or BACKGROUND_BLUE: Result := TALConsoleColor.ccDarkAqua;
+    BACKGROUND_BLUE or BACKGROUND_RED or BACKGROUND_INTENSITY: Result := TALConsoleColor.ccPurple;
+    BACKGROUND_BLUE or BACKGROUND_RED: Result := TALConsoleColor.ccDarkPurple;
+    BACKGROUND_INTENSITY: Result := TALConsoleColor.ccGrey;
+    0: Result := TALConsoleColor.ccBlack;
+    BACKGROUND_BLUE or BACKGROUND_GREEN or BACKGROUND_RED or BACKGROUND_INTENSITY: Result := TALConsoleColor.ccWhite;
+    BACKGROUND_BLUE or BACKGROUND_GREEN or BACKGROUND_RED: Result := TALConsoleColor.ccDarkWhite;
+    else raise Exception.Create('Unknown code');
+  end;
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+procedure ALGetConsoleColors(out AForegroundColor: TALConsoleColor; out ABackgroundColor: TALConsoleColor);
+var LConsoleInfo: _CONSOLE_SCREEN_BUFFER_INFO;
+    LStdOut: THandle;
+begin
+  LStdOut := GetStdHandle(STD_OUTPUT_HANDLE);
+  if LStdOut = INVALID_HANDLE_VALUE then RaiseLastOsError;
+  if GetConsoleScreenBufferInfo(LStdOut, LConsoleInfo) then begin
+    AForegroundColor := ALConsoleCodeToForegroundColor(LConsoleInfo.wAttributes and (FOREGROUND_BLUE or FOREGROUND_GREEN or FOREGROUND_RED or FOREGROUND_INTENSITY));
+    ABackgroundColor := ALConsoleCodeToBackgroundColor(LConsoleInfo.wAttributes and (BACKGROUND_BLUE or BACKGROUND_GREEN or BACKGROUND_RED or BACKGROUND_INTENSITY));
+  end
+  else RaiseLastOsError;
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+procedure ALSetConsoleColors(const AForegroundColor: TALConsoleColor; const ABackgroundColor: TALConsoleColor);
+var LStdOut: THandle;
+begin
+  LStdOut := GetStdHandle(STD_OUTPUT_HANDLE);
+  if LStdOut = INVALID_HANDLE_VALUE then RaiseLastOsError;
+  SetConsoleTextAttribute(
+    LStdOut,
+    ALConsoleForegroundColorToCode(AForegroundColor) or ALConsoleBackgroundColorToCode(ABackgroundColor));
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+Procedure ALWriteLN(const AStr: AnsiString);
+begin
+  System.Write(AStr);
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+Procedure ALWriteLN(const AStr: AnsiString; const aForegroundColor: TALConsoleColor);
+var LForegroundColor: TALConsoleColor;
+    LBackgroundColor: TALConsoleColor;
+begin
+  ALGetConsoleColors(LForegroundColor, LBackgroundColor);
+  ALSetConsoleColors(AForegroundColor, LBackgroundColor);
+  System.Writeln(AStr);
+  ALSetConsoleColors(LForegroundColor, LBackgroundColor);
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+Procedure ALWriteLN(const AStr: AnsiString; const aForegroundColor: TALConsoleColor; const aBackgroundColor: TALConsoleColor);
+var LForegroundColor: TALConsoleColor;
+    LBackgroundColor: TALConsoleColor;
+begin
+  ALGetConsoleColors(LForegroundColor, LBackgroundColor);
+  ALSetConsoleColors(AForegroundColor, ABackgroundColor);
+  System.Writeln(AStr);
+  ALSetConsoleColors(LForegroundColor, LBackgroundColor);
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+Procedure ALWriteLN(const AStr: String);
+begin
+  System.Write(AStr);
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+Procedure ALWriteLN(const AStr: String; const aForegroundColor: TALConsoleColor);
+var LForegroundColor: TALConsoleColor;
+    LBackgroundColor: TALConsoleColor;
+begin
+  ALGetConsoleColors(LForegroundColor, LBackgroundColor);
+  ALSetConsoleColors(AForegroundColor, LBackgroundColor);
+  System.Writeln(AStr);
+  ALSetConsoleColors(LForegroundColor, LBackgroundColor);
+end;
+{$ENDIF}
+
+{****************}
+{$IFDEF MSWINDOWS}
+Procedure ALWriteLN(const AStr: String; const aForegroundColor: TALConsoleColor; const aBackgroundColor: TALConsoleColor);
+var LForegroundColor: TALConsoleColor;
+    LBackgroundColor: TALConsoleColor;
+begin
+  ALGetConsoleColors(LForegroundColor, LBackgroundColor);
+  ALSetConsoleColors(AForegroundColor, ABackgroundColor);
+  System.Writeln(AStr);
+  ALSetConsoleColors(LForegroundColor, LBackgroundColor);
+end;
+{$ENDIF}
+
+{***********************************}
+{$IF CompilerVersion >= 34} // sydney
+Procedure ALFreeAndNil(const [ref] Obj: TObject; const ADelayed: boolean = false);
+{$ELSE}
+Procedure ALFreeAndNil(var Obj; const ADelayed: boolean = false);
+{$ENDIF}
 var Temp: TObject;
 begin
+  {$IF CompilerVersion >= 34} // sydney
+  Temp := Obj;
+  if Temp = nil then exit;
+  TObject(Pointer(@Obj)^) := nil;
+  {$ELSE}
   Temp := TObject(Obj);
-  if temp = nil then exit;
+  if Temp = nil then exit;
   TObject(Obj) := nil;
+  {$ENDIF}
   if adelayed and assigned(ALCustomDelayedFreeObjectProc) then ALCustomDelayedFreeObjectProc(Temp)
   else begin
     {$IF defined(AUTOREFCOUNT)}
+    //AUTOREFCOUNT was removed in 10.4 (sydney) so the
+    //code below is for version < than 10.4
     if AtomicCmpExchange(temp.refcount{Target}, 0{NewValue}, 0{Compareand}) = 1 then begin // it's seam it's not an atomic operation (http://stackoverflow.com/questions/39987850/is-reading-writing-an-integer-4-bytes-atomic-on-ios-android-like-on-win32-win6)
-      temp.Free;
-      temp := nil;
+      Temp.Free;
+      Temp := nil;
     end
     else begin
       Temp.DisposeOf; // TComponent Free Notification mechanism notifies registered components that particular
@@ -2105,207 +3073,26 @@ begin
                       // Free Notification mechanism is being triggered in TComponent destructor and without DisposeOf
                       // and direct execution of destructor, two components could hold strong references to each
                       // other keeping themselves alive during whole application lifetime.
-      {$IF defined(DEBUG)}
-      if ALFreeAndNilRefCountWarn and
-        (not ALCurThreadFreeAndNilNORefCountWarn) and
-        ((not assigned(ALFreeAndNilCanRefCountWarnProc)) or
-         (ALFreeAndNilCanRefCountWarnProc(Temp))) then begin
-        if (Temp.RefCount - 1) and (not $40000000{Temp.objDisposedFlag}) <> 0 then
-          ALLog('ALFreeAndNil', Temp.ClassName + ' | Refcount is not null (' + Inttostr((Temp.RefCount - 1) and (not $40000000{Temp.objDisposedFlag})) + ')', TalLogType.warn);
-      end;
-      {$ENDIF}
-      temp := nil;
+      Temp := nil;
     end;
     {$ELSE}
-    temp.Free;
-    temp := nil;
-    {$IFEND}
+    Temp.Free;
+    Temp := nil;
+    {$ENDIF}
   end;
 end;
 
-{*************************************************************************************}
-Procedure ALFreeAndNil(var Obj; const adelayed: boolean; const aRefCountWarn: Boolean);
-{$IFDEF DEBUG}
-var aOldCurThreadFreeAndNilNoRefCountWarn: boolean;
-{$ENDIF}
-begin
-  {$IFDEF DEBUG}
-  aOldCurThreadFreeAndNilNoRefCountWarn := ALCurThreadFreeAndNilNORefCountWarn;
-  ALCurThreadFreeAndNilNORefCountWarn := not aRefCountWarn;
-  try
-  {$ENDIF}
-
-    ALFreeAndNil(Obj, adelayed);
-
-  {$IFDEF DEBUG}
-  finally
-    ALCurThreadFreeAndNilNORefCountWarn := aOldCurThreadFreeAndNilNORefCountWarn;
-  end;
-  {$ENDIF}
-end;
-
-{$IFNDEF NEXTGEN}
-
-//
-// Taken from https://github.com/synopse/mORMot.git
-// https://synopse.info
-// http://mormot.net
-//
-
-{$IF CompilerVersion > 34} // sydney
-  {$MESSAGE WARN 'Check if https://github.com/synopse/mORMot.git SynCommons.pas was not updated from references\mORMot\SynCommons.pas and adjust the IFDEF'}
-{$ENDIF}
-
-{**}
-type
-  TRegisters = record
-    eax,ebx,ecx,edx: cardinal;
-  end;
-
-{*************************************************************}
-procedure GetCPUID(Param: Cardinal; var Registers: TRegisters);
-{$IF defined(CPU64BITS)}
-asm .noframe // ecx=param, rdx=Registers (Linux: edi,rsi)
-        mov     eax, Param
-        mov     r9, Registers
-        mov     r10, rbx // preserve rbx
-        xor     ebx, ebx
-        xor     ecx, ecx
-        xor     edx, edx
-        cpuid
-        mov     TRegisters(r9).&eax, eax
-        mov     TRegisters(r9).&ebx, ebx
-        mov     TRegisters(r9).&ecx, ecx
-        mov     TRegisters(r9).&edx, edx
-        mov     rbx, r10
-end;
-{$else}
-asm
-        push    esi
-        push    edi
-        mov     esi, edx
-        mov     edi, eax
-        pushfd
-        pop     eax
-        mov     edx, eax
-        xor     eax, $200000
-        push    eax
-        popfd
-        pushfd
-        pop     eax
-        xor     eax, edx
-        jz      @nocpuid
-        push    ebx
-        mov     eax, edi
-        xor     ecx, ecx
-        cpuid
-        mov     TRegisters(esi).&eax, eax
-        mov     TRegisters(esi).&ebx, ebx
-        mov     TRegisters(esi).&ecx, ecx
-        mov     TRegisters(esi).&edx, edx
-        pop     ebx
-@nocpuid:
-        pop     edi
-        pop     esi
-end;
-{$endif}
-
-{******************************************************}
-function crc32cBy4SSE42(crc, value: cardinal): cardinal;
-{$IF defined(CPU64BITS)}
-asm .noframe
-        mov     eax, crc
-        crc32   eax, value
-end;
-{$else}
-asm // eax=crc, edx=value
-        {$ifdef UNICODE}
-        crc32   eax, edx
-        {$else}
-        db      $F2, $0F, $38, $F1, $C2
-        {$endif}
-end;
-{$endif}
-
-{**************************}
-function RdRand32: cardinal;
-{$IF defined(CPU64BITS)}
-asm .noframe
-{$else}
-asm
-{$endif}
-  // rdrand eax: same opcodes for x86 and x64
-  db $0f, $c7, $f0
-  // returns in eax, ignore carry flag (eax=0 won't hurt)
-end;
-
-{*********************************************}
-function IsXmmYmmOSEnabled: boolean; assembler;
-asm // see https://software.intel.com/en-us/blogs/2011/04/14/is-avx-enabled
-        xor     ecx, ecx  // specify control register XCR0 = XFEATURE_ENABLED_MASK
-        db  $0f, $01, $d0 // XGETBV reads XCR0 into EDX:EAX
-        and     eax, 6    // check OS has enabled both XMM (bit 1) and YMM (bit 2)
-        cmp     al, 6
-        sete    al
-end;
-
-{**************************}
-procedure ALInitCpuFeatures;
-var regs: TRegisters;
-    c: cardinal;
-begin
-  {$R-} // this code require range check error OFF
-  // retrieve CPUID raw flags
-  regs.edx := 0;
-  regs.ecx := 0;
-  GetCPUID(1,regs);
-  PIntegerArray(@ALCpuFeatures)^[0] := regs.edx;
-  PIntegerArray(@ALCpuFeatures)^[1] := regs.ecx;
-  GetCPUID(7,regs);
-  PIntegerArray(@ALCpuFeatures)^[2] := regs.ebx;
-  PIntegerArray(@ALCpuFeatures)^[3] := regs.ecx;
-  PByte(@PIntegerArray(@ALCpuFeatures)^[4])^ := regs.edx;
-  if not(cfOSXS in ALCpuFeatures) or not IsXmmYmmOSEnabled then
-    ALCpuFeatures := ALCpuFeatures-[cfAVX,cfAVX2,cfFMA];
-  // validate accuracy of most used HW opcodes
-  if cfRAND in ALCpuFeatures then
-    try
-      c := RdRand32;
-      if RdRand32=c then // most probably a RDRAND bug, e.g. on AMD Rizen 3000
-        exclude(ALCpuFeatures,cfRAND);
-    except // may trigger an illegal instruction exception on some Ivy Bridge
-      exclude(ALCpuFeatures,cfRAND);
-    end;
-  if cfSSE42 in ALCpuFeatures then
-    try
-      if crc32cBy4SSE42(0,1)<>3712330424 then
-        raise EALException.Create('Invalid crc32cBy4SSE42');
-    except // disable now on illegal instruction or incorrect result
-      exclude(ALCpuFeatures,cfSSE42);
-    end;
-  {$R+} // enable back the {$R+}
-end;
-
-{$ENDIF}
 
 initialization
-
-  {$IFNDEF NEXTGEN}
-  ALInitCpuFeatures;
-  {$ENDIF}
-
   ALCustomDelayedFreeObjectProc := nil;
-  {$IFDEF DEBUG}
-  ALFreeAndNilRefCountWarn := False;
-  ALFreeAndNilCanRefCountWarnProc := nil;
-  {$ENDIF}
-
-  _ALCallStackCustomLogsU := TList<_TALCallStackCustomLogU>.Create;
+  ALEnqueueLog := False;
+  _ALLogQueue := TList<_TALLogQueueItem>.Create;
+  _ALCallStackCustomLogs := TList<_TALCallStackCustomLog>.Create;
   ALMove := system.Move;
 
 
 Finalization
-
-  ALFreeAndNil(_ALCallStackCustomLogsU);
+  ALFreeAndNil(_ALCallStackCustomLogs);
+  ALFreeAndNil(_ALLogQueue);
 
 end.

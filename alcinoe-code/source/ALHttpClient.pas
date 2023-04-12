@@ -1,44 +1,25 @@
-{*************************************************************
-www:          http://sourceforge.net/projects/alcinoe/              
-svn:          svn checkout svn://svn.code.sf.net/p/alcinoe/code/ alcinoe-code              
-Author(s):    Stéphane Vander Clock (skype/email: svanderclock@yahoo.fr)
-
-product:      ALHttpClient Base Class
-Version:      4.00
-
-Description:  TALHttpClient is a ancestor of class like
-              TALWinInetHttpClient or TALWinHttpClient
-
-Know bug :
-
-History :     28/11/2005: move public procedure to published
-                          in TALHttpClientProxyParams
-              26/06/2012: Add xe2 support
-
-Link :        http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.1
-              http://www.ietf.org/rfc/rfc1867.txt
-              http://www.ietf.org/rfc/rfc2388.txt
-              http://www.w3.org/MarkUp/html-spec/html-spec_8.html
-              http://www.cs.tut.fi/~jkorpela/forms/methods.html
-              http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-              http://wp.netscape.com/newsref/std/cookie_spec.html
-
-**************************************************************}
+{****************************************
+TALHttpClient is a ancestor of class like
+TALWinInetHttpClient or TALWinHttpClient
+****************************************}
 unit ALHttpClient;
 
 interface
 
-{$IF CompilerVersion >= 25} {Delphi XE4}
-  {$LEGACYIFEND ON} // http://docwiki.embarcadero.com/RADStudio/XE4/en/Legacy_IFEND_(Delphi)
+{$I Alcinoe.inc}
+
+{$IFNDEF ALCompilerVersionSupported}
+  {$MESSAGE WARN 'Check if Web.HTTPApp was not updated and adjust the IFDEF'}
 {$IFEND}
 
-uses System.SysUtils,
-     System.Classes,
-     {$IFDEF MSWINDOWS}
-     Winapi.Wininet,
-     {$ENDIF}
-     ALStringList,
-     ALMultiPartParser;
+uses
+  System.SysUtils,
+  {$IFDEF MSWINDOWS}
+  Winapi.Wininet,
+  {$ENDIF}
+  ALStringList,
+  ALMultiPartParser,
+  System.Classes;
 
 type
 
@@ -46,113 +27,81 @@ type
   TALHTTPPropertyChangeEvent = procedure(sender: Tobject; Const PropertyIndex: Integer) of object;
 
   {--protocol version--}
-  TALHTTPProtocolVersion = (HTTPpv_1_0, HTTPpv_1_1);
+  TALHTTPProtocolVersion = (v1_0, v1_1);
 
   {--Request method--}
-  TALHTTPMethod = (HTTPmt_Get,
-                   HTTPmt_Post,
-                   HTTPmt_Head,
-                   HTTPmt_Trace,
-                   HTTPmt_Put,
-                   HTTPmt_Delete);
+  TALHTTPMethod = (Get,
+                   Post,
+                   Head,
+                   Trace,
+                   Put,
+                   Delete,
+                   Options);
 
   {--Request header--}
   TALHTTPRequestHeader = Class(TObject)
   Private
-    fAccept: AnsiString;
-    fAcceptCharSet: AnsiString;
-    fAcceptEncoding: AnsiString;
-    fAcceptLanguage: AnsiString;
-    fAllow: AnsiString;
-    fAuthorization: AnsiString;
-    fCacheControl: AnsiString;
-    fConnection: AnsiString;
-    fContentEncoding: AnsiString;
-    fContentLanguage: AnsiString;
-    fContentLength: AnsiString;
-    fContentLocation: AnsiString;
-    fContentMD5: AnsiString;
-    fContentRange: AnsiString;
-    fContentType: AnsiString;
-    fDate: AnsiString;
-    fExpect: AnsiString;
-    fExpires: AnsiString;
-    fFrom: AnsiString;
-    fHost: AnsiString;
-    fIfMatch: AnsiString;
-    fIfModifiedSince: AnsiString;
-    fIfNoneMatch: AnsiString;
-    fIfRange: AnsiString;
-    fIfUnmodifiedSince: AnsiString;
-    fLastModified: AnsiString;
-    fMaxForwards: AnsiString;
-    fPragma: AnsiString;
-    fProxyAuthorization: AnsiString;
-    fRange: AnsiString;
-    fReferer: AnsiString;
-    fTE: AnsiString;
-    fTrailer: AnsiString;
-    fTransferEncoding: AnsiString;
-    fUpgrade: AnsiString;
-    fUserAgent: AnsiString;
-    fVia: AnsiString;
-    fWarning: AnsiString;
-    FCustomHeaders: TALStrings;
-    FCookies: TALStrings;
-    FOnChange: TALHTTPPropertyChangeEvent;
-    Procedure DoChange(propertyIndex: Integer);
+    fHeaders: TALStringsA;
+    FCookies: TALStringsA;
+    function GetHeaderValueByPropertyIndex(const Index: Integer): ansiString;
     procedure SetHeaderValueByPropertyIndex(const Index: Integer; const Value: AnsiString);
     Function GetRawHeaderText: AnsiString;
-    procedure SetCookies(const Value: TALStrings);
     procedure SetRawHeaderText(const aRawHeaderText: AnsiString);
-    procedure SetCustomHeaders(const Value: TALStrings);
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Clear;
+    procedure setHeaderValue(const aName: ansiString; const aValue: ansiString);
     Property RawHeaderText: AnsiString read GetRawHeaderText write SetRawHeaderText;
-    property Accept: AnsiString index 0 read FAccept write SetHeaderValueByPropertyIndex; {Accept: audio/*; q=0.2, audio/basic}
-    property AcceptCharSet: AnsiString index 1 read FAcceptCharSet write SetHeaderValueByPropertyIndex; {Accept-Charset: iso-8859-5, unicode-1-1;q=0.8}
-    property AcceptEncoding: AnsiString index 2 read FAcceptEncoding write SetHeaderValueByPropertyIndex; {Accept-Encoding: gzip;q=1.0, identity; q=0.5, *;q=0}
-    property AcceptLanguage: AnsiString index 3 read FAcceptLanguage write SetHeaderValueByPropertyIndex; {Accept-Language: da, en-gb;q=0.8, en;q=0.7}
-    property Allow: AnsiString index 4 read FAllow write SetHeaderValueByPropertyIndex; {Allow: GET, HEAD, PUT}
-    property Authorization: AnsiString index 5 read FAuthorization write SetHeaderValueByPropertyIndex; {Authorization: BASIC d2VibWFzdGVyOnpycW1hNHY=}
-    property CacheControl: AnsiString index 6 read FCacheControl write SetHeaderValueByPropertyIndex; {Cache-Control: no-cache}
-    property Connection: AnsiString index 7 read FConnection write SetHeaderValueByPropertyIndex; {Connection: close}
-    property ContentEncoding: AnsiString index 8 read FContentEncoding write SetHeaderValueByPropertyIndex; {Content-Encoding: gzip}
-    property ContentLanguage: AnsiString index 9 read FContentLanguage write SetHeaderValueByPropertyIndex; {Content-Language: mi, en}
-    property ContentLength: AnsiString index 10 read FContentLength write SetHeaderValueByPropertyIndex;  {Content-Length: 3495}
-    property ContentLocation: AnsiString index 11 read FContentLocation write SetHeaderValueByPropertyIndex;  {Content-Location: http://localhost/page.asp}
-    property ContentMD5: AnsiString index 12 read FContentMD5 write SetHeaderValueByPropertyIndex;  {Content-MD5: [md5-digest]}
-    property ContentRange: AnsiString index 13 read FContentRange write SetHeaderValueByPropertyIndex;  {Content-Range: bytes 2543-4532/7898}
-    property ContentType: AnsiString index 14 read FContentType write SetHeaderValueByPropertyIndex; {Content-Type: text/html; charset=ISO-8859-4}
-    property Date: AnsiString index 15 read FDate write SetHeaderValueByPropertyIndex; {Date: Tue, 15 Nov 1994 08:12:31 GMT}
-    property Expect: AnsiString index 16 read fExpect write SetHeaderValueByPropertyIndex; {Expect: 100-continue}
-    property Expires: AnsiString index 17 read FExpires write SetHeaderValueByPropertyIndex; {Expires: Thu, 01 Dec 1994 16:00:00 GMT}
-    property From: AnsiString index 18 read FFrom write SetHeaderValueByPropertyIndex; {From: webmaster@w3.org}
-    property Host: AnsiString index 19 read FHost write SetHeaderValueByPropertyIndex; {Host: www.w3.org}
-    property IfMatch: AnsiString index 20 read FIfMatch write SetHeaderValueByPropertyIndex; {If-Match: entity_tag001}
-    property IfModifiedSince: AnsiString index 21 read FIfModifiedSince write SetHeaderValueByPropertyIndex; {If-Modified-Since: Sat, 29 Oct 1994 19:43:31 GMT}
-    property IfNoneMatch: AnsiString index 22 read fIfNoneMatch write SetHeaderValueByPropertyIndex; {If-None-Match: entity_tag001}
-    property IfRange: AnsiString index 23 read fIfRange write SetHeaderValueByPropertyIndex; {If-Range: entity_tag001}
-    property IfUnmodifiedSince: AnsiString index 24 read fIfUnmodifiedSince write SetHeaderValueByPropertyIndex; {If-Unmodified-Since: Sat, 29 Oct 1994 19:43:31 GMT}
-    property LastModified: AnsiString index 25 read fLastModified write SetHeaderValueByPropertyIndex; {Last-Modified: Tue, 15 Nov 1994 12:45:26 GMT}
-    property MaxForwards: AnsiString index 26 read fMaxForwards write SetHeaderValueByPropertyIndex; {Max-Forwards: 3}
-    property Pragma: AnsiString index 27 read FPragma write SetHeaderValueByPropertyIndex; {Pragma: no-cache}
-    property ProxyAuthorization: AnsiString index 28 read FProxyAuthorization write SetHeaderValueByPropertyIndex; {Proxy-Authorization: [credentials]}
-    property Range: AnsiString index 29 read FRange write SetHeaderValueByPropertyIndex; {Range: bytes=100-599}
-    property Referer: AnsiString index 30 read FReferer write SetHeaderValueByPropertyIndex; {Referer: http://www.w3.org/hypertext/DataSources/Overview.html}
-    property TE: AnsiString index 31 read fTE write SetHeaderValueByPropertyIndex; {TE: trailers, deflate;q=0.5}
-    property Trailer: AnsiString index 32 read FTrailer write SetHeaderValueByPropertyIndex; {Trailer: Date}
-    property TransferEncoding: AnsiString index 33 read FTransferEncoding write SetHeaderValueByPropertyIndex; {Transfer-Encoding: chunked}
-    property Upgrade: AnsiString index 34 read FUpgrade write SetHeaderValueByPropertyIndex; {Upgrade: HTTP/2.0, SHTTP/1.3, IRC/6.9, RTA/x11}
-    property UserAgent: AnsiString index 35 read FUserAgent write SetHeaderValueByPropertyIndex; {User-Agent: CERN-LineMode/2.15 libwww/2.17b3}
-    property Via: AnsiString index 36 read FVia write SetHeaderValueByPropertyIndex; {Via: 1.0 ricky, 1.1 mertz, 1.0 lucy}
-    property Warning: AnsiString index 37 read FWarning write SetHeaderValueByPropertyIndex; {Warning: 112 Disconnected Operation}
-    property CustomHeaders: TALStrings read FCustomHeaders write SetCustomHeaders;
-    property Cookies: TALStrings read FCookies write SetCookies;
-    property OnChange: TALHTTPPropertyChangeEvent read FOnChange write FOnChange;
+    property Accept: AnsiString index 0 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Accept: audio/*; q=0.2, audio/basic}
+    property AcceptCharSet: AnsiString index 1 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Accept-Charset: iso-8859-5, unicode-1-1;q=0.8}
+    property AcceptEncoding: AnsiString index 2 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Accept-Encoding: gzip;q=1.0, identity; q=0.5, *;q=0}
+    property AcceptLanguage: AnsiString index 3 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Accept-Language: da, en-gb;q=0.8, en;q=0.7}
+    property Allow: AnsiString index 4 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Allow: GET, HEAD, PUT}
+    property Authorization: AnsiString index 5 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Authorization: BASIC d2VibWFzdGVyOnpycW1hNHY=}
+    property CacheControl: AnsiString index 6 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Cache-Control: no-cache}
+    property Connection: AnsiString index 7 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Connection: close}
+    property ContentEncoding: AnsiString index 8 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Content-Encoding: gzip}
+    property ContentLanguage: AnsiString index 9 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Content-Language: mi, en}
+    property ContentLength: AnsiString index 10 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex;  {Content-Length: 3495}
+    property ContentLocation: AnsiString index 11 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex;  {Content-Location: http://localhost/page.asp}
+    property ContentMD5: AnsiString index 12 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex;  {Content-MD5: [md5-digest]}
+    property ContentRange: AnsiString index 13 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex;  {Content-Range: bytes 2543-4532/7898}
+    property ContentType: AnsiString index 14 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Content-Type: text/html; charset=ISO-8859-4}
+    property Date: AnsiString index 15 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Date: Tue, 15 Nov 1994 08:12:31 GMT}
+    property Expect: AnsiString index 16 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Expect: 100-continue}
+    property Expires: AnsiString index 17 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Expires: Thu, 01 Dec 1994 16:00:00 GMT}
+    property From: AnsiString index 18 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {From: webmaster@w3.org}
+    property Host: AnsiString index 19 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Host: www.w3.org}
+    property IfMatch: AnsiString index 20 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {If-Match: entity_tag001}
+    property IfModifiedSince: AnsiString index 21 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {If-Modified-Since: Sat, 29 Oct 1994 19:43:31 GMT}
+    property IfNoneMatch: AnsiString index 22 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {If-None-Match: entity_tag001}
+    property IfRange: AnsiString index 23 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {If-Range: entity_tag001}
+    property IfUnmodifiedSince: AnsiString index 24 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {If-Unmodified-Since: Sat, 29 Oct 1994 19:43:31 GMT}
+    property LastModified: AnsiString index 25 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Last-Modified: Tue, 15 Nov 1994 12:45:26 GMT}
+    property MaxForwards: AnsiString index 26 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Max-Forwards: 3}
+    property Pragma: AnsiString index 27 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Pragma: no-cache}
+    property ProxyAuthorization: AnsiString index 28 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Proxy-Authorization: [credentials]}
+    property Range: AnsiString index 29 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Range: bytes=100-599}
+    property Referer: AnsiString index 30 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Referer: http://www.w3.org/hypertext/DataSources/Overview.html}
+    property TE: AnsiString index 31 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {TE: trailers, deflate;q=0.5}
+    property Trailer: AnsiString index 32 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Trailer: Date}
+    property TransferEncoding: AnsiString index 33 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Transfer-Encoding: chunked}
+    property Upgrade: AnsiString index 34 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Upgrade: HTTP/2.0, SHTTP/1.3, IRC/6.9, RTA/x11}
+    property UserAgent: AnsiString index 35 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {User-Agent: CERN-LineMode/2.15 libwww/2.17b3}
+    property Via: AnsiString index 36 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Via: 1.0 ricky, 1.1 mertz, 1.0 lucy}
+    property Warning: AnsiString index 37 read GetHeaderValueByPropertyIndex write SetHeaderValueByPropertyIndex; {Warning: 112 Disconnected Operation}
+    property CustomHeaders: TALStringsA read FHeaders;
+    property Cookies: TALStringsA read FCookies;
   end;
+
+  {-----------------------}
+  TALNameValuePair = record
+    Name: ansistring;
+    Value: ansistring;
+    constructor Create(const AName, AValue: ansistring);
+  end;
+  TALNameValueArray = Array of TALNameValuePair;
 
   {--TALHTTPCookie--}
   TALHTTPCookie = class(TCollectionItem)
@@ -162,7 +111,9 @@ type
     FPath: AnsiString;
     FDomain: AnsiString;
     FExpires: TDateTime;
+    FSameSite: AnsiString;
     FSecure: Boolean;
+    FHttpOnly: Boolean;
   protected
     function GetHeaderValue: AnsiString;
     procedure SetHeaderValue(Const aValue: AnsiString);
@@ -171,10 +122,12 @@ type
     procedure AssignTo(Dest: TPersistent); override;
     property Name: AnsiString read FName write FName;
     property Value: AnsiString read FValue write FValue;
-    property Domain: AnsiString read FDomain write FDomain;
     property Path: AnsiString read FPath write FPath;
+    property Domain: AnsiString read FDomain write FDomain;
     property Expires: TDateTime read FExpires write FExpires;
+    property SameSite: AnsiString read FSameSite write FSameSite;
     property Secure: Boolean read FSecure write FSecure;
+    property HttpOnly: Boolean read FHttpOnly write FHttpOnly;
     property HeaderValue: AnsiString read GetHeaderValue write SetHeaderValue;
   end;
 
@@ -186,12 +139,15 @@ type
     procedure SetCookie(Index: Integer; Cookie: TALHTTPCookie);
   public
     function Add: TALHTTPCookie; overload;
-    function Add(const Name: AnsiString;
-                 const Value: AnsiString;
-                 const Path: AnsiString;
-                 const Domain: AnsiString;
-                 const Expires: int64; // unixDateTime format
-                 const Secure: Boolean): TALHTTPCookie; overload;
+    function Add(
+               const Name: AnsiString;
+               const Value: AnsiString;
+               const Path: AnsiString;
+               const Domain: AnsiString;
+               const Expires: int64; // unixDateTime format
+               const SameSite: AnsiString;
+               const Secure: Boolean;
+               const HttpOnly: Boolean): TALHTTPCookie; overload;
     property Items[Index: Integer]: TALHTTPCookie read GetCookie write SetCookie; default;
   end;
 
@@ -227,7 +183,7 @@ type
     FWarning: AnsiString;
     FWWWAuthenticate: AnsiString;
     FRawHeaderText: AnsiString;
-    FCustomHeaders: TALStrings;
+    FCustomHeaders: TALStringsA;
     FCookies: TALHTTPCookieCollection;
     FStatusCode: AnsiString;
     FHttpProtocolVersion: AnsiString;
@@ -266,7 +222,7 @@ type
     property Via: AnsiString read FVia; {Via: 1.0 ricky, 1.1 mertz, 1.0 lucy}
     property Warning: AnsiString read FWarning; {Warning: 112 Disconnected Operation}
     property WWWAuthenticate: AnsiString read FWWWAuthenticate; {WWW-Authenticate: [challenge]}
-    Property CustomHeaders: TALStrings read FCustomHeaders;
+    Property CustomHeaders: TALStringsA read FCustomHeaders;
     Property Cookies: TALHTTPCookieCollection read FCookies;
     property StatusCode: AnsiString read FStatusCode;
     property HttpProtocolVersion: AnsiString read FHttpProtocolVersion;
@@ -321,8 +277,6 @@ type
     FProxyParams: TALHTTPClientProxyParams;
     FRequestHeader: TALHTTPRequestHeader;
     FProtocolVersion: TALHTTPProtocolVersion;
-    FRequestMethod: TALHTTPMethod;
-    FURL: AnsiString;
     FUserName: AnsiString;
     FPassword: AnsiString;
     FConnectTimeout: Integer;
@@ -331,84 +285,143 @@ type
     FOnUploadProgress: TALHTTPClientUploadProgressEvent;
     FOnDownloadProgress: TALHTTPClientDownloadProgressEvent;
     FOnRedirect: TAlHTTPClientRedirectEvent;
-    FUploadBufferSize: Integer;
+    FUploadBufferSize: cardinal;
   protected
-    procedure SetURL(const Value: AnsiString); virtual;
     procedure SetUsername(const NameValue: AnsiString); virtual;
     procedure SetPassword(const PasswordValue: AnsiString); virtual;
     procedure OnProxyParamsChange(sender: Tobject; Const PropertyIndex: Integer); virtual;
-    procedure OnRequestHeaderChange(sender: Tobject; Const PropertyIndex: Integer); virtual;
-    procedure SetUploadBufferSize(const Value: Integer); virtual;
     procedure SetOnRedirect(const Value: TAlHTTPClientRedirectEvent); virtual;
+    procedure Execute(
+                const aUrl:AnsiString;
+                const aRequestMethod: TALHTTPMethod;
+                const aRequestDataStream: TStream;
+                const ARequestHeaderValues: TALNameValueArray;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader); virtual; abstract;
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure Execute(aRequestDataStream: TStream;
-                      aResponseContentStream: TStream;
-                      aResponseContentHeader: TALHTTPResponseHeader); virtual;
-    Procedure Get(const aUrl:AnsiString;
-                  aResponseContentStream: TStream;
-                  aResponseContentHeader: TALHTTPResponseHeader); overload;
-    Procedure Post(const aUrl:AnsiString;
-                   aResponseContentStream: TStream;
-                   aResponseContentHeader: TALHTTPResponseHeader); overload;
-    Procedure Post(const aUrl:AnsiString;
-                   aPostDataStream: TStream;
-                   aResponseContentStream: TStream;
-                   aResponseContentHeader: TALHTTPResponseHeader); overload;
-    Procedure PostUrlEncoded(const aUrl:AnsiString;
-                             aPostDataStrings: TALStrings;
-                             aResponseContentStream: TStream;
-                             aResponseContentHeader: TALHTTPResponseHeader;
-                             Const EncodeParams: Boolean=True); overload;
-    Procedure PostMultipartFormData(const aUrl:AnsiString;
-                                    aPostDataStrings: TALStrings;
-                                    aPostDataFiles: TALMultiPartFormDataContents;
-                                    aResponseContentStream: TStream;
-                                    aResponseContentHeader: TALHTTPResponseHeader); overload;
-    Procedure Head(const aUrl:AnsiString;
-                   aResponseContentStream: TStream;
-                   aResponseContentHeader: TALHTTPResponseHeader); overload;
-    Procedure Trace(const aUrl:AnsiString;
-                    aResponseContentStream: TStream;
-                    aResponseContentHeader: TALHTTPResponseHeader); overload;
-    Procedure Put(const aUrl:AnsiString;
-                  aPutDataStream: TStream;
-                  aResponseContentStream: TStream;
-                  aResponseContentHeader: TALHTTPResponseHeader); overload;
-    procedure Delete(const aUrl:AnsiString;
-                     aResponseContentStream: TStream;
-                     aResponseContentHeader: TALHTTPResponseHeader); overload;
-    Function  Get(const aUrl:AnsiString): AnsiString; overload;
-    Function  Get(const aUrl:AnsiString;
-                  aParams: TALStrings;
-                  Const EncodeParams: Boolean=True): AnsiString; overload;
-    Procedure Get(const aUrl:AnsiString;
-                  aParams: TALStrings;
-                  aResponseContentStream: TStream;
-                  aResponseContentHeader: TALHTTPResponseHeader;
-                  Const EncodeParams: Boolean=True); overload;
-    Function  Post(const aUrl:AnsiString): AnsiString; overload;
-    Function  Post(const aUrl:AnsiString; aPostDataStream: TStream): AnsiString; overload;
-    Function  PostUrlEncoded(const aUrl:AnsiString;
-                             aPostDataStrings: TALStrings;
-                             Const EncodeParams: Boolean=True): AnsiString; overload;
-    Function  PostMultiPartFormData(const aUrl:AnsiString;
-                                    aPostDataStrings: TALStrings;
-                                    aPostDataFiles: TALMultiPartFormDataContents): AnsiString; overload;
-    Function  Head(const aUrl:AnsiString): AnsiString; overload;
-    Function  trace(const aUrl:AnsiString): AnsiString; overload;
-    function  Put(const aURL: Ansistring; aPutDataStream: TStream): AnsiString; overload;
-    function  Delete(const aURL: Ansistring): AnsiString; overload;
-    property  URL: AnsiString read FURL write SetURL;
+    //-----
+    Procedure Get(
+                const aUrl:AnsiString;
+                const aRequestFields: TALStringsA;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil;
+                Const aEncodeRequestFields: Boolean=True); overload;
+    Procedure Get(
+                const aUrl:AnsiString;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil); overload;
+    Function  Get(
+                const aUrl:AnsiString;
+                const ARequestHeaderValues: TALNameValueArray = nil): AnsiString; overload;
+    Function  Get(
+                const aUrl:AnsiString;
+                const aRequestFields: TALStringsA;
+                const ARequestHeaderValues: TALNameValueArray = nil;
+                Const aEncodeRequestFields: Boolean=True): AnsiString; overload;
+    //-----
+    Procedure Post(
+                const aUrl:AnsiString;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil); overload;
+    Procedure Post(
+                const aUrl:AnsiString;
+                const aPostDataStream: TStream;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil); overload;
+    Function  Post(
+                const aUrl:AnsiString;
+                const ARequestHeaderValues: TALNameValueArray = nil): AnsiString; overload;
+    Function  Post(
+                const aUrl:AnsiString;
+                const aPostDataStream: TStream;
+                const ARequestHeaderValues: TALNameValueArray = nil): AnsiString; overload;
+    //-----
+    Procedure PostUrlEncoded(
+                const aUrl:AnsiString;
+                const aRequestFields: TALStringsA;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil;
+                Const aEncodeRequestFields: Boolean=True); overload;
+    Function  PostUrlEncoded(
+                const aUrl:AnsiString;
+                const aRequestFields: TALStringsA;
+                const ARequestHeaderValues: TALNameValueArray = nil;
+                Const aEncodeRequestFields: Boolean=True): AnsiString; overload;
+    //-----
+    Procedure PostMultipartFormData(
+                const aUrl:AnsiString;
+                const aRequestFields: TALStringsA;
+                const aRequestFiles: TALMultiPartFormDataContents;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil); overload;
+    Function  PostMultiPartFormData(
+                const aUrl:AnsiString;
+                const aRequestFields: TALStringsA;
+                const aRequestFiles: TALMultiPartFormDataContents;
+                const ARequestHeaderValues: TALNameValueArray = nil): AnsiString; overload;
+    //-----
+    Procedure Head(
+                const aUrl:AnsiString;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil); overload;
+    Function  Head(
+                const aUrl:AnsiString;
+                const ARequestHeaderValues: TALNameValueArray = nil): AnsiString; overload;
+    //-----
+    Procedure Trace(
+                const aUrl:AnsiString;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil); overload;
+    Function  trace(
+                const aUrl:AnsiString;
+                const ARequestHeaderValues: TALNameValueArray = nil): AnsiString; overload;
+    //-----
+    Procedure Put(
+                const aUrl:AnsiString;
+                const aPutDataStream: TStream;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil); overload;
+    function  Put(
+                const aURL: Ansistring;
+                const aPutDataStream: TStream;
+                const ARequestHeaderValues: TALNameValueArray = nil): AnsiString; overload;
+    //-----
+    procedure Delete(
+                const aUrl:AnsiString;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil); overload;
+    function  Delete(
+                const aURL: Ansistring;
+                const ARequestHeaderValues: TALNameValueArray = nil): AnsiString; overload;
+    //-----
+    procedure Options(
+                const aUrl:AnsiString;
+                const aResponseContent: TStream;
+                const aResponseHeader: TALHTTPResponseHeader;
+                const ARequestHeaderValues: TALNameValueArray = nil); overload;
+    function  Options(
+                const aURL: Ansistring;
+                const ARequestHeaderValues: TALNameValueArray = nil): AnsiString; overload;
+    //-----
     property  ConnectTimeout: Integer read FConnectTimeout write FConnectTimeout default 0;
     property  SendTimeout: Integer read FSendTimeout write FSendTimeout default 0;
     property  ReceiveTimeout: Integer read FReceiveTimeout write FReceiveTimeout default 0;
-    property  UploadBufferSize: Integer read FUploadBufferSize write SetUploadBufferSize default $8000;
+    property  UploadBufferSize: cardinal read FUploadBufferSize write FUploadBufferSize default $8000;
     property  ProxyParams: TALHTTPClientProxyParams read FProxyParams;
     property  RequestHeader: TALHTTPRequestHeader read FRequestHeader;
-    Property  ProtocolVersion: TALHTTPProtocolVersion read FProtocolVersion write FProtocolVersion default HTTPpv_1_1;
-    Property  RequestMethod: TALHTTPMethod read FRequestMethod write fRequestMethod default HTTPmt_get;
+    Property  ProtocolVersion: TALHTTPProtocolVersion read FProtocolVersion write FProtocolVersion default TALHTTPProtocolVersion.v1_1;
     property  UserName: AnsiString read FUserName write SetUserName;
     property  Password: AnsiString read FPassword write SetPassword;
     property  OnUploadProgress: TALHTTPClientUploadProgressEvent read FOnUploadProgress write FOnUploadProgress;
@@ -416,14 +429,14 @@ type
     property  OnRedirect: TAlHTTPClientRedirectEvent read FOnRedirect write SetOnRedirect;
   end;
 
-{Http Function}
-procedure ALHTTPEncodeParamNameValues(ParamValues: TALStrings);
-procedure ALExtractHTTPFields(Separators,
-                              WhiteSpace,
-                              Quotes: TSysCharSet;
-                              Content: PAnsiChar;
-                              Strings: TALStrings;
-                              StripQuotes: Boolean = False);
+procedure ALHTTPEncodeParamNameValues(const ParamValues: TALStringsA);
+procedure ALExtractHTTPFields(
+            Separators,
+            WhiteSpace,
+            Quotes: TSysCharSet;
+            Content: PAnsiChar;
+            Strings: TALStringsA;
+            StripQuotes: Boolean = False);
 Function  AlRemoveShemeFromUrl(const aUrl: AnsiString): ansiString;
 {$IFDEF MSWINDOWS}
 Function  AlExtractShemeFromUrl(const aUrl: AnsiString): TInternetScheme;
@@ -431,62 +444,64 @@ Function  AlExtractShemeFromUrl(const aUrl: AnsiString): TInternetScheme;
 Function  AlExtractHostNameFromUrl(const aUrl: AnsiString): AnsiString;
 Function  AlExtractDomainNameFromUrl(const aUrl: AnsiString): AnsiString;
 Function  AlExtractUrlPathFromUrl(const aUrl: AnsiString): AnsiString;
-Function  AlInternetCrackUrl(aUrl: AnsiString;
-                             Var SchemeName,
-                                 HostName,
-                                 UserName,
-                                 Password,
-                                 UrlPath,
-                                 ExtraInfo: AnsiString;
-                             var PortNumber: integer): Boolean; overload;
-Function  AlInternetCrackUrl(const aUrl: AnsiString;
-                             Var SchemeName,
-                                 HostName,
-                                 UserName,
-                                 Password,
-                                 UrlPath,
-                                 Anchor: AnsiString; // not the anchor is never send to the server ! it's only used on client side
-                             Query: TALStrings;
-                             var PortNumber: integer): Boolean; overload;
-Function  AlInternetCrackUrl(var Url: AnsiString; // if true return UrlPath
-                             var Anchor: AnsiString;
-                             Query: TALStrings): Boolean; overload;
+Function  AlInternetCrackUrl(
+            const aUrl: AnsiString;
+            Var SchemeName,
+                HostName,
+                UserName,
+                Password,
+                UrlPath,
+                ExtraInfo: AnsiString;
+            var PortNumber: integer): Boolean; overload;
+Function  AlInternetCrackUrl(
+            const aUrl: AnsiString;
+            Var SchemeName,
+                HostName,
+                UserName,
+                Password,
+                UrlPath,
+                Anchor: AnsiString; // not the anchor is never send to the server ! it's only used on client side
+            const Query: TALStringsA;
+            var PortNumber: integer): Boolean; overload;
+Function  AlInternetCrackUrl(
+            var Url: AnsiString; // if true return UrlPath
+            var Anchor: AnsiString;
+            const Query: TALStringsA): Boolean; overload;
 Function  AlRemoveAnchorFromUrl(aUrl: AnsiString; Var aAnchor: AnsiString): AnsiString; overload;
 Function  AlRemoveAnchorFromUrl(const aUrl: AnsiString): AnsiString; overload;
 {$IFDEF MSWINDOWS}
 function  AlCombineUrl(const RelativeUrl, BaseUrl: AnsiString): AnsiString; overload;
-Function  AlCombineUrl(const RelativeUrl,
-                             BaseUrl,
-                             Anchor: AnsiString;
-                       Query: TALStrings): AnsiString; overload;
+Function  AlCombineUrl(
+            const RelativeUrl,
+                  BaseUrl,
+                  Anchor: AnsiString;
+            const Query: TALStringsA): AnsiString; overload;
 {$ENDIF}
 
 const
-  CAlRfc822DayOfWeekNames: array[1..7] of AnsiString = ('Sun',
-                                                        'Mon',
-                                                        'Tue',
-                                                        'Wed',
-                                                        'Thu',
-                                                        'Fri',
-                                                        'Sat');
+  AlRfc822DayOfWeekNames: array[1..7] of AnsiString = ('Sun',
+                                                       'Mon',
+                                                       'Tue',
+                                                       'Wed',
+                                                       'Thu',
+                                                       'Fri',
+                                                       'Sat');
 
-  CALRfc822MonthOfTheYearNames: array[1..12] of AnsiString = ('Jan',
-                                                              'Feb',
-                                                              'Mar',
-                                                              'Apr',
-                                                              'May',
-                                                              'Jun',
-                                                              'Jul',
-                                                              'Aug',
-                                                              'Sep',
-                                                              'Oct',
-                                                              'Nov',
-                                                              'Dec');
+  ALRfc822MonthOfTheYearNames: array[1..12] of AnsiString = ('Jan',
+                                                             'Feb',
+                                                             'Mar',
+                                                             'Apr',
+                                                             'May',
+                                                             'Jun',
+                                                             'Jul',
+                                                             'Aug',
+                                                             'Sep',
+                                                             'Oct',
+                                                             'Nov',
+                                                             'Dec');
 
 function ALGmtDateTimeToRfc822Str(const aValue: TDateTime): AnsiString;
-{$IFDEF MSWINDOWS}
 function ALDateTimeToRfc822Str(const aValue: TDateTime): AnsiString;
-{$ENDIF}
 function ALTryRfc822StrToGMTDateTime(const S: AnsiString; out Value: TDateTime): Boolean;
 function ALRfc822StrToGMTDateTime(const s: AnsiString): TDateTime;
 
@@ -499,14 +514,20 @@ type
   TALIPv6Binary = array[1..16] of AnsiChar;
 
 function ALZeroIpV6: TALIPv6Binary;
+Function ALIsValidIPv6BinaryStr(const aIPV6BinaryStr: ansiString): boolean;
 function ALTryIPV6StrToBinary(aIPv6Str: ansiString; var aIPv6Bin: TALIPv6Binary): Boolean;
 function ALIPV6StrTobinary(const aIPv6: AnsiString): TALIPv6Binary;
 function ALBinaryToIPv6Str(const aIPv6: TALIPv6Binary): ansiString;
 function ALBinaryStrToIPv6Binary(const aIPV6BinaryStr: ansiString): TALIPv6Binary;
+function ALBinaryStrToIPv6Str(const aIPV6BinaryStr: ansiString): ansiString;
 function ALIPv6EndOfRange(const aStartIPv6: TALIPv6Binary; aMaskLength: integer): TALIPv6Binary;
-procedure ALIPv6SplitParts(const aIPv6: TALIPv6Binary;
-                           var aLowestPart: UInt64;
-                           var aHigestPart: UInt64);
+procedure ALIPv6SplitParts(
+            const aIPv6: TALIPv6Binary;
+            var aLowestPart: UInt64;
+            var aHigestPart: UInt64);
+
+procedure ALDecompressHttpResponseContent(const aContentEncoding: AnsiString; var aContentStream: TMemoryStream); overload;
+procedure ALDecompressHttpResponseContent(const aContentEncoding: String; var aContentStream: TMemoryStream); overload;
 
 Const
   cALHTTPCLient_MsgInvalidURL         = 'Invalid url ''%s'' - only supports ''http'' and ''https'' schemes';
@@ -515,23 +536,27 @@ Const
 
 implementation
 
-uses {$IFDEF MSWINDOWS}
-     Winapi.Windows,
-     {$ENDIF}
-     Web.HttpApp,
-     System.DateUtils,
-     System.SysConst,
-     System.Math,
-     system.AnsiStrings,
-     AlCommon,
-     ALString;
+uses
+  {$IFDEF MSWINDOWS}
+  Winapi.Windows,
+  {$ENDIF}
+  {$if not defined(ALHttpGzipAuto)}
+  system.zlib,
+  {$endif}
+  Web.HttpApp,
+  System.DateUtils,
+  System.SysConst,
+  System.Math,
+  system.AnsiStrings,
+  ALCommon,
+  ALString;
 
-{***********************************************************************************}
-function AlStringFetch(var AInput: AnsiString; const ADelim: AnsiString): AnsiString;
+{************************************************************************************}
+function _AlStringFetch(var AInput: AnsiString; const ADelim: AnsiString): AnsiString;
 var
   LPos: Integer;
 begin
-  LPos := AlPos(ADelim, AInput);
+  LPos := ALPosA(ADelim, AInput);
   if LPos <= 0 then begin
     Result := AInput;
     AInput := '';
@@ -551,7 +576,9 @@ begin
   FPath := '';
   FDomain := '';
   FExpires := ALNullDate;
+  FSameSite := '';
   FSecure := False;
+  FHttpOnly := false;
 end;
 
 {**************************************************}
@@ -561,10 +588,12 @@ begin
     with TALHTTPCookie(Dest) do begin
       Name := Self.FName;
       Value := Self.FValue;
-      Domain := Self.FDomain;
       Path := Self.FPath;
+      Domain := Self.FDomain;
       Expires := Self.FExpires;
+      SameSite := Self.FSameSite;
       Secure := Self.FSecure;
+      HttpOnly := Self.FHttpOnly;
     end
     else inherited AssignTo(Dest);
 end;
@@ -572,17 +601,20 @@ end;
 {************************************************}
 function TALHTTPCookie.GetHeaderValue: AnsiString;
 begin
-  Result := ALFormat('%s=%s; ', [ALHTTPEncode(FName), ALHTTPEncode(FValue)]);
-  if Domain <> '' then Result := Result + ALFormat('domain=%s; ', [Domain]);
-  if Path <> '' then Result := Result + ALFormat('path=%s; ', [Path]);
-  if Expires <> ALNullDate then begin
-    Result := Result + ALFormat(ALFormatDateTime('"expires=%s, "dd"-%s-"yyyy" "hh":"nn":"ss" GMT; "',
-                                                 Expires,
-                                                 ALDefaultFormatSettings),
-                                [CAlRfc822DayOfWeekNames[DayOfWeek(Expires)],
-                                 CALRfc822MonthOfTheYearNames[MonthOf(Expires)]]);
-  end;
-  if Secure then Result := Result + 'secure';
+  Result := ALFormatA('%s=%s; ', [ALHTTPEncode(FName), ALHTTPEncode(FValue)]);
+  if Domain <> '' then Result := Result + ALFormatA('domain=%s; ', [Domain]);
+  if Path <> '' then Result := Result + ALFormatA('path=%s; ', [Path]);
+  if Expires <> ALNullDate then
+    Result := Result + ALFormatA(
+                         ALFormatDateTimeA(
+                           '"expires=%s, "dd"-%s-"yyyy" "hh":"nn":"ss" GMT; "',
+                           Expires,
+                           ALDefaultFormatSettingsA),
+                         [AlRfc822DayOfWeekNames[DayOfWeek(Expires)],
+                          ALRfc822MonthOfTheYearNames[MonthOf(Expires)]]);
+  if SameSite <> '' then Result := Result + ALFormatA('SameSite=%s; ', [SameSite]);
+  if Secure then Result := Result + 'secure; ';
+  if HttpOnly then Result := Result + 'httponly';
   if ALCopyStr(Result, Length(Result) - 1, MaxInt) = '; ' then SetLength(Result, Length(Result) - 2);
 end;
 
@@ -592,8 +624,8 @@ end;
 // HSID=AYQEVn….DKrdst; Domain=.foo.com; Path=/; Expires=Wed, 13-Jan-2021 22:23:01 GMT; HttpOnly
 // SSID=Ap4P….GTEq; Domain=.foo.com; Path=/; Expires=Wed, 13-Jan-2021 22:23:01 GMT; Secure; HttpOnly
 procedure TALHTTPCookie.SetHeaderValue(Const aValue: AnsiString);
-Var aCookieProp: TALStringList;
-    aCookieStr: AnsiString;
+Var LCookieProp: TALStringListA;
+    LCookieStr: AnsiString;
 begin
 
   FName:= '';
@@ -601,34 +633,39 @@ begin
   FPath:= '';
   FDomain:= '';
   FExpires:= ALNullDate;
+  FSameSite := '';
   FSecure:= False;
+  FHttpOnly := False;
 
-  aCookieProp := TALStringList.Create;
+  LCookieProp := TALStringListA.Create;
   try
 
-    aCookieStr := ALTrim(AValue);
-    while aCookieStr <> '' do
-      aCookieProp.Add(ALTrim(AlStringFetch(aCookieStr, ';')));
-    if aCookieProp.Count = 0 then exit;
+    LCookieStr := ALTrim(AValue);
+    while LCookieStr <> '' do
+      LCookieProp.Add(ALTrim(_AlStringFetch(LCookieStr, ';')));
+    if LCookieProp.Count = 0 then exit;
 
     // Exemple of aCookieProp content :
     //   LSID=DQAAAK…Eaem_vYg
     //   Domain=docs.foo.com
     //   Path=/accounts
     //   Expires=Wed, 13-Jan-2021 22:23:01 GMT
+    //   SameSite=None
     //   Secure
     //   HttpOnly
 
-    FName := aCookieProp.Names[0];
-    FValue := aCookieProp.ValueFromIndex[0];
-    FPath := aCookieProp.values['PATH'];
+    FName := LCookieProp.Names[0];
+    FValue := LCookieProp.ValueFromIndex[0];
+    FPath := LCookieProp.values['PATH'];
     if FPath = '' then FPath := '/';
-    if not ALTryRfc822StrToGmtDateTime(aCookieProp.values['EXPIRES'], FExpires) then FExpires := ALNullDate;
-    FDomain := aCookieProp.values['DOMAIN'];
-    FSecure := aCookieProp.IndexOf('SECURE') <> -1;
+    FDomain := LCookieProp.values['DOMAIN'];
+    if not ALTryRfc822StrToGmtDateTime(LCookieProp.values['EXPIRES'], FExpires) then FExpires := ALNullDate;
+    FSameSite := LCookieProp.values['SAMESITE'];
+    FSecure := LCookieProp.IndexOf('SECURE') <> -1;
+    FHttpOnly := LCookieProp.IndexOf('HTTPONLY') <> -1;
 
   finally
-    aCookieProp.free;
+    AlFreeAndNil(LCookieProp);
   end;
 
 end;
@@ -639,13 +676,16 @@ begin
   Result := TALHTTPCookie(inherited Add);
 end;
 
-{**********************************************************}
-function TALHTTPCookieCollection.Add(const Name: AnsiString;
-                                     const Value: AnsiString;
-                                     const Path: AnsiString;
-                                     const Domain: AnsiString;
-                                     const Expires: int64; // unixDateTime format
-                                     const Secure: Boolean): TALHTTPCookie;
+{***********************************}
+function TALHTTPCookieCollection.Add(
+           const Name: AnsiString;
+           const Value: AnsiString;
+           const Path: AnsiString;
+           const Domain: AnsiString;
+           const Expires: int64; // unixDateTime format
+           const SameSite: AnsiString;
+           const Secure: Boolean;
+           const HttpOnly: boolean): TALHTTPCookie;
 begin
   result := TALHTTPCookie(inherited Add);
   result.Name := Name;
@@ -653,7 +693,9 @@ begin
   result.Path := Path;
   result.Domain := Domain;
   result.Expires := unixtoDateTime(Expires);
+  result.SameSite := SameSite;
   result.Secure := Secure;
+  result.HttpOnly := HttpOnly;
 end;
 
 {************************************************************************}
@@ -672,7 +714,7 @@ end;
 constructor TALHTTPResponseHeader.Create;
 begin
   inherited;
-  FCustomHeaders := TALStringList.create;
+  FCustomHeaders := TALStringListA.create;
   FCustomHeaders.NameValueSeparator := ':';
   FCookies := TALHTTPCookieCollection.Create(TALHTTPCookie);
   clear;
@@ -681,8 +723,8 @@ end;
 {***************************************}
 destructor TALHTTPResponseHeader.Destroy;
 begin
-  FCustomHeaders.free;
-  FCookies.free;
+  AlFreeAndNil(FCustomHeaders);
+  AlFreeAndNil(FCookies);
   inherited;
 end;
 
@@ -733,83 +775,84 @@ end;
 
 {*********************************************************************************}
 procedure TALHTTPResponseHeader.SetRawHeaderText(Const aRawHeaderText: AnsiString);
-Var aRawHeaderLst: TALStringList;
-    j: integer;
-    AStatusLine: AnsiString;
 
-  {---------------------------------------------------}
-  Function AlG001(const aName: AnsiString): AnsiString;
-  Var i: Integer;
+Var LRawHeaderLst: TALStringListA;
+    J: integer;
+    LStatusLine: AnsiString;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  Function internalGetValue(const aName: AnsiString): AnsiString;
+  Var I: Integer;
   Begin
-    I := aRawHeaderLst.IndexOfName(aName);
+    I := LRawHeaderLst.IndexOfName(aName);
     If I >= 0 then Begin
-      result := ALTrim(aRawHeaderLst.ValueFromIndex[i]);
-      aRawHeaderLst.Delete(i);
+      result := ALTrim(LRawHeaderLst.ValueFromIndex[I]);
+      LRawHeaderLst.Delete(I);
     end
     else result := '';
   end;
 
 begin
-  aRawHeaderLst := TALStringList.create;
+  LRawHeaderLst := TALStringListA.create;
   try
-    aRawHeaderLst.NameValueSeparator := ':';
-    aRawHeaderLst.Text := aRawHeaderText;
+    LRawHeaderLst.NameValueSeparator := ':';
+    LRawHeaderLst.Text := aRawHeaderText;
 
-    FAcceptRanges := Alg001('Accept-Ranges');
-    FAge:= Alg001('Age');
-    FAllow := Alg001('Allow');
-    FCacheControl := Alg001('Cache-Control');
-    FConnection := Alg001('Connection');
-    FContentEncoding := Alg001('Content-Encoding');
-    FContentLanguage := Alg001('Content-Language');
-    FContentLength := Alg001('Content-Length');
-    FContentLocation := Alg001('Content-Location');
-    FContentMD5 := Alg001('Content-MD5');
-    FContentRange := Alg001('Content-Range');
-    FContentType := Alg001('Content-Type');
-    FDate := Alg001('Date');
-    FETag := Alg001('ETag');
-    FExpires := Alg001('Expires');
-    FLastModified := Alg001('Last-Modified');
-    FLocation := Alg001('Location');
-    FPragma := Alg001('Pragma');
-    FProxyAuthenticate := Alg001('Proxy-Authenticate');
-    FRetryAfter := Alg001('Retry-After');
-    FServer := Alg001('Server');
-    FTrailer := Alg001('Trailer');
-    FTransferEncoding := Alg001('Transfer-Encoding');
-    FUpgrade := Alg001('Upgrade');
-    FVary := Alg001('Vary');
-    FVia := Alg001('Via');
-    FWarning := Alg001('Warning');
-    FWWWAuthenticate := Alg001('WWW-Authenticate');
+    FAcceptRanges := internalGetValue('Accept-Ranges');
+    FAge:= internalGetValue('Age');
+    FAllow := internalGetValue('Allow');
+    FCacheControl := internalGetValue('Cache-Control');
+    FConnection := internalGetValue('Connection');
+    FContentEncoding := internalGetValue('Content-Encoding');
+    FContentLanguage := internalGetValue('Content-Language');
+    FContentLength := internalGetValue('Content-Length');
+    FContentLocation := internalGetValue('Content-Location');
+    FContentMD5 := internalGetValue('Content-MD5');
+    FContentRange := internalGetValue('Content-Range');
+    FContentType := internalGetValue('Content-Type');
+    FDate := internalGetValue('Date');
+    FETag := internalGetValue('ETag');
+    FExpires := internalGetValue('Expires');
+    FLastModified := internalGetValue('Last-Modified');
+    FLocation := internalGetValue('Location');
+    FPragma := internalGetValue('Pragma');
+    FProxyAuthenticate := internalGetValue('Proxy-Authenticate');
+    FRetryAfter := internalGetValue('Retry-After');
+    FServer := internalGetValue('Server');
+    FTrailer := internalGetValue('Trailer');
+    FTransferEncoding := internalGetValue('Transfer-Encoding');
+    FUpgrade := internalGetValue('Upgrade');
+    FVary := internalGetValue('Vary');
+    FVia := internalGetValue('Via');
+    FWarning := internalGetValue('Warning');
+    FWWWAuthenticate := internalGetValue('WWW-Authenticate');
 
     FCookies.clear;
-    J := aRawHeaderLst.IndexOfName('Set-Cookie');
+    J := LRawHeaderLst.IndexOfName('Set-Cookie');
     While J >= 0 do begin
-      If ALTrim(aRawHeaderLst.ValueFromIndex[j]) <> '' then
-        Cookies.Add.HeaderValue := ALTrim(aRawHeaderLst.ValueFromIndex[j]);
-      aRawHeaderLst.Delete(j);
-      J := aRawHeaderLst.IndexOfName('Set-Cookie');
+      If ALTrim(LRawHeaderLst.ValueFromIndex[J]) <> '' then
+        Cookies.Add.HeaderValue := ALTrim(LRawHeaderLst.ValueFromIndex[J]);
+      LRawHeaderLst.Delete(J);
+      J := LRawHeaderLst.IndexOfName('Set-Cookie');
     end;
 
-    If aRawHeaderLst.Count > 0 then begin
-      AStatusLine := aRawHeaderLst[0]; //HTTP/1.1 200 OK | 200 OK | status: 200 OK
-      FHttpProtocolVersion := ALTrim(AlStringFetch(AstatusLine,' '));
+    If LRawHeaderLst.Count > 0 then begin
+      LStatusLine := LRawHeaderLst[0]; //HTTP/1.1 200 OK | 200 OK | status: 200 OK
+      FHttpProtocolVersion := ALTrim(_AlStringFetch(LStatusLine,' '));
       If AlIsInteger(FHttpProtocolVersion) then begin
         FStatusCode := FHttpProtocolVersion;
         FHttpProtocolVersion := '';
       end
-      else FStatusCode := ALTrim(AlStringFetch(AstatusLine,' '));
-      FReasonPhrase := ALTrim(AstatusLine);
+      else FStatusCode := ALTrim(_AlStringFetch(LStatusLine,' '));
+      FReasonPhrase := ALTrim(LStatusLine);
 
       If not AlIsInteger(FStatusCode) then begin
         FHttpProtocolVersion := '';
-        AStatusLine := Alg001('Status');
-        FStatusCode := ALTrim(AlStringFetch(AStatusLine,' '));
-        FReasonPhrase := ALTrim(AlStringFetch(AStatusLine,' '));
+        LStatusLine := internalGetValue('Status');
+        FStatusCode := ALTrim(_AlStringFetch(LStatusLine,' '));
+        FReasonPhrase := ALTrim(_AlStringFetch(LStatusLine,' '));
       end
-      else aRawHeaderLst.Delete(0);
+      else LRawHeaderLst.Delete(0);
     end
     else begin
       FStatusCode := '';
@@ -818,13 +861,13 @@ begin
     end;
 
     FCustomHeaders.clear;
-    For j := 0 to aRawHeaderLst.count - 1 do
-      If ALTrim(aRawHeaderLst[j]) <> '' then
-        FCustomHeaders.Add(aRawHeaderLst[j]);
+    For J := 0 to LRawHeaderLst.count - 1 do
+      If ALTrim(LRawHeaderLst[J]) <> '' then
+        FCustomHeaders.Add(LRawHeaderLst[J]);
 
     FRawHeaderText := aRawHeaderText;
   finally
-    aRawHeaderLst.Free;
+    AlFreeAndNil(LRawHeaderLst);
   end;
 end;
 
@@ -832,281 +875,191 @@ end;
 constructor TALHTTPRequestHeader.Create;
 Begin
   inherited;
-  fCustomHeaders:= TALStringList.create;
-  fCustomHeaders.NameValueSeparator := ':';
-  FCookies := TALStringList.create;
-  FOnchange := nil;
-  clear;
-  fAccept := 'text/html, */*';
+  fHeaders:= TALNVStringListA.create;
+  fHeaders.NameValueSeparator := ':';
+  FCookies := TALNVStringListA.create;
+  Accept := 'text/html, */*';
 end;
 
 {**************************************}
 destructor TALHTTPRequestHeader.Destroy;
 begin
-  fCustomHeaders.free;
-  Fcookies.Free;
+  AlFreeAndNil(fHeaders);
+  AlFreeAndNil(Fcookies);
   inherited;
 end;
 
 {***********************************}
 procedure TALHTTPRequestHeader.Clear;
 begin
-  fAccept := '';
-  fAcceptCharSet := '';
-  fAcceptEncoding := '';
-  fAcceptLanguage := '';
-  fAllow := '';
-  fAuthorization := '';
-  fCacheControl := '';
-  fConnection := '';
-  fContentEncoding := '';
-  fContentLanguage := '';
-  fContentLength := '';
-  fContentLocation := '';
-  fContentMD5 := '';
-  fContentRange := '';
-  fContentType := '';
-  fDate := '';
-  fExpect := '';
-  fExpires := '';
-  fFrom := '';
-  fHost := '';
-  fIfMatch := '';
-  fIfModifiedSince := '';
-  fIfNoneMatch := '';
-  fIfRange := '';
-  fIfUnmodifiedSince := '';
-  fLastModified := '';
-  fMaxForwards := '';
-  fPragma := '';
-  fProxyAuthorization := '';
-  fRange := '';
-  fReferer := '';
-  fTE := '';
-  fTrailer := '';
-  fTransferEncoding := '';
-  fUpgrade := '';
-  fUserAgent := '';
-  fVia := '';
-  fWarning := '';
-  fCustomHeaders.clear;
+  fHeaders.clear;
   FCookies.Clear;
-  DoChange(-1);
 end;
 
-{**************************************************************}
-procedure TALHTTPRequestHeader.DoChange(propertyIndex: Integer);
+{********************************************************************************************}
+function TALHTTPRequestHeader.GetHeaderValueByPropertyIndex(const Index: Integer): ansiString;
 begin
-  if assigned(FonChange) then FonChange(Self,propertyIndex);
+  Case index of
+    0: result := FHeaders.values['Accept'];
+    1: result := FHeaders.values['Accept-Charset'];
+    2: result := FHeaders.values['Accept-Encoding'];
+    3: result := FHeaders.values['Accept-Language'];
+    4: result := FHeaders.values['Allow'];
+    5: result := FHeaders.values['Authorization'];
+    6: result := FHeaders.values['Cache-Control'];
+    7: result := FHeaders.values['Connection'];
+    8: result := FHeaders.values['Content-Encoding'];
+    9: result := FHeaders.values['Content-Language'];
+    10: result := FHeaders.values['Content-Length'];
+    11: result := FHeaders.values['Content-Location'];
+    12: result := FHeaders.values['Content-MD5'];
+    13: result := FHeaders.values['Content-Range'];
+    14: result := FHeaders.values['Content-Type'];
+    15: result := FHeaders.values['Date'];
+    16: result := FHeaders.values['Expect'];
+    17: result := FHeaders.values['Expires'];
+    18: result := FHeaders.values['From'];
+    19: result := FHeaders.values['Host'];
+    20: result := FHeaders.values['If-Match'];
+    21: result := FHeaders.values['If-Modified-Since'];
+    22: result := FHeaders.values['If-None-Match'];
+    23: result := FHeaders.values['If-Range'];
+    24: result := FHeaders.values['If-Unmodified-Since'];
+    25: result := FHeaders.values['Last-Modified'];
+    26: result := FHeaders.values['Max-Forwards'];
+    27: result := FHeaders.values['Pragma'];
+    28: result := FHeaders.values['Proxy-Authorization'];
+    29: result := FHeaders.values['Range'];
+    30: result := FHeaders.values['Referer'];
+    31: result := FHeaders.values['TE'];
+    32: result := FHeaders.values['Trailer'];
+    33: result := FHeaders.values['Transfer-Encoding'];
+    34: result := FHeaders.values['Upgrade'];
+    35: result := FHeaders.values['User-Agent'];
+    36: result := FHeaders.values['Via'];
+    37: result := FHeaders.values['Warning'];
+    else raise Exception.Create('Error A24918E8-4580-43FC-B513-47D1D4483F72');
+  end;
 end;
 
 {**********************************************************************************************************}
 procedure TALHTTPRequestHeader.SetHeaderValueByPropertyIndex(const Index: Integer; const Value: AnsiString);
-
-  {------------------------------------------}
-  procedure alg001(Var AProperty: AnsiString);
-  Begin
-    If AProperty <> Value then begin
-      AProperty := Value;
-      DoChange(Index);
-    end;
-  end;
-
 begin
   Case index of
-    0: alg001(FAccept);
-    1: alg001(FAcceptCharSet);
-    2: alg001(FAcceptEncoding);
-    3: alg001(FAcceptLanguage);
-    4: alg001(FAllow);
-    5: alg001(FAuthorization);
-    6: alg001(FCacheControl);
-    7: alg001(FConnection);
-    8: alg001(FContentEncoding);
-    9: alg001(FContentLanguage);
-    10: alg001(FContentLength);
-    11: alg001(FContentLocation);
-    12: alg001(FContentMD5);
-    13: alg001(FContentRange);
-    14: alg001(FContentType);
-    15: alg001(FDate);
-    16: alg001(fExpect);
-    17: alg001(FExpires);
-    18: alg001(FFrom);
-    19: alg001(FHost);
-    20: alg001(FIfMatch);
-    21: alg001(FIfModifiedSince);
-    22: alg001(fIfNoneMatch);
-    23: alg001(fIfRange);
-    24: alg001(fIfUnmodifiedSince);
-    25: alg001(fLastModified);
-    26: alg001(fMaxForwards);
-    27: alg001(FPragma);
-    28: alg001(FProxyAuthorization);
-    29: alg001(FRange);
-    30: alg001(FReferer);
-    31: alg001(fTE);
-    32: alg001(FTrailer);
-    33: alg001(FTransferEncoding);
-    34: alg001(FUpgrade);
-    35: alg001(FUserAgent);
-    36: alg001(FVia);
-    37: alg001(FWarning);
+    0: FHeaders.values['Accept'] := AlTrim(Value);
+    1: FHeaders.values['Accept-Charset'] := AlTrim(Value);
+    2: FHeaders.values['Accept-Encoding'] := AlTrim(Value);
+    3: FHeaders.values['Accept-Language'] := AlTrim(Value);
+    4: FHeaders.values['Allow'] := AlTrim(Value);
+    5: FHeaders.values['Authorization'] := AlTrim(Value);
+    6: FHeaders.values['Cache-Control'] := AlTrim(Value);
+    7: FHeaders.values['Connection'] := AlTrim(Value);
+    8: FHeaders.values['Content-Encoding'] := AlTrim(Value);
+    9: FHeaders.values['Content-Language'] := AlTrim(Value);
+    10: FHeaders.values['Content-Length'] := AlTrim(Value);
+    11: FHeaders.values['Content-Location'] := AlTrim(Value);
+    12: FHeaders.values['Content-MD5'] := AlTrim(Value);
+    13: FHeaders.values['Content-Range'] := AlTrim(Value);
+    14: FHeaders.values['Content-Type'] := AlTrim(Value);
+    15: FHeaders.values['Date'] := AlTrim(Value);
+    16: FHeaders.values['Expect'] := AlTrim(Value);
+    17: FHeaders.values['Expires'] := AlTrim(Value);
+    18: FHeaders.values['From'] := AlTrim(Value);
+    19: FHeaders.values['Host'] := AlTrim(Value);
+    20: FHeaders.values['If-Match'] := AlTrim(Value);
+    21: FHeaders.values['If-Modified-Since'] := AlTrim(Value);
+    22: FHeaders.values['If-None-Match'] := AlTrim(Value);
+    23: FHeaders.values['If-Range'] := AlTrim(Value);
+    24: FHeaders.values['If-Unmodified-Since'] := AlTrim(Value);
+    25: FHeaders.values['Last-Modified'] := AlTrim(Value);
+    26: FHeaders.values['Max-Forwards'] := AlTrim(Value);
+    27: FHeaders.values['Pragma'] := AlTrim(Value);
+    28: FHeaders.values['Proxy-Authorization'] := AlTrim(Value);
+    29: FHeaders.values['Range'] := AlTrim(Value);
+    30: FHeaders.values['Referer'] := AlTrim(Value);
+    31: FHeaders.values['TE'] := AlTrim(Value);
+    32: FHeaders.values['Trailer'] := AlTrim(Value);
+    33: FHeaders.values['Transfer-Encoding'] := AlTrim(Value);
+    34: FHeaders.values['Upgrade'] := AlTrim(Value);
+    35: FHeaders.values['User-Agent'] := AlTrim(Value);
+    36: FHeaders.values['Via'] := AlTrim(Value);
+    37: FHeaders.values['Warning'] := AlTrim(Value);
+    else raise Exception.Create('Error F230BBEE-7614-4CEF-AC06-0D190D4BD838');
   end;
 end;
 
 {*********************************************************}
 Function TALHTTPRequestHeader.GetRawHeaderText: AnsiString;
-Var i : integer;
+Var LName: ansiString;
+    LValue: ansiString;
+    I : integer;
 begin
-  Result := '';
-  If ALTrim(fAccept) <> '' then result := result + 'Accept: ' + ALTrim(FAccept) + #13#10;
-  If ALTrim(fAcceptCharSet) <> '' then result := result + 'Accept-Charset: ' + ALTrim(FAcceptCharSet) + #13#10;
-  If ALTrim(fAcceptEncoding) <> '' then result := result + 'Accept-Encoding: ' + ALTrim(FAcceptEncoding) + #13#10;
-  If ALTrim(fAcceptLanguage) <> '' then result := result + 'Accept-Language: ' + ALTrim(FAcceptLanguage) + #13#10;
-  If ALTrim(fAllow) <> '' then result := result + 'Allow: ' + ALTrim(FAllow) + #13#10;
-  If ALTrim(fAuthorization) <> '' then result := result + 'Authorization: ' + ALTrim(FAuthorization) + #13#10;
-  If ALTrim(fCacheControl) <> '' then result := result + 'Cache-Control: ' + ALTrim(FCacheControl) + #13#10;
-  If ALTrim(fConnection) <> '' then result := result + 'Connection: ' + ALTrim(FConnection) + #13#10;
-  If ALTrim(fContentEncoding) <> '' then result := result + 'Content-Encoding: ' + ALTrim(FContentEncoding) + #13#10;
-  If ALTrim(fContentLanguage) <> '' then result := result + 'Content-Language: ' + ALTrim(FContentLanguage) + #13#10;
-  If ALTrim(fContentLength) <> '' then result := result + 'Content-Length: ' + ALTrim(FContentLength) + #13#10;
-  If ALTrim(fContentLocation) <> '' then result := result + 'Content-Location: ' + ALTrim(FContentLocation) + #13#10;
-  If ALTrim(fContentMD5) <> '' then result := result + 'Content-MD5: ' + ALTrim(FContentMD5) + #13#10;
-  If ALTrim(fContentRange) <> '' then result := result + 'Content-Range: ' + ALTrim(FContentRange) + #13#10;
-  If ALTrim(fContentType) <> '' then result := result + 'Content-Type: ' + ALTrim(FContentType) + #13#10;
-  If ALTrim(fDate) <> '' then result := result + 'Date: ' + ALTrim(FDate) + #13#10;
-  If ALTrim(fExpect) <> '' then result := result + 'Expect: ' + ALTrim(FExpect) + #13#10;
-  If ALTrim(fExpires) <> '' then result := result + 'Expires: ' + ALTrim(FExpires) + #13#10;
-  If ALTrim(fFrom) <> '' then result := result + 'From: ' + ALTrim(FFrom) + #13#10;
-  If ALTrim(fHost) <> '' then result := result + 'Host: ' + ALTrim(FHost) + #13#10;
-  If ALTrim(fIfMatch) <> '' then result := result + 'If-Match: ' + ALTrim(FIfMatch) + #13#10;
-  If ALTrim(fIfModifiedSince) <> '' then result := result + 'If-Modified-Since: ' + ALTrim(FIfModifiedSince) + #13#10;
-  If ALTrim(fIfNoneMatch) <> '' then result := result + 'If-None-Match: ' + ALTrim(fIfNoneMatch) + #13#10;
-  If ALTrim(fIfRange) <> '' then result := result + 'If-Range: ' + ALTrim(fIfRange) + #13#10;
-  If ALTrim(fIfUnmodifiedSince) <> '' then result := result + 'If-Unmodified-Since: ' + ALTrim(fIfUnmodifiedSince) + #13#10;
-  If ALTrim(fLastModified) <> '' then result := result + 'Last-Modified: ' + ALTrim(fLastModified) + #13#10;
-  If ALTrim(fMaxForwards) <> '' then result := result + 'Max-Forwards: ' + ALTrim(fMaxForwards) + #13#10;
-  If ALTrim(fPragma) <> '' then result := result + 'Pragma: ' + ALTrim(FPragma) + #13#10;
-  If ALTrim(fProxyAuthorization) <> '' then result := result + 'Proxy-Authorization: ' + ALTrim(FProxyAuthorization) + #13#10;
-  If ALTrim(fRange) <> '' then result := result + 'Range: ' + ALTrim(FRange) + #13#10;
-  If ALTrim(fReferer) <> '' then result := result + 'Referer: ' + ALTrim(FReferer) + #13#10;
-  If ALTrim(fTE) <> '' then result := result + 'TE: ' + ALTrim(fTE) + #13#10;
-  If ALTrim(fTrailer) <> '' then result := result + 'Trailer: ' + ALTrim(FTrailer) + #13#10;
-  If ALTrim(fTransferEncoding) <> '' then result := result + 'Transfer-Encoding: ' + ALTrim(FTransferEncoding) + #13#10;
-  If ALTrim(fUpgrade) <> '' then result := result + 'Upgrade: ' + ALTrim(FUpgrade) + #13#10;
-  If ALTrim(fUserAgent) <> '' then result := result + 'User-Agent: ' + ALTrim(FUserAgent) + #13#10;
-  If ALTrim(fVia) <> '' then result := result + 'Via: ' + ALTrim(FVia) + #13#10;
-  If ALTrim(fWarning) <> '' then result := result + 'Warning: ' + ALTrim(FWarning) + #13#10;
-  For i := 0 to FCustomHeaders.count - 1 do
-    if (ALTrim(FCustomHeaders.names[i]) <> '') and (ALTrim(FCustomHeaders.ValueFromIndex[i]) <> '') then
-      result := result + FCustomHeaders.names[i] + ': ' + ALTrim(FCustomHeaders.ValueFromIndex[i]) + #13#10;
-  If FCookies.Count > 0 then
-    result := result + 'Cookie: ' + AlStringReplace(ALTrim(FCookies.text),#13#10,'; ', [rfReplaceAll]) + #13#10;
+  result := '';
+  For I := 0 to FHeaders.count - 1 do begin
+    LName := ALTrim(FHeaders.names[I]);
+    LValue := alTrim(FHeaders.ValueFromIndex[I]);
+    If (LName <> '') and (LValue <> '') then
+      result := result + LName + ': ' + LValue + #13#10;
+  end;
+  If FCookies.Count > 0 then begin
+    LValue := ALStringReplaceA(ALTrim(FCookies.text), #13#10, '; ', [rfReplaceAll]);
+    if LValue <> '' then
+      result := result + 'Cookie: ' + LValue + #13#10;
+  end;
+end;
+
+{***********************************************************************************************}
+procedure TALHTTPRequestHeader.setHeaderValue(const aName: ansiString; const aValue: ansiString);
+begin
+  If (aName <> '') then begin
+    if ALSameTextA(aName, 'Cookie') then begin
+      FCookies.Clear;
+      if (aValue <> '') then ALExtractHTTPFields([';'], [' '], [], PAnsiChar(aValue), fCookies, True)
+    end
+    else FHeaders.Values[aName] := aValue;
+  end;
 end;
 
 {********************************************************************************}
 procedure TALHTTPRequestHeader.SetRawHeaderText(const aRawHeaderText: AnsiString);
-Var aRawHeaderLst: TALStringList;
-    j: integer;
-
-  {---------------------------------------------------}
-  Function AlG001(const aName: AnsiString): AnsiString;
-  Var i: Integer;
-  Begin
-    I := aRawHeaderLst.IndexOfName(aName);
-    If I >= 0 then Begin
-      result := ALTrim(aRawHeaderLst.ValueFromIndex[i]);
-      aRawHeaderLst.Delete(i);
-    end
-    else result := '';
-  end;
-
+Var LTmpHeaders: TALStringListA;
+    I: integer;
 begin
-  aRawHeaderLst := TALStringList.create;
+  LTmpHeaders := TALStringListA.create;
   try
-    aRawHeaderLst.NameValueSeparator := ':';
-    aRawHeaderLst.Text := aRawHeaderText;
 
-    fAccept := Alg001('Accept');
-    fAcceptCharSet := Alg001('Accept-Charset');
-    fAcceptEncoding := Alg001('Accept-Encoding');
-    fAcceptLanguage := Alg001('Accept-Language');
-    fAllow := Alg001('Allow');
-    fAuthorization := Alg001('Authorization');
-    fCacheControl := Alg001('Cache-Control');
-    fConnection := Alg001('Connection');
-    fContentEncoding := Alg001('Content-Encoding');
-    fContentLanguage := Alg001('Content-Language');
-    fContentLength := Alg001('Content-Length');
-    fContentLocation := Alg001('Content-Location');
-    fContentMD5 := Alg001('Content-MD5');
-    fContentRange := Alg001('Content-Range');
-    fContentType := Alg001('Content-Type');
-    fDate := Alg001('Date');
-    fExpect := Alg001('Expect');
-    fExpires := Alg001('Expires');
-    fFrom := Alg001('From');
-    fHost := Alg001('Host');
-    fIfMatch := Alg001('If-Match');
-    fIfModifiedSince := Alg001('If-Modified-Since');
-    fIfNoneMatch := Alg001('If-None-Match');
-    fIfRange := Alg001('If-Range');
-    fIfUnmodifiedSince := Alg001('If-Unmodified-Since');
-    fLastModified := Alg001('Last-Modified');
-    fMaxForwards := Alg001('Max-Forwards');
-    fPragma := Alg001('Pragma');
-    fProxyAuthorization := Alg001('Proxy-Authorization');
-    fRange := Alg001('Range');
-    fReferer := Alg001('Referer');
-    fTE := Alg001('TE');
-    fTrailer := Alg001('Trailer');
-    fTransferEncoding := Alg001('Transfer-Encoding');
-    fUpgrade := Alg001('Upgrade');
-    fUserAgent := Alg001('User-Agent');
-    fVia := Alg001('Via');
-    fWarning := Alg001('Warning');
+    LTmpHeaders.NameValueSeparator := ':';
+    LTmpHeaders.Text := aRawHeaderText;
 
+    FHeaders.clear;
     FCookies.clear;
-    J := aRawHeaderLst.IndexOfName('Cookie');
-    If J >= 0 then begin
-      ALExtractHTTPFields([';'], [' '], [], PAnsiChar(aRawHeaderLst.ValueFromIndex[j]), Cookies, True);
-      aRawHeaderLst.Delete(j);
-    end;
+    For I := 0 to LTmpHeaders.count - 1 do
+      setHeaderValue(
+        ALTrim(LTmpHeaders.Names[I]),
+        alTrim(LTmpHeaders.ValueFromIndex[I]));
 
-    FCustomHeaders.clear;
-    For j := 0 to aRawHeaderLst.count - 1 do
-      If ALTrim(aRawHeaderLst[j]) <> '' then
-        FCustomHeaders.Add(aRawHeaderLst[j]);
-
-    DoChange(-1);
   finally
-    aRawHeaderLst.Free;
+    AlFreeAndNil(LTmpHeaders);
   end;
 end;
 
-{*****************************************************************}
-procedure TALHTTPRequestHeader.SetCookies(const Value: TALStrings);
+{*******************************************************************}
+constructor TALNameValuePair.Create(const AName, AValue: ansiString);
 begin
-  FCookies.Assign(Value);
+  Name := AName;
+  Value := AValue;
 end;
 
-{***********************************************************************}
-procedure TALHTTPRequestHeader.SetCustomHeaders(const Value: TALStrings);
-begin
-  FCustomHeaders.Assign(Value);
-end;
-
-{*************************************************************}
-procedure ALHTTPEncodeParamNameValues(ParamValues: TALStrings);
-var i: Integer;
+{********************************************************************}
+procedure ALHTTPEncodeParamNameValues(const ParamValues: TALStringsA);
+var I: Integer;
     LPos: integer;
     LStr: AnsiString;
 begin
-  for i := 0 to ParamValues.Count - 1 do begin
-    LStr := ParamValues[i];
-    LPos := AlPos(ParamValues.NameValueSeparator, LStr);
-    if LPos > 0 then ParamValues[i] := ALHTTPEncode(AlCopyStr(LStr, 1, LPos-1)) + '=' + ALHTTPEncode(AlCopyStr(LStr, LPos+1, MAXINT));
+  for I := 0 to ParamValues.Count - 1 do begin
+    LStr := ParamValues[I];
+    LPos := ALPosA(ParamValues.NameValueSeparator, LStr);
+    if LPos > 0 then ParamValues[I] := ALHTTPEncode(AlCopyStr(LStr, 1, LPos-1)) + '=' + ALHTTPEncode(AlCopyStr(LStr, LPos+1, MAXINT));
   end;
 end;
 
@@ -1121,27 +1074,29 @@ end;
   removed before substrings are added to Strings.
  Note:	Characters contained in Separators or WhiteSpace are treated as part of a value substring if the substring is surrounded by single
  or double quote marks. HTTP escape characters are converted using the HTTPDecode function.}
-procedure ALExtractHTTPFields(Separators,
-                              WhiteSpace,
-                              Quotes: TSysCharSet;
-                              Content: PAnsiChar;
-                              Strings: TALStrings;
-                              StripQuotes: Boolean = False);
+procedure ALExtractHTTPFields(
+            Separators,
+            WhiteSpace,
+            Quotes: TSysCharSet;
+            Content: PAnsiChar;
+            Strings: TALStringsA;
+            StripQuotes: Boolean = False);
 begin
-  ALExtractHeaderFields(Separators,
-                        WhiteSpace,
-                        Quotes,
-                        Content,
-                        Strings,
-                        True,
-                        StripQuotes);
+  ALExtractHeaderFields(
+    Separators,
+    WhiteSpace,
+    Quotes,
+    Content,
+    Strings,
+    True,
+    StripQuotes);
 end;
 
 {*****************************************************************}
 Function  AlRemoveShemeFromUrl(const aUrl: AnsiString): ansiString;
 Var P: integer;
 begin
-  P := AlPos('://', aUrl);
+  P := ALPosA('://', aUrl);
   if P > 0 then result := ALcopyStr(aUrl, P+3, maxint)
   else result := aUrl;
 end;
@@ -1155,19 +1110,20 @@ Var SchemeName,
     Password,
     UrlPath,
     ExtraInfo: AnsiString;
-var PortNumber: integer;
+    PortNumber: integer;
 begin
-  if AlInternetCrackUrl(aUrl,
-                        SchemeName,
-                        HostName,
-                        UserName,
-                        Password,
-                        UrlPath,
-                        ExtraInfo,
-                        PortNumber) then begin
-    if ALSameText(SchemeName,'http') then result := INTERNET_SCHEME_HTTP
-    else if ALSameText(SchemeName,'https') then result := INTERNET_SCHEME_HTTPS
-    else if ALSameText(SchemeName,'ftp') then result := INTERNET_SCHEME_FTP
+  if AlInternetCrackUrl(
+       aUrl,
+       SchemeName,
+       HostName,
+       UserName,
+       Password,
+       UrlPath,
+       ExtraInfo,
+       PortNumber) then begin
+    if ALSameTextA(SchemeName,'http') then result := INTERNET_SCHEME_HTTP
+    else if ALSameTextA(SchemeName,'https') then result := INTERNET_SCHEME_HTTPS
+    else if ALSameTextA(SchemeName,'ftp') then result := INTERNET_SCHEME_FTP
     else result := INTERNET_SCHEME_UNKNOWN;
   end
   else result := INTERNET_SCHEME_UNKNOWN;
@@ -1184,27 +1140,30 @@ Var SchemeName,
     ExtraInfo: AnsiString;
     PortNumber: integer;
 begin
-  if AlInternetCrackUrl(aUrl,
-                        SchemeName,
-                        HostName,
-                        UserName,
-                        Password,
-                        UrlPath,
-                        ExtraInfo,
-                        PortNumber) then result := HostName
+  if AlInternetCrackUrl(
+       aUrl,
+       SchemeName,
+       HostName,
+       UserName,
+       Password,
+       UrlPath,
+       ExtraInfo,
+       PortNumber) then result := HostName
   else result := '';
 end;
 
 {**********************************************************************}
 Function AlExtractDomainNameFromUrl(const aUrl: AnsiString): AnsiString;
-var aIPv4Num: Cardinal;
+var LIPv4Num: Cardinal;
 begin
   Result := AlExtractHostNameFromUrl(aUrl);
-  if not ALTryIPV4StrToNumeric(Result, aIPv4Num) then begin
-    while length(AlStringReplace(Result,
-                                 '.',
-                                 '',
-                                 [rfReplaceALL])) < length(result) - 1 do delete(Result, 1, ALpos('.',result));
+  if not ALTryIPV4StrToNumeric(Result, LIPv4Num) then begin
+    while length(
+            ALStringReplaceA(
+              Result,
+              '.',
+              '',
+              [rfReplaceALL])) < length(result) - 1 do delete(Result, 1, ALPosA('.',result));
   end;
 end;
 
@@ -1218,57 +1177,57 @@ Var SchemeName,
     ExtraInfo: AnsiString;
     PortNumber: integer;
 begin
-  if AlInternetCrackUrl(aUrl,
-                        SchemeName,
-                        HostName,
-                        UserName,
-                        Password,
-                        UrlPath,
-                        ExtraInfo,
-                        PortNumber) then result := UrlPath
+  if AlInternetCrackUrl(
+       aUrl,
+       SchemeName,
+       HostName,
+       UserName,
+       Password,
+       UrlPath,
+       ExtraInfo,
+       PortNumber) then result := UrlPath
   else result := '';
 end;
 
-{********************************************}
-Function  AlInternetCrackUrl(aUrl: AnsiString;
-                             Var SchemeName,
-                                 HostName,
-                                 UserName,
-                                 Password,
-                                 UrlPath,
-                                 ExtraInfo: AnsiString;
-                             var PortNumber: integer): Boolean;
+{***************************}
+Function  AlInternetCrackUrl(
+            const aUrl: AnsiString;
+            Var SchemeName,
+                HostName,
+                UserName,
+                Password,
+                UrlPath,
+                ExtraInfo: AnsiString;
+            var PortNumber: integer): Boolean;
 Var P1, P2: Integer;
     S1: AnsiString;
 begin
-  SchemeName := '';
-  HostName := '';
-  UserName := '';
-  Password := '';
-  UrlPath := '';
-  ExtraInfo := '';
-  PortNumber := 0;
+  HostName := aUrl;
   Result := True;
-
-  P1 := AlPos('://', aUrl);  // ftp://xxxx:yyyyy@ftp.yoyo.com:21/path/filename.xxx?param1=value1
+  P1 := ALPosA('://', HostName);  // ftp://xxxx:yyyyy@ftp.yoyo.com:21/path/filename.xxx?param1=value1
   if P1 > 0 then begin
-    SchemeName := AlCopyStr(aUrl, 1, P1-1); // ftp
-    delete(aUrl,1, P1+2);                   // xxxx:yyyyy@ftp.yoyo.com:21/path/filename.xxx?param1=value1
-    P1 := AlPos('?',aUrl);
+    SchemeName := AlCopyStr(HostName, 1, P1-1); // ftp
+    delete(HostName,1, P1+2);                   // xxxx:yyyyy@ftp.yoyo.com:21/path/filename.xxx?param1=value1
+    P2 := ALPosA('#',HostName);
+    P1 := ALPosA('?',HostName);
+    if (P1 > 0) and (P2 > 0) then P1 := Min(P1,P2)
+    else if (P2 > 0) then P1 := P2;
     if P1 > 0 then begin
-      ExtraInfo := AlCopyStr(aUrl, P1, Maxint); // ?param1=value1
-      delete(aUrl, P1, Maxint);                 // xxxx:yyyyy@ftp.yoyo.com:21/path/filename.xxx
-    end;
-    P1 := AlPos('/',aUrl);
+      ExtraInfo := AlCopyStr(HostName, P1, Maxint); // ?param1=value1
+      delete(HostName, P1, Maxint);                 // xxxx:yyyyy@ftp.yoyo.com:21/path/filename.xxx
+    end
+    else ExtraInfo := '';
+    P1 := ALPosA('/',HostName);
     if P1 > 0 then begin
-      UrlPath := AlCopyStr(aUrl, P1, Maxint); // /path/filename.xxx
-      delete(aUrl, P1, Maxint);               // xxxx:yyyyy@ftp.yoyo.com:21
-    end;
-    P1 := ALLastDelimiter('@',aUrl);
+      UrlPath := AlCopyStr(HostName, P1, Maxint); // /path/filename.xxx
+      delete(HostName, P1, Maxint);               // xxxx:yyyyy@ftp.yoyo.com:21
+    end
+    else UrlPath := '';
+    P1 := ALLastDelimiterA('@',HostName);
     if P1 > 0 then begin
-      S1 := AlCopyStr(aUrl, 1, P1-1); // xxxx:yyyyy
-      delete(aUrl,1, P1);             // ftp.yoyo.com:21
-      P1 := Alpos(':', S1);
+      S1 := AlCopyStr(HostName, 1, P1-1); // xxxx:yyyyy
+      delete(HostName,1, P1);             // ftp.yoyo.com:21
+      P1 := ALPosA(':', S1);
       if P1 > 0 then begin
         UserName := AlCopyStr(S1,1,P1-1);      // xxxx
         Password := AlCopyStr(S1,P1+1,Maxint); // yyyyy
@@ -1277,24 +1236,28 @@ begin
         UserName := S1;
         Password := '';
       end;
+    end
+    else begin
+      UserName := '';
+      Password := '';
     end;
-    P2 := AlPos(']', aUrl); // to handle ipV6 url like [::1]:8080
-    P1 := AlPosEx(':',aUrl, P2+1);
+    P2 := ALPosA(']', HostName); // to handle ipV6 url like [::1]:8080
+    P1 := ALPosA(':',HostName, P2+1);
     if P1 > 0 then begin
-      S1 := AlCopyStr(aUrl, P1+1, Maxint); // 21
-      delete(aUrl, P1, Maxint);            // ftp.yoyo.com
+      S1 := AlCopyStr(HostName, P1+1, Maxint); // 21
+      delete(HostName, P1, Maxint);            // ftp.yoyo.com
       if not ALTryStrToInt(S1, PortNumber) then PortNumber := 0;
-    end;
+    end
+    else PortNumber := 0;
     if PortNumber = 0 then begin
-      if ALSameText(SchemeName, 'http') then PortNumber := 80
-      else if ALSameText(SchemeName, 'https') then PortNumber := 443
-      else if ALSameText(SchemeName, 'ftp') then PortNumber := 21
+      if ALSameTextA(SchemeName, 'http') then PortNumber := 80
+      else if ALSameTextA(SchemeName, 'https') then PortNumber := 443
+      else if ALSameTextA(SchemeName, 'ws') then PortNumber := 80
+      else if ALSameTextA(SchemeName, 'wss') then PortNumber := 443
+      else if ALSameTextA(SchemeName, 'ftp') then PortNumber := 21
       else result := False;
     end;
-    if result then begin
-      HostName := aUrl;
-      result := HostName <> '';
-    end;
+    If result then result := HostName <> '';
   end
   else result := False;
 
@@ -1310,38 +1273,40 @@ begin
 end;
 
 
-{*************************************************}
-Function AlInternetCrackUrl(const aUrl: AnsiString;
-                            Var SchemeName,
-                                HostName,
-                                UserName,
-                                Password,
-                                UrlPath,
-                                Anchor: AnsiString; // not the anchor is never send to the server ! it's only used on client side
-                            Query: TALStrings;
-                            var PortNumber: integer): Boolean;
-var aExtraInfo: AnsiString;
+{**************************}
+Function AlInternetCrackUrl(
+           const aUrl: AnsiString;
+           Var SchemeName,
+               HostName,
+               UserName,
+               Password,
+               UrlPath,
+               Anchor: AnsiString; // not the anchor is never send to the server ! it's only used on client side
+           const Query: TALStringsA;
+           var PortNumber: integer): Boolean;
+var LExtraInfo: AnsiString;
     P1: integer;
 begin
-  Result := AlInternetCrackUrl(aUrl,
-                               SchemeName,
-                               HostName,
-                               UserName,
-                               Password,
-                               UrlPath,
-                               aExtraInfo,
-                               PortNumber);
+  Result := AlInternetCrackUrl(
+              aUrl,
+              SchemeName,
+              HostName,
+              UserName,
+              Password,
+              UrlPath,
+              LExtraInfo,
+              PortNumber);
   if result then begin
-    P1 := AlPos('#',aExtraInfo);
+    P1 := ALPosA('#',LExtraInfo);
     if P1 > 0 then begin
-      Anchor := AlCopyStr(aExtraInfo, P1+1, MaxInt);
-      delete(aExtraInfo, P1, Maxint);
+      Anchor := AlCopyStr(LExtraInfo, P1+1, MaxInt);
+      delete(LExtraInfo, P1, Maxint);
     end
     else Anchor := '';
-    if (aExtraInfo <> '') and (aExtraInfo[1] = '?') then begin
-      if AlPos('&amp;', aExtraInfo) > 0 then Query.LineBreak := '&amp;'
+    if (LExtraInfo <> '') and (LExtraInfo[1] = '?') then begin
+      if ALPosA('&amp;', LExtraInfo) > 0 then Query.LineBreak := '&amp;'
       else Query.LineBreak := '&';
-      Query.text := AlCopyStr(aExtraInfo,2,Maxint);
+      Query.text := AlCopyStr(LExtraInfo,2,Maxint);
     end
     else Query.clear;
   end
@@ -1349,13 +1314,13 @@ begin
     Anchor := '';
     Query.clear;
   end;
-
 end;
 
-{***********************************************}
-Function  AlInternetCrackUrl(var Url: AnsiString;  // if true return the relative url
-                             var Anchor: AnsiString;
-                             Query: TALStrings): Boolean;
+{***************************}
+Function  AlInternetCrackUrl(
+            var Url: AnsiString;  // if true return the relative url
+            var Anchor: AnsiString;
+            const Query: TALStringsA): Boolean;
 Var SchemeName,
     HostName,
     UserName,
@@ -1372,15 +1337,16 @@ begin
   end;
 
   //first try with full url
-  Result := AlInternetCrackUrl(Url,
-                               SchemeName,
-                               HostName,
-                               UserName,
-                               Password,
-                               UrlPath,
-                               Anchor,
-                               Query,
-                               PortNumber);
+  Result := AlInternetCrackUrl(
+              Url,
+              SchemeName,
+              HostName,
+              UserName,
+              Password,
+              UrlPath,
+              Anchor,
+              Query,
+              PortNumber);
   if Result then Url := UrlPath
 
   //try with relative url
@@ -1388,15 +1354,16 @@ begin
     tmpUrl := Url;
     if tmpUrl[1] = '/' then tmpUrl := 'http://www.arkadia.com' + tmpUrl // we don't take care of the domaine name, it's will be skip, it's just to make the url valid
     else tmpUrl := 'http://www.arkadia.com/' + tmpUrl;
-    Result := AlInternetCrackUrl(tmpUrl,
-                                 SchemeName,
-                                 HostName,
-                                 UserName,
-                                 Password,
-                                 UrlPath,
-                                 Anchor,
-                                 Query,
-                                 PortNumber);
+    Result := AlInternetCrackUrl(
+                tmpUrl,
+                SchemeName,
+                HostName,
+                UserName,
+                Password,
+                UrlPath,
+                Anchor,
+                Query,
+                PortNumber);
     if Result then Url := UrlPath;
   end;
 
@@ -1406,7 +1373,7 @@ end;
 Function AlRemoveAnchorFromUrl(aUrl: AnsiString; Var aAnchor: AnsiString): AnsiString;
 Var P1: integer;
 begin
-  P1 := AlPos('#',aUrl);
+  P1 := ALPosA('#',aUrl);
   if P1 > 0 then begin
     aAnchor := AlCopyStr(aUrl, P1+1, MaxInt);
     delete(aUrl, P1, Maxint);
@@ -1417,9 +1384,9 @@ end;
 
 {*****************************************************************}
 Function AlRemoveAnchorFromUrl(const aUrl: AnsiString): AnsiString;
-var aAnchor: AnsiString;
+var LAnchor: AnsiString;
 begin
-  result := AlRemoveAnchorFromUrl(aUrl,aAnchor);
+  result := AlRemoveAnchorFromUrl(aUrl,LAnchor);
 end;
 
 {****************}
@@ -1449,34 +1416,37 @@ end;
 
 {****************}
 {$IFDEF MSWINDOWS}
-Function  AlCombineUrl(const RelativeUrl,
-                             BaseUrl,
-                             Anchor: AnsiString;
-                       Query: TALStrings): AnsiString;
+Function  AlCombineUrl(
+            const RelativeUrl,
+                  BaseUrl,
+                  Anchor: AnsiString;
+            const Query: TALStringsA): AnsiString;
 Var S1 : AnsiString;
-    aBool: Boolean;
+    LBool: Boolean;
 begin
   if Query.Count > 0 then begin
 
     if Query.LineBreak = #13#10 then begin
-      aBool := True;
+      LBool := True;
       Query.LineBreak := '&';
     end
-    else aBool := False;
+    else LBool := False;
 
     try
 
       S1 := ALTrim(Query.Text);
-      while alpos(Query.LineBreak, S1) = 1 do delete(S1,1,length(Query.LineBreak));
-      while alposEx(Query.LineBreak,
-                    S1,
-                    length(S1) - length(Query.LineBreak) + 1) > 0 do delete(S1,
-                                                                            length(S1) - length(Query.LineBreak) + 1,
-                                                                            MaxInt);
+      while ALPosA(Query.LineBreak, S1) = 1 do delete(S1,1,length(Query.LineBreak));
+      while ALPosA(
+              Query.LineBreak,
+              S1,
+              length(S1) - length(Query.LineBreak) + 1) > 0 do delete(
+                                                                 S1,
+                                                                 length(S1) - length(Query.LineBreak) + 1,
+                                                                 MaxInt);
       if S1 <> '' then S1 := '?' + S1;
 
     finally
-      if aBool then Query.LineBreak := #13#10;
+      if LBool then Query.LineBreak := #13#10;
     end;
 
   end
@@ -1491,30 +1461,30 @@ end;
 {*********************************************************************}
 {aValue is a GMT TDateTime - result is "Sun, 06 Nov 1994 08:49:37 GMT"}
 function  ALGMTDateTimeToRfc822Str(const aValue: TDateTime): AnsiString;
-var aDay, aMonth, aYear: Word;
+var LDay, LMonth, LYear: Word;
 begin
-  DecodeDate(aValue,
-             aYear,
-             aMonth,
-             aDay);
+  DecodeDate(
+    aValue,
+    LYear,
+    LMonth,
+    LDay);
 
-  Result := ALFormat('%s, %.2d %s %.4d %s %s',
-                     [CAlRfc822DayOfWeekNames[DayOfWeek(aValue)],
-                      aDay,
-                      CALRfc822MonthOfTheYearNames[aMonth],
-                      aYear,
-                      ALFormatDateTime('hh":"nn":"ss', aValue, ALDefaultFormatSettings),
-                      'GMT']);
+  Result := ALFormatA(
+              '%s, %.2d %s %.4d %s %s',
+              [AlRfc822DayOfWeekNames[DayOfWeek(aValue)],
+               LDay,
+               ALRfc822MonthOfTheYearNames[LMonth],
+               LYear,
+               ALFormatDateTimeA('hh":"nn":"ss', aValue, ALDefaultFormatSettingsA),
+               'GMT']);
 end;
 
-{****************}
-{$IFDEF MSWINDOWS}
+{***********************************************************************}
 {aValue is a Local TDateTime - result is "Sun, 06 Nov 1994 08:49:37 GMT"}
 function ALDateTimeToRfc822Str(const aValue: TDateTime): AnsiString;
 begin
   Result := ALGMTDateTimeToRfc822Str(AlLocalDateTimeToUTC(aValue));
 end;
-{$ENDIF}
 
 {************************************************************}
 {Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
@@ -1547,7 +1517,7 @@ end;
   transmitted in GMT and displayed in the local time zone.}
 Function  ALTryRfc822StrToGMTDateTime(const S: AnsiString; out Value: TDateTime): Boolean;
 
-  {--------------------------------------------------------------------------}
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
   Function InternalMonthWithLeadingChar(const AMonth: AnsiString): AnsiString;
   Begin
     If Length(AMonth) = 1 then result := '0' + AMonth
@@ -1555,104 +1525,104 @@ Function  ALTryRfc822StrToGMTDateTime(const S: AnsiString; out Value: TDateTime)
   end;
 
 Var P1,P2: Integer;
-    ADateStr : AnsiString;
-    aLst: TALStringList;
-    aMonthLabel: AnsiString;
-    aFormatSettings: TALformatSettings;
-    aTimeZoneStr: AnsiString;
-    aTimeZoneDelta: TDateTime;
+    LDateStr : AnsiString;
+    LLst: TALStringListA;
+    LMonthLabel: AnsiString;
+    LFormatSettings: TALFormatSettingsA;
+    LTimeZoneStr: AnsiString;
+    LTimeZoneDelta: TDateTime;
 
 Begin
 
-  ADateStr := S; // Wdy, DD-Mon-YYYY HH:MM:SS GMT
+  LDateStr := S; // Wdy, DD-Mon-YYYY HH:MM:SS GMT
                  // Wdy, DD-Mon-YYYY HH:MM:SS +0200
                  // 23 Aug 2004 06:48:46 -0700
-  P1 := AlPos(',',ADateStr);
-  If P1 > 0 then delete(ADateStr,1,P1); // DD-Mon-YYYY HH:MM:SS GMT
+  P1 := ALPosA(',',LDateStr);
+  If P1 > 0 then delete(LDateStr,1,P1); // DD-Mon-YYYY HH:MM:SS GMT
                                         // DD-Mon-YYYY HH:MM:SS +0200
                                         // 23 Aug 2004 06:48:46 -0700
-  ADateStr := ALTrim(ADateStr); // DD-Mon-YYYY HH:MM:SS GMT
+  LDateStr := ALTrim(LDateStr); // DD-Mon-YYYY HH:MM:SS GMT
                                 // DD-Mon-YYYY HH:MM:SS +0200
                                 // 23 Aug 2004 06:48:46 -0700
 
-  P1 := AlPos(':',ADateStr);
-  P2 := AlPos('-',ADateStr);
+  P1 := ALPosA(':',LDateStr);
+  P2 := ALPosA('-',LDateStr);
   While (P2 > 0) and (P2 < P1) do begin
-    aDateStr[P2] := ' ';
-    P2 := AlPosEx('-',ADateStr,P2);
+    LDateStr[P2] := ' ';
+    P2 := ALPosA('-',LDateStr,P2);
   end; // DD Mon YYYY HH:MM:SS GMT
        // DD Mon YYYY HH:MM:SS +0200
        // 23 Aug 2004 06:48:46 -0700
-  While Alpos('  ',ADateStr) > 0 do ADateStr := AlStringReplace(ADateStr,'  ',' ',[RfReplaceAll]); // DD Mon YYYY HH:MM:SS GMT
+  While ALPosA('  ',LDateStr) > 0 do LDateStr := ALStringReplaceA(LDateStr,'  ',' ',[RfReplaceAll]); // DD Mon YYYY HH:MM:SS GMT
                                                                                                    // DD Mon YYYY HH:MM:SS +0200
                                                                                                    // 23 Aug 2004 06:48:46 -0700
 
-  Alst := TALStringList.create;
+  LLst := TALStringListA.create;
   Try
 
-    Alst.Text :=  AlStringReplace(ADateStr,' ',#13#10,[RfReplaceall]);
-    If Alst.Count < 5 then begin
+    LLst.Text :=  ALStringReplaceA(LDateStr,' ',#13#10,[RfReplaceall]);
+    If LLst.Count < 5 then begin
       Result := False;
       Exit;
     end;
 
-    aMonthLabel := ALTrim(Alst[1]); // Mon
+    LMonthLabel := ALTrim(LLst[1]); // Mon
                                     // Mon
                                     // Aug
     P1 := 1;
-    While (p1 <= 12) and (not ALSameText(CALRfc822MonthOfTheYearNames[P1],aMonthLabel)) do inc(P1);
+    While (p1 <= 12) and (not ALSameTextA(ALRfc822MonthOfTheYearNames[P1],LMonthLabel)) do inc(P1);
     If P1 > 12 then begin
       Result := False;
       Exit;
     end;
 
-    aFormatSettings := ALDefaultFormatSettings;
-    aFormatSettings.DateSeparator := '/';
-    aFormatSettings.TimeSeparator := ':';
-    aFormatSettings.ShortDateFormat := 'dd/mm/yyyy';
-    aFormatSettings.ShortTimeFormat := 'hh:nn:zz';
+    LFormatSettings := ALDefaultFormatSettingsA;
+    LFormatSettings.DateSeparator := '/';
+    LFormatSettings.TimeSeparator := ':';
+    LFormatSettings.ShortDateFormat := 'dd/mm/yyyy';
+    LFormatSettings.ShortTimeFormat := 'hh:nn:zz';
 
-    aTimeZoneStr := ALTrim(Alst[4]); // GMT
+    LTimeZoneStr := ALTrim(LLst[4]); // GMT
                                      // +0200
                                      // -0700
-    aTimeZoneStr := AlStringReplace(aTimeZoneStr,'(','',[]);
-    aTimeZoneStr := AlStringReplace(aTimeZoneStr,')','',[]);
-    aTimeZoneStr := ALTrim(aTimeZoneStr);
-    If aTimeZoneStr = '' then Begin
+    LTimeZoneStr := ALStringReplaceA(LTimeZoneStr,'(','',[]);
+    LTimeZoneStr := ALStringReplaceA(LTimeZoneStr,')','',[]);
+    LTimeZoneStr := ALTrim(LTimeZoneStr);
+    If LTimeZoneStr = '' then Begin
       Result := False;
       Exit;
     end
-    else If (Length(aTimeZoneStr) >= 5) and
-            (aTimeZoneStr[1] in ['+','-']) and
-            (aTimeZoneStr[2] in ['0'..'9']) and
-            (aTimeZoneStr[3] in ['0'..'9']) and
-            (aTimeZoneStr[4] in ['0'..'9']) and
-            (aTimeZoneStr[5] in ['0'..'9']) then begin
-      aTimeZoneDelta := ALStrToDateTime(AlCopyStr(aTimeZoneStr,2,2) + ':' + AlCopyStr(aTimeZoneStr,4,2) + ':00', aFormatSettings);
-      if aTimeZoneStr[1] = '+' then aTimeZoneDelta := -1*aTimeZoneDelta;
+    else If (Length(LTimeZoneStr) >= 5) and
+            (LTimeZoneStr[1] in ['+','-']) and
+            (LTimeZoneStr[2] in ['0'..'9']) and
+            (LTimeZoneStr[3] in ['0'..'9']) and
+            (LTimeZoneStr[4] in ['0'..'9']) and
+            (LTimeZoneStr[5] in ['0'..'9']) then begin
+      LTimeZoneDelta := ALStrToDateTime(AlCopyStr(LTimeZoneStr,2,2) + ':' + AlCopyStr(LTimeZoneStr,4,2) + ':00', LFormatSettings);
+      if LTimeZoneStr[1] = '+' then LTimeZoneDelta := -1*LTimeZoneDelta;
     end
-    else If ALSameText(aTimeZoneStr,'GMT') then  aTimeZoneDelta := 0
-    else If ALSameText(aTimeZoneStr,'UTC') then  aTimeZoneDelta := 0
-    else If ALSameText(aTimeZoneStr,'UT')  then  aTimeZoneDelta := 0
-    else If ALSameText(aTimeZoneStr,'EST') then aTimeZoneDelta := ALStrToDateTime('05:00:00', aFormatSettings)
-    else If ALSameText(aTimeZoneStr,'EDT') then aTimeZoneDelta := ALStrToDateTime('04:00:00', aFormatSettings)
-    else If ALSameText(aTimeZoneStr,'CST') then aTimeZoneDelta := ALStrToDateTime('06:00:00', aFormatSettings)
-    else If ALSameText(aTimeZoneStr,'CDT') then aTimeZoneDelta := ALStrToDateTime('05:00:00', aFormatSettings)
-    else If ALSameText(aTimeZoneStr,'MST') then aTimeZoneDelta := ALStrToDateTime('07:00:00', aFormatSettings)
-    else If ALSameText(aTimeZoneStr,'MDT') then aTimeZoneDelta := ALStrToDateTime('06:00:00', aFormatSettings)
-    else If ALSameText(aTimeZoneStr,'PST') then aTimeZoneDelta := ALStrToDateTime('08:00:00', aFormatSettings)
-    else If ALSameText(aTimeZoneStr,'PDT') then aTimeZoneDelta := ALStrToDateTime('07:00:00', aFormatSettings)
+    else If ALSameTextA(LTimeZoneStr,'GMT') then  LTimeZoneDelta := 0
+    else If ALSameTextA(LTimeZoneStr,'UTC') then  LTimeZoneDelta := 0
+    else If ALSameTextA(LTimeZoneStr,'UT')  then  LTimeZoneDelta := 0
+    else If ALSameTextA(LTimeZoneStr,'EST') then LTimeZoneDelta := ALStrToDateTime('05:00:00', LFormatSettings)
+    else If ALSameTextA(LTimeZoneStr,'EDT') then LTimeZoneDelta := ALStrToDateTime('04:00:00', LFormatSettings)
+    else If ALSameTextA(LTimeZoneStr,'CST') then LTimeZoneDelta := ALStrToDateTime('06:00:00', LFormatSettings)
+    else If ALSameTextA(LTimeZoneStr,'CDT') then LTimeZoneDelta := ALStrToDateTime('05:00:00', LFormatSettings)
+    else If ALSameTextA(LTimeZoneStr,'MST') then LTimeZoneDelta := ALStrToDateTime('07:00:00', LFormatSettings)
+    else If ALSameTextA(LTimeZoneStr,'MDT') then LTimeZoneDelta := ALStrToDateTime('06:00:00', LFormatSettings)
+    else If ALSameTextA(LTimeZoneStr,'PST') then LTimeZoneDelta := ALStrToDateTime('08:00:00', LFormatSettings)
+    else If ALSameTextA(LTimeZoneStr,'PDT') then LTimeZoneDelta := ALStrToDateTime('07:00:00', LFormatSettings)
     else begin
       Result := False;
       Exit;
     end;
 
-    ADateStr := ALTrim(Alst[0]) + '/' + InternalMonthWithLeadingChar(ALIntToStr(P1)) + '/' + ALTrim(Alst[2]) + ' ' + ALTrim(Alst[3]); // DD/MM/YYYY HH:MM:SS
-    Result := ALTryStrToDateTime(ADateStr,Value,AformatSettings);
-    If Result then Value := Value + aTimeZoneDelta;
+    LDateStr := ALTrim(LLst[0]) + '/' + InternalMonthWithLeadingChar(ALIntToStrA(P1)) + '/' + ALTrim(LLst[2]) + ' ' + ALTrim(LLst[3]); // DD/MM/YYYY HH:MM:SS
+    Result := ALTryStrToDateTime(LDateStr,Value,LFormatSettings);
+    If Result then Value := Value + LTimeZoneDelta;
 
   finally
-    aLst.free;
+    AlFreeAndNil(LLst);
   end;
 
 end;
@@ -1681,7 +1651,7 @@ Begin
 
   //----------
   P1 := 1;
-  P2 := AlPosEx('.',aIPv4Str, P1);
+  P2 := ALPosA('.',aIPv4Str, P1);
   if (P2 <= P1) or
      (not ALTryStrToInt(AlCopyStr(aIPv4Str,P1,P2-P1), I1)) or
      (not (I1 in [0..255])) then begin
@@ -1691,7 +1661,7 @@ Begin
 
   //----------
   P1 := P2+1;
-  P2 := AlPosEx('.',aIPv4Str, P1);
+  P2 := ALPosA('.',aIPv4Str, P1);
   if (P2 <= P1) or
      (not ALTryStrToInt(AlCopyStr(aIPv4Str,P1,P2-P1), I2)) or
      (not (I2 in [0..255])) then begin
@@ -1701,7 +1671,7 @@ Begin
 
   //----------
   P1 := P2+1;
-  P2 := AlPosEx('.',aIPv4Str, P1);
+  P2 := ALPosA('.',aIPv4Str, P1);
   if (P2 <= P1) or
      (not ALTryStrToInt(AlCopyStr(aIPv4Str,P1,P2-P1), I3)) or
      (not (I3 in [0..255])) then begin
@@ -1736,10 +1706,10 @@ Function ALNumericToIPv4Str(const aIPv4: Cardinal): ansiString;
 Var S1, S2, S3, S4: ansiString;
 Begin
 
-  S1 := ALIntToStr(( aIPv4 div (256*256*256) ) mod 256);
-  S2 := ALIntToStr(( aIPv4 div (256*256)     ) mod 256);
-  S3 := ALIntToStr(( aIPv4 div (256)         ) mod 256);
-  S4 := ALIntToStr(( aIPv4                   ) mod 256);
+  S1 := ALIntToStrA(( aIPv4 div (256*256*256) ) mod 256);
+  S2 := ALIntToStrA(( aIPv4 div (256*256)     ) mod 256);
+  S3 := ALIntToStrA(( aIPv4 div (256)         ) mod 256);
+  S4 := ALIntToStrA(( aIPv4                   ) mod 256);
 
   Result := S1 + '.' + S2 + '.' + S3 + '.' + S4;
 
@@ -1773,9 +1743,15 @@ begin
   FillChar(result, 16, #0);
 end;
 
+{*************************************************************************}
+Function ALIsValidIPv6BinaryStr(const aIPV6BinaryStr: ansiString): boolean;
+begin
+  result := (length(aIPV6BinaryStr) = 16) and (aIPV6BinaryStr <> ALZeroIpV6)
+end;
+
 {****************************************************************************************}
 Function ALTryIPV6StrToBinary(aIPv6Str: ansiString; var aIPv6Bin: TALIPv6Binary): Boolean;
-var aLstIpv6Part: TALStringList;
+var LLstIpv6Part: TALStringListA;
     S1: ansiString;
     P1: integer;
     i: integer;
@@ -1790,27 +1766,30 @@ begin
   // http://msdn.microsoft.com/en-us/library/aa921042.aspx
   // Zero compression can be used only once in an address, which enables you to determine
   // the number of 0 bits represented by each instance of a double-colon (::).
-  P1 := Alpos('::',aIPv6Str);
-  if (P1 > 0) and (AlPosEx('::', aIPv6Str, P1+1) > 0) then begin
+  P1 := ALPosA('::',aIPv6Str);
+  if (P1 > 0) and (ALPosA('::', aIPv6Str, P1+1) > 0) then begin
     result := False;
     exit;
   end
   else if P1 = 1 then delete(aIPv6Str,1,1);  // with the exemple below, we have one extra ":"
                                              // ::D3:0000:2F3B:02AA:00FF:FE28:9C5A => 0:D3:0000:2F3B:02AA:00FF:FE28:9C5A
                                              // but with the exemple below ok because the last #13#10 will be trim when we will do
-                                             // aLstIpv6Part.Text := AlStringReplace(aIPv6Str, ':', #13#10, [rfReplaceALL]);
+                                             // aLstIpv6Part.Text := ALStringReplaceA(aIPv6Str, ':', #13#10, [rfReplaceALL]);
                                              // 21DA:D3:0000:2F3B:02AA:00FF:FE28:: => 21DA:D3:0000:2F3B:02AA:00FF:FE28:0
 
+  //https://howdoesinternetwork.com/2013/ipv6-zone-id
+  P1 := ALPosA('%', aIPv6Str); // fe80:3438:7667:5c77:ce27%18
+  if (P1 > 0) then delete(aIPv6Str,P1,maxint); // fe80:3438:7667:5c77:ce27
 
   //----------
-  aLstIpv6Part := TALStringList.Create;
+  LLstIpv6Part := TALStringListA.Create;
   try
 
     //----------
-    aLstIpv6Part.Text := AlStringReplace(aIPv6Str, ':', #13#10, [rfReplaceALL]);
+    LLstIpv6Part.Text := ALStringReplaceA(aIPv6Str, ':', #13#10, [rfReplaceALL]);
 
     //----------
-    if (aLstIpv6Part.Count > 8) then begin
+    if (LLstIpv6Part.Count > 8) then begin
       Result := False;
       Exit;
     end;
@@ -1827,35 +1806,35 @@ begin
     // FF02::2 => FF02:0:0:0:0:0:0:2
     I := 0;
     while i <= 7 do begin
-      if i >= aLstIpv6Part.Count then begin
+      if i >= LLstIpv6Part.Count then begin
         result := False;
         Exit;
       end
-      else if (aLstIpv6Part[i] = '') then begin
-        aLstIpv6Part[i] := '0000';
-        while aLstIpv6Part.Count < 8 do begin
-          aLstIpv6Part.Insert(i,'0000');
+      else if (LLstIpv6Part[i] = '') then begin
+        LLstIpv6Part[i] := '0000';
+        while LLstIpv6Part.Count < 8 do begin
+          LLstIpv6Part.Insert(i,'0000');
           inc(i);
         end;
       end
       else begin
-        if length(aLstIpv6Part[i]) > 4 then begin
+        if length(LLstIpv6Part[i]) > 4 then begin
           result := False;
           Exit;
         end
-        else if length(aLstIpv6Part[i]) < 4 then begin
-          SetLength(S1,4-length(aLstIpv6Part[i]));
+        else if length(LLstIpv6Part[i]) < 4 then begin
+          SetLength(S1,4-length(LLstIpv6Part[i]));
           FillChar(S1[1], length(S1), '0');
-          aLstIpv6Part[i] := S1 + aLstIpv6Part[i];
+          LLstIpv6Part[i] := S1 + LLstIpv6Part[i];
         end;
       end;
       inc(i);
     end;
 
     //----------
-    for I := 0 to aLstIpv6Part.Count - 1 do begin
+    for I := 0 to LLstIpv6Part.Count - 1 do begin
 
-      S1 := AlUpperCase(AlCopyStr(aLstIpv6Part[i], 1, 2));
+      S1 := AlUpperCase(AlCopyStr(LLstIpv6Part[i], 1, 2));
       if (not ALTryStrToInt('$' + S1, P1)) or
          (not (P1 in [0..255])) then begin
         Result := False;
@@ -1863,7 +1842,7 @@ begin
       end;
       aIPv6Bin[(i*2) + 1] := AnsiChar(P1);
 
-      S1 := AlUpperCase(AlCopyStr(aLstIpv6Part[i], 3, 2));
+      S1 := AlUpperCase(AlCopyStr(LLstIpv6Part[i], 3, 2));
       if (not ALTryStrToInt('$' + S1, P1)) or
          (not (P1 in [0..255])) then begin
         Result := False;
@@ -1876,7 +1855,7 @@ begin
     Result := True;
 
   finally
-    aLstIpv6Part.Free;
+    AlFreeAndNil(LLstIpv6Part);
   end;
 
 end;
@@ -1891,14 +1870,14 @@ End;
 Function ALBinaryToIPv6Str(const aIPv6: TALIPv6Binary): ansiString;
 Begin
 
-  Result := ALIntToHex(ord(aIPv6[1]), 2)  + ALIntToHex(ord(aIPv6[2]), 2)   + ':' +
-            ALIntToHex(ord(aIPv6[3]), 2)  + ALIntToHex(ord(aIPv6[4]), 2)   + ':' +
-            ALIntToHex(ord(aIPv6[5]), 2)  + ALIntToHex(ord(aIPv6[6]), 2)   + ':' +
-            ALIntToHex(ord(aIPv6[7]), 2)  + ALIntToHex(ord(aIPv6[8]), 2)   + ':' +
-            ALIntToHex(ord(aIPv6[9]), 2)  + ALIntToHex(ord(aIPv6[10]), 2)   + ':' +
-            ALIntToHex(ord(aIPv6[11]), 2) + ALIntToHex(ord(aIPv6[12]), 2)  + ':' +
-            ALIntToHex(ord(aIPv6[13]), 2) + ALIntToHex(ord(aIPv6[14]), 2)  + ':' +
-            ALIntToHex(ord(aIPv6[15]), 2) + ALIntToHex(ord(aIPv6[16]), 2);
+  Result := ALIntToHexA(ord(aIPv6[1]), 2)  + ALIntToHexA(ord(aIPv6[2]), 2)  + ':' +
+            ALIntToHexA(ord(aIPv6[3]), 2)  + ALIntToHexA(ord(aIPv6[4]), 2)  + ':' +
+            ALIntToHexA(ord(aIPv6[5]), 2)  + ALIntToHexA(ord(aIPv6[6]), 2)  + ':' +
+            ALIntToHexA(ord(aIPv6[7]), 2)  + ALIntToHexA(ord(aIPv6[8]), 2)  + ':' +
+            ALIntToHexA(ord(aIPv6[9]), 2)  + ALIntToHexA(ord(aIPv6[10]), 2) + ':' +
+            ALIntToHexA(ord(aIPv6[11]), 2) + ALIntToHexA(ord(aIPv6[12]), 2) + ':' +
+            ALIntToHexA(ord(aIPv6[13]), 2) + ALIntToHexA(ord(aIPv6[14]), 2) + ':' +
+            ALIntToHexA(ord(aIPv6[15]), 2) + ALIntToHexA(ord(aIPv6[16]), 2);
 
 End;
 
@@ -1926,6 +1905,12 @@ Begin
 
 End;
 
+{**************************************************************************}
+function ALBinaryStrToIPv6Str(const aIPV6BinaryStr: ansiString): ansiString;
+begin
+  result := ALBinaryToIPv6Str(ALBinaryStrToIPv6Binary(aIPV6BinaryStr));
+end;
+
 {********************************************************************************
 {This function calculates ending IPv6-address for a given start of IPv6-range and
  length of subnetwork mask.
@@ -1945,62 +1930,120 @@ End;
   2001:250:c3f:ffff:ffff:ffff:ffff:ffff}
 function ALIPv6EndOfRange(const aStartIPv6: TALIPv6Binary; aMaskLength: integer): TALIPv6Binary;
 
-  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  function _setBitTo1(const aValue: byte;
-                      const aBitNumber: byte): byte;
+  {~~~~~~~~~~~~~~~~~~}
+  function _setBitTo1(
+             const aValue: byte;
+             const aBitNumber: byte): byte;
   begin
     if (aBitNumber > 8) or
        (aBitNumber < 1) then raise EALException.Create('Bad bit number for IPv6');
     result := aValue or (1 shl (aBitNumber - 1));
   end;
 
-var aBitsCount: integer;
-    aByteNumber: integer;
-    aBitNumber: integer;
-    i: byte;
+var LBitsCount: integer;
+    LByteNumber: integer;
+    LBitNumber: integer;
+    I: byte;
 
 begin
   if (aMaskLength < 1) or
      (aMaskLength > 128) then raise Exception.CreateFmt('Wrong value for mask length IPv6: %d', [aMaskLength]);
 
   result := aStartIPv6;
-  aBitsCount := 128 - aMaskLength; // for example, 128 - 24 = 104
+  LBitsCount := 128 - aMaskLength; // for example, 128 - 24 = 104
 
   // scroll all the required bits and set them to 1;
   // 1st bit to set actually represents 1st bit of the 16th byte,
   // ...
   // 10th bit represents 2nd bit of the 15th byte et cetera
-  for i := 1 to aBitsCount do begin
+  for I := 1 to LBitsCount do begin
     // NOTE: these variables are uneseccarily but the code becomes to be a little
     //       more readable, we see immediately what each formula represents.
-    aByteNumber := 16 - (Ceil(i / 8)) + 1;
-    aBitNumber := 8 - ((Ceil(i / 8) * 8) - i);
-    result[aByteNumber] := AnsiChar(_setBitTo1(Ord(result[aByteNumber]), aBitNumber));
+    LByteNumber := 16 - (Ceil(I / 8)) + 1;
+    LBitNumber := 8 - ((Ceil(I / 8) * 8) - I);
+    result[LByteNumber] := AnsiChar(_setBitTo1(Ord(result[LByteNumber]), LBitNumber));
   end;
 end;
 
-{****************************************************}
-procedure ALIPv6SplitParts(const aIPv6: TALIPv6Binary;
-                           var aLowestPart: UInt64;
-                           var aHigestPart: UInt64);
-var aIntRec: Int64Rec;
-    i: integer;
+{*************************}
+procedure ALIPv6SplitParts(
+            const aIPv6: TALIPv6Binary;
+            var aLowestPart: UInt64;
+            var aHigestPart: UInt64);
+var LIntRec: Int64Rec;
+    I: integer;
 begin
   // get the Lowest Part
-  aIntRec.Lo := 0;
-  aIntRec.Hi := 0;
-  for i := 8 downto 1 do begin
-    aIntRec.Bytes[8 - i] := Ord(aIPv6[i]);
+  LIntRec.Lo := 0;
+  LIntRec.Hi := 0;
+  for I := 8 downto 1 do begin
+    LIntRec.Bytes[8 - I] := Ord(aIPv6[I]);
   end;
-  aLowestPart := UInt64(aIntRec);
+  aLowestPart := UInt64(LIntRec);
 
   // get the Higest Part
-  aIntRec.Lo := 0;
-  aIntRec.Hi := 0;
-  for i := 16 downto 9 do begin
-    aIntRec.Bytes[16 - i] := Ord(aIPv6[i]);
+  LIntRec.Lo := 0;
+  LIntRec.Hi := 0;
+  for I := 16 downto 9 do begin
+    LIntRec.Bytes[16 - I] := Ord(aIPv6[I]);
   end;
-  aHigestPart := UInt64(aIntRec);
+  aHigestPart := UInt64(LIntRec);
+end;
+
+{***************************************************************************************************************}
+procedure ALDecompressHttpResponseContent(const aContentEncoding: AnsiString; var aContentStream: TMemoryStream);
+begin
+  {$if not defined(ALHttpGzipAuto)}
+  if ALSameTextA(aContentEncoding, 'gzip') then begin
+    aContentStream.position := 0;
+    // 15 is the default mode.
+    // 16 is to enable gzip mode.  http://www.zlib.net/manual.html#Advanced
+    var LDecompressionStream := TDecompressionStream.Create(aContentStream, 15 + 16);
+    try
+      var LTmpStream := TmemoryStream.Create;
+      try
+        LTmpStream.CopyFrom(LDecompressionStream, 0{Count});
+        ALFreeAndNil(aContentStream);
+        aContentStream := LTmpStream;
+        LTmpStream := nil;
+      except
+        AlFreeAndNil(LTmpStream);
+        raise;
+      end;
+    finally
+      alFreeAndNil(LDecompressionStream);
+    end;
+  end;
+  {$ENDIF}
+  aContentStream.Position := 0;
+end;
+
+{***********************************************************************************************************}
+procedure ALDecompressHttpResponseContent(const aContentEncoding: String; var aContentStream: TMemoryStream);
+begin
+  {$if not defined(ALHttpGzipAuto)}
+  if ALSameTextW(aContentEncoding, 'gzip') then begin
+    aContentStream.position := 0;
+    // 15 is the default mode.
+    // 16 is to enable gzip mode.  http://www.zlib.net/manual.html#Advanced
+    var LDecompressionStream := TDecompressionStream.Create(aContentStream, 15 + 16);
+    Try
+      var LTmpStream := TmemoryStream.Create;
+      try
+        LTmpStream.CopyFrom(LDecompressionStream, 0{Count});
+        ALFreeAndNil(aContentStream);
+        aContentStream := LTmpStream;
+        LTmpStream := nil;
+      except
+        AlFreeAndNil(LTmpStream);
+        raise;
+      end;
+    finally
+      alFreeAndNil(LDecompressionStream);
+    end;
+  end;
+  {$ENDIF}
+  aContentStream.Position := 0;
 end;
 
 {***********************************************************************************}
@@ -2025,33 +2068,24 @@ begin
   FConnectTimeout := 0;
   FSendTimeout := 0;
   FReceiveTimeout := 0;
-  FURL:= '';
   FUserName := '';
   FPassword := '';
   FOnUploadProgress := nil;
   FOnDownloadProgress := nil;
   FOnRedirect := nil;
   FProxyParams := TALHTTPClientProxyParams.Create;
+  FProxyParams.OnChange := OnProxyParamsChange;
   FRequestHeader := TALHTTPRequestHeader.Create;
   FRequestHeader.UserAgent := 'Mozilla/3.0 (compatible; TALHTTPClient)';
-  FProtocolVersion := HTTPpv_1_1;
-  FRequestMethod := HTTPmt_get;
-  FrequestHeader.OnChange := OnRequestHeaderChange;
-  FProxyParams.OnChange := OnProxyParamsChange;
+  FProtocolVersion := TALHTTPProtocolVersion.v1_1;
 end;
 
 {*******************************}
 destructor TALHTTPClient.Destroy;
 begin
-  FProxyParams.free;
-  FRequestHeader.free;
+  AlFreeAndNil(FProxyParams);
+  AlFreeAndNil(FRequestHeader);
   inherited;
-end;
-
-{******************************************************}
-procedure TALHTTPClient.SetURL(const Value: AnsiString);
-begin
-  Furl := Value;
 end;
 
 {***************************************************************}
@@ -2060,401 +2094,506 @@ begin
   FUserName := NameValue;
 end;
 
-{*****************************************************************************}
-procedure TALHTTPClient.SetOnRedirect(const Value: TAlHTTPClientRedirectEvent);
-begin
-  FOnRedirect := Value;
-end;
-
 {*******************************************************************}
 procedure TALHTTPClient.SetPassword(const PasswordValue: AnsiString);
 begin
   FPassword := PasswordValue;
 end;
 
-{**********************************************************}
-procedure TALHTTPClient.Execute(aRequestDataStream: TStream;
-                                aResponseContentStream: TStream;
-                                aResponseContentHeader: TALHTTPResponseHeader);
+{*****************************************************************************}
+procedure TALHTTPClient.SetOnRedirect(const Value: TAlHTTPClientRedirectEvent);
 begin
-// virtual;
+  FOnRedirect := Value;
 end;
 
-{*************************************************}
-procedure TALHTTPClient.Get(const aUrl: AnsiString;
-                            aResponseContentStream: TStream;
-                            aResponseContentHeader: TALHTTPResponseHeader);
-begin
-  Url := aURL;
-  RequestMethod := HTTPmt_get;
-  Execute(nil,
-          aResponseContentStream,
-          aResponseContentHeader);
-end;
-
-{**************************************************}
-procedure TALHTTPClient.Post(const aUrl: AnsiString;
-                             aPostDataStream: TStream;
-                             aResponseContentStream: TStream;
-                             aResponseContentHeader: TALHTTPResponseHeader);
-Var OldContentLengthValue: AnsiString;
-begin
-  Url := aURL;
-  RequestMethod := HTTPmt_Post;
-  OldContentLengthValue := FrequestHeader.ContentLength;
-  try
-    If assigned(aPostDataStream) then FrequestHeader.ContentLength := ALIntToStr(aPostDataStream.Size)
-    else FrequestHeader.ContentLength := '0';
-    Execute(aPostDataStream,
-            aResponseContentStream,
-            aResponseContentHeader);
-  finally
-    FrequestHeader.ContentLength := OldContentLengthValue;
-  end;
-end;
-
-{**************************************************}
-procedure TALHTTPClient.Post(const aUrl: AnsiString;
-                             aResponseContentStream: TStream;
-                             aResponseContentHeader: TALHTTPResponseHeader);
-begin
-  Post(aUrl,
-       nil,
-       aResponseContentStream,
-       aResponseContentHeader);
-end;
-
-{*******************************************************************}
-procedure TALHTTPClient.PostMultiPartFormData(const aUrl: AnsiString;
-                                              aPostDataStrings: TALStrings;
-                                              aPostDataFiles: TALMultiPartFormDataContents;
-                                              aResponseContentStream: TStream;
-                                              aResponseContentHeader: TALHTTPResponseHeader);
-Var aMultipartFormDataEncoder: TALMultipartFormDataEncoder;
-    OldRequestContentType: AnsiString;
-begin
-  aMultipartFormDataEncoder := TALMultipartFormDataEncoder.create;
-  OldRequestContentType := FrequestHeader.ContentType;
-  try
-    aMultipartFormDataEncoder.Encode(aPostDataStrings, aPostDataFiles);
-    FrequestHeader.ContentType := 'multipart/form-data; boundary='+aMultipartFormDataEncoder.DataStream.Boundary;
-    post(aUrl,
-         aMultipartFormDataEncoder.DataStream,
-         aResponseContentStream,
-         aResponseContentHeader);
-  finally
-    aMultipartFormDataEncoder.free;
-    FrequestHeader.ContentType := OldRequestContentType;
-  end;
-end;
-
-{************************************************************}
-procedure TALHTTPClient.PostUrlEncoded(const aUrl: AnsiString;
-                                       aPostDataStrings: TALStrings;
-                                       aResponseContentStream: TStream;
-                                       aResponseContentHeader: TALHTTPResponseHeader;
-                                       Const EncodeParams: Boolean=True);
-Var aURLEncodedContentStream: TALStringStream;
-    OldRequestContentType: AnsiString;
-    Str: AnsiString;
-    I, P: Integer;
-begin
-  aURLEncodedContentStream := TALStringStream.create('');
-  OldRequestContentType := FrequestHeader.ContentType;
-  try
-
-    if EncodeParams then begin
-      for i := 0 to aPostDataStrings.Count - 1 do begin
-        Str := aPostDataStrings[i];
-        P := AlPos(aPostDataStrings.NameValueSeparator, Str);
-        if P > 0 then Str := ALHTTPEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALHTTPEncode(AlCopyStr(Str, P+1, MAXINT))
-        else Str := ALHTTPEncode(Str);
-        If i < aPostDataStrings.Count - 1 then aURLEncodedContentStream.WriteString(Str + '&')
-        else aURLEncodedContentStream.WriteString(Str);
-      end;
-    end
-    else begin
-      for i := 0 to aPostDataStrings.Count - 1 do begin
-        If i < aPostDataStrings.Count - 1 then aURLEncodedContentStream.WriteString(aPostDataStrings[i] + '&')
-        else aURLEncodedContentStream.WriteString(aPostDataStrings[i]);
-      end;
-    end;
-
-    FrequestHeader.ContentType := 'application/x-www-form-urlencoded';
-    post(aUrl,
-         aURLEncodedContentStream,
-         aResponseContentStream,
-         aResponseContentHeader);
-  finally
-    aURLEncodedContentStream.free;
-    FrequestHeader.ContentType := OldRequestContentType;
-  end;
-end;
-
-{**************************************************}
-procedure TALHTTPClient.Head(const aUrl: AnsiString;
-                             aResponseContentStream: TStream;
-                             aResponseContentHeader: TALHTTPResponseHeader);
-begin
-  Url := aURL;
-  RequestMethod := HTTPmt_head;
-  Execute(nil,
-          aResponseContentStream,
-          aResponseContentHeader);
-end;
-
-{***************************************************}
-procedure TALHTTPClient.Trace(const aUrl: AnsiString;
-                              aResponseContentStream: TStream;
-                              aResponseContentHeader: TALHTTPResponseHeader);
-begin
-  Url := aURL;
-  RequestMethod := HTTPmt_Trace;
-  Execute(nil,
-          aResponseContentStream,
-          aResponseContentHeader);
-end;
-
-{************************************************}
-procedure TALHTTPClient.Put(const aUrl:AnsiString;
-                            aPutDataStream: TStream;
-                            aResponseContentStream: TStream;
-                            aResponseContentHeader: TALHTTPResponseHeader);
-Var OldContentLengthValue: AnsiString;
-begin
-  Url := aURL;
-  RequestMethod := HTTPmt_Put;
-  OldContentLengthValue := FrequestHeader.ContentLength;
-  try
-    If assigned(aPutDataStream) then FrequestHeader.ContentLength := ALIntToStr(aPutDataStream.Size)
-    else FrequestHeader.ContentLength := '0';
-    Execute(aPutDataStream,
-            aResponseContentStream,
-            aResponseContentHeader);
-  finally
-    FrequestHeader.ContentLength := OldContentLengthValue;
-  end;
-end;
-
-{****************************************************}
-procedure TALHTTPClient.Delete(const aUrl: AnsiString;
-                               aResponseContentStream: TStream;
-                               aResponseContentHeader: TALHTTPResponseHeader);
-begin
-  Url := aURL;
-  RequestMethod := HTTPmt_Delete;
-  Execute(nil,
-          aResponseContentStream,
-          aResponseContentHeader);
-end;
-
-{*************************************************************}
-function TALHTTPClient.Get(const aUrl: AnsiString): AnsiString;
-var aResponseContentStream: TALStringStream;
-begin
-  aResponseContentStream := TALStringStream.Create('');
-  try
-    Get(aUrl,
-        aResponseContentStream,
-        nil);
-    result := aResponseContentStream.DataString;
-  finally
-    aResponseContentStream.Free;
-  end;
-end;
-
-{************************************************}
-Procedure TALHTTPClient.Get(const aUrl:AnsiString;
-                            aParams: TALStrings;
-                            aResponseContentStream: TStream;
-                            aResponseContentHeader: TALHTTPResponseHeader;
-                            Const EncodeParams: Boolean=True);
+{**************************}
+Procedure TALHTTPClient.Get(
+            const aUrl:AnsiString;
+            const aRequestFields: TALStringsA;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil;
+            Const aEncodeRequestFields: Boolean=True);
 Var Query: AnsiString;
     Str: AnsiString;
     I, P: Integer;
 begin
 
   Query := '';
-  for i := 0 to aParams.Count - 1 do begin
-    Str := aParams[i];
-    P := AlPos(aParams.NameValueSeparator, Str);
-    if EncodeParams then begin
-      if P > 0 then Query := Query + ALHTTPEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALHTTPEncode(AlCopyStr(Str, P+1, MAXINT)) + ALIfThen(i < aParams.Count - 1, '&')
-      else Query := Query + ALHTTPEncode(Str) + ALIfThen(i < aParams.Count - 1, '&')
+  for i := 0 to aRequestFields.Count - 1 do begin
+    Str := aRequestFields[i];
+    P := ALPosA(aRequestFields.NameValueSeparator, Str);
+    if aEncodeRequestFields then begin
+      if P > 0 then Query := Query + ALHTTPEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALHTTPEncode(AlCopyStr(Str, P+1, MAXINT)) + ALIfThenA(i < aRequestFields.Count - 1, '&')
+      else Query := Query + ALHTTPEncode(Str) + ALIfThenA(i < aRequestFields.Count - 1, '&')
     end
     else begin
-      if P > 0 then Query := Query + AlCopyStr(Str, 1, P-1) + '=' + AlCopyStr(Str, P+1, MAXINT) + ALIfThen(i < aParams.Count - 1, '&')
-      else Query := Query + Str + ALIfThen(i < aParams.Count - 1, '&')
+      if P > 0 then Query := Query + AlCopyStr(Str, 1, P-1) + '=' + AlCopyStr(Str, P+1, MAXINT) + ALIfThenA(i < aRequestFields.Count - 1, '&')
+      else Query := Query + Str + ALIfThenA(i < aRequestFields.Count - 1, '&')
     end;
   end;
   if Query <> '' then begin
-    P := ALpos('?', aUrl);
+    P := ALPosA('?', aUrl);
     if P <= 0 then Query := '?' + Query
     else if P <> length(aUrl) then Query := '&' + Query;
   end;
 
-  Get(aUrl + Query,
-      aResponseContentStream,
-      aResponseContentHeader);
+  Get(
+    aUrl + Query,
+    aResponseContent,
+    aResponseHeader,
+    ARequestHeaderValues);
 
 end;
 
-{***********************************************}
-Function TALHTTPClient.Get(const aUrl:AnsiString;
-                           aParams: TALStrings;
-                           Const EncodeParams: Boolean=True): AnsiString;
-var aResponseContentStream: TALStringStream;
+{**************************}
+procedure TALHTTPClient.Get(
+            const aUrl: AnsiString;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil);
 begin
-  aResponseContentStream := TALStringStream.Create('');
+  Execute(
+    aUrl,
+    TALHTTPMethod.get,
+    nil,
+    ARequestHeaderValues,
+    aResponseContent,
+    aResponseHeader);
+end;
+
+{*************************}
+Function TALHTTPClient.Get(
+           const aUrl:AnsiString;
+           const aRequestFields: TALStringsA;
+           const ARequestHeaderValues: TALNameValueArray = nil;
+           Const aEncodeRequestFields: Boolean=True): AnsiString;
+var LResponseContent: TALStringStreamA;
+begin
+  LResponseContent := TALStringStreamA.Create('');
   try
-    Get(aUrl,
-        aParams,
-        aResponseContentStream,
-        nil,
-        EncodeParams);
-    result := aResponseContentStream.DataString;
+    Get(
+      aUrl,
+      aRequestFields,
+      LResponseContent,
+      nil,
+      ARequestHeaderValues,
+      aEncodeRequestFields);
+    result := LResponseContent.DataString;
   finally
-    aResponseContentStream.Free;
+    AlFreeAndNil(LResponseContent);
   end;
 end;
 
-{****************************************************************************************}
-function TALHTTPClient.Post(const aUrl: AnsiString; aPostDataStream: TStream): AnsiString;
-var aResponseContentStream: TALStringStream;
+{*************************}
+function TALHTTPClient.Get(
+           const aUrl: AnsiString;
+           const ARequestHeaderValues: TALNameValueArray = nil): AnsiString;
+var LResponseContent: TALStringStreamA;
 begin
-  aResponseContentStream := TALStringStream.Create('');
+  LResponseContent := TALStringStreamA.Create('');
   try
-    post(aUrl,
-         aPostDataStream,
-         aResponseContentStream,
-         nil);
-    result := aResponseContentStream.DataString;
+    Get(
+      aUrl,
+      LResponseContent,
+      nil,
+      ARequestHeaderValues);
+    result := LResponseContent.DataString;
   finally
-    aResponseContentStream.Free;
+    AlFreeAndNil(LResponseContent);
   end;
 end;
 
-{**************************************************************}
-function TALHTTPClient.Post(const aUrl: AnsiString): AnsiString;
+{***************************}
+procedure TALHTTPClient.Post(
+            const aUrl: AnsiString;
+            const aPostDataStream: TStream;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil);
+Var LOldContentLengthValue: AnsiString;
 begin
-  Result := Post(aUrl, nil);
-end;
-
-{******************************************************************}
-function TALHTTPClient.PostMultiPartFormData(const aUrl: AnsiString;
-                                             aPostDataStrings: TALStrings;
-                                             aPostDataFiles: TALMultiPartFormDataContents): AnsiString;
-Var aMultipartFormDataEncoder: TALMultipartFormDataEncoder;
-    OldRequestContentType: AnsiString;
-begin
-  aMultipartFormDataEncoder := TALMultipartFormDataEncoder.create;
-  OldRequestContentType := FrequestHeader.ContentType;
+  LOldContentLengthValue := FrequestHeader.ContentLength;
   try
-    aMultipartFormDataEncoder.Encode(aPostDataStrings, aPostDataFiles);
-    FrequestHeader.ContentType := 'multipart/form-data; boundary='+aMultipartFormDataEncoder.DataStream.Boundary;
-    Result := post(aUrl, aMultipartFormDataEncoder.DataStream);
+    If assigned(aPostDataStream) then FrequestHeader.ContentLength := ALIntToStrA(aPostDataStream.Size)
+    else FrequestHeader.ContentLength := '0';
+    Execute(
+      aURL,
+      TALHTTPMethod.Post,
+      aPostDataStream,
+      ARequestHeaderValues,
+      aResponseContent,
+      aResponseHeader);
   finally
-    aMultipartFormDataEncoder.free;
-    FrequestHeader.ContentType := OldRequestContentType;
+    FrequestHeader.ContentLength := LOldContentLengthValue;
   end;
 end;
 
-{***********************************************************}
-function TALHTTPClient.PostUrlEncoded(const aUrl: AnsiString;
-                                      aPostDataStrings: TALStrings;
-                                      Const EncodeParams: Boolean=True): AnsiString;
-Var aURLEncodedContentStream: TALStringStream;
-    OldRequestContentType: AnsiString;
+{***************************}
+procedure TALHTTPClient.Post(
+            const aUrl: AnsiString;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil);
+begin
+  Post(
+    aUrl,
+    nil,
+    aResponseContent,
+    aResponseHeader,
+    ARequestHeaderValues);
+end;
+
+{**************************}
+function TALHTTPClient.Post(
+           const aUrl: AnsiString;
+           const aPostDataStream: TStream;
+           const ARequestHeaderValues: TALNameValueArray = nil): AnsiString;
+var LResponseContent: TALStringStreamA;
+begin
+  LResponseContent := TALStringStreamA.Create('');
+  try
+    post(
+      aUrl,
+      aPostDataStream,
+      LResponseContent,
+      nil,
+      ARequestHeaderValues);
+    result := LResponseContent.DataString;
+  finally
+    AlFreeAndNil(LResponseContent);
+  end;
+end;
+
+{**************************}
+function TALHTTPClient.Post(
+           const aUrl: AnsiString;
+           const ARequestHeaderValues: TALNameValueArray = nil): AnsiString;
+begin
+  Result := Post(aUrl, nil, ARequestHeaderValues);
+end;
+
+{*************************************}
+procedure TALHTTPClient.PostUrlEncoded(
+            const aUrl: AnsiString;
+            const aRequestFields: TALStringsA;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil;
+            Const aEncodeRequestFields: Boolean=True);
+Var LURLEncodedContentStream: TALStringStreamA;
+    LOldRequestContentType: AnsiString;
     Str: AnsiString;
     I, P: Integer;
 begin
-  aURLEncodedContentStream := TALStringStream.create('');
-  OldRequestContentType := FrequestHeader.ContentType;
+  LURLEncodedContentStream := TALStringStreamA.create('');
+  LOldRequestContentType := FrequestHeader.ContentType;
   try
 
-    if EncodeParams then begin
-      for i := 0 to aPostDataStrings.Count - 1 do begin
-        Str := aPostDataStrings[i];
-        P := AlPos(aPostDataStrings.NameValueSeparator, Str);
+    if aEncodeRequestFields then begin
+      for i := 0 to aRequestFields.Count - 1 do begin
+        Str := aRequestFields[i];
+        P := ALPosA(aRequestFields.NameValueSeparator, Str);
         if P > 0 then Str := ALHTTPEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALHTTPEncode(AlCopyStr(Str, P+1, MAXINT))
         else Str := ALHTTPEncode(Str);
-        If i < aPostDataStrings.Count - 1 then aURLEncodedContentStream.WriteString(Str + '&')
-        else aURLEncodedContentStream.WriteString(Str);
+        If i < aRequestFields.Count - 1 then LURLEncodedContentStream.WriteString(Str + '&')
+        else LURLEncodedContentStream.WriteString(Str);
       end;
     end
     else begin
-      for i := 0 to aPostDataStrings.Count - 1 do begin
-        If i < aPostDataStrings.Count - 1 then aURLEncodedContentStream.WriteString(aPostDataStrings[i] + '&')
-        else aURLEncodedContentStream.WriteString(aPostDataStrings[i]);
+      for i := 0 to aRequestFields.Count - 1 do begin
+        If i < aRequestFields.Count - 1 then LURLEncodedContentStream.WriteString(aRequestFields[i] + '&')
+        else LURLEncodedContentStream.WriteString(aRequestFields[i]);
       end;
     end;
 
     FrequestHeader.ContentType := 'application/x-www-form-urlencoded';
-    Result := post(aUrl, aURLEncodedContentStream);
+    post(
+      aUrl,
+      LURLEncodedContentStream,
+      aResponseContent,
+      aResponseHeader,
+      ARequestHeaderValues);
+
   finally
-    aURLEncodedContentStream.free;
-    FrequestHeader.ContentType := OldRequestContentType;
+    AlFreeAndNil(LURLEncodedContentStream);
+    FrequestHeader.ContentType := LOldRequestContentType;
   end;
 end;
 
-{**************************************************************}
-function TALHTTPClient.Head(const aUrl:AnsiString) : AnsiString;
-var aResponseContentStream: TALStringStream;
+{************************************}
+function TALHTTPClient.PostUrlEncoded(
+           const aUrl: AnsiString;
+           const aRequestFields: TALStringsA;
+           const ARequestHeaderValues: TALNameValueArray = nil;
+           Const aEncodeRequestFields: Boolean=True): AnsiString;
+Var LURLEncodedContentStream: TALStringStreamA;
+    LOldRequestContentType: AnsiString;
+    Str: AnsiString;
+    I, P: Integer;
 begin
-  aResponseContentStream := TALStringStream.Create('');
+  LURLEncodedContentStream := TALStringStreamA.create('');
+  LOldRequestContentType := FrequestHeader.ContentType;
   try
-    Head(aUrl,
-         aResponseContentStream,
-         nil);
-    result := aResponseContentStream.DataString;
+
+    if aEncodeRequestFields then begin
+      for i := 0 to aRequestFields.Count - 1 do begin
+        Str := aRequestFields[i];
+        P := ALPosA(aRequestFields.NameValueSeparator, Str);
+        if P > 0 then Str := ALHTTPEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALHTTPEncode(AlCopyStr(Str, P+1, MAXINT))
+        else Str := ALHTTPEncode(Str);
+        If i < aRequestFields.Count - 1 then LURLEncodedContentStream.WriteString(Str + '&')
+        else LURLEncodedContentStream.WriteString(Str);
+      end;
+    end
+    else begin
+      for i := 0 to aRequestFields.Count - 1 do begin
+        If i < aRequestFields.Count - 1 then LURLEncodedContentStream.WriteString(aRequestFields[i] + '&')
+        else LURLEncodedContentStream.WriteString(aRequestFields[i]);
+      end;
+    end;
+
+    FrequestHeader.ContentType := 'application/x-www-form-urlencoded';
+    Result := post(aUrl, LURLEncodedContentStream, ARequestHeaderValues);
+
   finally
-    aResponseContentStream.Free;
+    AlFreeAndNil(LURLEncodedContentStream);
+    FrequestHeader.ContentType := LOldRequestContentType;
   end;
 end;
 
-{**************************************************************}
-function TALHTTPClient.Trace(const aUrl:AnsiString): AnsiString;
-var aResponseContentStream: TALStringStream;
+{********************************************}
+procedure TALHTTPClient.PostMultiPartFormData(
+            const aUrl: AnsiString;
+            const aRequestFields: TALStringsA;
+            const aRequestFiles: TALMultiPartFormDataContents;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil);
+Var LMultipartFormDataEncoder: TALMultipartFormDataEncoder;
+    LOldRequestContentType: AnsiString;
 begin
-  aResponseContentStream := TALStringStream.Create('');
+  LMultipartFormDataEncoder := TALMultipartFormDataEncoder.create;
+  LOldRequestContentType := FrequestHeader.ContentType;
   try
-    Trace(aUrl,
-          aResponseContentStream,
-          nil);
-    result := aResponseContentStream.DataString;
+    LMultipartFormDataEncoder.Encode(aRequestFields, aRequestFiles);
+    FrequestHeader.ContentType := 'multipart/form-data; boundary='+LMultipartFormDataEncoder.DataStream.Boundary;
+    post(
+      aUrl,
+      LMultipartFormDataEncoder.DataStream,
+      aResponseContent,
+      aResponseHeader,
+      ARequestHeaderValues);
   finally
-    aResponseContentStream.Free;
+    AlFreeAndNil(LMultipartFormDataEncoder);
+    FrequestHeader.ContentType := LOldRequestContentType;
   end;
 end;
 
-{**************************************************************************************}
-function TALHTTPClient.Put(const aURL: Ansistring; aPutDataStream: TStream): AnsiString;
-var aResponseContentStream: TALStringStream;
+{*******************************************}
+function TALHTTPClient.PostMultiPartFormData(
+           const aUrl: AnsiString;
+           const aRequestFields: TALStringsA;
+           const aRequestFiles: TALMultiPartFormDataContents;
+           const ARequestHeaderValues: TALNameValueArray = nil): AnsiString;
+Var LMultipartFormDataEncoder: TALMultipartFormDataEncoder;
+    LOldRequestContentType: AnsiString;
 begin
-  aResponseContentStream := TALStringStream.Create('');
+  LMultipartFormDataEncoder := TALMultipartFormDataEncoder.create;
+  LOldRequestContentType := FrequestHeader.ContentType;
   try
-    put(aUrl,
-        aPutDataStream,
-        aResponseContentStream,
-        nil);
-    result := aResponseContentStream.DataString;
+    LMultipartFormDataEncoder.Encode(aRequestFields, aRequestFiles);
+    FrequestHeader.ContentType := 'multipart/form-data; boundary='+LMultipartFormDataEncoder.DataStream.Boundary;
+    Result := post(aUrl, LMultipartFormDataEncoder.DataStream, ARequestHeaderValues);
   finally
-    aResponseContentStream.Free;
+    AlFreeAndNil(LMultipartFormDataEncoder);
+    FrequestHeader.ContentType := LOldRequestContentType;
   end;
 end;
 
-{****************************************************************}
-function TALHTTPClient.Delete(const aURL: Ansistring): AnsiString;
-var aResponseContentStream: TALStringStream;
+{***************************}
+procedure TALHTTPClient.Head(
+            const aUrl: AnsiString;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil);
 begin
-  aResponseContentStream := TALStringStream.Create('');
+  Execute(
+    aURL,
+    TALHTTPMethod.head,
+    nil,
+    ARequestHeaderValues,
+    aResponseContent,
+    aResponseHeader);
+end;
+
+{**************************}
+function TALHTTPClient.Head(
+           const aUrl:AnsiString;
+           const ARequestHeaderValues: TALNameValueArray = nil) : AnsiString;
+var LResponseContent: TALStringStreamA;
+begin
+  LResponseContent := TALStringStreamA.Create('');
   try
-    Delete(aUrl,
-           aResponseContentStream,
-           nil);
-    result := aResponseContentStream.DataString;
+    Head(
+      aUrl,
+      LResponseContent,
+      nil,
+      ARequestHeaderValues);
+    result := LResponseContent.DataString;
   finally
-    aResponseContentStream.Free;
+    AlFreeAndNil(LResponseContent);
+  end;
+end;
+
+{****************************}
+procedure TALHTTPClient.Trace(
+            const aUrl: AnsiString;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil);
+begin
+  Execute(
+    aURL,
+    TALHTTPMethod.Trace,
+    nil,
+    ARequestHeaderValues,
+    aResponseContent,
+    aResponseHeader);
+end;
+
+{***************************}
+function TALHTTPClient.Trace(
+           const aUrl:AnsiString;
+           const ARequestHeaderValues: TALNameValueArray = nil): AnsiString;
+var LResponseContent: TALStringStreamA;
+begin
+  LResponseContent := TALStringStreamA.Create('');
+  try
+    Trace(
+      aUrl,
+      LResponseContent,
+      nil,
+      ARequestHeaderValues);
+    result := LResponseContent.DataString;
+  finally
+    AlFreeAndNil(LResponseContent);
+  end;
+end;
+
+{**************************}
+procedure TALHTTPClient.Put(
+            const aUrl:AnsiString;
+            const aPutDataStream: TStream;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil);
+Var LOldContentLengthValue: AnsiString;
+begin
+  LOldContentLengthValue := FrequestHeader.ContentLength;
+  try
+    If assigned(aPutDataStream) then FrequestHeader.ContentLength := ALIntToStrA(aPutDataStream.Size)
+    else FrequestHeader.ContentLength := '0';
+    Execute(
+      aURL,
+      TALHTTPMethod.Put,
+      aPutDataStream,
+      ARequestHeaderValues,
+      aResponseContent,
+      aResponseHeader);
+  finally
+    FrequestHeader.ContentLength := LOldContentLengthValue;
+  end;
+end;
+
+{*************************}
+function TALHTTPClient.Put(
+           const aURL: Ansistring;
+           const aPutDataStream: TStream;
+           const ARequestHeaderValues: TALNameValueArray = nil): AnsiString;
+var LResponseContent: TALStringStreamA;
+begin
+  LResponseContent := TALStringStreamA.Create('');
+  try
+    put(
+      aUrl,
+      aPutDataStream,
+      LResponseContent,
+      nil,
+      ARequestHeaderValues);
+    result := LResponseContent.DataString;
+  finally
+    AlFreeAndNil(LResponseContent);
+  end;
+end;
+
+{*****************************}
+procedure TALHTTPClient.Delete(
+            const aUrl: AnsiString;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil);
+begin
+  Execute(
+    aURL,
+    TALHTTPMethod.Delete,
+    nil,
+    ARequestHeaderValues,
+    aResponseContent,
+    aResponseHeader);
+end;
+
+{****************************}
+function TALHTTPClient.Delete(
+           const aURL: Ansistring;
+           const ARequestHeaderValues: TALNameValueArray = nil): AnsiString;
+var LResponseContent: TALStringStreamA;
+begin
+  LResponseContent := TALStringStreamA.Create('');
+  try
+    Delete(
+      aUrl,
+      LResponseContent,
+      nil,
+      ARequestHeaderValues);
+    result := LResponseContent.DataString;
+  finally
+    AlFreeAndNil(LResponseContent);
+  end;
+end;
+
+{******************************}
+procedure TALHTTPClient.Options(
+            const aUrl: AnsiString;
+            const aResponseContent: TStream;
+            const aResponseHeader: TALHTTPResponseHeader;
+            const ARequestHeaderValues: TALNameValueArray = nil);
+begin
+  Execute(
+    aURL,
+    TALHTTPMethod.Options,
+    nil,
+    ARequestHeaderValues,
+    aResponseContent,
+    aResponseHeader);
+end;
+
+{*****************************}
+function TALHTTPClient.Options(
+           const aURL: Ansistring;
+           const ARequestHeaderValues: TALNameValueArray = nil): AnsiString;
+var LResponseContent: TALStringStreamA;
+begin
+  LResponseContent := TALStringStreamA.Create('');
+  try
+    Options(
+      aUrl,
+      LResponseContent,
+      nil,
+      ARequestHeaderValues);
+    result := LResponseContent.DataString;
+  finally
+    AlFreeAndNil(LResponseContent);
   end;
 end;
 
@@ -2462,18 +2601,6 @@ end;
 procedure TALHTTPClient.OnProxyParamsChange(sender: Tobject; Const PropertyIndex: Integer);
 begin
  //virtual
-end;
-
-{*******************************************************************************************}
-procedure TALHTTPClient.OnRequestHeaderChange(sender: Tobject; Const PropertyIndex: Integer);
-begin
- //virtual
-end;
-
-{****************************************************************}
-procedure TALHTTPClient.SetUploadBufferSize(const Value: Integer);
-begin
-  If Value >= 0 then FUploadBufferSize := Value;
 end;
 
 {***************************************}
@@ -2551,4 +2678,3 @@ begin
 end;
 
 end.
-

@@ -1,3 +1,9 @@
+commit 0b11ed17279217084ba7a31fe8c133520d2732cd
+Author: zed <starmen@tut.by>
+Date:   2023-04-12 16:27:19 +0300
+
+    Синхронизировал с апстримом и удалил неиспользуемые юниты
+
 commit e4f95a20325d9c262fe837197e2e1fa9a3881a6c
 Author: zed <starmen@tut.by>
 Date:   2020-09-14 18:19:56 +0300
