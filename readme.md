@@ -1,4 +1,4 @@
-1. Install [Git](https://git-scm.com/downloads) and Delphi 10.4.2 Sydney (or any earlier version up to XE2)
+1. Install [Git](https://git-scm.com/downloads) and Delphi 10.4.2 Sydney
 
 1. [Clone](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository) this repository into any place in your disk:
 
@@ -8,20 +8,13 @@
 
     ![](/.screenshots/EditUserVariable.png)
 
-1. Set the `Library path` (navigate to the end of the path, add path separator `;` and add one of this lines):
+1. Set the `Library path` (navigate to the end of the path, add path separator `;` and add the following line):
 
-    - for Delphi XE4 and newer:
     `$(SAS)\alcinoe-code\source;$(SAS)\graphics32\Source;$(SAS)\toolbar2000\Source;$(SAS)\tbx\Source;$(SAS)\tbx\Source\Themes;$(SAS)\embeddedwb\source;$(SAS)\pascalscript\Source;$(SAS)\vsagps\Runtime;$(SAS)\vsagps\Public;$(SAS)\ccr-exif;$(SAS)\synedit\Source;$(SAS)\mormot;$(SAS)\mormot\SQLite3`
+    
+    `Library path` can be found in:
 
-    - for XE3 and older:
-    `$(SAS)\alcinoe\source;$(SAS)\graphics32\Source;$(SAS)\toolbar2000\Source;$(SAS)\tbx\Source;$(SAS)\tbx\Source\Themes;$(SAS)\embeddedwb\source;$(SAS)\pascalscript\Source;$(SAS)\vsagps\Runtime;$(SAS)\vsagps\Public;$(SAS)\ccr-exif;$(SAS)\synedit\Source;$(SAS)\mormot;$(SAS)\mormot\SQLite3`
-
-    *The only difference here is path to the Alcinoe component (`alcinoe-code` for XE4 and newer and `alcinoe` for XE3 and older).*
-
-    Depending on the Delphi version the `Library path` can be found in:
-
-    - `Tools - Options - Language - Delphi - Library` - for Delphi 10.4 (don't forget to set platform:  `Windows 32-bit`)
-    - `Tools - Options - Environment Options - Delphi Options - Library` - for Delphi XE2
+    - `Tools - Options - Language - Delphi - Library` (don't forget to set platform:  `Windows 32-bit`)
     
         ![](/.screenshots/LibraryDirectories.png)
 
@@ -30,7 +23,6 @@
     - for Graphics32 open GR32.groupproj file (or the corresponding GR32_R.dproj and GR32_D.dproj), select and Build GR32_R\*.bpl, select and Install GR32_D\*.bpl
 
         - Delphi 10.4: `graphics32\Source\Packages\D104\GR32.groupproj` (Build GR32_RD104.bpl, Install GR32_DD104.bpl)
-        - Delphi XE2: `graphics32\Source\Packages\XE2\GR32.groupproj` (Build GR32_RXE2.bpl, Install GR32_DXE2.bpl)
         
             ![](/.screenshots/GR32.png)
 
