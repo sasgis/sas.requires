@@ -1,3 +1,28 @@
+commit 0a2b98cbd93e051f47cb6b7ca715c8ac43f7dba8
+Merge: aa72898 cd85f55
+Author: zed <starmen@tut.by>
+Date:   2023-11-13 13:43:50 +0300
+
+    Merge branch 'master' into sasgis-fix
+
+commit aa7289890b1ad4ce7a06f5b0ebfa35cb570d4868
+Author: zed <starmen@tut.by>
+Date:   2023-11-13 13:42:06 +0300
+
+     add project files
+
+commit f63eecf321333bf1aa47bbdb32d0a572c2f7430f
+Author: zed <starmen@tut.by>
+Date:   2023-11-13 13:36:23 +0300
+
+    fix package defines
+
+commit cd85f55a5629b1f31069552e7232980f00a300a7
+Author: Yuri Plashenkov <plashenkov@gmail.com>
+Date:   2022-10-25 02:42:48 +0300
+
+    Initialize CBTHookHandle variable
+
 commit fd5c9aa4b04bfe1746d169459b7dc9bfd265bc15
 Author: Yuri Plashenkov <plashenkov@gmail.com>
 Date:   2019-12-03 02:43:54 +0300

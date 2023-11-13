@@ -1,3 +1,15 @@
+commit 8a9845e4962244161cf2e82f8351fdc1223f0fdb
+Author: zed <starmen@tut.by>
+Date:   2023-11-13 13:33:25 +0300
+
+    add project files
+
+commit 04e2b3ad8f1288f6f93b80e61a84a4bdc131b596
+Author: zed <starmen@tut.by>
+Date:   2023-11-13 13:32:54 +0300
+
+    fix package defines
+
 commit 6c57329f7ebe729b9a372d5bd8c490cf20fd84bb
 Author: zed <starmen@tut.by>
 Date:   2023-04-05 10:53:19 +0300
