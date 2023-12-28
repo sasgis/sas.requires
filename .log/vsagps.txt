@@ -1,3 +1,21 @@
+commit 1b7f9336f9a654500195bd55afa00840d44a881f
+Author: zed <starmen@tut.by>
+Date:   2023-12-28 12:32:16 +0300
+
+    Добавил gitignore + фикс перевода строк
+
+commit 3ed3e6e1e21f388fbd25794bbd421103c66f20cf
+Author: zed <starmen@tut.by>
+Date:   2023-12-28 12:31:19 +0300
+
+    3596: Переделал работу с пакетами nmea с учётом того, что в них может оказаться бинарный мусор
+
+commit abea258e7eb78e41d606138d43348c49e6c88284
+Author: zed <starmen@tut.by>
+Date:   2023-12-28 10:20:03 +0300
+
+    Включил использование системных юнитов для Location API в новых версиях delphi
+
 commit 854cc0852487b1bc564cbb51fb17fc971ddf902b
 Author: zed <starmen@tut.by>
 Date:   2022-06-12 13:17:50 +0300

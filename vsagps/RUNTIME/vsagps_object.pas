@@ -63,7 +63,8 @@ type
 
     // dump packet to string representation (for logging)
     function SerializePacket(const AUnitIndex: Byte;
-                             const APacket: Pointer): PAnsiChar;
+                             const APacket: Pointer;
+                             const AReserved: PDWORD): PAnsiChar;
 
     // send packet to device object
     function SendPacket_ToUnit(const AUnitIndex: Byte;
@@ -449,14 +450,15 @@ begin
 end;
 
 function Tvsagps_object.SerializePacket(const AUnitIndex: Byte;
-                                        const APacket: Pointer): PAnsiChar;
+                                        const APacket: Pointer;
+                                        const AReserved: PDWORD): PAnsiChar;
 var p: PVSAGPS_UNIT;
 begin
   Result:=nil;
   if (AUnitIndex<=cUnitIndex_Max) then begin
     p:=GPSUnits[AUnitIndex];
     if (nil<>p) and (nil<>p^.objDevice) then
-      Result:=p^.objDevice.SerializePacket(APacket);
+      Result:=p^.objDevice.SerializePacket(APacket, AReserved);
   end;
 end;
 

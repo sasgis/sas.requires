@@ -32,6 +32,9 @@ const
   cNmea_Finisher    = '*';
   cNmea_Tail        = AnsiString(#13#10);
 
+  cNmea_SentenceLenMax = 82; // Messages have a maximum length of 82 characters,
+                             // including the $ or ! starting character and the ending <LF>
+
 type
   TNmeaParserProc = function (const AData, ASubCommand: AnsiString): DWORD of object;
 

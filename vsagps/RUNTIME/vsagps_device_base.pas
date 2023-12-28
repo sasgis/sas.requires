@@ -128,7 +128,7 @@ type
     procedure ExecuteGPSCommand(const ACommand: LongInt;
                                 const APointer: Pointer); virtual;
 
-    function SerializePacket(const APacket: Pointer): PAnsiChar; virtual; abstract;
+    function SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar; virtual; abstract;
     function ParsePacket(const ABuffer: Pointer): DWORD; virtual; abstract;
 
     function SendPacket(const APacketBuffer: Pointer;

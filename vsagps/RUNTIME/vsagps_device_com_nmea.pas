@@ -63,7 +63,7 @@ type
     function Parse_Proprietary_TNL_Data(const AData, ASubCommand: AnsiString): DWORD;
     function Parse_Proprietary_XEM_Data(const AData, ASubCommand: AnsiString): DWORD;
     // nmea parsers
-    function Internal_Parse_NmeaComm_Packets(const pPacket: PAnsiChar): DWORD;
+    function Internal_Parse_NmeaComm_Packets(const APacket: Pointer): DWORD;
   protected
     procedure InternalResetDeviceConnectionParams; override;
     procedure Internal_Before_Open_Device; override;
@@ -86,7 +86,7 @@ type
 
     procedure ExecuteGPSCommand(const ACommand: LongInt;
                                 const APointer: Pointer); override;
-    function SerializePacket(const APacket: Pointer): PAnsiChar; override;
+    function SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar; override;
     function ParsePacket(const ABuffer: Pointer): DWORD; override;
 
     function SendPacket(const APacketBuffer: Pointer;
@@ -94,14 +94,56 @@ type
                         const AFlags: DWORD): LongBool; override;
   end;
 
+function NmeaPacketCreate(const AData: Pointer; const ASize: DWORD): Pointer; overload; inline;
+function NmeaPacketCreate(const AData: AnsiString): Pointer; overload; inline;
+function NmeaPacketSize(const APacket: Pointer): DWORD; inline;
+function NmeaPacketData(APacket: Pointer): Pointer; inline;
+
+
 implementation
 
 uses
+  AnsiStrings,
   vsagps_public_unit_info,
   vsagps_public_memory,
   vsagps_public_debugstring,
   vsagps_com_checker,
   vsagps_ini;
+
+function NmeaPacketCreate(const AData: Pointer; const ASize: DWORD): Pointer;
+var
+  P: PByte;
+  VCount: Integer;
+begin
+  Assert((AData <> nil) and (ASize > 0));
+  VCount := SizeOf(DWORD);
+  Result := VSAGPS_GetMem(DWORD(VCount) + ASize);
+  PDWORD(Result)^ := ASize;
+  P := Result;
+  Inc(P, VCount);
+  Move(AData^, P^, ASize);
+end;
+
+function NmeaPacketCreate(const AData: AnsiString): Pointer;
+begin
+  Assert(AData <> '');
+  Result := NmeaPacketCreate(@AData[1], Length(AData));
+end;
+
+function NmeaPacketSize(const APacket: Pointer): DWORD;
+begin
+  Assert(APacket <> nil);
+  Result := PDWORD(APacket)^;
+end;
+
+function NmeaPacketData(APacket: Pointer): Pointer;
+var
+  P: PByte absolute APacket;
+begin
+  Assert(APacket <> nil);
+  Inc(P, SizeOf(DWORD));
+  Result := P;
+end;
 
 { Tvsagps_device_com_nmea }
 
@@ -241,7 +283,7 @@ begin
   // set DCB info as AnsiString
   if (gpsc_Set_DCB_Str_Info_A = ACommand) then
   if (nil<>APointer) then begin
-    SetString(FDCB_Str_Info_A, PAnsiChar(APointer), StrLen(PAnsiChar(APointer)));
+    SetString(FDCB_Str_Info_A, PAnsiChar(APointer), AnsiStrings.StrLen(PAnsiChar(APointer)));
     FDCB_Str_Info_A:=TrimA(FDCB_Str_Info_A);
     Exit;
   end;
@@ -410,76 +452,121 @@ begin
 {$ifend}
 end;
 
-function Tvsagps_device_com_nmea.Internal_Parse_NmeaComm_Packets(const pPacket: PAnsiChar): DWORD;
+function Tvsagps_device_com_nmea.Internal_Parse_NmeaComm_Packets(const APacket: Pointer): DWORD;
 
-  function _RunWithoutStarter(const s: AnsiString): DWORD;
+  function _IsText(AHead, ATail: Integer): Boolean;
+  var
+    I: Integer;
+    P: PByte;
   begin
-    Result:=FParser.Parse_Sentence_Without_Starter(s);
+    Assert(ATail > AHead);
+    // check for the BINARY data inside the packed
+    // (u-blox can send UBX packets interleaved with NMEA sentences)
+    // https://www.sasgis.org/mantis/view.php?id=3596
+    P := Pointer(FGlobalNmeaBuffer);
+    Inc(P, AHead);
+    for I := AHead+1 to ATail-1 do begin
+      // allowed values: $0D, $0A, $21..$7E
+      if (P^ <= $20) or (P^ >= $7F) then begin
+        Result := False;
+        Exit;
+      end;
+      Inc(P);
+    end;
+    Result := True;
   end;
 
-  procedure _CutNmeaByTail(k: Integer);
-  var str_nmea_packet: AnsiString;
+  function _GetNmeaSentence(var ASentence: AnsiString): Boolean;
+  var
+    I: Integer;
+    VHead, VTail: Integer;
   begin
-    str_nmea_packet:=System.Copy(FGlobalNmeaBuffer, 1, k);
-    System.Delete(FGlobalNmeaBuffer, 1, k);
-    Result:=_RunWithoutStarter(str_nmea_packet);
-  end;
-
-var
-  pNmea_Tail, pNmea_Aux: Integer;
-  i: Byte;
-  new_part: AnsiString;
-begin
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-  VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.Internal_Parse_NmeaComm_Packets:');
-  VSAGPS_DebugPAnsiChar(pPacket);
-{$ifend}
-  Result:=0;
-  new_part := SafeSetStringP(pPacket);
-  FGlobalNmeaBuffer:=FGlobalNmeaBuffer+new_part;
-  repeat
-    if (0=Length(FGlobalNmeaBuffer)) then
+    Result := False;
+    VHead := PosEx(cNmea_Starter, FGlobalNmeaBuffer);
+    if VHead = 0 then begin
+      FGlobalNmeaBuffer := '';
       Exit;
-
-    // get part before
-    // allowed delimiters for packets ARE: cNmea_Starter (from next packet) and chars from cNmea_Tail (from this packet)
-    // allow proprietary packets without finisher and checksum
-    // delete up to first cNmea_Starter
-    //if Sametext(System.Copy(FGlobalNmeaBuffer, 1, Length(cNmea_Starter)), cNmea_Starter) then
-      //System.Delete(FGlobalNmeaBuffer, 1, Length(cNmea_Starter));
-    pNmea_Aux := PosA(cNmea_Starter, FGlobalNmeaBuffer);
-    if (1=pNmea_Aux) then
-      System.Delete(FGlobalNmeaBuffer, 1, Length(cNmea_Starter))
-    else if (1<pNmea_Aux) then begin
-      _RunWithoutStarter(System.Copy(FGlobalNmeaBuffer, 1, pNmea_Aux-1));
-      System.Delete(FGlobalNmeaBuffer, 1, pNmea_Aux+Length(cNmea_Starter)-1);
     end;
-
-    // check finish of sentence
-    pNmea_Tail:=0;
-    for i := 1 to Length(cNmea_Tail) do begin
-      pNmea_Aux := PosA(cNmea_Tail[i], FGlobalNmeaBuffer);
-      if (pNmea_Aux>0) then
-        if (pNmea_Aux>pNmea_Tail) then
-          pNmea_Tail:=pNmea_Aux;
-    end;
-
-    if (pNmea_Tail>0) then begin
-      // packet ends by cNmea_Tail
-      _CutNmeaByTail(pNmea_Tail);
-    end else begin
-      // no packet tail - check finisher or next starter
-      pNmea_Tail := PosA(cNmea_Starter, FGlobalNmeaBuffer);
-      pNmea_Aux := PosA(cNmea_Finisher, FGlobalNmeaBuffer);
-      if (0<pNmea_Tail) and (0<pNmea_Aux) and (pNmea_Aux<pNmea_Tail) then begin
-        // next packet starter found and before it current finisher found
-        _CutNmeaByTail(pNmea_Tail-1);
-      end else begin
-        // no packets
+    VTail := PosEx(cNmea_Tail, FGlobalNmeaBuffer, VHead + 1);
+    if VTail > 0 then begin
+      repeat
+        // check if there any other Heads between Head and Tail
+        I := PosEx(cNmea_Starter, FGlobalNmeaBuffer, VHead + 1);
+        if (I > 0) and (I < VTail) then begin
+          // found another Head before Tail
+          {$if defined(USE_NMEA_PROPRIETARY_WITHOUT_TAIL)}
+          if (FGlobalNmeaBuffer[VHead+1] = cNmea_Proprietary) and _IsText(VHead, I) then begin
+            // ok - return sentence without tail and head
+            ASentence := System.Copy(FGlobalNmeaBuffer, VHead + 1, I - VHead - 1);
+            System.Delete(FGlobalNmeaBuffer, 1, I-1);
+            Result := True;
+            Exit;
+          end else begin
+            VHead := I; // move to the new Head
+          end;
+          {$else}
+          VHead := I; // move to the new Head
+          {$ifend}
+        end else begin
+          Break;
+        end;
+      until False;
+      if not _IsText(VHead, VTail) then begin
+        // remove raw data from the buffer
+        System.Delete(FGlobalNmeaBuffer, 1, VTail + 1);
+        // search recursively for the next sentence
+        Result := _GetNmeaSentence(ASentence);
+        Exit;
+      end;
+      // ok - return sentence with tail but without head
+      ASentence := System.Copy(FGlobalNmeaBuffer, VHead + 1, VTail - VHead + 1);
+      System.Delete(FGlobalNmeaBuffer, 1, VTail + 1);
+      Result := (ASentence <> #13#10) and (Length(ASentence) <= (cNmea_SentenceLenMax - 1));
+      if not Result then begin
+        // search recursively for the next sentence
+        Result := _GetNmeaSentence(ASentence);
         Exit;
       end;
     end;
-  until FALSE;
+  end;
+
+var
+  I: Integer;
+  VSentence: AnsiString;
+  VSize: DWORD;
+  VData: Pointer;
+  VBuffer: PByte;
+begin
+  {$if defined(VSAGPS_USE_DEBUG_STRING)}
+  VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.Internal_Parse_NmeaComm_Packets:');
+  {$ifend}
+  Result := 0; // not used
+  if APacket = nil then begin
+    Exit;
+  end;
+  VSize := NmeaPacketSize(APacket);
+  {$if defined(VSAGPS_USE_DEBUG_STRING)}
+  VSAGPS_DebugAnsiString('Packet Size: ' + IntToStrA(VSize));
+  {$ifend}
+  if VSize = 0 then begin
+    Exit;
+  end;
+  VData := NmeaPacketData(APacket);
+
+  I := Length(FGlobalNmeaBuffer);
+  SetLength(FGlobalNmeaBuffer, DWORD(I) + VSize);
+
+  VBuffer := Pointer(FGlobalNmeaBuffer);
+  Inc(VBuffer, I);
+
+  Move(VData^, VBuffer^, VSize);
+
+  while _GetNmeaSentence(VSentence) do begin
+    {$if defined(VSAGPS_USE_DEBUG_STRING_NMEA_SENTENCE)}
+    OutputDebugStringA(PAnsiChar(StringReplaceA(VSentence, #13#10, '\r\n', [rfReplaceAll])));
+    {$ifend}
+    FParser.Parse_Sentence_Without_Starter(VSentence);
+  end;
 end;
 
 procedure Tvsagps_device_com_nmea.Internal_Query_GPSDeviceName;
@@ -985,28 +1072,40 @@ begin
   Result:=(WriteFile(FGPSDeviceHandle, PAnsiChar(AFullPacket)^, Length(AFullPacket), dwWriten, nil)<>FALSE);
 
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
-  VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.Send_NmeaComm_Packet: ok (' + IntToStr(Ord(Result))+ ') (' + IntToStr(dwWriten) + ')');
+  VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.Send_NmeaComm_Packet: ok (' + IntToStrA(Ord(Result))+ ') (' + IntToStrA(dwWriten) + ')');
 {$ifend}
 end;
 
-function Tvsagps_device_com_nmea.SerializePacket(const APacket: Pointer): PAnsiChar;
+function Tvsagps_device_com_nmea.SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar;
+var
+  VData: Pointer;
+  VSize: DWORD;
 begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.SerializePacket:');
-  VSAGPS_DebugPAnsiChar(PAnsiChar(APacket));
 {$ifend}
 
-  if (APacket<>nil) then
-    Result:=VSAGPS_AllocPCharByPChar(PAnsiChar(APacket), TRUE)
-  else
+  if (APacket<>nil) and (AReserved<>nil) then begin
+    VSize := NmeaPacketSize(APacket);
+    VData := NmeaPacketData(APacket);
+    AReserved^ := VSize;
+    Result := VSAGPS_GetMem(VSize);
+    Move(VData^, Result^, VSize);
+  end else
+  if (APacket<>nil) then begin
+    Assert(False);
+    VData := NmeaPacketData(APacket);
+    Result:=VSAGPS_AllocPCharByPChar(PAnsiChar(VData), TRUE);
+  end else begin
     Result:=nil;
+  end;
 end;
 
 function Tvsagps_device_com_nmea.WorkingThread_Receive_Packets(const AWorkingThreadPacketFilter: DWORD): Boolean;
 var
   bRead: Boolean;
   dwBytes: DWORD;
-  queued_pointer: PAnsiChar;
+  queued_pointer: Pointer;
 begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.WorkingThread_Receive_Packets: begin');
@@ -1015,7 +1114,7 @@ begin
   Result:=FALSE;
   if (0=FGPSDeviceHandle) then
     Exit;
-  
+
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.WorkingThread_Receive_Packets: ReadFile');
 {$ifend}
@@ -1028,10 +1127,8 @@ begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
     VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.WorkingThread_Receive_Packets: ok');
 {$ifend}
-    // packet received - make a buffer and put it into queue
-    queued_pointer:=VSAGPS_GetMem(dwBytes+1);
-    CopyMemory(queued_pointer, @(FNMEABuffer[0]), dwBytes);
-    queued_pointer[dwBytes]:=#0;
+    // packet received - make a buffer and put packet size + data into queue
+    queued_pointer := NmeaPacketCreate(@FNMEABuffer[0], dwBytes);
 
     // add packet to queue
     FExternal_Queue.AppendGPSPacket(queued_pointer, FUnitIndex);
@@ -1043,7 +1140,7 @@ begin
     // error or no data received (timeout)
     dwBytes:=GetLastError;
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
-    VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.WorkingThread_Receive_Packets: failed '+IntToStr(dwBytes));
+    VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.WorkingThread_Receive_Packets: failed '+IntToStrA(dwBytes));
 {$ifend}
     if (ERROR_TIMEOUT<>dwBytes) then begin
       // error

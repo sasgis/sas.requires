@@ -50,7 +50,7 @@ type
 
     procedure ExecuteGPSCommand(const ACommand: LongInt;
                                 const APointer: Pointer); override;
-    function SerializePacket(const APacket: Pointer): PAnsiChar; override;
+    function SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar; override;
     function ParsePacket(const ABuffer: Pointer): DWORD; override;
 
     function SendPacket(const APacketBuffer: Pointer;
@@ -72,14 +72,23 @@ uses
 type
   TLocationEvents = class(TInterfacedObject, ILocationEvents)
   private
+    {$IFDEF VSAGPS_USE_LOCATIONAPI_TLB}
     function OnLocationChanged(var reportType: TGUID; const pLocationReport: ILocationReport): HResult; stdcall;
     function OnStatusChanged(var reportType: TGUID; newStatus: LOCATION_REPORT_STATUS): HResult; stdcall;
+    {$ELSE}
+    function OnLocationChanged(const reportType: TIID; const pLocationReport: ILocationReport): HRESULT; stdcall;
+    function OnStatusChanged(const reportType: TIID; newStatus: LOCATION_REPORT_STATUS): HRESULT; stdcall;
+    {$ENDIF}
   end;
 
 { TLocationEvents }
 
 function TLocationEvents.OnLocationChanged(
+  {$IFDEF VSAGPS_USE_LOCATIONAPI_TLB}
   var reportType: TGUID;
+  {$ELSE}
+  const reportType: TGUID;
+  {$ENDIF}
   const pLocationReport: ILocationReport
 ): HResult;
 begin
@@ -87,7 +96,11 @@ begin
 end;
 
 function TLocationEvents.OnStatusChanged(
+  {$IFDEF VSAGPS_USE_LOCATIONAPI_TLB}
   var reportType: TGUID;
+  {$ELSE}
+  const reportType: TGUID;
+  {$ENDIF}
   newStatus: LOCATION_REPORT_STATUS
 ): HResult;
 begin
@@ -156,7 +169,7 @@ begin
   Result := False;
 end;
 
-function Tvsagps_device_location_api.SerializePacket(const APacket: Pointer): PAnsiChar;
+function Tvsagps_device_location_api.SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar;
 begin
   Result := VSAGPS_AllocPCharByPByte(APacket, SizeOf(Tvsagps_location_api_packet));
 end;
@@ -216,15 +229,26 @@ begin
     FComInitRes := CoInitializeEx(nil, COINIT_MULTITHREADED);
   end;
 
-  FLocation := CreateComObject(CLASS_Location) as ILocation;
+  FLocation := CreateComObject(
+    {$IFDEF VSAGPS_USE_LOCATIONAPI_TLB}
+    CLASS_Location
+    {$ELSE}
+    CLSID_Location
+    {$ENDIF}
+  ) as ILocation;
+
   Result := (FLocation <> nil);
 
   if Result then begin
     VResult := FLocation.RequestPermissions(
+      {$IFDEF VSAGPS_USE_LOCATIONAPI_TLB}
       _RemotableHandle(nil^),
       FReportType,
       1,
       1 // 0 for asynchronous calls
+      {$ELSE}
+      0, @FReportType, 1, True
+      {$ENDIF}
     );
     // -2147417842 = $8001010E = RPC_E_WRONG_THREAD
     // 1 = S_FALSE
@@ -236,12 +260,4 @@ begin
 end;
 
 end.
-
-
-
-
-
-
-
-
 

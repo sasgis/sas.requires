@@ -67,10 +67,12 @@ uses
 
 procedure Tvsagps_location_api_packet.SetReport(const AReport: ILatLongReport);
 var
+{$IFDEF VSAGPS_USE_LOCATIONAPI_TLB}
   VSystemTime: LocationApiLib_TLB._SYSTEMTIME;
-{$IFNDEF VSAGPS_USE_LOCATIONAPI_TLB}
+{$ELSE}
   // use original delphi rtl winapi modules
   //VValue: tag_inner_PROPVARIANT;
+  VSystemTime: TSystemTime;
 {$ENDIF}
 begin
   FillChar(Self, SizeOf(Self), 0);

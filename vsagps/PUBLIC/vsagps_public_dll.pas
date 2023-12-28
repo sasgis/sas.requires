@@ -2,7 +2,11 @@
   VSAGPS Library. Copyright (C) 2011, Sergey Vasketsov
   Please read <info_*.txt> file for License details and conditions (GNU GPLv3)
 *)
-unit vsagps_public_dll;(**)interface
+unit vsagps_public_dll;
+(*
+*)
+
+interface
 
 uses
 {$IFDEF MSWINDOWS}
@@ -22,7 +26,8 @@ const
   vsagps_dll='VSAGPS.dll';
 
 function VSAGPS_GetMem(const dwBytes: DWORD): Pointer; stdcall; external vsagps_dll;
-procedure VSAGPS_FreeMem(p: Pointer); stdcall; external vsagps_dll;
+
+procedure VSAGPS_FreeMem(p: Pointer); stdcall; external vsagps_dll;
 
 function VSAGPS_Create(const AUserPointer: Pointer;
                        const AGPSStateProc: TVSAGPS_GPSStateChanged_DLL_Proc;

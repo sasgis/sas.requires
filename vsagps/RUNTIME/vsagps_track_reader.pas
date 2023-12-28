@@ -79,7 +79,7 @@ type
     constructor Create(const APtrSourceFiles: PWideChar); reintroduce;
     destructor Destroy; override;
 
-    function SerializePacket(const APacket: Pointer): PAnsiChar; override;
+    function SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar; override;
     function ParsePacket(const ABuffer: Pointer): DWORD; override;
 
     function SendPacket(const APacketBuffer: Pointer;
@@ -570,7 +570,7 @@ begin
   Result:=FALSE;
 end;
 
-function Tvsagps_track_reader.SerializePacket(const APacket: Pointer): PAnsiChar;
+function Tvsagps_track_reader.SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar;
 begin
   Result:=nil;
 end;
