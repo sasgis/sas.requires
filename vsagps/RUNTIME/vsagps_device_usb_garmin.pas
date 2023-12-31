@@ -67,7 +67,9 @@ type
 
     procedure ExecuteGPSCommand(const ACommand: LongInt;
                                 const APointer: Pointer); override;
-    function SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar; override;
+    function SerializePacket(const APacket: Pointer;
+                             out ASerializedSize: DWORD;
+                             const AReserved: PDWORD): Pointer; override;
     function ParsePacket(const ABuffer: Pointer): DWORD; override;
 
     function SendPacket(const APacketBuffer: Pointer;
@@ -334,7 +336,9 @@ begin
   end;
 end;
 
-function Tvsagps_device_usb_garmin.SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar;
+function Tvsagps_device_usb_garmin.SerializePacket(const APacket: Pointer;
+                                                   out ASerializedSize: DWORD;
+                                                   const AReserved: PDWORD): Pointer;
 var dwLen: DWORD;
 begin
   dwLen:=PGarminUSB_Custom_Packet(APacket)^.Data_Size;
@@ -342,6 +346,7 @@ begin
     dwLen:=0;
   dwLen:=GarminUSB_Custom_Packet_Base_Size+dwLen;
   Result:=VSAGPS_AllocPCharByPByte(APacket, dwLen);
+  ASerializedSize := StrLenA(PAnsiChar(Result));
 end;
 
 function Tvsagps_device_usb_garmin.WorkingThread_Receive_Packets(const AWorkingThreadPacketFilter: DWORD): Boolean;

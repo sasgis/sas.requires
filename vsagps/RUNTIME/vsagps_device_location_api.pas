@@ -50,7 +50,9 @@ type
 
     procedure ExecuteGPSCommand(const ACommand: LongInt;
                                 const APointer: Pointer); override;
-    function SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar; override;
+    function SerializePacket(const APacket: Pointer;
+                             out ASerializedSize: DWORD;
+                             const AReserved: PDWORD): Pointer; override;
     function ParsePacket(const ABuffer: Pointer): DWORD; override;
 
     function SendPacket(const APacketBuffer: Pointer;
@@ -169,9 +171,12 @@ begin
   Result := False;
 end;
 
-function Tvsagps_device_location_api.SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar;
+function Tvsagps_device_location_api.SerializePacket(const APacket: Pointer;
+                                                     out ASerializedSize: DWORD;
+                                                     const AReserved: PDWORD): Pointer;
 begin
   Result := VSAGPS_AllocPCharByPByte(APacket, SizeOf(Tvsagps_location_api_packet));
+  ASerializedSize := StrLenA(PAnsiChar(Result));
 end;
 
 function Tvsagps_device_location_api.WorkingThread_Receive_Packets(const AWorkingThreadPacketFilter: DWORD): Boolean;

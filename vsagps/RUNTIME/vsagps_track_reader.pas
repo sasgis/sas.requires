@@ -79,7 +79,9 @@ type
     constructor Create(const APtrSourceFiles: PWideChar); reintroduce;
     destructor Destroy; override;
 
-    function SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar; override;
+    function SerializePacket(const APacket: Pointer;
+                             out ASerializedSize: DWORD;
+                             const AReserved: PDWORD): Pointer; override;
     function ParsePacket(const ABuffer: Pointer): DWORD; override;
 
     function SendPacket(const APacketBuffer: Pointer;
@@ -570,9 +572,10 @@ begin
   Result:=FALSE;
 end;
 
-function Tvsagps_track_reader.SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar;
+function Tvsagps_track_reader.SerializePacket(const APacket: Pointer; out ASerializedSize: DWORD; const AReserved: PDWORD): Pointer;
 begin
   Result:=nil;
+  ASerializedSize := 0;
 end;
 
 procedure Tvsagps_track_reader.SleepInXMLParser;

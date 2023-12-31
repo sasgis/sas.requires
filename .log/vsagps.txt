@@ -1,3 +1,15 @@
+commit c50c5a5550271c4cfbd3f4fcc41420c591525e1d
+Author: zed <starmen@tut.by>
+Date:   2023-12-31 10:44:16 +0300
+
+    Добавил выходным параметром размер сериализованного пакета
+
+commit d3fc24efb4e81efc38c64b72fd9db62e6dba5c2e
+Author: zed <starmen@tut.by>
+Date:   2023-12-31 10:18:16 +0300
+
+    Фикс использования ансишных функций работы со строками
+
 commit 1b7f9336f9a654500195bd55afa00840d44a881f
 Author: zed <starmen@tut.by>
 Date:   2023-12-28 12:32:16 +0300

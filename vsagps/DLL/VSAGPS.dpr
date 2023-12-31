@@ -144,12 +144,13 @@ end;
 function VSAGPS_SerializePacket(const AVSAGPS_HANDLE: TVSAGPS_HANDLE;
                                 const AUnitIndex: Byte;
                                 const APacket: Pointer;
-                                const AReserved: PDWORD): PAnsiChar; stdcall;
+                                out ASerializedSize: DWORD;
+                                const AReserved: PDWORD): Pointer; stdcall;
 begin
   Result:=nil;
   try
     if (nil<>AVSAGPS_HANDLE) then begin
-      Result:=Tvsagps_object(Pointer(AVSAGPS_HANDLE)).SerializePacket(AUnitIndex, APacket);
+      Result:=Tvsagps_object(Pointer(AVSAGPS_HANDLE)).SerializePacket(AUnitIndex, APacket, ASerializedSize, AReserved);
     end;
   except
   end;

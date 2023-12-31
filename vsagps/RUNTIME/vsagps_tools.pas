@@ -137,7 +137,7 @@ begin
     while sl.EnumItems(EnumPtr, PayloadPtr) do begin
       iSize:=sizeof(PAnsiChar)+
              sizeof(AnsiChar)+
-             StrLen(PAnsiChar(PayloadPtr))+
+             StrLenA(PAnsiChar(PayloadPtr))+
              iSize;
     end;
 {$else}
@@ -161,7 +161,7 @@ begin
       EnumPtr:=nil;
       i:=0;
       while sl.EnumItems(EnumPtr, PayloadPtr) do begin
-        CopyMemory(pLines, PAnsiChar(PayloadPtr), StrLen(PAnsiChar(PayloadPtr))+1);
+        CopyMemory(pLines, PAnsiChar(PayloadPtr), StrLenA(PAnsiChar(PayloadPtr))+1);
         Result^.szItems[i]:=pLines;
         pLines:=PAnsiChar(Pointer(DWORD(Pointer(pLines))+DWORD(Length(s))+1));
       end;

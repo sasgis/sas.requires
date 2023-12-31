@@ -18,6 +18,9 @@ uses
 {$if not defined(USE_SIMPLE_CLASSES)}
   Classes,
 {$ifend}
+{$IFDEF HAS_ANSISTRINGS_UNIT}
+  AnsiStrings,
+{$ENDIF}
   vsagps_public_sysutils;
 
 type
@@ -422,7 +425,7 @@ var
 begin
   if InternalLocateItem(AIndex, VItem) then begin
     if (VItem <> nil) and (VItem^.data <> nil) then
-      SetString(Result, PAnsiChar(VItem^.data), StrLen(PAnsiChar(VItem^.data)))
+      SetString(Result, PAnsiChar(VItem^.data), StrLenA(PAnsiChar(VItem^.data)))
     else
       Result := '';
   end else
@@ -458,8 +461,8 @@ begin
   VEnumPtr := nil;
   VLen := Length(S);
   while EnumItems(VEnumPtr, VPayloadPtr) do begin
-    if (StrLen(PAnsiChar(VPayloadPtr)) = VLen) then
-    if (0 = AnsiStrLIComp(PAnsiChar(VPayloadPtr), PAnsiChar(@S[1]), VLen)) then
+    if (StrLenA(PAnsiChar(VPayloadPtr)) = VLen) then
+    if (0 = AnsiStrLICompA(PAnsiChar(VPayloadPtr), PAnsiChar(@S[1]), VLen)) then
       Exit;
     Inc(Result);
   end;

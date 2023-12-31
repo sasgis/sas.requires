@@ -14,7 +14,11 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-  SysUtils;
+  SysUtils
+{$IFDEF HAS_ANSISTRINGS_UNIT}
+  ,AnsiStrings
+{$ENDIF}
+  ;
 
 function VSAGPS_GetMem(const dwBytes: DWORD): Pointer; stdcall;
 
@@ -120,7 +124,7 @@ begin
   if (nil=pSrc) then
     Exit;
 
-  d:=StrLen(pSrc);
+  d:=StrLenA(pSrc);
 
   if aNILforEmpty and (0=d) then
     Exit;

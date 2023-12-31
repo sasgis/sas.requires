@@ -15,6 +15,9 @@ uses
   Windows,
 {$ENDIF}
   SysUtils,
+{$IFDEF HAS_ANSISTRINGS_UNIT}
+  AnsiStrings,
+{$ENDIF}
   vsagps_public_base,
   vsagps_public_types,
   vsagps_public_classes,
@@ -128,7 +131,10 @@ type
     procedure ExecuteGPSCommand(const ACommand: LongInt;
                                 const APointer: Pointer); virtual;
 
-    function SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar; virtual; abstract;
+    function SerializePacket(const APacket: Pointer;
+                             out ASerializedSize: DWORD;
+                             const AReserved: PDWORD): Pointer; virtual; abstract;
+
     function ParsePacket(const ABuffer: Pointer): DWORD; virtual; abstract;
 
     function SendPacket(const APacketBuffer: Pointer;
@@ -781,7 +787,7 @@ begin
     if (nil=FGPSDeviceInfo_NameToConnectInternalA) then
       dwDevNameLen:=0
     else
-      dwDevNameLen:=StrLen(FGPSDeviceInfo_NameToConnectInternalA);
+      dwDevNameLen:=StrLenA(FGPSDeviceInfo_NameToConnectInternalA);
 
     if (0=dwDevNameLen) then begin
       // no device name

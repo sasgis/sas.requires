@@ -15,6 +15,9 @@ uses
   Windows,
 {$ENDIF}
   SysUtils,
+{$IFDEF HAS_ANSISTRINGS_UNIT}
+  AnsiStrings,
+{$ENDIF}
   vsagps_public_base,
   vsagps_public_classes,
   vsagps_tools;
@@ -361,6 +364,7 @@ function VSAGPS_Autodetect_Get_SetupDi_Devices(const AClassGuid: PGUID;
 implementation
 
 uses
+  vsagps_public_sysutils,
   vsagps_public_memory;
 
 procedure VSAGPS_WorkingThread_InitParams(pParams: PVSAGPS_WorkingThread_Params);
@@ -582,7 +586,7 @@ begin
             bDiResult:=TSetupDiGetDeviceInterfaceDetailA(pFunc)(theDevInfo, @theInterfaceData, theDevDetailData, theBytesReturned, nil, @theDevInfoData);
             if bDiResult then begin
               // save info to list
-              dwErr:=StrLen(PAnsiChar(@(theDevDetailData^.DevicePath)));
+              dwErr:=StrLenA(PAnsiChar(@(theDevDetailData^.DevicePath)));
               SetString(str_dev_name, PAnsiChar(@(theDevDetailData^.DevicePath)), dwErr);
               //if sl_names.IndexOf(str_dev_name)>=0 then
                 //break;

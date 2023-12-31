@@ -64,7 +64,8 @@ function VSAGPS_GPSState(const AVSAGPS_HANDLE: TVSAGPS_HANDLE): Tvsagps_GPSState
 function VSAGPS_SerializePacket(const AVSAGPS_HANDLE: TVSAGPS_HANDLE;
                                 const AUnitIndex: Byte;
                                 const APacket: Pointer;
-                                const AReserved: PDWORD): PAnsiChar; stdcall; external vsagps_dll; // result must be deallocated using VSAGPS_FreeMem
+                                out ASerializedSize: DWORD;
+                                const AReserved: PDWORD): Pointer; stdcall; external vsagps_dll; // result must be deallocated using VSAGPS_FreeMem
 
 function VSAGPS_AutodetectCOM(const ADevFlags: DWORD;
                               const AUserPointer: Pointer;

@@ -14,7 +14,12 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-  SysUtils;
+  SysUtils,
+{$IFDEF HAS_ANSISTRINGS_UNIT}
+  AnsiStrings;
+{$ELSE}
+  StrUtils;
+{$ENDIF}
 
 const
 {$IFDEF UNICODE}
@@ -50,7 +55,8 @@ procedure DelCharInSetA(var S: AnsiString; const ASet: TSysCharSet);
 function IntToStrA(const AValue: Integer): AnsiString;
 function IntToHexA(const Value: Integer; const Digits: Integer): AnsiString;
 
-function PosA(const ASubStr, ABigStr: AnsiString): Integer;
+function PosA(const ASubStr, ABigStr: AnsiString): Integer; inline; overload;
+function PosA(const ASubStr, ABigStr: AnsiString; AOffset: Integer): Integer; inline; overload;
 
 function FloatToStrFixedA(
   const Value: Extended;
@@ -98,6 +104,8 @@ function TryStrToIntA(const S: AnsiString; out AValue: Integer): Boolean;
 function AnsiLowerCaseA(const S: AnsiString): AnsiString; deprecated;
 function AnsiUpperCaseA(const S: AnsiString): AnsiString;
 
+function AnsiStrLICompA(S1, S2: PAnsiChar; MaxLen: Cardinal): Integer; inline;
+
 function StringReplaceA(
   const S, OldPattern, NewPattern: AnsiString;
   Flags: TReplaceFlags
@@ -105,6 +113,7 @@ function StringReplaceA(
 
 procedure StringReplaceSingleCharA(var S: AnsiString; const AOld, ANew: AnsiChar);
 
+function StrLenA(const Str: PAnsiChar): Cardinal; inline;
 function StrLenW(Src: PWideChar): DWORD;
 
 function VSAGPS_CreateFileW(
@@ -166,6 +175,11 @@ implementation
 uses
   SysConst;
 
+function AnsiStrLICompA(S1, S2: PAnsiChar; MaxLen: Cardinal): Integer;
+begin
+  Result := {$IFDEF HAS_ANSISTRINGS_UNIT}AnsiStrings.{$ENDIF}AnsiStrLIComp(S1, S2, MaxLen);
+end;
+
 function SameTextA(const S1, S2: AnsiString): Boolean;
 begin
   if Pointer(S1) = Pointer(S2) then
@@ -175,7 +189,7 @@ begin
   else if (Pointer(S1) = nil) or (Pointer(S2) = nil) then
     Result := False
   else
-    Result := (0 = AnsiStrLIComp(PAnsiChar(@S1[1]), PAnsiChar(@S2[1]), Length(S1)));
+    Result := (0 = AnsiStrLICompA(PAnsiChar(@S1[1]), PAnsiChar(@S2[1]), Length(S1)));
 end;
 
 function IsTrimmableA(const ALetter: AnsiChar): Boolean;
@@ -236,13 +250,14 @@ var
   VBuffer: array [0..15] of AnsiChar;
   VLen: Cardinal;
 begin
-  VLen := FormatBuf(
-    VBuffer,
-    SizeOf(VBuffer),
-    cFormat,
-    StrLen(cFormat),
-    [AValue]
-  );
+  VLen := {$IFDEF HAS_ANSISTRINGS_UNIT}AnsiStrings.{$ENDIF}
+    FormatBuf(
+      VBuffer,
+      SizeOf(VBuffer),
+      cFormat,
+      StrLenA(cFormat),
+      [AValue]
+    );
   if (VLen > 0) then begin
     SetString(Result, PAnsiChar(@VBuffer), VLen);
   end else begin
@@ -264,6 +279,15 @@ begin
 {$IFEND}
 end;
 
+function PosA(const ASubStr, ABigStr: AnsiString; AOffset: Integer): Integer;
+begin
+{$IFDEF HAS_ANSISTRINGS_UNIT}
+  Result := AnsiStrings.PosEx(ASubStr, ABigStr, AOffset);
+{$ELSE}
+  Result := StrUtils.PosEx(ASubStr, ABigStr, AOffset);
+{$ENDIF}
+end;
+
 function FloatToStrFixedA(
   const Value: Extended;
   //Format: TFloatFormat;
@@ -276,7 +300,7 @@ begin
   SetString(
     Result,
     VBuffer,
-    FloatToText(
+    {$IFDEF HAS_ANSISTRINGS_UNIT}AnsiStrings.{$ENDIF}FloatToText(
       VBuffer,
       Value,
       fvExtended,
@@ -298,7 +322,7 @@ begin
   SetString(
     Result,
     VBuffer,
-    FloatToText(
+    {$IFDEF HAS_ANSISTRINGS_UNIT}AnsiStrings.{$ENDIF}FloatToText(
       VBuffer,
       Value,
       fvExtended,
@@ -337,7 +361,7 @@ function StrToFloatA(
   const AFormatSettings: TFormatSettings
 ): Extended;
 begin
-  if not TextToFloat(PAnsiChar(S), Result, fvExtended, AFormatSettings) then
+  if not {$IFDEF HAS_ANSISTRINGS_UNIT}AnsiStrings.{$ENDIF}TextToFloat(PAnsiChar(S), Result, fvExtended, AFormatSettings) then
     raise EConvertError.CreateResFmt(@SInvalidFloat, [string(S)]);
 end;
 
@@ -347,7 +371,8 @@ function TryStrToFloatA(
   const AFormatSettings: TFormatSettings
 ): Boolean;
 begin
-  Result := TextToFloat(PAnsiChar(S), AValue, fvExtended, AFormatSettings);
+  Result := {$IFDEF HAS_ANSISTRINGS_UNIT}AnsiStrings.{$ENDIF}
+    TextToFloat(PAnsiChar(S), AValue, fvExtended, AFormatSettings);
 end;
 
 function TryStrToFloatA(
@@ -360,7 +385,8 @@ const
 var
   VValue: Extended;
 begin
-  Result := TextToFloat(PAnsiChar(S), VValue, fvExtended, AFormatSettings);
+  Result := {$IFDEF HAS_ANSISTRINGS_UNIT}AnsiStrings.{$ENDIF}
+    TextToFloat(PAnsiChar(S), VValue, fvExtended, AFormatSettings);
   if Result then
     if (VValue < -MaxDouble) or (VValue > MaxDouble) then
       Result := False;
@@ -405,6 +431,9 @@ function StringReplaceA(
   Flags: TReplaceFlags
 ): AnsiString;
 begin
+{$IFDEF HAS_ANSISTRINGS_UNIT}
+  Result := AnsiStrings.StringReplace(S, OldPattern, NewPattern, Flags);
+{$ELSE}
   Result := AnsiString(
     StringReplace(
       string(S),
@@ -413,6 +442,7 @@ begin
       Flags
     )
   );
+{$ENDIF}
 end;
 
 procedure StringReplaceSingleCharA(var S: AnsiString; const AOld, ANew: AnsiChar);
@@ -421,6 +451,15 @@ begin
   for i := 1 to Length(S) do
   if (AOld = S[i]) then
     S[i] := ANew;
+end;
+
+function StrLenA(const Str: PAnsiChar): Cardinal;
+begin
+{$IFDEF HAS_ANSISTRINGS_UNIT}
+  Result := AnsiStrings.StrLen(Str);
+{$ELSE}
+  Result := StrLen(Str);
+{$ENDIF}
 end;
 
 function StrLenW(Src: PWideChar): DWORD;
@@ -510,7 +549,7 @@ begin
   if (nil = ABuffer) then
     Result := ''
   else begin
-    L := StrLen(ABuffer);
+    L := StrLenA(ABuffer);
     if (0 = L) then
       Result := ''
     else

@@ -15,6 +15,11 @@ uses
   Windows,
 {$ENDIF}
   SysUtils,
+{$IFDEF HAS_ANSISTRINGS_UNIT}
+  AnsiStrings,
+{$ELSE}
+  StrUtils,
+{$ENDIF}
   vsagps_public_base,
   vsagps_public_types,
   vsagps_public_classes,
@@ -86,7 +91,9 @@ type
 
     procedure ExecuteGPSCommand(const ACommand: LongInt;
                                 const APointer: Pointer); override;
-    function SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar; override;
+    function SerializePacket(const APacket: Pointer;
+                             out ASerializedSize: DWORD;
+                             const AReserved: PDWORD): Pointer; override;
     function ParsePacket(const ABuffer: Pointer): DWORD; override;
 
     function SendPacket(const APacketBuffer: Pointer;
@@ -103,7 +110,6 @@ function NmeaPacketData(APacket: Pointer): Pointer; inline;
 implementation
 
 uses
-  AnsiStrings,
   vsagps_public_unit_info,
   vsagps_public_memory,
   vsagps_public_debugstring,
@@ -283,7 +289,7 @@ begin
   // set DCB info as AnsiString
   if (gpsc_Set_DCB_Str_Info_A = ACommand) then
   if (nil<>APointer) then begin
-    SetString(FDCB_Str_Info_A, PAnsiChar(APointer), AnsiStrings.StrLen(PAnsiChar(APointer)));
+    SetString(FDCB_Str_Info_A, PAnsiChar(APointer), StrLenA(PAnsiChar(APointer)));
     FDCB_Str_Info_A:=TrimA(FDCB_Str_Info_A);
     Exit;
   end;
@@ -482,16 +488,16 @@ function Tvsagps_device_com_nmea.Internal_Parse_NmeaComm_Packets(const APacket: 
     VHead, VTail: Integer;
   begin
     Result := False;
-    VHead := PosEx(cNmea_Starter, FGlobalNmeaBuffer);
+    VHead := PosA(cNmea_Starter, FGlobalNmeaBuffer);
     if VHead = 0 then begin
       FGlobalNmeaBuffer := '';
       Exit;
     end;
-    VTail := PosEx(cNmea_Tail, FGlobalNmeaBuffer, VHead + 1);
+    VTail := PosA(cNmea_Tail, FGlobalNmeaBuffer, VHead + 1);
     if VTail > 0 then begin
       repeat
         // check if there any other Heads between Head and Tail
-        I := PosEx(cNmea_Starter, FGlobalNmeaBuffer, VHead + 1);
+        I := PosA(cNmea_Starter, FGlobalNmeaBuffer, VHead + 1);
         if (I > 0) and (I < VTail) then begin
           // found another Head before Tail
           {$if defined(USE_NMEA_PROPRIETARY_WITHOUT_TAIL)}
@@ -563,7 +569,7 @@ begin
 
   while _GetNmeaSentence(VSentence) do begin
     {$if defined(VSAGPS_USE_DEBUG_STRING_NMEA_SENTENCE)}
-    OutputDebugStringA(PAnsiChar(StringReplaceA(VSentence, #13#10, '\r\n', [rfReplaceAll])));
+    VSAGPS_DebugAnsiString(StringReplaceA(VSentence, #13#10, '\r\n', [rfReplaceAll]);
     {$ifend}
     FParser.Parse_Sentence_Without_Starter(VSentence);
   end;
@@ -1076,26 +1082,21 @@ begin
 {$ifend}
 end;
 
-function Tvsagps_device_com_nmea.SerializePacket(const APacket: Pointer; const AReserved: PDWORD): PAnsiChar;
+function Tvsagps_device_com_nmea.SerializePacket(const APacket: Pointer;
+                                                 out ASerializedSize: DWORD;
+                                                 const AReserved: PDWORD): Pointer;
 var
   VData: Pointer;
-  VSize: DWORD;
 begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.SerializePacket:');
 {$ifend}
 
-  if (APacket<>nil) and (AReserved<>nil) then begin
-    VSize := NmeaPacketSize(APacket);
-    VData := NmeaPacketData(APacket);
-    AReserved^ := VSize;
-    Result := VSAGPS_GetMem(VSize);
-    Move(VData^, Result^, VSize);
-  end else
   if (APacket<>nil) then begin
-    Assert(False);
+    ASerializedSize := NmeaPacketSize(APacket);
     VData := NmeaPacketData(APacket);
-    Result:=VSAGPS_AllocPCharByPChar(PAnsiChar(VData), TRUE);
+    Result := VSAGPS_GetMem(ASerializedSize);
+    Move(VData^, Result^, ASerializedSize);
   end else begin
     Result:=nil;
   end;

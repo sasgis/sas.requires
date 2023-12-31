@@ -17,6 +17,7 @@
 
 {$IF CompilerVersion >= 23}
 {.$define VSAGPS_USE_UNICODE}
+{$define HAS_ANSISTRINGS_UNIT}
 {$IFEND}
 
 {$IF CompilerVersion < 25}
