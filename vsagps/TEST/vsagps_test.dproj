@@ -102,6 +102,7 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="vsagps_com_checker_test.pas"/>
         <DCCReference Include="vsagps_device_com_nmea_test.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_classes.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_com_checker.pas"/>

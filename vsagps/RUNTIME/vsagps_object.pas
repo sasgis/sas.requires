@@ -133,7 +133,7 @@ begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
           VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: prepare to kill');
 {$ifend}
-          FPacketThread.PrepareToKill;
+          //FPacketThread.PrepareToKill;
         end;
       except
       end;
@@ -143,7 +143,7 @@ begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
           VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: kill');
 {$ifend}
-          FreeAndNil(FPacketThread);
+          //FreeAndNil(FPacketThread);
         end;
       except
       end;

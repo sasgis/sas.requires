@@ -20,6 +20,12 @@
 {$define HAS_ANSISTRINGS_UNIT}
 {$IFEND}
 
+{$IFDEF DEBUG}
+  {$IF CompilerVersion >= 22} // Delphi XE and UP
+    {$define USE_THREAD_NAMING}
+  {$IFEND}	
+{$ENDIF}
+
 {$IF CompilerVersion < 25}
   {$define VSAGPS_USE_LOCATIONAPI_TLB}
 {$IFEND}

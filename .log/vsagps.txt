@@ -1,3 +1,33 @@
+commit ca335e6fd8dd49b5fdbe71b98aa52b7eb5ab0838
+Author: zed <starmen@tut.by>
+Date:   2024-01-03 11:40:41 +0300
+
+    Больше логов
+
+commit af3bf075f9ef927684aa966813be43e271e2cf01
+Author: zed <starmen@tut.by>
+Date:   2024-01-03 10:12:15 +0300
+
+    Переименовал readme и поправил gitignore
+
+commit 05502f1f48f076f54ae762b4daf46096352d2a18
+Author: zed <starmen@tut.by>
+Date:   2024-01-03 10:05:39 +0300
+
+    Убрал ручное удаление потоков, для которых выставлено FreeOnTerminate
+
+commit 0a24a90d946df9a4396590914644aa5a0acf4add
+Author: zed <starmen@tut.by>
+Date:   2024-01-02 14:38:43 +0300
+
+    Детектилка com портов без использования TerminateThread
+
+commit 154327664b4c045d63875ab3240f2230f1dc8840
+Author: zed <starmen@tut.by>
+Date:   2024-01-02 12:20:13 +0300
+
+    Мелкие правки
+
 commit c50c5a5550271c4cfbd3f4fcc41420c591525e1d
 Author: zed <starmen@tut.by>
 Date:   2023-12-31 10:44:16 +0300

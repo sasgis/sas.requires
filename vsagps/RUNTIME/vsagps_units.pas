@@ -245,7 +245,12 @@ begin
   VSAGPS_DebugAnsiString('TVSAGPS_UNITS.Destroy: begin');
 {$ifend}
 
-  FreeAndNil(FDeviceThread);
+  if FDeviceThread <> nil then begin
+    {$if defined(VSAGPS_USE_DEBUG_STRING)}
+    VSAGPS_DebugAnsiString('TVSAGPS_UNITS.Destroy: DeviceThread is not nil');
+    {$ifend}
+  end;
+  //FreeAndNil(FDeviceThread);
   
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('TVSAGPS_UNITS.Destroy: cleanup');

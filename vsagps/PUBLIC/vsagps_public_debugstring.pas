@@ -36,7 +36,7 @@ end;
 procedure VSAGPS_DebugAnsiString(const ADebugText: AnsiString);
 var VText: AnsiString;
 begin
-  VText := '[THR='+IntToStr(GetCurrentThreadId)+']'+ADebugText;
+  VText := '[THR='+AnsiString(IntToStr(GetCurrentThreadId))+']'+ADebugText;
   OutputDebugStringA(PAnsiChar(VText));
 end;
 {$ifend}

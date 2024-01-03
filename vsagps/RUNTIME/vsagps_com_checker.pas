@@ -20,39 +20,31 @@ uses
 {$else}
   Classes,
 {$ifend}
+{$if defined(VSAGPS_USE_DEBUG_STRING)}
+  vsagps_public_debugstring,
+{$ifend}
   //vsagps_public_com_checker, // do not use!
   vsagps_public_base,
   vsagps_public_classes,
   vsagps_public_sysutils,
   vsagps_public_events;
 
-const
-  cCOM_read_bytes = 512; // buffer to read - 512 will be enough for any nmea sentences in second
-
 type
-  TCOMCheckerThread = class(TThread)
+  TComCheckerThread = class(TThread)
   private
-    FCOMName: string;
-    FCOMHandle: THandle;
-    FCOMFinished: Boolean;
-    FCOMOpened: Boolean;
-    FCOMClosed: Boolean;
-    FCOMReadOK: LongBool;
-    FCOMKeepHandle: Boolean;
-    FCOMReadCount: DWORD;
-    FCOMError: DWORD;
-    //FCOMTimeA: DWORD;
-    //FCOMTimeB: DWORD;
-    FCOMReadTimeout: DWORD;
-    FCOMReadEvent: TCOMCheckerReadEvent;
+    FComName: string;
+    FComHandle: THandle;
+    FComFinished: Boolean;
+    FComReadOk: LongBool;
+    FComKeepHandle: Boolean;
+    FComError: DWORD;
+    FComReadTimeout: DWORD;
   private
-    procedure InternalKillThread;
-    procedure InternalCloseCOM;
+    function TryReceivePacket: Boolean;
   protected
     procedure Execute; override;
   public
-    destructor Destroy; override;
-    property COMName: string read FCOMName;
+    property ComName: string read FComName;
   end;
 
   TCOMCheckerObject = class(TObject)
@@ -70,8 +62,8 @@ type
     procedure MakeCOMs;
     procedure InternalMakeThreads(const AKeepFirstOpenedHandle: Boolean);
     procedure InternalCleanupThreads;
-    procedure InternalCleanupThread(const AIndex: Integer; AThread: TCOMCheckerThread);
-    procedure InternalPendingThread(AThread: TCOMCheckerThread);
+    procedure InternalCleanupThread(const AIndex: Integer; AThread: TComCheckerThread);
+    procedure InternalPendingThread(AThread: TComCheckerThread);
     procedure InternalCloseFirstOpenedHandle;
   public
     constructor Create; virtual;
@@ -80,7 +72,7 @@ type
     procedure SetFullConnectionTimeout(const AConnectTimeoutSec: DWORD;
                                        const AForKeepFirstOpenedHandle: LongBool);
 
-    // to enumerate end make outlist with names of COMx (with optional flags cCOM_src_*)
+    // to enumerate and make outlist with names of COMx (with optional flags cCOM_src_*)
     // if AOutList=nil - just returns first COM-port found index (3 for COM3)
     // if AOutList<>nil - returns count of ports found
     // no ports - returns -1
@@ -98,45 +90,18 @@ type
     property Timeout_Read_Msec: DWORD read FTimeout_Read_Msec write FTimeout_Read_Msec;
     property Timeout_Wait_Msec: DWORD read FTimeout_Wait_Msec write FTimeout_Wait_Msec;
 
-    property OnCOMReadBuffer: TCOMCheckerReadEvent read FOnCOMReadBuffer write FOnCOMReadBuffer;
+    //property OnCOMReadBuffer: TCOMCheckerReadEvent read FOnCOMReadBuffer write FOnCOMReadBuffer;
     property OnThreadFinished: TCOMCheckerThreadEvent read FOnThreadFinished write FOnThreadFinished;
     property OnThreadPending: TCOMCheckerThreadEvent read FOnThreadPending write FOnThreadPending;
   end;
 
 
 // retrieve all com ports to list (with flags)
-procedure GetAllCOMPortsList(AList: TStrings; const ADevFlags: DWORD);
-
-(*
-// testing routine
-procedure EnumSerialPrint(const ADevFlags: DWORD);
-*)
+procedure GetAllComPortsList(AList: TStrings; const ADevFlags: DWORD);
 
 implementation
 
-(*
-procedure EnumSerialPrint(const ADevFlags: DWORD);
-var
-  obj: TCOMCheckerObject;
-  sl: TStringList;
-  ACancelled: Boolean;
-begin
-  obj:=TCOMCheckerObject.Create;
-  sl:=TStringList.Create;
-  try
-    obj.SetFullConnectionTimeout(10,FALSE);
-    if obj.EnumExecute(sl,ACancelled,ADevFlags,FALSE)>0 then
-      Writeln(sl.Text)
-    else
-      Writeln('No ports found');
-  finally
-    obj.Free;
-    sl.Free;
-  end;
-end;
-*)
-
-function GetCOMDeviceFlags(const ADevNameUpperCased: AnsiString): DWORD;
+function GetComDeviceFlags(const ADevNameUpperCased: AnsiString): DWORD;
 begin
   // common
   // \Device\BthModem0 - bluetooth ports
@@ -161,11 +126,11 @@ begin
     Result:=cCOM_src_Others;
 end;
 
-procedure GetAllCOMPortsList(AList: TStrings; const ADevFlags: DWORD);
+procedure GetAllComPortsList(AList: TStrings; const ADevFlags: DWORD);
 var
   reg: TRegistryA;
   sl_names: TStringListA;
-  
+
   procedure InternalAddFromKey(const AKeyName: AnsiString);
   var
     sName, sValue: AnsiString;
@@ -191,7 +156,7 @@ var
 
           if (0<Length(sValue)) then begin
             // port found - existing or new?
-            f:=GetCOMDeviceFlags(AnsiUpperCaseA(sName));
+            f:=GetComDeviceFlags(AnsiUpperCaseA(sName));
             if (0=ADevFlags) or (0<>(f and ADevFlags)) then begin
               VExtValue := string(sValue);
               p:=AList.IndexOf(VExtValue);
@@ -224,92 +189,126 @@ begin
   end;
 end;
 
-{ TCOMCheckerThread }
+{ TComCheckerThread }
 
-destructor TCOMCheckerThread.Destroy;
-begin
-  InternalCloseCOM;
-  inherited;
-end;
-
-procedure TCOMCheckerThread.Execute;
+function TComCheckerThread.TryReceivePacket: Boolean;
+const
+  CBuffSize = 100;
 var
   tm: TCommTimeouts;
-  dwRead: DWORD;
-  dwTimeout: DWORD;
-  buf: array [0..cCOM_read_bytes-1] of AnsiChar;
+  VBuf: array [0..CBuffSize-1] of AnsiChar;
+  VLen: DWORD;
+  VRead: DWORD;
+  VTimeout: DWORD;
+  VStart: Cardinal;
 begin
-  //inherited;
-  Terminate;
-  FCOMError:=0;
-  FCOMReadCount:=0;
-  FCOMReadOK:=FALSE;
-  FCOMFinished:=FALSE;
-  FCOMOpened:=FALSE;
-  FCOMClosed:=FALSE;
-  //FCOMTimeA:=GetTickCount;
-  //FCOMTimeB:=0;
+  Result := False;
+
+  if Terminated then begin
+    Exit;
+  end;
+
+  tm.ReadIntervalTimeout := MAXDWORD;
+  tm.ReadTotalTimeoutMultiplier := MAXDWORD;
+  tm.ReadTotalTimeoutConstant := 250; // internal timeout, milliseconds
+  tm.WriteTotalTimeoutMultiplier := MAXDWORD;
+  tm.WriteTotalTimeoutConstant := MAXDWORD;
+
+  if not SetCommTimeouts(FComHandle, tm) then begin
+    FComError := GetLastError;
+    Exit;
+  end;
 
   // calc min of timeouts
-  dwTimeout:=(10000); // in milliseconds
-  if dwTimeout>FCOMReadTimeout then
-    dwTimeout:=FCOMReadTimeout;
+  VTimeout := 10000; // milliseconds
+  if VTimeout > FComReadTimeout then begin
+    VTimeout := FComReadTimeout;
+  end;
 
-  FCOMHandle:=CreateFile(PChar(FCOMName), GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_EXISTING, 0, 0);
+  VLen := Length(VBuf);
 
-  if (0<>FCOMHandle) and (INVALID_HANDLE_VALUE<>FCOMHandle) then
-  try
-    FCOMOpened:=TRUE;
-
-    tm.ReadIntervalTimeout:=MAXDWORD;
-    tm.ReadTotalTimeoutMultiplier:=MAXDWORD;
-    tm.ReadTotalTimeoutConstant:=dwTimeout;
-    tm.WriteTotalTimeoutMultiplier:=MAXDWORD;
-    tm.WriteTotalTimeoutConstant:=MAXDWORD;
-
-    if SetCommTimeouts(FCOMHandle, tm) then begin
-      // reading
-      dwRead:=0;
-      if ReadFile(FCOMHandle, buf, cCOM_read_bytes, dwRead, nil) then begin
-        FCOMReadOK:=TRUE;
-        FCOMReadCount:=dwRead;
-
-        if Assigned(FCOMReadEvent) then
-          FCOMReadEvent(Self, @buf, dwRead, @FCOMReadOK);
+  // reading
+  VStart := GetTickCount;
+  while not Terminated and (GetTickCount < VStart + VTimeout) do begin
+    VRead:=0;
+    if ReadFile(FComHandle, VBuf, VLen, VRead, nil) then begin
+      if VRead = 0 then begin
+        // internal timeout
+        {$if defined(VSAGPS_USE_DEBUG_STRING)}
+        //VSAGPS_DebugAnsiString('TComCheckerThread.TryReceivePacket: Continue');
+        {$ifend}
+        Continue;
+      end else begin
+        // ok
+        Result := True;
+        Exit;
       end;
     end else begin
-      // failed
-      FCOMError:=GetLastError;
+      // error
+      Exit;
+    end;
+  end;
+  {$if defined(VSAGPS_USE_DEBUG_STRING)}
+  if Terminated then
+    VSAGPS_DebugAnsiString('TComCheckerThread.TryReceivePacket: Terminated')
+  else
+  if not Result and (GetTickCount > VStart + VTimeout) then
+    VSAGPS_DebugAnsiString('TComCheckerThread.TryReceivePacket: Exit by Timeout');
+  {$ifend}
+end;
+
+procedure TComCheckerThread.Execute;
+begin
+  {$if defined(VSAGPS_USE_DEBUG_STRING)}
+  VSAGPS_DebugAnsiString('TComCheckerThread.Execute: ' + AnsiString(FComName));
+  {$ifend}
+
+  {$IFDEF USE_THREAD_NAMING}
+  NameThreadForDebugging(Self.ClassName);
+  {$ENDIF}
+
+  FComError := 0;
+  FComReadOk := False;
+
+  FComFinished := False;
+  try
+    FComHandle := CreateFile(PChar(FComName), GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_EXISTING, 0, 0);
+
+    if (FComHandle = 0) or (FComHandle = INVALID_HANDLE_VALUE) then begin
+      FComError := GetLastError;
+      {$if defined(VSAGPS_USE_DEBUG_STRING)}
+      VSAGPS_DebugAnsiString('TComCheckerThread.Execute: CreateFile error = ' + IntToStrA(FComError));
+      {$ifend}
+      Exit;
+    end;
+
+    try
+      FComReadOk := TryReceivePacket;
+      {$if defined(VSAGPS_USE_DEBUG_STRING)}
+      VSAGPS_DebugAnsiString('TComCheckerThread.Execute: FComReadOk = ' + AnsiString(BoolToStr(FComReadOk, True)));
+      {$ifend}
+    finally
+      if not FComKeepHandle then begin
+        {$if defined(VSAGPS_USE_DEBUG_STRING)}
+        VSAGPS_DebugAnsiString('TComCheckerThread.Execute: closing FComHandle');
+        {$ifend}
+        if not PurgeComm(FComHandle, PURGE_TXABORT or PURGE_RXABORT or PURGE_TXCLEAR or PURGE_RXCLEAR) then begin
+          {$if defined(VSAGPS_USE_DEBUG_STRING)}
+          VSAGPS_DebugAnsiString('TComCheckerThread.Execute: PurgeComm error = ' + IntToStrA(GetLastError));
+          {$ifend}
+        end;
+        CloseHandle(FComHandle);
+        FComHandle := 0;
+        {$if defined(VSAGPS_USE_DEBUG_STRING)}
+        VSAGPS_DebugAnsiString('TComCheckerThread.Execute: closed FComHandle');
+        {$ifend}
+      end;
     end;
   finally
-    if (not FCOMKeepHandle) then
-      InternalCloseCOM;
-  end else begin
-    FCOMError:=GetLastError;
-  end;
-  FCOMFinished:=TRUE;
-  //FCOMTimeB:=GetTickCount;
-end;
-
-procedure TCOMCheckerThread.InternalCloseCOM;
-begin
-  if (FCOMOpened) and (not FCOMClosed) then begin
-    PurgeComm(FCOMHandle, (PURGE_TXABORT or PURGE_RXABORT or PURGE_TXCLEAR or PURGE_RXCLEAR));
-    FCOMClosed:=TRUE;
-    CloseHandle(FCOMHandle);
-    FCOMHandle:=0;
-  end;
-end;
-
-procedure TCOMCheckerThread.InternalKillThread;
-begin
-  if (0<>Handle) then
-  try
-    PDWORD(@(ThreadID))^:=0;
-    TerminateThread(Handle, 0);
-  finally
-    CloseHandle(Handle);
-    PHandle(@(Handle))^:=0;
+    FComFinished := True;
+    {$if defined(VSAGPS_USE_DEBUG_STRING)}
+    VSAGPS_DebugAnsiString('TComCheckerThread.Execute: end');
+    {$ifend}
   end;
 end;
 
@@ -376,7 +375,8 @@ function TCOMCheckerObject.EnumExecute(AFoundPorts: TStrings;
 var
   dwTicks_Start: DWORD;
   i: SmallInt;
-  t: TCOMCheckerThread;
+  t: TComCheckerThread;
+  VWorkingCount: Integer;
 begin
   ACancelled:=FALSE;
 
@@ -417,23 +417,24 @@ begin
       repeat
         // work
         i:=0;
-        while (i<FCOMs.Count) do begin
+        VWorkingCount := 0;
+        while i < FCOMs.Count do begin
           Sleep(0);
 
           if _CheckCancelling then
-            break;
+            Break;
 
           Sleep(0);
 
-          t:=TCOMCheckerThread(FCOMs.Objects[i]);
-          if Assigned(t) then begin
+          t:=TComCheckerThread(FCOMs.Objects[i]);
+          if Assigned(t) and not t.Terminated then begin
             // pending
             InternalPendingThread(t);
 
             // check finished
-            if t.FCOMFinished then begin
+            if t.FComFinished then begin
               // thread finished
-              if t.FCOMOpened and t.FCOMReadOK and (0<t.FCOMReadCount) then begin
+              if t.FComReadOk then begin
                 // good port
                 if (nil<>AFoundPorts) then begin
                   // with list
@@ -444,8 +445,8 @@ begin
                   Result:=GetCOMPortNumber(FCOMs[i]);
                   if AKeepFirstOpenedHandle then begin
                     // extract this handle for connection
-                    FFirstOpenedHandle:=t.FCOMHandle;
-                    t.FCOMHandle:=0;
+                    FFirstOpenedHandle:=t.FComHandle;
+                    t.FComHandle:=0;
                   end;
                   Exit;
                 end;
@@ -458,28 +459,25 @@ begin
               FCOMs.Delete(i);
             end else begin
               // still working
-              if (GetTickCount>dwTicks_Start+FTimeout_Wait_Msec) then begin
-                // kill
-                InternalCleanupThread(i,t);
-                FCOMs.Delete(i);
+              if GetTickCount > dwTicks_Start + FTimeout_Wait_Msec then begin
+                t.Terminate;
               end else begin
                 // wait a little
                 Inc(i);
+                Inc(VWorkingCount);
               end;
             end;
           end else begin
-            // empty item
-            FCOMs.Delete(i);
+            Inc(i);
           end;
         end;
 
         Sleep(100);
 
         // check exit
-        if (0=FCOMs.Count) then
-          break;
-        if _CheckCancelling then
-          break;
+        if _CheckCancelling or (VWorkingCount = 0) then begin
+          Break;
+        end;
       until FALSE;
     finally
       InternalCleanupThreads;
@@ -495,7 +493,7 @@ begin
   FFirstOpenedHandle:=0;
 end;
 
-procedure TCOMCheckerObject.InternalCleanupThread(const AIndex: Integer; AThread: TCOMCheckerThread);
+procedure TCOMCheckerObject.InternalCleanupThread(const AIndex: Integer; AThread: TComCheckerThread);
 begin
   try
     // user handler
@@ -504,35 +502,8 @@ begin
       FOnThreadFinished(Self, AThread);
     except
     end;
-
-    // check
-    if (nil=AThread) then
-      Exit;
-
-    Sleep(0);
-
-    // kill
-    try
-      if (not AThread.FCOMFinished) then
-        AThread.InternalKillThread;
-    except
-    end;
-
-    Sleep(0);
-
-    // close com handle
-    try
-      AThread.InternalCloseCOM;
-    except
-    end;
-
-    Sleep(0);
-
-    // free
-    try
-      AThread.Free;
-    except
-    end;
+    AThread.Terminate;
+    AThread.Free;
   finally
     FCOMs.Objects[AIndex]:=nil;
   end;
@@ -541,14 +512,20 @@ end;
 procedure TCOMCheckerObject.InternalCleanupThreads;
 var
   i: Integer;
-  t: TCOMCheckerThread;
+  t: TComCheckerThread;
 begin
-  if (0<FCOMs.Count) then
+  // terminate
   for i := 0 to FCOMs.Count - 1 do begin
-    t:=TCOMCheckerThread(FCOMs.Objects[i]);
-    if (Assigned(t)) then begin
-      // cleanup
-      InternalCleanupThread(i,t);
+    t := TComCheckerThread(FCOMs.Objects[i]);
+    if Assigned(t) then begin
+      t.Terminate;
+    end;
+  end;
+  // cleanup
+  for i := 0 to FCOMs.Count - 1 do begin
+    t := TComCheckerThread(FCOMs.Objects[i]);
+    if Assigned(t) then begin
+      InternalCleanupThread(i, t);
     end;
   end;
 end;
@@ -564,9 +541,8 @@ end;
 procedure TCOMCheckerObject.InternalMakeThreads(const AKeepFirstOpenedHandle: Boolean);
 var
   i: Integer;
-  t: TCOMCheckerThread;
+  t: TComCheckerThread;
 begin
-  if (0<FCOMs.Count) then
   for i := 0 to FCOMs.Count-1 do begin
     if FEnumCancelling then
       Exit;
@@ -574,13 +550,13 @@ begin
     //if FPrintDebug then
       //Writeln('Creating thread '+IntToStr(i));
 
-    t:=TCOMCheckerThread.Create(TRUE);
+    t:=TComCheckerThread.Create(TRUE);
     t.FreeOnTerminate:=FALSE;
-    t.FCOMName:=cNmea_NT_COM_Prefix+FCOMs[i]+#0;
-    
-    t.FCOMReadTimeout:=Self.FTimeout_Read_Msec;
-    t.FCOMReadEvent:=Self.FOnCOMReadBuffer;
-    t.FCOMKeepHandle:=AKeepFirstOpenedHandle;
+    t.FComName:=cNmea_NT_COM_Prefix+FCOMs[i];
+
+    t.FComReadTimeout:=Self.FTimeout_Read_Msec;
+    //t.FCOMReadEvent:=Self.FOnCOMReadBuffer;
+    t.FComKeepHandle:=AKeepFirstOpenedHandle;
 
     FCOMs.Objects[i]:=t;
 
@@ -596,7 +572,7 @@ begin
   end;
 end;
 
-procedure TCOMCheckerObject.InternalPendingThread(AThread: TCOMCheckerThread);
+procedure TCOMCheckerObject.InternalPendingThread(AThread: TComCheckerThread);
 begin
   if Assigned(FOnThreadPending) then
     FOnThreadPending(Self, AThread);

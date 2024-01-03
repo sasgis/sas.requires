@@ -828,7 +828,7 @@ begin
     // failed
     FWT_Params.dwLastError:=GetLastError;
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
-    VSAGPS_DebugAnsiString('Tvsagps_device_base.Internal_Do_Open_Device: failed '+IntToStr(FWT_Params.dwLastError));
+    VSAGPS_DebugAnsiString('Tvsagps_device_base.Internal_Do_Open_Device: failed '+IntToStrA(FWT_Params.dwLastError));
 {$ifend}
     FWT_Params.dwFinishReason:=(FWT_Params.dwFinishReason or wtfr_Abort_By_Device);
     InternalSetEmpty;

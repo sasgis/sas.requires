@@ -682,21 +682,19 @@ var
   VRes: LongInt;
   VBuf: PAnsiChar;
   dwType, dwSize, dwLen: DWORD;
-  S, SS: AnsiString;
 begin
   Result := '';
-  SS := AName + #0;
   dwLen := 256;
   VBuf := VSAGPS_GetMemZ(dwLen);
   try
     repeat
       dwType := REG_NONE;
       dwSize := dwLen;
-      VRes := RegQueryValueExA(FCurrentKey, PAnsiChar(SS), nil, @dwType, PByte(VBuf), @dwSize);
+      VRes := RegQueryValueExA(FCurrentKey, PAnsiChar(AName), nil, @dwType, PByte(VBuf), @dwSize);
       case VRes of
         ERROR_SUCCESS: begin
           // ok
-          Result := SafeSetStringL(VBuf, dwLen);
+          Result := SafeSetStringL(VBuf, dwSize-1);
           Exit;
         end;
         ERROR_MORE_DATA: begin
@@ -704,13 +702,11 @@ begin
           dwLen := dwLen * 2;
           VSAGPS_FreeMem(VBuf);
           VBuf := VSAGPS_GetMemZ(dwLen);
-          SetLength(S, dwLen);
         end;
-        else begin
-          // error
-          // raise ERegistryException.CreateResFmt(@SRegGetDataFailed, [AName]);
-          Exit;
-        end;
+      else
+        // error
+        // raise ERegistryException.CreateResFmt(@SRegGetDataFailed, [AName]);
+        Exit;
       end;
     until False;
   finally

@@ -2,7 +2,7 @@ program vsagps_test;
 
 {.$DEFINE REPORT_MEMORY_LEAK}
 
-{$DEFINE CONSOLE_TESTRUNNER}
+{.$DEFINE CONSOLE_TESTRUNNER}
 
 {$IFDEF CONSOLE_TESTRUNNER}
 {$APPTYPE CONSOLE}
@@ -10,6 +10,7 @@ program vsagps_test;
 
 uses
   DUnitTestRunner,
+  vsagps_com_checker_test in 'vsagps_com_checker_test.pas',
   vsagps_device_com_nmea_test in 'vsagps_device_com_nmea_test.pas',
   vsagps_classes in '..\RUNTIME\vsagps_classes.pas',
   vsagps_com_checker in '..\RUNTIME\vsagps_com_checker.pas',
