@@ -6,7 +6,7 @@ unit SynLog;
 (*
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2023 Arnaud Bouchez
+    Synopse framework. Copyright (c) Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit SynLog;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2023
+  Portions created by the Initial Developer are Copyright (c)
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -4660,6 +4660,7 @@ end;
 procedure TSynLog.LogInternal(Level: TSynLogInfo; const Text: RawUTF8;
   Instance: TObject; TextTruncateAtLength: integer);
 var LastError: cardinal;
+    L: integer;
 begin
   if Level=sllLastError then
     LastError := GetLastError else
@@ -4681,10 +4682,11 @@ begin
     end else begin
       if Instance<>nil then
         fWriter.AddInstancePointer(Instance,' ',fFamily.WithUnitName,fFamily.WithInstancePointer);
-      if length(Text)>TextTruncateAtLength then begin
-        fWriter.AddOnSameLine(pointer(Text),TextTruncateAtLength);
+      L := length(Text);
+      if L>TextTruncateAtLength then begin
+        fWriter.AddOnSameLine(pointer(Text),Utf8TruncatedLength(pointer(Text),L,TextTruncateAtLength));
         fWriter.AddShort('... (truncated) length=');
-        fWriter.AddU(length(Text));
+        fWriter.AddU(L);
       end else
         fWriter.AddOnSameLine(pointer(Text));
     end;
@@ -6142,7 +6144,7 @@ const
 initialization
   assert(ord(sfLocal7)=23);
   assert(ord(ssDebug)=7);
-  InitializeCriticalSection(GlobalThreadLock);   // deleted with the process
+  InitializeCriticalSection(GlobalThreadLock);
   SynLogFamily := TSynObjectList.Create;         // TSynLogFamily instances
   SynLogFileList := TSynObjectListLocked.Create; // TSynLog instances
   {$ifndef NOEXCEPTIONINTERCEPT}
@@ -6161,4 +6163,5 @@ finalization
   {$ifndef NOEXCEPTIONINTERCEPT}
   GlobalCurrentHandleExceptionSynLog := nil; // paranoid
   {$endif}
+  DeleteCriticalSection(GlobalThreadLock);
 end.

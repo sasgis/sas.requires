@@ -1,3 +1,199 @@
+commit e3dafecdcb5b63e41540fa44e0576c85fb0e8cf2
+Merge: 4404525c e118a9d8
+Author: ab <webcontact01@synopse.info>
+Date:   2024-02-11 20:10:27 +0100
+
+    Merge pull request #451 from zedxxx/master
+    
+    Fix Delphi compiler warning
+
+commit e118a9d8c12f2cdca744d6bf521c905058669fec
+Author: zed <starmen@tut.by>
+Date:   2024-02-10 18:56:53 +0300
+
+    fix Delphi compiler warning:
+    
+    [dcc32 Warning] SynLog.pas(4685): W1023 Comparing signed and unsigned types - widened both operands
+
+commit 4404525cedb8f2af9113e31524b94cdebcb851ca
+Merge: 398673c7 e1f7b737
+Author: ab <webcontact01@synopse.info>
+Date:   2024-01-09 17:00:37 +0100
+
+    Merge pull request #449 from zedxxx/memleak-fix
+    
+    Make happy memory leak detectors
+
+commit e1f7b7377c6374a1e9d8d18e037d4b711386c9b3
+Author: zed <starmen@tut.by>
+Date:   2024-01-08 22:39:12 +0300
+
+    make happy memory leak detectors
+
+commit 398673c72934e0e7476c78377e142cc7e09b00d4
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-01-02 16:49:27 +0100
+
+    fixed another regression
+
+commit a58f4e90c3a081a94a8edb60c32eb7ae42e69c29
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-01-02 16:47:22 +0100
+
+    fixed previous commit
+    - which was overriding some last year fix :(
+
+commit 041595cd0a9d50d0dd39533a69ba47ee19ad2ef8
+Merge: a6397d66 e88cbf52
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-01-02 16:33:19 +0100
+
+    Merge remote-tracking branch 'refs/remotes/origin/master'
+
+commit a6397d66031999ad22c61f6ef274bbcb4aee9ad3
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-01-02 16:32:58 +0100
+
+    SQlite3 3.44.2 + happy new year 2024
+
+commit e88cbf520f3a3369f55a91f5e78277ba457654ab
+Merge: d852e290 c5c16b8b
+Author: ab <webcontact01@synopse.info>
+Date:   2023-12-03 08:58:51 +0100
+
+    Merge pull request #447 from synopse/dependabot/maven/SQLite3/Samples/ThirdPartyDemos/KroKodil/org.json-json-20231013
+    
+    Bump org.json:json from 20230227 to 20231013 in /SQLite3/Samples/ThirdPartyDemos/KroKodil
+
+commit d852e290d6016a9fdfc5c768c95bdacd06378c40
+Merge: 7c4e62bd 6430e81f
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-12-03 08:57:27 +0100
+
+    Merge remote-tracking branch 'refs/remotes/origin/master'
+
+commit 7c4e62bd7598a1cbd8ba116b97fb6e160683bd5b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-12-03 08:56:39 +0100
+
+    fixed Delphi 12 compilation error
+    - as reported by #448
+    - with the same fix already included in mORMot 2
+
+commit c5c16b8bcb49f329fbd7fa4a74de869916e5ab49
+Author: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+Date:   2023-11-14 23:25:43 +0000
+
+    Bump org.json:json in /SQLite3/Samples/ThirdPartyDemos/KroKodil
+    
+    Bumps [org.json:json](https://github.com/douglascrockford/JSON-java) from 20230227 to 20231013.
+    - [Release notes](https://github.com/douglascrockford/JSON-java/releases)
+    - [Changelog](https://github.com/stleary/JSON-java/blob/master/docs/RELEASES.md)
+    - [Commits](https://github.com/douglascrockford/JSON-java/commits)
+    
+    ---
+    updated-dependencies:
+    - dependency-name: org.json:json
+      dependency-type: direct:production
+    ...
+    
+    Signed-off-by: dependabot[bot] <support@github.com>
+
+commit 6430e81ff47f4d597eb2121da3badf8c1bb135c7
+Merge: e1f863ac d1065f16
+Author: ab <webcontact01@synopse.info>
+Date:   2023-10-02 19:04:25 +0200
+
+    Merge pull request #446 from synopse/fix/logTextTruncateUTF8
+    
+    backport from mormot2: TSynLog  TextTruncateAtLength
+
+commit d1065f1651d85e50187b9031e6f98707ffd127ec
+Author: pavel.mash <pavel.mash@inbase.com.ua>
+Date:   2023-10-02 18:31:55 +0300
+
+    backport from mormot2: TSynLog ensure TextTruncateAtLength generates UTF-8 valid output
+
+commit e1f863ac3b949b1ec50dfde225233de2a8fd5c3e
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-09-29 18:18:02 +0200
+
+    added missing aarch64-darwin target
+    for static compilation scripts
+
+commit aa1ff6c5989a20c6bfb40a967bd6f5999cd0d06e
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-09-16 14:51:04 +0200
+
+    fixed TPdfEnum.TextOut clipping
+    - as reported by https://github.com/synopse/SynPDF/pull/71
+
+commit 8fa8b7b5945ebeb7ff03e27dbd279fe1010c9882
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-09-08 07:59:56 +0200
+
+    include optional ZipFolder to TZipWrite.AddFolder
+    - as suggested by https://synopse.info/forum/viewtopic.php?id=6696
+
+commit 6a77ec2f59a1bfba042632a37bd7078ee638a932
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-08-24 10:19:00 +0200
+
+    enhanced Sqlite3 compilation documentation
+
+commit 16435ca4f27c8b1327bf8c49886b7c1e221088c7
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-08-24 10:17:37 +0200
+
+    updated SQlite3 engine to latest 3.42.0 revision
+
+commit 9d59b4ec20aa27cbb7c028a66f1f7a99b2d35558
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-07-27 12:36:53 +0200
+
+    fixed github security warning about a third-party sample
+
+commit f348f468aed4c40245722bb25146403e241aa63d
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-07-27 12:28:57 +0200
+
+    updated sqlite3.o build script on x86_64-linux
+    - renaming dl and pthread symbols for proper cross-GLIBC execution
+
+commit 256053426365d75a9e72e6e42cb95c1dd4dbc1ca
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2023-06-14 09:34:50 +0200
+
+    let TTimeLogBits.Expand reset the MilliSeconds field
+
+commit 4cfe065a1418d17173d90538e6c9cb8c26ae6d48
+Merge: bd6d0057 7a5e1005
+Author: ab <webcontact01@synopse.info>
+Date:   2023-04-15 10:25:45 +0200
+
+    Merge pull request #445 from synopse/dependabot/maven/SQLite3/Samples/ThirdPartyDemos/KroKodil/org.json-json-20230227
+    
+    Bump json from 20180813 to 20230227 in /SQLite3/Samples/ThirdPartyDemos/KroKodil
+
+commit 7a5e1005b6c84717c723956035fca6f2108b611a
+Author: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+Date:   2023-04-14 17:50:13 +0000
+
+    Bump json in /SQLite3/Samples/ThirdPartyDemos/KroKodil
+    
+    Bumps [json](https://github.com/douglascrockford/JSON-java) from 20180813 to 20230227.
+    - [Release notes](https://github.com/douglascrockford/JSON-java/releases)
+    - [Changelog](https://github.com/stleary/JSON-java/blob/master/docs/RELEASES.md)
+    - [Commits](https://github.com/douglascrockford/JSON-java/commits)
+    
+    ---
+    updated-dependencies:
+    - dependency-name: org.json:json
+      dependency-type: direct:production
+    ...
+    
+    Signed-off-by: dependabot[bot] <support@github.com>
+
 commit bd6d0057a25a35f755c87db0942cc16f887560dc
 Author: Arnaud Bouchez <ab@synopse.info>
 Date:   2023-03-27 14:55:51 +0200

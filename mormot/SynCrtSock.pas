@@ -6,7 +6,7 @@ unit SynCrtSock;
 {
     This file is part of Synopse framework.
 
-    Synopse framework. Copyright (C) 2023 Arnaud Bouchez
+    Synopse framework. Copyright (c) Arnaud Bouchez
       Synopse Informatique - https://synopse.info
 
   *** BEGIN LICENSE BLOCK *****
@@ -25,7 +25,7 @@ unit SynCrtSock;
 
   The Initial Developer of the Original Code is Arnaud Bouchez.
 
-  Portions created by the Initial Developer are Copyright (C) 2023
+  Portions created by the Initial Developer are Copyright (c)
   the Initial Developer. All Rights Reserved.
 
   Contributor(s):
@@ -5378,7 +5378,7 @@ begin
     BufSize := InputBufferSize;
     BufPtr := pointer(PAnsiChar(SockIn)+sizeof(TTextRec)); // ignore Buffer[] (Delphi 2009+)
     OpenFunc := @OpenSock;
-    Handle := -1;
+    Handle := {$ifdef FPC}THandle{$endif}(0); // some invalid handle
   end;
   {$ifndef DELPHI5OROLDER}
   SetLineBreakStyle(SockIn^,LineBreak); // http does break lines with #13#10
@@ -5400,7 +5400,7 @@ begin
     BufSize := OutputBufferSize;
     BufPtr := pointer(PAnsiChar(SockIn)+sizeof(TTextRec)); // ignore Buffer[] (Delphi 2009+)
     OpenFunc := @OpenSock;
-    Handle := -1;
+    Handle := {$ifdef FPC}THandle{$endif}(0); // some invalid handle
   end;
   {$ifndef DELPHI5OROLDER}
   SetLineBreakStyle(SockOut^,tlbsCRLF); // force e.g. for Linux platforms
