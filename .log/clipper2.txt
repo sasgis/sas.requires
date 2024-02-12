@@ -1,0 +1,4627 @@
+commit 609d87385e8e62d9658e4b39521f57aa281bc75c
+Author: angusj <angus@angusj.com>
+Date:   2024-01-13 10:56:43 +1000
+
+    Fixed USINGZ option when bevel offsetting (Disc. 766).
+
+commit cee24f5314e9fc0f502c0471520d1366a8add32d
+Author: angusj <angus@angusj.com>
+Date:   2024-01-11 14:46:49 +1000
+
+    Fixed LF vs CRLF bug in C++ CI testing (#764).
+    Other minor tweaks
+
+commit 24c42c9222cdca5d76d1eb4b215b85db455b3be8
+Author: angusj <angus@angusj.com>
+Date:   2023-12-28 10:00:18 +1000
+
+    Added WASM link to ReadMe
+
+commit 31acd3ade8148973336ef175147bda8b48fdd1f2
+Author: angusj <angus@angusj.com>
+Date:   2023-12-22 20:55:45 +1000
+
+    Fixed a compiler error when enabling CLIPPER2_HI_PRECISION.
+
+commit 76fa070a647596369da56786345442cd7c19db4a
+Author: angusj <angus@angusj.com>
+Date:   2023-12-21 18:06:25 +1000
+
+    Minor tweak to CMakeLists.txt (#754)
+
+commit 348e9c4244268955ec465448f705c1d2788696f7
+Author: angusj <angus@angusj.com>
+Date:   2023-12-21 10:59:38 +1000
+
+    Fixed a bug when offsetting, using delta callback, a path with a single point. (#752)
+    Minor code tidy (Delphi).
+
+commit 84b30f17f5bd726f8a22534f1f039934b8d96ba5
+Author: angusj <angus@angusj.com>
+Date:   2023-12-20 08:26:50 +1000
+
+    Minor code tidy of variable offset example
+
+commit 2d7564f4a6f4ec5491876eff9a4ae9cac11d42e9
+Author: SebastianDirks <68428517+SebastianDirks@users.noreply.github.com>
+Date:   2023-12-19 02:06:19 +0100
+
+    CSharp Performance: when reusing clipper objects, currently clipper sets the internal lists capacity, even if the capacity already sufficient. This causes C# to drop the currently allocated array and create a new, smaller one. (#750)
+    
+    This changes check if the capacity is sufficient before setting it to reduces allocations.
+
+commit be61c7e799648f899b2d20c22bfa066cdedcf658
+Author: angusj <angus@angusj.com>
+Date:   2023-12-13 19:01:55 +1000
+
+    Minor code tidy
+
+commit 928379cec5321855125b470061b8b30e6f40a0e0
+Author: angusj <angus@angusj.com>
+Date:   2023-12-13 15:15:27 +1000
+
+    Added CLIPPER2_HI_PRECISION option in CMakeLists.txt
+
+commit 326f1274d22ff4a299b0af2958bc02ab8ad28c69
+Author: angusj <angus@angusj.com>
+Date:   2023-12-11 17:44:51 +1000
+
+    Additional minor tweaks to cpp/benchmark tests
+
+commit 69e00c6cf9c4afa16e378c7b7aebf453c7d443ba
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2023-12-09 17:54:36 +0200
+
+    Make googletest not be a git submodule, and instead clone it separately in the CI script (#745)
+
+commit 3e3e3dcfa5402a45132b89ee721ff7c5cd23ee8d
+Author: James Ruan <ruanbeihong@gmail.com>
+Date:   2023-12-09 10:08:54 +0800
+
+    fix compiler warning of -Wunused-but-set-parameter with -fno-exceptions (#744)
+
+commit 9d6a1b4535c467fa29e3d2d83586ce71286bdc51
+Author: angusj <angus@angusj.com>
+Date:   2023-12-04 08:19:23 +1000
+
+    Additional tweaks to GetIntersectPtBenchmark.cpp
+
+commit f3b149ed9d0021f0f48f21ac91f0d9f4d95906e2
+Author: angusj <angus@angusj.com>
+Date:   2023-12-03 20:11:10 +1000
+
+    Additional GetIntersectPtBenchmark tweaks
+
+commit d41d9a9235a2ca9097410e59d39f24a83142b9af
+Author: angusj <angus@angusj.com>
+Date:   2023-12-03 19:47:53 +1000
+
+    Fixed incorrect code comment
+
+commit 385bd371db14e06860c4ec12f9a530bd31ebbc4d
+Author: angusj <angus@angusj.com>
+Date:   2023-12-03 19:38:25 +1000
+
+    Added new GetIntersectPoint benchmark test
+    Updated other benchmark tests.
+
+commit ebab8683b462fc76f8fbe010ce4944cf6c7c59e2
+Author: angusj <angus@angusj.com>
+Date:   2023-12-02 08:13:02 +1000
+
+    Code formatting only (removed trailing spaces)
+
+commit 6cf713e7a72d52badadef4185e1596984fb64018
+Author: angusj <angus@angusj.com>
+Date:   2023-12-01 23:33:50 +1000
+
+    Fixed minor typecasting issues (#727)
+
+commit 147b9b505fb14b47fee2888efe4b48dbd6dd2a53
+Author: angusj <angus@angusj.com>
+Date:   2023-12-01 23:24:02 +1000
+
+    More tweaks to PointInPolygon benchmarking.
+
+commit ab6a16eb015618b3ab19a5f6f99ce143d378064d
+Author: David Cole <DLRdave@aol.com>
+Date:   2023-12-01 08:20:22 -0500
+
+    Allow using external gtest with GTest:: qualified names (#737)
+
+commit 605982cd3e4ae3af829d6615ee503cb1cd03af70
+Author: angusj <angus@angusj.com>
+Date:   2023-12-01 21:51:57 +1000
+
+    Fixed a significant (though uncommon) bug in polygon clipping (#736)
+    Fixed bugs in PointInPolygon benchmark testing.
+
+commit bc5855a386f62e8b21868939858b98ea79d8bae0
+Author: angusj <angus@angusj.com>
+Date:   2023-11-29 14:36:26 +1000
+
+    Minor tweaks to PointInPolygon benchmark testing.
+
+commit 98db5662e8dd1808a5a7b50c5605a2289bb390e8
+Author: angusj <angus@angusj.com>
+Date:   2023-11-28 22:48:04 +1000
+
+    Fixed a minor syntax error tripping some C++ compilers
+
+commit 41851ca1fba03051f29d360ffa0b973b5afd9bde
+Author: angusj <angus@angusj.com>
+Date:   2023-11-28 22:43:36 +1000
+
+    Version 1.3.0
+    1. Fixed a significant offsetting bug introduced in previous update (#733)
+    2. Fixed a C++ compile error when 32bit compiling (#727)
+    3. Minor tweak to CMakeLists.txt (C++) (#728)
+    4. Will now offset 'flat' polygons (Disc.#725)
+    5. Reminder: recent change in open path offsetting behaviour (#707)
+    6. Reminder: recent changes to clipper.export.h data structures.
+
+commit 0a6a3ab6a137c20edba28f6efc573edd752bc360
+Author: angusj <angus@angusj.com>
+Date:   2023-11-26 16:11:58 +1000
+
+    Fixed a typo and tweaked documentation
+
+commit ff858747b7fd7f0ceb0e97bb291031062c27c55c
+Author: angusj <angus@angusj.com>
+Date:   2023-11-26 13:13:42 +1000
+
+    Version 1.2.4
+      Changes since ver 1.2.3 include:
+      1. Important: Offsetting open path behaviour has changed.
+         The delta now behaves as it did in Clipper1 (See Issue #707)
+      2. Important: Data structures of exported values in clipper.export.h have changed.
+      3. Minor bugfixes to PolyTree nesting (#679, #687)
+      4. Numerous minor bugfixes to polygon offsetting (#703, #715, #724)
+      5. Fixed an obscure bug in polygon clipping caused by horizontal spikes (#720)
+      6. Significantly improved documentation.
+
+commit 88d0bc794b08e861ef7ea5e12e07a7bd2cd95b6a
+Author: angusj <angus@angusj.com>
+Date:   2023-11-26 12:19:09 +1000
+
+    Additional minor bugfix to ClipperOffset (#724 & Disc.#726)
+
+commit 906bc1d505ed9ee641d29b164956896d5ae7356b
+Author: angusj <angus@angusj.com>
+Date:   2023-11-25 15:09:24 +1000
+
+    ClipperOffset: fixed bug where rounding wasn't entirely accurate //#724
+
+commit 9299eb6cbf683ee1545c31dbf14c67a5c5def1ff
+Author: angusj <angus@angusj.com>
+Date:   2023-11-22 21:06:59 +1000
+
+    Caution: Clipper.ReverseSolution and Clipper.PreserveCollinear now method calls in C++.
+    Fixed an obscure clipping bug (#720)
+
+commit 84d8012fbd1b99e79a27694bbf1304b2125ac5ad
+Merge: 4955873 466efe7
+Author: angusj <angus@angusj.com>
+Date:   2023-11-19 14:20:04 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git
+
+commit 49558735238e3a788f2e86279ab69306b0a5da00
+Author: angusj <angus@angusj.com>
+Date:   2023-11-19 14:19:21 +1000
+
+    Fixed bug where offsetting would occasionally lose a path (#715)
+
+commit 466efe768b11d140a18e12639772fed5ac92561c
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-11-18 16:34:58 +1000
+
+    Update ReadMe.md
+
+commit 60cd2938fa46721654c63b1f0e1743534096ef1b
+Author: angusj <angus@angusj.com>
+Date:   2023-11-18 14:20:40 +1000
+
+    Caution: Fixed SimplifyPaths function in C# with confusing parameters
+    Caution: Fixed SimplifyPaths function in Delphi with reversed boolean parameter.
+    Minor code tidy to SimplifyPaths function.
+    Reminder: Offsetting open path 'delta' behaviour also changed (ie doubled) recently.
+
+commit 7a481e87aac279b10da717872bcebd740c0d03f3
+Author: Klaus Loft Højbjerre <10060520+klauslh@users.noreply.github.com>
+Date:   2023-11-17 19:28:00 +0100
+
+    Fix simplification of open path (#714)
+    
+    * Add failing simplification test
+    
+    A slightly wiggly line from (0,0) to (0,100), which we expect to
+    simplify to a straight line of length 100 with just the two endpoints
+    remaining.
+    
+    Instead it simplifies to a much shorter line.
+    
+    * Don't recompute distance for open endpoint
+
+commit 2c775d69e5f40c26b1f9af2ea15d1f227f19d5f4
+Merge: c3839ac 028a2b0
+Author: angusj <angus@angusj.com>
+Date:   2023-11-15 16:39:30 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git
+
+commit c3839acbc07ecdfa6a361e2608c897fd4e4f737c
+Author: angusj <angus@angusj.com>
+Date:   2023-11-15 16:38:58 +1000
+
+    Offsetting open paths has changed delta (#707)
+    Minor changes to clipper.export.h
+      Renamed DisposeExportedCPaths64 to DisposeArray64
+      Renamed DisposeExportedCPathsD to DisposeArrayD
+      Tidied up code documentation
+
+commit 028a2b087b204459fe85f9f550470e27f9907974
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-11-15 06:48:28 +1000
+
+    Update ReadMe.md
+
+commit ab39a5ef6edee82775a81ea0f75edb96fa837805
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-11-15 06:47:17 +1000
+
+    Update ReadMe.md
+
+commit 21e3db57193bc6613f1eee4a23d9ee8cff19f0cd
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-11-15 06:41:21 +1000
+
+    Update ReadMe.md
+
+commit e600a239c7bb722336015cbcb9dcb80eaf0cbd28
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-11-15 06:36:19 +1000
+
+    Update README.md
+
+commit 249c4406de864c3de30f5830131a62866d144df4
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-11-14 19:18:42 +1000
+
+    Update README.md
+
+commit 4c43946874bb531d05c96782cf9bf3c04de7ed11
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-11-14 19:06:01 +1000
+
+    Update README.md
+
+commit 571cab31d91273dc3be429c7052d99cbd4194705
+Author: angusj <angus@angusj.com>
+Date:   2023-11-09 15:41:27 +1000
+
+    Corrected a typo in code documentation
+
+commit 36cf9f7ff3b05d97183bb93d04c57c65e5de4d0c
+Author: angusj <angus@angusj.com>
+Date:   2023-11-09 15:35:02 +1000
+
+    Revert "Correct of typo in code documentation :)"
+    
+    This reverts commit 2c4626badde4aa8c703a8b0e2b00dd773c72840c.
+
+commit 2c4626badde4aa8c703a8b0e2b00dd773c72840c
+Author: angusj <angus@angusj.com>
+Date:   2023-11-09 14:35:33 +1000
+
+    Correct of typo in code documentation :)
+
+commit 775ec626dfffadb2eac88ef9e91f7ae30ab35e28
+Author: angusj <angus@angusj.com>
+Date:   2023-11-08 21:28:48 +1000
+
+    Numerous minor bugfixes to ClipperOffset (#703)
+
+commit ff03eacb137c72cf9afc4109048f5b697b298026
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-10-31 16:15:00 +1000
+
+    Update README.md
+
+commit 8650a7b4557a2a6a0acf624a24a9ccc103ce8b45
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-10-31 14:42:25 +1000
+
+    Create ReadMe.md
+
+commit 01a3555e2009d839ed1ba603063d808adea18f59
+Author: angusj <angus@angusj.com>
+Date:   2023-10-30 10:28:12 +1000
+
+    Minor code tidy
+
+commit 07be56242303d9da06e595a412ebeb33e1b532fc
+Author: angusj <angus@angusj.com>
+Date:   2023-10-29 19:28:40 +1000
+
+    Forgot to update TestExportHeaders :)
+
+commit 855291096f32ffa1cedd41307af0716fc429acbf
+Author: angusj <angus@angusj.com>
+Date:   2023-10-29 19:26:30 +1000
+
+    clipper.export.h code tidy
+
+commit 5fda66d595aad331e0efcec053a2938304b45093
+Author: angusj <angus@angusj.com>
+Date:   2023-10-29 16:23:03 +1000
+
+    Another tidy of CSharp_TestApp (Clipper2 DLL demo)
+
+commit c5a0cda5798dd0f4f8097a61023d021eba34ddd3
+Author: angusj <angus@angusj.com>
+Date:   2023-10-29 14:52:59 +1000
+
+    Tidied up C# test app for Clipper2 DLL.
+
+commit 0b0dd11a9150d3577c90b601f671275c6c64d433
+Author: angusj <angus@angusj.com>
+Date:   2023-10-28 11:46:59 +1000
+
+    Updated DLL test app
+
+commit 615a18dd64ccab12252d83dc3b1161051257d0c3
+Author: angusj <angus@angusj.com>
+Date:   2023-10-27 21:19:29 +1000
+
+    Updated Clipper2.DLL test applications
+    Fixed a bug when offsetting a single point in C# (Disc.699)
+
+commit d56becdac037e7f85abc88ac7b9c966fad501ac8
+Author: angusj <angus@angusj.com>
+Date:   2023-10-26 15:23:28 +1000
+
+    Added a simple C# demo that uses a Clipper2 DLL
+    Can now alter MAX_DECIMAL_PRECISION via CMakeLists.txt (Disc.564)
+
+commit ee5223f38ecb55f6d8a3265c747e494b30df015c
+Author: angusj <angus@angusj.com>
+Date:   2023-10-25 23:02:04 +1000
+
+    Updated clipper.export.h again
+
+commit 23105245c79afcef9d4872e15b669f073ffb0d3c
+Author: angusj <angus@angusj.com>
+Date:   2023-10-25 17:15:48 +1000
+
+    clipper.export.h minor code tidy
+
+commit 266a706084c34b849be30a4806fb2b292eb99bbd
+Author: angusj <angus@angusj.com>
+Date:   2023-10-25 17:08:20 +1000
+
+    clipper.export.h compile error
+
+commit 11c97a14ba55dc1210c2a9714105b398fda73bb2
+Author: angusj <angus@angusj.com>
+Date:   2023-10-25 16:39:53 +1000
+
+    Minor bugfix in clipper.export.h
+    Added clipper.export.h CI test
+
+commit 9ffd0778bd7344ac9f83307b8895ddb1b0020c12
+Author: angusj <angus@angusj.com>
+Date:   2023-10-25 07:50:39 +1000
+
+    Major rewrite of clipper.export.h
+    and also renamed a couple of exported functions.
+    Delphi DLL sample app updated too
+
+commit 0b5bf2f631ad42d27b6089c0d8bf02153679d9e6
+Author: angusj <angus@angusj.com>
+Date:   2023-10-19 20:08:51 +1000
+
+    Fixed a very minor bug merging touching polygons (Dis.#690)
+
+commit 6a7a401e70d65816f2e86713648ed757895d1df8
+Author: angusj <angus@angusj.com>
+Date:   2023-10-16 16:10:37 +1000
+
+    Fixed a Delphi only bug in Polytree path ownership (#687)
+
+commit 91bf3c60e55ed4baaaf715ad1d583b550a125f6f
+Author: angusj <angus@angusj.com>
+Date:   2023-10-06 10:32:04 +1000
+
+    Fixed a bug in polytree nesting (#679)
+
+commit a6ffab2918530bba7f0f354a44d57802aa4d2b03
+Author: Vyacheslav Zhdanovskiy <zeronsix@gmail.com>
+Date:   2023-10-06 02:18:07 +0300
+
+    Fix cyclic header file dependency (#677)
+
+commit 763526bf5c306bfc195d578fc15e3a166f4fd1e6
+Author: angusj <angus@angusj.com>
+Date:   2023-10-04 14:11:32 +1000
+
+    Added CMake updated clipper.version.h file
+    Minor tweaks to PR #675
+
+commit c7a48296ee90b78a71eaaa5b947583479d88ba8c
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2023-10-03 18:28:12 -0500
+
+    Update Clipper.cs (#673)
+
+commit b37c974220f806ffecc5498a6ada3bbaf371ba29
+Author: angusj <angus@angusj.com>
+Date:   2023-10-01 20:00:28 +1000
+
+    version 1.2.3
+
+commit 1e46e2bd9d1a10a9aa68384cd5423694a9cb0e7a
+Author: angusj <angus@angusj.com>
+Date:   2023-10-01 18:38:54 +1000
+
+    netstandard2.0 (C#)
+
+commit 5dc364a1eda60aedd99e6d15bfc992af8aaab71b
+Author: angusj <angus@angusj.com>
+Date:   2023-10-01 18:19:11 +1000
+
+    Minor code tidy (C# only)
+
+commit 99eaaf1a8b7adea65246ff9c4fe24e1eaab3488e
+Author: Daniel Lutz <26437097+lutz@users.noreply.github.com>
+Date:   2023-10-01 04:03:53 +0200
+
+    .net Standard 2.0 (#652)
+    
+    * create snk for signing
+    
+    * use source of hashcode to allow .net standard 2.0
+    
+    * use .net standard 2.0
+
+commit 8a3484f5d1b24b0b656f8753008f25916c820448
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2023-10-01 04:58:21 +0300
+
+    C# only: specify rounding modes explicitly, so that they match the (SSE2 optimized) C++ version as accurately as possible (#660)
+
+commit dc3b90f661b9cd314ffe28313b1c5965b036a478
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2023-10-01 04:03:14 +0300
+
+    C# only: truncate intersection point coordinates instead of rounding, to make the C# version work similarly to the C++ and Delphi versions (#664)
+
+commit b462b5bf645338d25a0759b0188e5e37fe511942
+Author: angusj <angus@angusj.com>
+Date:   2023-09-24 19:42:21 +1000
+
+    Added a new join type (JoinType::Bevel) for offsetting //#615
+
+commit b444ed389d2996e278e2cb1eb055ce6cb464b5e9
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2023-09-23 00:33:34 +0300
+
+    Improve reporting test failures: separately show the measured and the stored values (#658)
+
+commit f9a40f05f8a044a5fbef7e280630f9a80dfc79b2
+Author: Daniel Lutz <26437097+lutz@users.noreply.github.com>
+Date:   2023-09-19 01:48:30 +0200
+
+    create snk for signing (#647)
+
+commit df61525985a836ef9b900782293afac2e932a188
+Author: angusj <angus@angusj.com>
+Date:   2023-09-19 09:44:07 +1000
+
+    Improved testing for excessive offset shrinking //#651
+
+commit 09835045de0d5231648271f379a9624a6ddea96d
+Author: SebastianDirks <68428517+SebastianDirks@users.noreply.github.com>
+Date:   2023-09-19 01:38:01 +0200
+
+    When testing if a group is smaller than the offset (and thus will vanish in the output), not only test the bounding box width but also the height. (#651)
+    
+    If either dimension is smaller than 2 times offset, the group will vanish when contracting.
+    Suspected to fix issue #593.
+    All tests passed locally in C# and C++. Delphi is missing yet, I am not familiar with that language.
+
+commit 0b4da7eb22f3f0b8320792ad8117adf9e9abc0d6
+Author: angusj <angus@angusj.com>
+Date:   2023-09-19 06:59:25 +1000
+
+    Removed redundant GetIntersectPt function  //#568
+
+commit 83b0ccc97a72d65bc55b5a34ee04fd634b9def08
+Author: angusj <angus@angusj.com>
+Date:   2023-09-19 06:41:20 +1000
+
+    Fixed bug in 180deg rounding (C++ & c#) //#593
+
+commit 388041f1150b8dbe67bf87d7300ae7d4ac291f78
+Author: angusj <angus@angusj.com>
+Date:   2023-09-16 20:31:13 +1000
+
+    Fixed a minor bug in ClipperOffset (#593)
+
+commit e6e22018666de4f423bb98550a120aa7c14ba820
+Author: angusj <angus@angusj.com>
+Date:   2023-09-09 19:02:32 +1000
+
+    Fixed a bug when offsetting a single point path (#617)
+
+commit 13bf2aa7818445241a4e82a4a6325af6ded4745f
+Author: angusj <angus@angusj.com>
+Date:   2023-09-09 07:53:47 +1000
+
+    Fixed a bug in RectClip (#637)
+
+commit ba8e8a2b4055ba5aa4cf75d4b21ddf22020d3f51
+Author: angusj <angus@angusj.com>
+Date:   2023-09-03 15:01:05 +1000
+
+    Fixed another Polytree nesting bug (C# only) //#638
+
+commit 7cf615c2799a9328ec32eb116f46b64ed34aecff
+Author: angusj <angus@angusj.com>
+Date:   2023-08-27 14:43:26 +1000
+
+    Another fix to a persistent bug in polytree nesting (#618)
+
+commit 4ef91e99756f97cab23e7fa2cd78861deeb61338
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-08-14 18:20:02 +1000
+
+    Update README.md
+
+commit 739f2e32e8e82ba2e86bd1e479ec3a029951f316
+Author: angusj <angus@angusj.com>
+Date:   2023-08-07 08:16:47 +1000
+
+    Minor bugfix in polygon offsetting (#593)
+
+commit 6222af46c73ab392e0b6189935304c3c9b6dfcc8
+Author: angusj <angus@angusj.com>
+Date:   2023-08-06 12:56:30 +1000
+
+    Fixed a minor bug in RectClip (#597)
+    Fixed a minor bug in merging solution polygons (#606)
+
+commit 3867aab8043aecced7496d0c2b70a2dc85848a67
+Author: angusj <angus@angusj.com>
+Date:   2023-08-05 08:11:33 +1000
+
+    Fixed several bugs in Polytree generation (#590, #600, #607)
+
+commit 015d5e72d5ab69e97b0f7d45bcec54c66a1ddbe0
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2023-07-26 09:44:57 +0300
+
+    Fix problem that may appear when including Windows.h before clipper headers (#602)
+    
+    * Add test case that fails
+    
+    * Fix problem that may appear when including Windows.h before clipper headers
+
+commit 959f96e9374d0251d744bb9ac451b71e9156bff3
+Author: angusj <angus@angusj.com>
+Date:   2023-07-19 16:20:15 +1000
+
+    Temporarily disabled Polytree unit testing. (Still buggy)
+
+commit 866e40201476b9af9fec5ce80de16bf0b03eff7a
+Author: angusj <angus@angusj.com>
+Date:   2023-07-19 13:49:42 +1000
+
+    Further fixes to Polytree nesting (#590)
+
+commit 562ef2da53e9eddeb638c3f79944aa293b84a0cc
+Author: angusj <angus@angusj.com>
+Date:   2023-07-17 18:58:41 +1000
+
+    Another minor bugfix in GetIntersectPoint(). (#568)
+    And a minor code tidy.
+
+commit 5f1699d14b097fcd924630ea40ce19eaa077822d
+Author: angusj <angus@angusj.com>
+Date:   2023-07-16 22:00:50 +1000
+
+    Minor improvement to the segment intersection algorithm (#568)
+    Fixed significant bugs in Polytree path ownership (#584, D.#576)
+    Fixed a minor bug in RectClip (#586)
+
+commit 81b01d2acbad7b06fb28df4fbfbd7228519b7905
+Author: Gornhoth <34295773+Gornhoth@users.noreply.github.com>
+Date:   2023-06-20 00:45:30 +0200
+
+     Remove unused convex_only parameter from export rectclip functions (#559)
+    
+    Co-authored-by: Johannes Schatteiner <jschatteiner.mmt-b2018@fh-salzburg.ac.at>
+
+commit c49dd94b93dc62ed29b0bb7eed94b12119fffadc
+Author: Ondrej Novak <33052757+freza-tm@users.noreply.github.com>
+Date:   2023-06-17 07:49:48 +0200
+
+    Use new keyword for hiding base class method (#552)
+
+commit e6d2ac183a25a24fe1a8aa6c4527ec7bf2b36327
+Author: angusj <angus@angusj.com>
+Date:   2023-06-17 15:42:59 +1000
+
+    Fixed infinite loop bug in C# code (#550).
+
+commit 9d946d748b08b5b361247bd790e5203d99edbfa1
+Author: angusj <angus@angusj.com>
+Date:   2023-05-30 08:23:53 +1000
+
+    Removed ConvexOnly parameter from ClipRect function (#542)
+
+commit 5aad3190a80dc723aa2168a0651f865bc8d60f35
+Author: Vicente Mataix Ferrándiz <vmataix@altair.com>
+Date:   2023-05-27 23:57:34 +0200
+
+    Update clipper.engine.h, missing ` #include <stdint.h>` (#541)
+
+commit 6d69b97d2ad41571f473bdf73b90ac276e946236
+Author: angusj <angus@angusj.com>
+Date:   2023-05-26 19:41:49 +1000
+
+    Renamed (again) ExecuteRectClip and ExecuteRectClipLines functions
+      to RectClip and RectClipLines respectively.
+    Fixed minor C# offsetting bugs
+    Fixed RectClipLines bug (C# only) (#530)
+
+commit 3305b617cdf05bbaa3dda324524c8cc472338070
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2023-05-24 01:51:47 -0500
+
+    Update Clipper.Offset.cs (#537)
+
+commit 9d50a822937c1d098647b72545249f54413ecec8
+Author: angusj <angus@angusj.com>
+Date:   2023-05-20 13:17:32 +1000
+
+    Fixed a minor (C++) bug in open path clipping when using Z (#525)
+
+commit f3fd5609e802ef72508353e2c057606e99338933
+Author: angusj <angus@angusj.com>
+Date:   2023-05-16 19:05:00 +1000
+
+    one more tweak to Polytree path ownership
+
+commit 41fc75800dbea8ba02c661849661850bf46aafa4
+Author: angusj <angus@angusj.com>
+Date:   2023-05-16 18:42:11 +1000
+
+    Further tweaks to Polytree path ownership
+
+commit f2331c4ea9bd9d2c09f9573a8d4157ef9262f5ee
+Author: angusj <angus@angusj.com>
+Date:   2023-05-16 17:52:32 +1000
+
+    Minor tweak to PolyTree path ownership
+
+commit 117f885c3ea86e16da116f9e3c394dddbf36e62c
+Author: angusj <angus@angusj.com>
+Date:   2023-05-16 15:53:45 +1000
+
+    Updated CI tests
+
+commit 6e15ba03b6150d3d3c7d9db055eab49baf9b280f
+Author: angusj <angus@angusj.com>
+Date:   2023-05-16 15:41:55 +1000
+
+    ClipperOffset
+      added support for variable offsets (#511)
+      further reduced extraneous vertices in solutions (#499)
+    ClipperEngine
+      Fixed a minor bug with polytrees (#520)
+
+commit 95edbf69508c2b00f8bc6b4792708e4fae1ece66
+Author: angusj <angus@angusj.com>
+Date:   2023-05-01 19:12:22 +1000
+
+    Added ReuseableDataContainer64 class (Discuss. #491)
+    Fixed a minor bug in Clipper.Engine.cs (#510)
+    Fixed minor bugs in Clipper.Core.cs
+
+commit d18faa9a262ea27fcf52e0454611e9a3f8d74f30
+Author: angusj <angus@angusj.com>
+Date:   2023-04-23 12:57:48 +1000
+
+    fixed signifcant clipping bug (#500)
+
+commit cda99eddc64ccecbbd8939ddf89113e3d9207309
+Author: angusj <angus@angusj.com>
+Date:   2023-04-22 18:35:32 +1000
+
+    Clipper.Engine
+      fixed a minor bug constructing Polytree structure.
+      tidied code used in constructing Polytrees
+    Clipper.RectClip
+      fixed a minor bug
+
+commit 1b86265551d61d9be76616a21bdce36ada87cd32
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-04-08 22:36:21 +1000
+
+    Update README.md
+
+commit c898b4b5260a771412ece105a9e5656ec7fc93ab
+Author: angusj <angus@angusj.com>
+Date:   2023-04-08 22:25:56 +1000
+
+    Changed default param in SimplifyPaths function **caution** (#485)
+    Further tweaks to ClipperOffset class (#482)
+    clipper.core.h - made PI a conditional define (#478)
+
+commit 3233b2ada6df6527eec3d1dd8c6d921e347ecb0a
+Author: Wang Chao <cwangbh@connect.ust.hk>
+Date:   2023-04-04 21:34:44 +0800
+
+    Add googlebenchmark and improve the stripduplicates (#483)
+    
+    * Add googlebenchmark and improve the stripduplicates
+    
+    * Moved file to CPP/Utils/CommonUtils.h
+
+commit 1eab2525fcaa645a73a2f02c417a804b19c0f7d1
+Author: angusj <angus@angusj.com>
+Date:   2023-04-03 22:52:46 +1000
+
+    Minor tweak to StripDuplicates function (C++) (#481)
+
+commit 0ce6056b6ceffbc31f5c18c92a95c2dafc2f3784
+Author: Wang Chao <cwangbh@connect.ust.hk>
+Date:   2023-04-03 20:41:31 +0800
+
+    perf: remove copy in offset (#481)
+
+commit e012779edb517562a5b3bd3152a0c8fb83a365dc
+Author: angusj <angus@angusj.com>
+Date:   2023-04-02 18:44:06 +1000
+
+    Fixed a bug in ExecuteRectClipLines() (C++ only) (#471)
+    Changed a parameter in ExecuteRectClip() (C++ only) (#471)
+    Fixed a crash in Clipper.Offset when not paths are submitted before offsetting. (C#, Del.)(#476)
+
+commit 0913ad98b6c7667895bd5bf34c55b0aec6d4361b
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2023-03-29 15:00:26 -0500
+
+    Remove unused references across C# (#472)
+
+commit 4057a508586bf3c5d4e6e397904b501077231f57
+Author: angusj <angus@angusj.com>
+Date:   2023-03-28 23:13:17 +1000
+
+    Fixed a significant bug in Clipper.Engine.cs (C# only) (#470).
+
+commit 756c5079aacab5837e812a143c59dc48a09f22e7
+Author: angusj <angus@angusj.com>
+Date:   2023-03-26 20:22:57 +1000
+
+    Updated version to 1.2.2
+
+commit 0c7fdf5ee073253469970600feb30a14337ef3fa
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2023-03-26 11:43:04 +0300
+
+    Do not freak out if an input polygon is empty (#465)
+    
+    * Modify tests so that they fail
+    
+    * Add sanity check
+
+commit fb8fdd1805b8b0dfa84823c2d65e3ca2fba7d8d4
+Author: Geoff deRosenroll <geoffderosenroll@gmail.com>
+Date:   2023-03-24 16:30:40 -0700
+
+    Make USINGZ optional (#463)
+    
+    * Make USINGZ optional
+    
+    * comments on empty list creations
+
+commit fd96eb6562606f11b3d0f508f0501821e856e343
+Author: angusj <angus@angusj.com>
+Date:   2023-03-23 21:32:16 +1000
+
+    Renamed the following functions in clipper.h (clipper.cs & clipper.pas)
+      RectClip64 to ExecuteRectClip64
+      RectClipD to ExecuteRectClipD
+      RectClipLines64 to ExecuteRectClipLines64 and
+      RectClipLinesD to ExecuteRectClipLinesD
+    This was done to avoid confusion WRT functions and classes with same names.
+
+commit 742614f36870bfda94b0224a5ce3bf4ee52cd358
+Author: Seth Hillbrand <seth@kipro-pcb.com>
+Date:   2023-03-22 09:47:45 -0700
+
+    Include cstdint in clipper_core (#458)
+    
+    cstdint provides fixed-size integer types used in Clipper, e.g. int64_t.
+    Some compilers include this header by reference from other headers but
+    in GCC13, it is not included from the existing headers and needs to be
+    explicitly included
+
+commit 7f5117014ebfd330ae032dc84c18c9a58e484094
+Author: angusj <angus@angusj.com>
+Date:   2023-03-22 21:16:47 +1000
+
+    Fixed bug in clipper.export.h due to recently changed clip_offset.Execute parameters (#457)
+
+commit 037d47cc822b34a5820a28b2449a83631ee52f2e
+Author: angusj <angus@angusj.com>
+Date:   2023-03-22 16:05:22 +1000
+
+    Fixed a Clipper.Offset bug (#456)
+    Minor issue with #IFDEF in clipper.offset (C++) (#454)
+
+commit e9eea4cf1bb47e2eb57a31368cd7ed7a93f21513
+Author: angusj <angus@angusj.com>
+Date:   2023-03-21 09:46:03 +1000
+
+    Fixed bug in MaxInvalidRectD (C++) (#451)
+
+commit ccff8d62fb297607e0b5452c8239399a3cc7bb60
+Author: Seth Hillbrand <seth.hillbrand@gmail.com>
+Date:   2023-03-20 12:29:21 -0700
+
+    Mark 'what()' override (#452)
+    
+    The virtual function `what` overrides the built-in std::exception and
+    should be marked as such.  Throws a warning when compiled with
+    `-Wsuggest-override` otherwise
+
+commit 0cab0b8c16caf0d48bce2508a7b65875023bb1d6
+Author: Seth Hillbrand <seth.hillbrand@gmail.com>
+Date:   2023-03-20 12:28:45 -0700
+
+    Rename Group CTOR parameters to avoid shadowing (#453)
+    
+    While the compiler can generally figure out that one `join_type` is a
+    class variable and the other `join_type` is a parameter, GCC's
+    `-Wshadow` warning will be thrown unless they are uniquely named
+
+commit 303232e32ab99fa028a43ea82e08e936f1b06c8d
+Author: angusj <angus@angusj.com>
+Date:   2023-03-19 13:33:17 +1000
+
+    Fixed another minor bug, this time in clipper.offset.cpp causing a compile error
+
+commit c0ddb491e287fc428fa5bf30f0053328f2dd46c4
+Author: angusj <angus@angusj.com>
+Date:   2023-03-19 13:30:05 +1000
+
+    Fixed minor bug in clipper.offset.h causing a compiler error
+
+commit 64acac6dcf0b81015b23d1113e193bb89b0432ed
+Author: angusj <angus@angusj.com>
+Date:   2023-03-19 13:25:15 +1000
+
+    Result of ClipperOffset.Execute now returned as second parameter
+    Overloaded ClipperOffset.Execute to accept Polytree solutions (#444)
+    Fixed small error in the quality of ClipperOffset when JoinType.Round (#448)
+    Improved performance of ClipperOffset when JoinType.Round (#448)
+
+commit 49900535c8f65292c6689584a45a2d50c3be43d5
+Author: Manuel Massing <m.massing@warped-space.de>
+Date:   2023-03-17 10:27:37 +0100
+
+    Refactor C++ code to use index-based for loop for iterating over (#446)
+    
+    outrec_list.
+    
+    This avoids undefined behavour/potential crashes
+    caused by self-intersection handling adding elements to the list
+    during the loop, invalidating the iterators underlying
+    the range-based for loop.
+
+commit 601b5297c0d3601be54e66a7650ab9418781a85b
+Author: angusj <angus@angusj.com>
+Date:   2023-03-15 12:26:07 +1000
+
+    Fixed buggy timer.pas utility (Delphi) (#439)
+    Fixed minor compiler bugs in RectClip_Demo (Delphi) (#440)
+
+commit ca16dff2e1e5a2c9594cdefce1390bbef6790a62
+Author: David Nadaski <david@glassbeaver.com>
+Date:   2023-03-11 10:01:21 +0100
+
+    Exception macro compatible with MSVC (#436)
+    
+    * Exception macro compatible with MSVC
+    
+    Under certain build configurations, MSVC may throw `error C4668: '__cpp_exceptions' is not defined as a preprocessor macro, replacing with '0' for '#if/#elif'` as there is no `__cpp_exceptions` in it - this should fix that.
+    
+    * Update clipper.core.h
+
+commit d297cb3353b832702209cfc4f5ddbcefdcaec08a
+Author: angusj <angus@angusj.com>
+Date:   2023-03-11 12:58:11 +1000
+
+    Fixed a significant bug in Clipper.Offset.pas (ie Delphi only)
+    Fixed a minor issue that only affects Delphi 2007 compilers (#435)
+    Minor changes to Delphi examples so they will again compile in Delphi7.
+
+commit a3f891189954950e1756e6d11eda9c158eeacf14
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-03-10 07:29:41 +1000
+
+    Update README.md
+
+commit 5a34352e4ff7851fe019cdc7fe3aa8057e9f591d
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-03-10 07:27:56 +1000
+
+    Update README.md
+
+commit 7110347a7068cc3e1f812befe809eb3e81d62f6a
+Author: elara-leitstellentechnik <elara-leitstellentechnik@users.noreply.github.com>
+Date:   2023-03-09 18:08:47 +0100
+
+    Fixed C# TestLines checking area (#432)
+    
+    Co-authored-by: sere <stefan.repke@frequentis.com>
+
+commit f62eb86b020545c7583701e7bc266af25d686ce4
+Author: angusj <angus@angusj.com>
+Date:   2023-03-08 15:20:32 +1000
+
+    Fixed a very minor issue in Clipper.Offset (#430).
+
+commit cff6d73f4a212a32043cd80496cbf21657544ac0
+Author: angusj <angus@angusj.com>
+Date:   2023-03-03 21:13:34 +1000
+
+    Fixed bug in Clipper.Offset.cs when using EndStyle.Butt (#427)
+
+commit 4b02bb970b8ad35fc832f96b1398022bbf50f05e
+Author: angusj <angus@angusj.com>
+Date:   2023-03-03 20:07:17 +1000
+
+    Fixed clipping affecting C# and Delphi versions (#426)
+
+commit 636cc33e4429e2eb63809911c7bbbfe41f5ef1b3
+Author: angusj <angus@angusj.com>
+Date:   2023-03-02 15:14:26 +1000
+
+    Fixed broken examples in C# (#423)
+    Mostly addressed a minor issue in offsetting (#424)
+    Fixed duplicated Delphi units (#420)
+
+commit e9bd409439bcb7a07a50f555c88e623986eea10f
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2023-02-27 00:34:48 +0100
+
+    Minor cleanup (#422)
+
+commit fecaa1671c7b4073e39216aecf1a1dffadd77e52
+Author: angusj <angus@angusj.com>
+Date:   2023-02-26 16:19:25 +1000
+
+    Release version 1.2.0
+
+commit df1c129e4f82e9d9053128ac581025f5bddf9907
+Author: angusj <angus@angusj.com>
+Date:   2023-02-23 18:13:21 +1000
+
+    Fixed minor offsetting bug. (#418)
+
+commit 044d4d154f9b0b52481ef8eff92dc0ef50db4f33
+Author: angusj <angus@angusj.com>
+Date:   2023-02-21 15:09:16 +1000
+
+    Minor bugfixes from previous commit in Clipper.Offset.pas
+
+commit f66ae370bcb84e97cc8c5a71ad68ca2791932a27
+Author: Brian Semrau <brian.semrau@gmail.com>
+Date:   2023-02-20 23:14:57 -0500
+
+    ClipperOffset copies Z values from input points to the output (#411)
+    
+    Co-authored-by: Angus Johnson <AngusJohnson@users.noreply.github.com>
+
+commit a1c2ea07513335768153058091e1c1df5237ba4c
+Author: angusj <angus@angusj.com>
+Date:   2023-02-21 13:41:37 +1000
+
+    Added Z value support to Offsetting - C# only (#411)
+
+commit 1931eedb86071675e5ef19ad095a4f4c80356be4
+Author: angusj <angus@angusj.com>
+Date:   2023-02-19 18:55:47 +1000
+
+    Fixed a bug in PointInPolygon functions (#416)
+
+commit d133cb64e405a84d59a2661092c46cc082945524
+Author: angusj <angus@angusj.com>
+Date:   2023-02-18 19:06:15 +1000
+
+    Fixed range checking in clipper.offset.cpp (#396)
+
+commit e9168f55b3c4986cfccb74d2162fef866949466f
+Author: angusj <angus@angusj.com>
+Date:   2023-02-17 10:04:11 +1000
+
+    fixed minor issues with previous commit
+
+commit 4d3240e79171fbafce0cd03b8cdab5ddff299343
+Author: angusj <angus@angusj.com>
+Date:   2023-02-17 09:56:20 +1000
+
+    Added missing file for sample application
+
+commit a0574b67e5f029a9c2cb1445082792455c7aa0ed
+Author: angusj <angus@angusj.com>
+Date:   2023-02-17 09:27:46 +1000
+
+    Fixed errors in clipper.core.h
+
+commit 3c95dd858add8cc0c007b9c2d216f3dda9874329
+Merge: 49eff0f 868c8ac
+Author: angusj <angus@angusj.com>
+Date:   2023-02-17 09:22:57 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git into main
+
+commit 49eff0f417b6457c4412edfe320d3acf5a462d6c
+Author: angusj <angus@angusj.com>
+Date:   2023-02-17 08:44:04 +1000
+
+    Fixed several offsetting bugs (#407, #408)
+    Fixed multiple bugs in RectClip and RectClipLines (#410)
+    Fixed null warnings in C# code (#414)
+    Fixed missing units in DelphiBenchmark example (#406)
+
+commit 868c8acb9c125816cb9f163284452bee20e00ab8
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-02-12 10:46:26 +1000
+
+    Update README.md
+
+commit 25d6cb15b85a0c9b46a71eb6b500b36e09c0a516
+Author: angusj <angus@angusj.com>
+Date:   2023-02-12 10:41:15 +1000
+
+    Fixed bug in clipper.offset.cpp in previous commit
+
+commit 14fd3d0fd26df4e21a11f44d77bf2b3abe2439e6
+Author: angusj <angus@angusj.com>
+Date:   2023-02-12 10:37:40 +1000
+
+    Fixed excessive vertices (excessive precision) when offsetting.
+    Clipper.Offset code tidy
+
+commit 367cd6c5c1042aabf771702569191fa5ca58cc4d
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-02-11 14:40:32 +1000
+
+    Update README.md
+
+commit 45ef43b28228018a0bbb53d7d1f8532aaa2d340a
+Author: angusj <angus@angusj.com>
+Date:   2023-02-11 13:36:22 +1000
+
+    Finally added C# translation of recent RectClip update.
+    (Updated RectClip documentation still pending.)
+    Minor tweak to DelphiBenchmark example (#406)
+    Minor tweaks to offsetting (so hope I haven't broken anything)
+
+commit 3912afd326fda7320315624e79d035e2235b97a5
+Author: angusj <angus@angusj.com>
+Date:   2023-02-10 10:30:11 +1000
+
+    Delphi 7 and FPC compatibility - fix attempted 3 (#402)
+
+commit 9e8734a74cd62fbb462b179d3430606440188cbd
+Author: angusj <angus@angusj.com>
+Date:   2023-02-10 10:23:50 +1000
+
+    Fixed recently introduced InflatePaths bug (#405)
+    Fixed Delphi 7 and FPC compatibility (#402)
+
+commit 7bad95c072cc0ed97b4de65472f6c3e7d7c65bb7
+Author: angusj <angus@angusj.com>
+Date:   2023-02-09 21:57:16 +1000
+
+    fixed signed vs unsigned int type mismatch (C++)
+
+commit 2d882c8ebabc518c9033de8c9c917d0af46172c0
+Author: angusj <angus@angusj.com>
+Date:   2023-02-09 21:52:21 +1000
+
+    fixed minor bug in RectClip constructor (C++)
+
+commit 92c8e2f698d754523e99c786fdd83211efd3edd5
+Author: angusj <angus@angusj.com>
+Date:   2023-02-09 21:48:17 +1000
+
+    Translated to C++ recent Delphi RectClip() update (C# still pending)
+    Fixed RectClipLines code (Delphi & C++)
+    Minor changes & code tidy in Clipper.Offset
+    Fixed Delphi 7 compatability issue (#402)
+    Fixed a very minor offset bug (#403)
+
+commit e0563828fb453cdf9aa8568db22e4992a1f3cff0
+Author: Justin Schuh <jschuh@users.noreply.github.com>
+Date:   2023-02-06 11:54:33 -0800
+
+    Improvements to C++ MakePath/MakePathD (#401)
+    
+    * Accept a vector argument to MakePath/MakePathD
+    * Force a compiler error on an unpaired initializer_list
+    * Fix OOB read in MakePath/MakePathD
+
+commit 1c5705314a2ee8ad461035e10e990f2da5f46c97
+Author: angusj <angus@angusj.com>
+Date:   2023-02-06 23:16:50 +1000
+
+    Major code tidy of RectClip.pas (Delphi only)
+    Renamed Bounds() to GetBounds() (C++ only) (#399)
+
+commit aefa104d134eeb228f5031df70cdefb14144bf8b
+Author: angusj <angus@angusj.com>
+Date:   2023-02-06 15:59:13 +1000
+
+    Tweaks to C++CI tests
+
+commit 1057798727ecb14b1dc36275aaa27e51ab3d1feb
+Author: angusj <angus@angusj.com>
+Date:   2023-02-06 15:45:15 +1000
+
+    Changed MakePath to expect only ordinal/arithmetic values (C++) (#398)
+    Fixed InflatePaths to return unchanged paths when delta == 0 (#389)
+    Minor tweak to detecting "touching" solution polygons
+    Fixed minor bug in ClipperOffset (#392,#393)
+    Tidied up error handling in C++
+    Added error_code param to ScalePath function (C++)
+    Tweaks to C# CI testing (#388)
+    Major rewrite of RectClip function (Delphi only so far) (#383)
+
+commit 2f8d52eed2332bd566de98e726a880b2586c62bc
+Merge: 9c26d55 49b97f7
+Author: angusj <angus@angusj.com>
+Date:   2023-02-01 08:41:44 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 9c26d559265458571fc3681fc93e64d98880fe14
+Author: angusj <angus@angusj.com>
+Date:   2023-02-01 08:40:01 +1000
+
+    improved exception handling C++ (#382)
+    minor improvements to polygon merging (#381)
+
+commit 49b97f74d063b9f5487475689fca669b23117408
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-01-27 15:46:33 +1000
+
+    Update README.md
+
+commit d1099f5d932dfd21e6bbd03cb2df1f38e5895c8d
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2023-01-27 15:42:45 +1000
+
+    Update README.md
+
+commit d3629f6b22927ecc5f2bde10d669205d5ae68471
+Author: angusj <angus@angusj.com>
+Date:   2023-01-27 14:36:08 +1000
+
+    Fixed trivial issue in C++ CI test
+
+commit 3742404d63ff82f2ce5b07fda83f8d03a173d281
+Author: angusj <angus@angusj.com>
+Date:   2023-01-27 14:19:42 +1000
+
+    Fixed significant bug in non-horizontal polygon merging (#381)
+    Fixed wrong version no. in CMake (#380)
+
+commit 09c531c3396874d3fab763415d81e08bf56edf4a
+Author: angusj <angus@angusj.com>
+Date:   2023-01-26 22:57:23 +1000
+
+    Fixed another trivial bug that was failing CI testing (C++)
+
+commit 15e4ba1aca3b505d285d29d3874dd7b6ef7380da
+Author: angusj <angus@angusj.com>
+Date:   2023-01-26 22:53:00 +1000
+
+    additional minor fixes for Linux (C++)
+
+commit cd9e44ea35cf799ce73ba7a149bfc1895492fad0
+Author: angusj <angus@angusj.com>
+Date:   2023-01-26 22:44:25 +1000
+
+    fixed C++ compile bug in Linux
+
+commit 1aae9b442f048d6ded7ba006e8ad57573de07d90
+Author: angusj <angus@angusj.com>
+Date:   2023-01-26 22:30:08 +1000
+
+    Added new SimplifyPaths() function (#378)
+    Fixed compiler issues with Windows and std::min & std::max (#377)
+    Partially fixed issue with out-of-range coordinate errors. (#374)
+    Removed and cumbersome (and undocumented) ClipperOffset.MergeGroups property
+
+commit a9de65169aafed0683515af5320511ba1c9db502
+Author: angusj <angus@angusj.com>
+Date:   2023-01-23 20:44:56 +1000
+
+    Improved PolyTree access.
+
+commit a8df94a7704a5d7470ebed9180f35da4a02045b0
+Author: angusj <angus@angusj.com>
+Date:   2023-01-23 12:47:24 +1000
+
+    fixing minor issue with previous commit
+
+commit be8ccf93f26caa88efaa216419878d1b48511120
+Author: angusj <angus@angusj.com>
+Date:   2023-01-23 12:22:56 +1000
+
+    Another minor code tidy (C++)
+
+commit bde0477d447945eec5634ec28c708d74dd1d1d24
+Author: angusj <angus@angusj.com>
+Date:   2023-01-22 21:21:30 +1000
+
+    Fixed issue with previous commit
+
+commit dd6d2735c1aaac7832dc6e278759be1084dbe961
+Author: angusj <angus@angusj.com>
+Date:   2023-01-22 21:14:44 +1000
+
+    C++ code tidy
+    Improved PolyTree logging to ostream
+
+commit b67b8ca840cc4ea89a16d8ee1213edaf452a24eb
+Author: angusj <angus@angusj.com>
+Date:   2023-01-21 22:09:27 +1000
+
+    Fixed buggy open path offsetting (#366)
+
+commit 33d306e86d0b6b27aefae56cfc144e07bf0fcb5f
+Author: angusj <angus@angusj.com>
+Date:   2023-01-21 08:14:28 +1000
+
+    Further updates to horizontal merging
+
+commit 3fe774a9a5d995dc61588c9b113e2d05d14a17e1
+Author: angusj <angus@angusj.com>
+Date:   2023-01-15 12:09:10 +1000
+
+    Minor change to CI testing (C++)
+
+commit fb1b74e5e5f121566e705c19ed6241fbb355ce16
+Author: angusj <angus@angusj.com>
+Date:   2023-01-15 11:46:13 +1000
+
+    Fixed a significant bug affecting Polytrees.
+
+commit 95e035700c06bc9a356b713c6ae2c7eaf252162e
+Author: angusj <angus@angusj.com>
+Date:   2023-01-15 07:45:36 +1000
+
+    Fixed minor bug in previous commit (C++)
+
+commit 77f9ebe41222dc8f119b083d97befbe16dd016d2
+Author: angusj <angus@angusj.com>
+Date:   2023-01-15 07:42:30 +1000
+
+    Further improvements to horizontal merging (Delphi & C++)
+    (C# translation to follow)
+
+commit aaec7db628a8d1691a3442cb2587b33cb8adad1e
+Author: angusj <angus@angusj.com>
+Date:   2023-01-10 20:32:13 +1000
+
+    Minor tweak to C++ CI tests
+
+commit c03e3158ceeabfd63eb12bfe9ac7728ec7ff279c
+Author: angusj <angus@angusj.com>
+Date:   2023-01-10 19:47:57 +1000
+
+    Minor bug fixes and code tidy
+
+commit 3d95b5a723eadd178792d98520a074cffd44bd2d
+Author: angusj <angus@angusj.com>
+Date:   2023-01-10 13:55:35 +1000
+
+    Minor tweaks and code tidy
+    Tweaks to CI testing.
+
+commit ec85f819a9bc4d5b6560be12f377a58ae5e39ce3
+Author: angusj <angus@angusj.com>
+Date:   2023-01-09 14:42:41 +1000
+
+    C# mistranslation previous commit
+
+commit abeca78135eaa0262ecb5eeeab7845bf60e18ffd
+Author: angusj <angus@angusj.com>
+Date:   2023-01-09 14:25:18 +1000
+
+    Further merging bugfixes #368
+
+commit dfa4dd86154bb7a2eee37a724777c56b61fd2d3a
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2023-01-09 02:53:02 +0200
+
+    Add example that leads to a stack overflow error (#368)
+
+commit aff97f3cfdb2377dd20b7f8d68297c2a4f106a6c
+Author: angusj <angus@angusj.com>
+Date:   2023-01-09 10:49:52 +1000
+
+    Fixed Polytree bug in C++ code
+
+commit 93568bfe4ecaaa70ccf8df0fd40bba4223967f35
+Author: angusj <angus@angusj.com>
+Date:   2023-01-08 23:05:34 +1000
+
+    dereferencing null pointer #345
+
+commit 6dd0cb74cec36e453e2e88a5b52c69262ade4a67
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2023-01-08 13:33:57 +0200
+
+    Add test case that fails in current Beta version (#367)
+    
+    * Add test case that fails in current Beta version
+    
+    * Add another offset example that fails
+
+commit 840ee0e787757f41f2999e6104a1c0269e7b13ac
+Author: angusj <angus@angusj.com>
+Date:   2023-01-08 16:09:13 +1000
+
+    Fixed minor bugs in Delphi and C# code
+
+commit 73b6fc64af49a16426b734d85d6570ad9b31ab72
+Author: angusj <angus@angusj.com>
+Date:   2023-01-08 12:47:54 +1000
+
+    Minor bugfixes to merging edges in clipping solutions (#367)
+
+commit 1578cc7c45bbf9fe2127c03cc0ca9b15b73c16ee
+Author: angusj <angus@angusj.com>
+Date:   2023-01-07 15:37:40 +1000
+
+    Minor bugfix #367
+
+commit fe2ee32d5fd4791535ce68bd73ed8fec399259ed
+Author: angusj <angus@angusj.com>
+Date:   2023-01-07 12:28:30 +1000
+
+    Fixed bugs in recent revision (#345)
+    Fixed memory leak in C++ code.
+
+commit ebcfe80899e827c1334a28f75f5b6213acc3227e
+Author: angusj <angus@angusj.com>
+Date:   2023-01-05 20:59:24 +1000
+
+    Fix C# CI testing.
+
+commit 34efe23575cbc71fd379ac3151880a8ec572d30c
+Author: angusj <angus@angusj.com>
+Date:   2023-01-05 20:50:43 +1000
+
+    Added C# translation of latest beta revision.
+    Updated several C# examples.
+
+commit d17d542a22633b084621884734676a1c6afbe9f7
+Author: angusj <angus@angusj.com>
+Date:   2023-01-05 12:00:28 +1000
+
+    Trivial fix in CI testing (C++).
+
+commit 0072a0cf30c6dd0abb7a764b08b56b10346cb96c
+Author: angusj <angus@angusj.com>
+Date:   2023-01-05 11:55:07 +1000
+
+    Added additional reporting info in C++ CI test code.
+
+commit 1cd9879c13937ba2d02119b7d297dc80dc6c75ac
+Author: angusj <angus@angusj.com>
+Date:   2023-01-05 11:42:49 +1000
+
+    removed pragma statements causing CI testing problems
+
+commit 84d73fe5e16f3944726f3d28e4bab0800b06a090
+Author: angusj <angus@angusj.com>
+Date:   2023-01-05 11:37:41 +1000
+
+    Translated latest Delphi revision to C++
+    Minor bugfixes to Delphi code
+    Updated CI testing and sample code
+
+commit f34221f4ae7f9d689c0f45b7e4381f97f11bf7f7
+Author: angusj <angus@angusj.com>
+Date:   2023-01-04 16:39:58 +1000
+
+    Major update to merging polygons in clipping solutions (#308)
+    (Delphi code only so far.)
+
+commit 7a2c80e58f8c639b4ac1d2651ee18c5a5acb0f29
+Author: angusj <angus@angusj.com>
+Date:   2022-12-18 20:24:42 +1000
+
+    Further C++ CI testing fixes
+
+commit e838c3c610c601c5f0c4474101288cb428983ecc
+Author: angusj <angus@angusj.com>
+Date:   2022-12-18 20:17:02 +1000
+
+    Updated numerous C++ samples.
+    Hopefully fixed C++ CI testing;
+
+commit 68a29da2d9dd1f1f051e14f8e35bbe6827d461d9
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-12-17 23:21:38 +0200
+
+    Print test output on failure even on Linux and MacOS (#355)
+
+commit aa01215af853692efc156e628d0323dabb862109
+Author: angusj <angus@angusj.com>
+Date:   2022-12-18 07:09:47 +1000
+
+    Minor bugfix in merging polygons.
+    Hopefully fixed C++ testing.
+
+commit f1056fb15f9fa0beebebb8f3775375c5ea097297
+Author: angusj <angus@angusj.com>
+Date:   2022-12-17 11:35:11 +1000
+
+    C# CI fixes
+
+commit 3098867e738701d2a46fcb7cde13a3affb29e61a
+Author: angusj <angus@angusj.com>
+Date:   2022-12-17 11:20:25 +1000
+
+    CI testing fixes
+
+commit cd4f22135ff3856695dd6f1c843f445133763731
+Author: angusj <angus@angusj.com>
+Date:   2022-12-17 11:06:22 +1000
+
+    Improved polygon merging.
+
+commit 71b46570a8341b8bc334fe70776e7676c98274db
+Author: angusj <angus@angusj.com>
+Date:   2022-12-14 09:06:57 +1000
+
+    Updated CI tests
+
+commit dc7e19e6b46801bd328e7014680dbd8fff420741
+Author: angusj <angus@angusj.com>
+Date:   2022-12-14 07:30:16 +1000
+
+    version 1.1 (beta) - finally includes C# translation
+    and various bugfixes to C++ and Delphi code.
+    Updated CI tests
+
+commit b695e8b6b0a3b1adda7b1becf60c7e98df519533
+Author: angusj <angus@angusj.com>
+Date:   2022-12-12 10:38:19 +1000
+
+    Bugfixes for new polygon merging code (C++ & Delphi).
+
+commit 65350c33cbfee8da4bfb8c00dcd5b58684dddd8c
+Author: angusj <angus@angusj.com>
+Date:   2022-12-11 19:00:27 +1000
+
+    further updates to CI tests
+
+commit 74b43448184d0d4f3a13c2a435991b0b1a547c0d
+Author: angusj <angus@angusj.com>
+Date:   2022-12-11 18:55:31 +1000
+
+    Updated CI tests
+
+commit 9c20002bfa3f4324e5b8244ad2060402bc0f5f98
+Author: angusj <angus@angusj.com>
+Date:   2022-12-11 17:43:57 +1000
+
+    Trivial change to satisfy CI testing
+
+commit 93dee52efe35beca6713551008ada67bdabd3be4
+Author: angusj <angus@angusj.com>
+Date:   2022-12-11 17:35:42 +1000
+
+    ver. 1.1 beta (only Delphi & C++ so far)
+    The merging of touching solution polygons has been completely revised.
+
+commit d3fbd4a1d642d0446bdc7739b471159539e3f465
+Author: angusj <angus@angusj.com>
+Date:   2022-12-11 16:28:48 +1000
+
+    Updated clipper.export.h to C++17 features
+    Removed beta folder in anticipation of branching
+
+commit eb08fbc5afff31ee710866390962b9d2b31920e0
+Author: angusj <angus@angusj.com>
+Date:   2022-12-07 20:12:52 +1000
+
+    Added readme.txt to Beta folder
+
+commit f972167a95fc824efdfc78b55780fd96d2fdfec2
+Author: angusj <angus@angusj.com>
+Date:   2022-12-06 17:09:09 +1000
+
+    Added beta release of ver 1.1 (C++, Delphi) (see Beta folder)
+      Redesigned joining of touching polyons in clipping solutions
+      Improves management of touching horizontal segments (#308)
+    Fixed infinite loop when clipping open paths in C# (#339)
+
+commit 21f8cf16faf241a412f0eeb59ad9aa4f6a7261fc
+Merge: 40b6d22 3879762
+Author: angusj <angus@angusj.com>
+Date:   2022-12-06 11:30:31 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 387976220444edc476edfb437be4bc7307b7cd46
+Author: jspam <jspam@users.noreply.github.com>
+Date:   2022-12-05 12:59:37 +0100
+
+    Clipper2Lib::BuildPathD: Fix Z coordinate not being set (#343)
+    
+    Fixes #340.
+
+commit 40b6d227fff82ec67be058c04de9d224d69f1a52
+Merge: 92969e2 2162626
+Author: angusj <angus@angusj.com>
+Date:   2022-12-03 16:09:17 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 216262665b61871211b39849fcfadfdec39f9fca
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-12-01 08:56:43 +0200
+
+    Fix memory leak reported in #341 (#342)
+
+commit 92969e2de00562cdc2814d13e376f4496650262f
+Merge: bb64959 2b64842
+Author: angusj <angus@angusj.com>
+Date:   2022-11-25 12:08:18 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit bb649598d201d47dfc23ecaeb640f9895362a231
+Author: angusj <angus@angusj.com>
+Date:   2022-11-25 12:07:56 +1000
+
+    Minor tweaks to GetIntersectPoint.
+
+commit 2b648428a66b06103e4feafcf733429d24c2b0fe
+Author: Kyle Coffey <mariorules24@gmail.com>
+Date:   2022-11-24 15:46:49 -0600
+
+    fix wrong compiler flags on MinGW (#337)
+
+commit ae66fd5d67b8b8d4a7ff96fb88de86a1c83396ac
+Author: angusj <angus@angusj.com>
+Date:   2022-11-19 22:14:59 +1000
+
+    Added DefaultZ property to Clipper class (#331)
+    Other minor tweaks.
+
+commit d802830f7f9b76b07e63f9a5cef6795abc5bf161
+Author: angusj <angus@angusj.com>
+Date:   2022-11-18 22:35:40 +1000
+
+    additional tweaks to GetIntersectPoint() (#317)
+
+commit eab89afbc77fca3c9d0003a40f0de3f7e4b22434
+Author: angusj <angus@angusj.com>
+Date:   2022-11-16 23:10:41 +1000
+
+    further bugfixes for GetIntersectPoint() (#317)
+
+commit c582fec7eb3ff77d6f2753e075e8658357f86ca4
+Author: angusj <angus@angusj.com>
+Date:   2022-11-16 20:31:31 +1000
+
+    removed unused static const in clipper.engine.cpp
+
+commit a16ce2edbf45c3e3f82ef125325c3b9777f12d3b
+Author: angusj <angus@angusj.com>
+Date:   2022-11-16 20:27:56 +1000
+
+    bugfixes for GetIntersectPoint() (#317)
+    __cpp_exceptions to enable exceptions (#305)
+
+commit bbd38f13600f68da23a0ada8f097f50934b3dc20
+Author: angusj <angus@angusj.com>
+Date:   2022-11-10 10:10:09 +1000
+
+    Fixed integer overflows (#317)
+    Other minor tweaks :)
+
+commit 8236cc58f80948e7e740f20c3ce8211c04bfe0e6
+Author: angusj <angus@angusj.com>
+Date:   2022-11-04 13:52:10 +1000
+
+    Fixed minor bug in previous commit
+
+commit bcb5ee07febed4df8e76e52433dcb5b54e295dd8
+Author: angusj <angus@angusj.com>
+Date:   2022-11-04 13:48:45 +1000
+
+    Fix bug in previous commit
+
+commit d1c9a490a1135984d711e0a056c89b5e62bcd7df
+Author: angusj <angus@angusj.com>
+Date:   2022-11-04 13:44:54 +1000
+
+    Fixed overflow error in GetIntersectPoint (#317)
+
+commit 6942b0efe012f1199e202ac10d6c620222e7ffb2
+Author: angusj <angus@angusj.com>
+Date:   2022-11-03 20:56:25 +1000
+
+    Tidy of several sample apps (#315, #316)
+
+commit 4c564d72938e4e746dd2ab5e094eb4aa02273d25
+Author: angusj <angus@angusj.com>
+Date:   2022-11-03 19:58:24 +1000
+
+    Removed logging code from CI testing code
+
+commit 3202481bbb25a3ff811d0a196b8c1f30f74d44c1
+Author: angusj <angus@angusj.com>
+Date:   2022-11-03 16:49:08 +1000
+
+    Fixed DLL project file #315
+    Minor bugfix to polygon clipping #309
+    C++: now using predefined __EXCEPTIONS to determine exception handling (#305)
+    Minor update to C++ CI polygon testing
+
+commit a2036d285e61219fc7bd236636f9ed9f394d8ad1
+Author: Sergey Mende <99703804+sergey-239@users.noreply.github.com>
+Date:   2022-10-31 23:53:03 +0300
+
+    External gtest (#306)
+    
+    * Allow use of system-wide installed GoogleTest
+    
+    * Add pc file for UZINGZ library
+    
+    * Fix release version number in CMakeLists.txt
+
+commit 3037ae58326a40e3322818c248d5be818aaa2d40
+Author: angusj <angus@angusj.com>
+Date:   2022-10-30 10:05:36 +1000
+
+    Minor update to the documentation in clipper.export.h.
+
+commit 79d1e306524b6f08b98e741607787d9cce6b8285
+Author: angusj <angus@angusj.com>
+Date:   2022-10-30 08:49:47 +1000
+
+    Bugfixed and better documented clipper.export.h
+    Fixed return type of the PolyPath::Polygon C++ (#303)
+    Removed extraneous code from DLL test app.
+
+commit c3d4e18b9abdd5619eaaf2634a5edb23562c5407
+Author: angusj <angus@angusj.com>
+Date:   2022-10-29 12:20:17 +1000
+
+    C++ throwing exceptions is now optional (#25)
+    Minor tweak to floating point scaling (#25)
+
+commit e9608792ebd3fb5d8be00535b2e08120027e1099
+Author: angusj <angus@angusj.com>
+Date:   2022-10-28 21:51:21 +1000
+
+    version 1.0.6
+    Additional clipper.export.h bugfixes
+    Additional bugfixes in DLL sample app
+    Minor tweaks to clipper.engine (C++)
+
+commit 09d6cc4061b4eb2df33ec8cfc25ea8a2e147ba64
+Merge: 144adaf 2b591f7
+Author: angusj <angus@angusj.com>
+Date:   2022-10-28 14:00:51 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 144adafd04b5552beca54fdf85736869485ba442
+Author: angusj <angus@angusj.com>
+Date:   2022-10-28 14:00:33 +1000
+
+    Major tidy of DLL test app.
+
+commit 2b591f7dd061d37220a1e8de7e0264a7e3561e02
+Author: Hans Loeblich <thehans@gmail.com>
+Date:   2022-10-27 21:30:38 -0500
+
+    Fix missing #include. (#296)
+
+commit 538e9b87323373fd51b36731206b632860637f44
+Author: angusj <angus@angusj.com>
+Date:   2022-10-27 22:47:08 +1000
+
+    Updated DLL binaries missed in prev. commit
+
+commit 23354a1e594f7cc91997f650935fff531603879e
+Author: angusj <angus@angusj.com>
+Date:   2022-10-27 22:10:07 +1000
+
+    Fixed bug that crashed Delphi test app for DLL (32bit only)
+    And further updated same app.
+
+commit 54984ef1460e84ad1a5797fdaa1a762b4e3fdf3c
+Author: angusj <angus@angusj.com>
+Date:   2022-10-27 09:36:08 +1000
+
+    Changed several exported function defs (clipper.export.h)
+    Updated Delphi DLL test app.
+
+commit 19679afb1e56a6d3ccf054013f580163c5e4ae6a
+Author: angusj <angus@angusj.com>
+Date:   2022-10-26 21:40:49 +1000
+
+    Fixed significant bug in clipper.export.h
+    Updated DLL's Delphi sample app
+
+commit 1808d458f108145f685e8a6465e3217aed983fc4
+Author: angusj <angus@angusj.com>
+Date:   2022-10-26 12:14:25 +1000
+
+    Fixed confusing record definitions in DLL demo app.
+
+commit e0f151123f8759d5b8ce14bc78635e2092434b73
+Author: angusj <angus@angusj.com>
+Date:   2022-10-26 09:28:02 +1000
+
+    Updated dll binary
+
+commit 30859719daeaede863d2a983b60416889a27cb31
+Author: angusj <angus@angusj.com>
+Date:   2022-10-26 09:25:07 +1000
+
+    Fixed bugs in new clipper.export.h file
+
+commit 9e2dcd5c4eef2e3b0eb4bf15e512bca2b68c6900
+Author: angusj <angus@angusj.com>
+Date:   2022-10-26 09:04:40 +1000
+
+    Fixed minor bug in DLL test app.
+
+commit 05abfde6609385ae1431cbefd8970fbccbd43240
+Author: angusj <angus@angusj.com>
+Date:   2022-10-26 08:40:55 +1000
+
+    Fixed minor bug detected in previous commit
+
+commit 93b7309856b8fda84e605a58999a58cd92e77022
+Author: angusj <angus@angusj.com>
+Date:   2022-10-26 08:31:35 +1000
+
+    Added clipper.export.h file to make DLL/so files
+    Added a sample Delphi app that tests the DLL
+    Redisgned C++ Polytree structure to use inheritance not generics
+    Polytree64ToPolytreeD function not longer required and removed (#292)
+    Fixed bug where Polytree wasn't descaling results (#291)
+
+commit cce4efdca8e10a322230c77e1003803d7c40dda6
+Author: angusj <angus@angusj.com>
+Date:   2022-10-22 08:06:42 +1000
+
+    Added RectClipLines functions.
+
+commit 383ddf4c0f339303e2ca9e0f27a94acfeecc80c5
+Author: angusj <angus@angusj.com>
+Date:   2022-10-16 08:30:23 +1000
+
+    Removed problematic #pragma instructions (C++)
+
+commit e2f55120d02203cfecc829af4e3950a74c7b5f88
+Author: angusj <angus@angusj.com>
+Date:   2022-10-16 08:24:05 +1000
+
+    Fixed another RectClip bug (#280)
+    Removed version numbers from file headers (#257)
+    Added default constructors for path classes (C# only) (#265)
+
+commit a2a7bb559c66326291617066c016ff3a8501c016
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-10-15 13:44:38 +0300
+
+    Problem: `RectClip` for single `Path64` input returns an empty solution, if the clipping rectangle does not completely _contain_ the (bounding rectangle of the) input path. (#278)
+    
+    Solution: Return an empty solution if the rects do not _intersect_.
+    
+    Bonus: Return the input path, if the clipping rectangle completely contains the (bounding rectangle of the) input path. (Similarly as in `RectClip` for `Paths64` input.)
+
+commit 3a76b71a5a52abe50cdef83167434ab02aad843a
+Author: angusj <angus@angusj.com>
+Date:   2022-10-15 12:18:29 +1000
+
+    Fixed RectClip bug and added C++ CI tests (#271)
+
+commit 6245001a3811458857a420a74f77e56d63566ea9
+Author: angusj <angus@angusj.com>
+Date:   2022-10-14 22:11:31 +1000
+
+    Fixed issue with RectClip returning empty paths (#269)
+
+commit 160b7adc97cf21c5a33a8025a16432f9d849ac18
+Author: angusj <angus@angusj.com>
+Date:   2022-10-14 07:51:37 +1000
+
+    Improved RectClip() performance.
+
+commit c0ab67fa98ec48bca746206386365deb57593cdb
+Author: angusj <angus@angusj.com>
+Date:   2022-10-12 10:25:25 +1000
+
+    fixed bugs in previous commit
+
+commit eb0b8b18f0ff3601a35e533d88dd889f65bae1c6
+Author: angusj <angus@angusj.com>
+Date:   2022-10-12 10:16:44 +1000
+
+    fixed bug in previous commit
+
+commit 98d4399598373f5ad3ec0cdc7351a3118fef2328
+Author: angusj <angus@angusj.com>
+Date:   2022-10-12 10:11:51 +1000
+
+    RectClip - added support for float coordinates.
+    Refactored C++ RectClip
+
+commit 8f81f0690edd6dcded4544b34a1d08e85f15ea2c
+Author: angusj <angus@angusj.com>
+Date:   2022-10-11 09:20:34 +1000
+
+    fixed bug in previous commit (C#)
+
+commit 7651a19256217e6dd393ab8ac8c229dc80a3d38d
+Merge: b1e18ac 3eb6d58
+Author: angusj <angus@angusj.com>
+Date:   2022-10-11 09:11:54 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit b1e18ac80101df2c3a8c8a5ebdb01f0892e7ff48
+Author: angusj <angus@angusj.com>
+Date:   2022-10-11 09:11:24 +1000
+
+    fixed errors in previous commit
+
+commit 3eb6d586f641262577644564829c21c6feb17d41
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-10-11 09:00:36 +1000
+
+    Update README.md
+
+commit e813a56d4de0e73cf5dd782245e471d3e64e381c
+Author: angusj <angus@angusj.com>
+Date:   2022-10-11 08:54:43 +1000
+
+    Fixed minor bugs in Clipper.RectClip
+    Added RectClip demos.
+    (Documentation to come)
+
+commit 19d5d92c3ce82690c4763904382b38d6dd06041f
+Author: angusj <angus@angusj.com>
+Date:   2022-10-10 09:04:19 +1000
+
+    fixed trivial bug in previous commit
+
+commit 046b7f91ad190daaef314caa8e39e2c900ba609b
+Author: angusj <angus@angusj.com>
+Date:   2022-10-10 08:59:32 +1000
+
+    Updated clipper.rectclip.h (C++)
+    (documentation to follow)
+
+commit 95b15562da57bcea2125fcd7aff5fcce7e832c46
+Author: angusj <angus@angusj.com>
+Date:   2022-10-07 10:24:27 +1000
+
+    fixed compile errors in previous commit
+
+commit 002462789c2ef1bcbd13b9040de51f89ae503ccf
+Author: angusj <angus@angusj.com>
+Date:   2022-10-07 10:17:55 +1000
+
+    Added Rect<T>.Intersects method & SegmentsIntersect() function
+
+commit 21ea89da42ae21ad212fb2bcfdbdec0c69397e3c
+Author: angusj <angus@angusj.com>
+Date:   2022-10-07 10:13:55 +1000
+
+    Minor tweak to polygon offsetting (#242)
+    Added clipper.rectclip.h
+    Added rectclip demos (Delphi and C++)
+
+commit b4ef77d8c8e10832302a13cee14134955af1d6f5
+Merge: c2f16ed 5513bd8
+Author: angusj <angus@angusj.com>
+Date:   2022-10-05 21:06:36 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit c2f16ed66d294e69ed1890fe75d79dd174248863
+Author: angusj <angus@angusj.com>
+Date:   2022-10-05 21:06:12 +1000
+
+    Fixed incorrect z member assigment in C++ Point<T> struct (#246)
+
+commit 5513bd80388220ce2cd84f6549a2e69baf2642dd
+Author: aismann <icesoft@freenet.de>
+Date:   2022-10-04 22:53:09 +0200
+
+    Update clipper.engine.h (#255)
+    
+    Adapt the version on:     #define CLIPPER2_VERSION "1.0.5"
+
+commit 1f5156a81ad20a3cfccaa0b63361d4cc3d36b32c
+Author: angusj <angus@angusj.com>
+Date:   2022-10-02 21:38:13 +1000
+
+    Added new Clipper.RectClip module
+    for simple fast rectanglar clipping (Delphi only so far).
+
+commit ff737992a1de1d0355ff8a756eaf417cbff28dcb
+Author: angusj <angus@angusj.com>
+Date:   2022-10-02 19:35:29 +1000
+
+    Minor tweak to Delphi Timer utility
+
+commit 3f4bc09e622db5d95cd593def7cfdf918e5701c3
+Merge: 674c822 3e82326
+Author: angusj <angus@angusj.com>
+Date:   2022-10-02 19:29:26 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 674c8228e60b9118e576ab6b75cf036ae7e3b6cd
+Author: angusj <angus@angusj.com>
+Date:   2022-10-02 19:28:51 +1000
+
+    Fixed bug in C++ Point<T> constructor when USINGZ defined (#246)
+    Changed Library's C# target framework back to netstandard2.0 (#225)
+    Updated several sample apps.
+    File headers updated to version 1.0.5
+
+commit 3e823265e9b212bcc7f441edc542ed0846b4ed8a
+Author: Sergey Mende <99703804+sergey-239@users.noreply.github.com>
+Date:   2022-10-02 05:06:16 +0300
+
+    Fix mistype (#250)
+
+commit acfeee62cdf74c139c00dc4e7e9fcf14ff8cba7e
+Author: Sergey Mende <99703804+sergey-239@users.noreply.github.com>
+Date:   2022-10-02 01:51:06 +0300
+
+    Shared library fix (#247)
+    
+    * Fixes for #243 as per discussion
+    
+    * Move files as per #243 discussion
+    
+    * Fix include paths in Examples
+    
+    * * Replace relative include paths in examples
+    * Disable unused-(function|result) warning for gcc targets
+    * Fix some indentation in CMakeLists.txt
+    
+    * - Add pkgconfig
+    - Fix test in CMakeLists.txt for actual gcc use
+
+commit c9de2ebae4a01dcbd7b0629363ecf281b03d01b1
+Author: Sergey Mende <99703804+sergey-239@users.noreply.github.com>
+Date:   2022-09-30 16:17:30 +0300
+
+    Shared library (#243)
+    
+    * Allow building as a shared lib
+    
+    * Disable annoying `unused func/var` warnings in utils & tests
+    
+    * Fix headers installation destination & cleanup of CMakeLists.txt
+    
+    * BugFix: unsigned char promotes to int by C and C++ standards
+    BugFix: evaluation order of `*c = case_table[*c++];` expression is undefined
+
+commit 162da32000bbdcdbebc23974b477cd70fba3c6f1
+Author: mattdev <matt@mattdev.com>
+Date:   2022-09-25 21:55:57 +0100
+
+    Update Clipper.cs (#240)
+    
+    Fixing maxInvalidRectD
+
+commit 7ff0455141ad1b06c2e71a38f0f1f02eccad9021
+Author: angusj <angus@angusj.com>
+Date:   2022-09-24 14:09:50 +1000
+
+    removed time costly round function calls (#236)
+
+commit 6496480905d0f4bb04a11340a3c9d45567486541
+Author: angusj <angus@angusj.com>
+Date:   2022-09-22 21:00:08 +1000
+
+    Minor code tidy Clipper.Core.cs (#234)
+    Fix cppcheck warning in clipper.h (#235)
+    Other minor tweaks (C++)
+
+commit ecf1e5e3e67026b678c41c986015bca4073b15bd
+Author: angusj <angus@angusj.com>
+Date:   2022-09-22 14:38:04 +1000
+
+    Improved joining touching polygons (#233)
+
+commit 29003e6e3aded084ae53d47e4d7f6c75ddc625b3
+Author: angusj <angus@angusj.com>
+Date:   2022-09-19 21:13:09 +1000
+
+    fixed bugs in C# project file
+
+commit de9732caeab31a8bcefea75a95e3e3b3681d5b1d
+Merge: db0aa8e af9a0f4
+Author: angusj <angus@angusj.com>
+Date:   2022-09-19 21:00:15 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit db0aa8e94b241a458f802832d49ec05069974a6b
+Author: angusj <angus@angusj.com>
+Date:   2022-09-19 20:59:44 +1000
+
+    Added support for multiple C# frameworks (#225)
+
+commit af9a0f48c0b38ad0b09c81f05abca2d238fdb026
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-18 12:46:40 -0500
+
+    Code style (#227)
+    
+    * Code style
+    
+    * Update Clipper.Core.cs
+
+commit df0a265047cd2f0f38ec5a658b36994de4ce862e
+Author: angusj <angus@angusj.com>
+Date:   2022-09-18 15:13:02 +1000
+
+    Minor C# performance tweak (#224)
+
+commit 41d7d3784075e42a6d5b59c81fe081e4ed18997e
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-18 00:03:36 -0500
+
+    Clean-up unused reference (#226)
+    
+    Allow IEnumerable to be passed in Paths constructor.
+    IDE highlighted missing nullable.
+
+commit 41deb1d086e53a8fea9e81b992ac2114f0cf8a72
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-09-17 16:25:18 +1000
+
+    Update README.md
+
+commit e718ae9a065973eb1231621988bd7327af7f12ad
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-09-17 16:20:59 +1000
+
+    Update README.md
+
+commit 9704ac037ddbba07b9aa6f531e5839d16ef5c858
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-09-17 09:32:58 +1000
+
+    Added Nuget package shield
+
+commit 8916ed19e113e1b84fa44d17ead56baef23fc394
+Author: angusj <angus@angusj.com>
+Date:   2022-09-16 21:41:54 +1000
+
+    C# refactor / code tidy
+
+commit 5f34747aca3d7a485fd436daeaac538fb7cfff12
+Author: angusj <angus@angusj.com>
+Date:   2022-09-16 21:00:24 +1000
+
+    C# refactored Path64, Paths64, PathD & PathsD to derived List classes
+    Updated framework to .NET5.0
+
+commit a616cb5de67a33b58c6407a35df3e56bcb3e61b0
+Merge: 509e7d1 558f641
+Author: angusj <angus@angusj.com>
+Date:   2022-09-16 07:50:28 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 509e7d190fad0b6df0846f0c1e378eb691197666
+Author: angusj <angus@angusj.com>
+Date:   2022-09-16 07:50:02 +1000
+
+    Fixed suspect sort function Clipper.Engine.cs (#224)
+
+commit 558f641f7e17a5e14eaf2fbbae02f861c01f0ff7
+Author: balagansky <56180447+balagansky@users.noreply.github.com>
+Date:   2022-09-15 10:47:37 -0700
+
+    Add cmake install steps (#223)
+
+commit dbc4020503cf80289378bdadd5b01da06ad8c1e5
+Author: angusj <angus@angusj.com>
+Date:   2022-09-14 20:23:30 +1000
+
+    Minor bugfixes in Clipper.Offset (+ code tidy)
+    Minor code tidy of several sample apps.
+
+commit d81ea065f66bcb7a74f3e12b08b026c16686cf9d
+Merge: 3b115c0 13dc503
+Author: angusj <angus@angusj.com>
+Date:   2022-09-12 08:43:11 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 3b115c0284b6c6fb4da500fb035f50bf4ca6ecc1
+Author: angusj <angus@angusj.com>
+Date:   2022-09-12 08:42:44 +1000
+
+    Minor refactor Clipper.Offset (Delphi)
+
+commit 13dc5032526bc06c0efc8afc00c5bfe80f1d6e63
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-11 08:50:16 -0400
+
+    Make struct read-only (#220)
+    
+    Also address warning about Equals override not matching nullability.
+
+commit 04cc7bbbbcafae7f3b6802fdc9587713e18a3481
+Author: angusj <angus@angusj.com>
+Date:   2022-09-11 13:16:21 +1000
+
+    Minor teaks to C# project files
+
+commit daa1725128267a6f853942763c218dd65f763603
+Merge: 1ad59ed 284ea55
+Author: angusj <angus@angusj.com>
+Date:   2022-09-11 10:55:42 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 1ad59edc6fa5ef12827df84653498839ac862297
+Author: angusj <angus@angusj.com>
+Date:   2022-09-11 10:54:42 +1000
+
+    Fixed significant bug in Clipper.Offset
+
+commit 284ea55603f08a75fb9a92090e19432cf4299dd2
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-10 08:46:39 -0400
+
+    Clean-ups (#219)
+
+commit 9579398efd0a0b24f672ed412b82a7a44827be7e
+Author: angusj <angus@angusj.com>
+Date:   2022-09-10 16:12:51 +1000
+
+    Fixed minor bugs introduced in the previous commit (C++).
+
+commit cfc6ba84f0c25a1af4fe82d064410540a4625991
+Author: angusj <angus@angusj.com>
+Date:   2022-09-10 16:06:17 +1000
+
+    Simplified C++ MakePath function.
+    Other very minor tweaks.
+
+commit 75b8483cbfb2bedd1cd9df9a8cac059e36180941
+Merge: 08f4b97 93d2b29
+Author: angusj <angus@angusj.com>
+Date:   2022-09-10 15:57:20 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 08f4b970d79a62f66aa9ef6efdb9ef326bed47e7
+Author: angusj <angus@angusj.com>
+Date:   2022-09-10 15:56:59 +1000
+
+    Minor tweak to Visual Studio instructions
+
+commit 93d2b29fb2bc5cf80f8e0c127fff5906a3fe3b67
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-08 23:43:29 -0400
+
+    tests.txt does not exist, remove reference (#218)
+
+commit 3f6b780f700c2118b336efc3e9f440ccccd6a309
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-08 23:43:11 -0400
+
+    Clipper.SVG.cs not found in prior location (#217)
+    
+    Updated link to point at correct relative location.
+
+commit 6a5784c7b29cabb1eb3435cfe377728f753e4bfb
+Author: angusj <angus@angusj.com>
+Date:   2022-09-08 10:04:51 +1000
+
+    fixed bug introduced in recent commit (f810fcd).
+
+commit bb98a40c971ba97c53fbfe28bcdc88b5057edbaa
+Author: Nicholas Lederer <lederernc@users.noreply.github.com>
+Date:   2022-09-07 16:47:30 -0700
+
+    Angus johnson/clipper2#171 (#215)
+    
+    * #171 make some improvements to the cmake and add two helper scripts for creating visual studio solution files
+    
+    * #171 remove unimplemented ability to compile as a shared library. That behavior is unsupported in Visual Studio due to the need to export std::vector<T> which causes a warning that is treated as an error
+    
+    * #171 add rudimentary documentation to CPP/cmake/win64
+    
+    * #171 remove gmock as a dependency (currently unused). remove cmake install commands
+
+commit f810fcd505b9a2e1f19d13780944e5a6861f4098
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-07 11:12:52 -0400
+
+    Clean-ups (#214)
+    
+    Address compiler warning about invalid cast exception in foreach loop.
+    Use constructor calls in some places.
+    Reduce some conditional nesting.
+    Redundant else
+
+commit 7e63f4dcf7e75b239124b601ab1d7275742eae99
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-07 11:11:43 -0400
+
+    Restore XYCoordsEqual (#213)
+    
+    This was lost in changes made in 85ecfff102f0a83a3f7d724e466406b4c7a89eff
+
+commit 627ba5dbfbc734c76cbfcf5698abd4314cc7386c
+Author: angusj <angus@angusj.com>
+Date:   2022-09-07 21:56:57 +1000
+
+    Fixed minor offset bug (#211)
+
+commit 22d0493813ad58c80c14edcfc7bebaddff4e6dcc
+Author: angusj <angus@angusj.com>
+Date:   2022-09-07 13:40:30 +1000
+
+    Minor bug assigning holes in Polytree (#207)
+
+commit b7b02bcb66bd3a05e8db39a8d4e929c903734d44
+Author: angusj <angus@angusj.com>
+Date:   2022-09-06 10:11:54 +1000
+
+    Fixed DecimalSeparator formatting (Delphi) (#183)
+
+commit 48e501a9983c28f277a240a192585f5ba17e4970
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-05 19:02:48 -0400
+
+    Misc clean-ups (#202)
+    
+    Indentation related conditional change.
+    Move one conditional to a pattern.
+    Remove an unused constructor (compiler generates this by default)
+
+commit dec2548e670ce782c30204c2b190b471fe869c79
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-05 19:02:10 -0400
+
+    Remove always-false checks (#205)
+    
+    * Remove always-false checks
+    
+    - Also remove unneeded string.format calls
+    - Also remove unused references
+    
+    * Make SvgUtils static
+
+commit 692207b0f59935099d05610739174ae04a21c583
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-05 17:29:41 -0400
+
+    Make ClipperFileIO static (#204)
+    
+    - Also defend against exceptions in object instantiation (checks for objects being null were always false; use try/except to handle instantiation failures, but silently swallow the exception for now - could be improved).
+    - Adjust string array IndexOf calls per IDE guidance.
+
+commit 94a8225a1489f1ea1c4a401ce41119fbf3e7c5d7
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-05 17:26:55 -0400
+
+    Change to a ternary (#203)
+    
+    Not always a huge fan of these, but it seemed cleaner than the prior code and makes the return behavior more obvious at a glance.
+
+commit d1d6277343a6858ad25b0d0836c0e2b2239b0849
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-05 08:57:50 -0400
+
+    Remove redundant qualifiers (#201)
+
+commit 94c10f87e061581180d89dde00d162d4dfeb0a7d
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-05 08:57:09 -0400
+
+    Remove redundant default arguments (#200)
+
+commit ac8663254dd07eb5a8c5379b81159e37ce39b164
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-05 08:56:37 -0400
+
+    Remove redundant casts (#198)
+
+commit 1ece3feda867fb6b29aa84ae37b617a960bdcf74
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-05 08:56:05 -0400
+
+    Remove redundant base constructor calls (#197)
+
+commit e297a4ff6ba68b4798ba5f95067d0880a972aa3e
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-05 08:55:49 -0400
+
+    Remove redundant suppression (#196)
+
+commit 85ecfff102f0a83a3f7d724e466406b4c7a89eff
+Author: angusj <angus@angusj.com>
+Date:   2022-09-05 17:36:44 +1000
+
+    Bugfixed potential endless loop in C# code
+    Additional minor C# refactoring (#188, #191, #195)
+
+commit a43a1ffa773fbaeb8f53544d76ec346aef9c9500
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-04 23:16:23 -0400
+
+    TrimHorz return value never used (#192)
+    
+    Remove return and set as void.
+
+commit d4f1236b4689d4830d1f60a9afe36931e6b4ddc4
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-04 16:40:28 -0400
+
+    Minor indentation fix (#194)
+
+commit 274edd520c3ad58851cab52ac7f2c5f77b3e2165
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-04 16:39:47 -0400
+
+    Reduce complexity of conditionals (#193)
+    
+    * Reduce complexity of conditionals
+    
+    'else' seemed to be redundant in a number of places, given the use of continue and break instructions within the conditional block.
+    
+    * Updated proposal
+
+commit 1db5eede18f47138f4e8800de637fa73d99afbe0
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-04 16:36:14 -0400
+
+    Redundant casts (#190)
+    
+    * Update Clipper.Engine.cs
+    
+    * Remove redundant casts from AreaTriangle
+
+commit d09364ea2e1c4c8350771b273653ea7a43ee907d
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-09-04 16:34:13 -0400
+
+    Flags (#189)
+    
+    * Update Clipper.Engine.cs
+    
+    * Update Clipper.Engine.cs
+
+commit 46b8c279f8389969ff5e13800a0cbed00c62c478
+Author: angusj <angus@angusj.com>
+Date:   2022-09-04 17:15:08 +1000
+
+    Tweaks to C# CI settings
+
+commit f21395e87ffdb87c2776b5dddeb30bee25d15206
+Author: angusj <angus@angusj.com>
+Date:   2022-09-04 17:12:53 +1000
+
+    Significant clipping performance improvements (Delphi only)
+    Minor clipping performance improvements (C++, C#)
+    Fixed format issue in Clipper.SVG.pas (Delphi) (#183)
+    Fixed a very minor bug joining solution polygons (#177)
+    Minor bugfixes to ClipperOffset (C++, C#, Delphi)
+    Tweaked C# CI testing (C#)
+    BooleanOp() parameter order changed
+
+commit 6d7b4b5e2c0d18617f0fd20252460094270f5570
+Author: angusj <angus@angusj.com>
+Date:   2022-09-03 10:47:43 +1000
+
+    Further Delphi performance improvements
+
+commit 4ae5871851f86ed04ed1c3bb419a4678ae96f136
+Merge: 8630842 26258fe
+Author: angusj <angus@angusj.com>
+Date:   2022-09-02 17:21:29 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 8630842b828000b27246d279ec6a960f082e7c0f
+Author: angusj <angus@angusj.com>
+Date:   2022-09-02 17:21:17 +1000
+
+    Improved Delphi performance
+
+commit 26258fe67eeebb5ee0035a11401fefd984890694
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-09-01 14:37:28 +1000
+
+    Update README.md
+
+commit f5e10908e4f477eb6b9f9f0faf03d189951ae653
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-09-01 14:29:36 +1000
+
+    Update README.md
+
+commit c222df1f824c45b3d1f85d8708f760f1bce96508
+Author: angusj <angus@angusj.com>
+Date:   2022-08-27 08:32:48 +1000
+
+    Removed unhelpful readme file
+
+commit cac502d6040febe73521e40f3d070ad35a5e44c7
+Author: angusj <angus@angusj.com>
+Date:   2022-08-26 20:34:30 +1000
+
+    Fixed C++ test broken in previous commit
+
+commit 04674d35629d73f3ad416ae09255dd263661cb33
+Author: angusj <angus@angusj.com>
+Date:   2022-08-26 20:14:58 +1000
+
+    Added 2 new C++ sample apps
+
+commit 74e73fac1c9e35404026fe68c3295dbac10f9702
+Author: Nicholas Lederer <lederernc@users.noreply.github.com>
+Date:   2022-08-23 19:26:14 -0700
+
+    Simplify CMake (#169)
+    
+    * clean up windows building/testing
+    
+    * standardize testing in CPP
+    
+    * more clean up of test code
+    
+    * remove rlink flags from linux. building static libs means no more need
+
+commit ff60f90371ee630935719914b81d4e6ed6141ddb
+Author: angusj <angus@angusj.com>
+Date:   2022-08-24 12:21:01 +1000
+
+    Updated C# unit testing
+
+commit c89093ef37cacb9cc2ba861d56ebb8fb43d43c37
+Author: angusj <angus@angusj.com>
+Date:   2022-08-23 13:29:24 +1000
+
+    bugfix (part 2) C# ClipperD.ZCallback property (#168)
+
+commit 5f3a0c2e05c44d7b549bb3a618e66013beaefbb7
+Author: angusj <angus@angusj.com>
+Date:   2022-08-23 13:15:04 +1000
+
+    bugfix C# ClipperD.ZCallback property (#168)
+
+commit 290b0c08f0a8dbf902c53b7f5fd145f1338afbf5
+Author: angusj <angus@angusj.com>
+Date:   2022-08-22 09:52:21 +1000
+
+    Fixed missing FillRule definition C++ (#167)
+    Added Hypotenuse function (C++)
+
+commit 4fdd158bc2cfeefd436eea3a110e686c5cd24f23
+Author: angusj <angus@angusj.com>
+Date:   2022-08-21 19:59:14 +1000
+
+    Minor bugfix to ClipperOffset.DoSquare
+      - now squares at exactly 1 delta
+    
+    The USINGZ compiler option was very buggy (#166)
+    The Z field is now Int64 in both Point64 and PointD
+    and will not be affected by coordinate scaling
+
+commit 058db9a0e5e0bab314a1afc93e1cface9eaaa234
+Author: Jmalinza <jonathanmalinza@gmail.com>
+Date:   2022-08-19 11:03:30 +0200
+
+    Verbose CMake options (#164)
+    
+    * Add cmake build options and library path for shared object
+    
+    * Update util build if
+    
+    * Add cmake flag for tests in cpp workflow
+
+commit da97798c8da68022a5cd367460e09d9fd9a90fcd
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-08-13 11:59:38 +1000
+
+    Update README.md
+
+commit aa8a760d69d75ecf7807a3225b66de0dbab9619e
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-08-13 11:56:16 +1000
+
+    Update README.md
+
+commit 88052747c377e2a6054e14cc2fd9ed8e5fdad7e0
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-08-13 11:54:42 +1000
+
+    Update README.md
+
+commit 267a04f7fee4f9abe6db616fc0f5fe06d307b7ea
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-08-13 11:44:03 +1000
+
+    Update README.md
+
+commit cfa0fcf5b28ca13b7d4abcd7171701e2ff2d917f
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-08-13 11:36:28 +1000
+
+    Update README.md
+
+commit e3ab29f12863147efc966858ea1c4ad8f9882ec6
+Author: angusj <angus@angusj.com>
+Date:   2022-08-11 06:56:05 +1000
+
+    Amend previous commit (see #153)
+
+commit 903425bf7652744c96055afea56e253ffb5a81bb
+Author: angusj <angus@angusj.com>
+Date:   2022-08-10 23:50:23 +1000
+
+    Fixed Delphi demo - missing unit declarations #153
+
+commit 7d5ab85059c724452ea30842325d2883159c0130
+Author: angusj <angus@angusj.com>
+Date:   2022-08-10 22:21:58 +1000
+
+    Poor merging of 'touching' solution polygons #159
+
+commit 6017ea3e1c92936f5cbaa3f56ca62cbff631b7b2
+Author: Damian Dixon <damiandixon@users.noreply.github.com>
+Date:   2022-08-09 21:28:33 +0100
+
+    cmake: export the headers from Clipper2utils (#158)
+    
+    Co-authored-by: Damian Dixon <damian.dixon@igence.com>
+
+commit b2921987f916cf886839737ea5655e030c21010b
+Author: Damian Dixon <damiandixon@users.noreply.github.com>
+Date:   2022-08-09 21:26:06 +0100
+
+    Fix negative numbers not being read correctly. (#157)
+    
+    Co-authored-by: Damian Dixon <damian.dixon@igence.com>
+
+commit 96be15ff93a9fc0804e60ae17e2cbca8706789d6
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-08-05 10:05:04 +1000
+
+    Update README.md
+
+commit cac2d61550fa7bfa60c01a02b56703fc3c04fe3e
+Author: angusj <angus@angusj.com>
+Date:   2022-08-05 09:58:25 +1000
+
+    Code tidy
+    to improve naming consistency between languages
+
+commit c61712659fdd9b859f620df4885da3fa26a44222
+Author: angusj <angus@angusj.com>
+Date:   2022-08-03 21:47:05 +1000
+
+    Minor code tidy
+
+commit 6048a2f2a7b88a9637d14d91847f06a1ff16123b
+Author: angusj <angus@angusj.com>
+Date:   2022-08-03 20:24:40 +1000
+
+    Revert "Inherit from ClipperBase privately (#152)"
+    
+    This reverts commit d14b2dfe5bbdcfc4ed8002446595f4364c6be685.
+
+commit d14b2dfe5bbdcfc4ed8002446595f4364c6be685
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-08-03 09:47:57 +0300
+
+    Inherit from ClipperBase privately (#152)
+
+commit 71eb75bf940e818c32ca3a313128952819b5a558
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-08-03 14:01:03 +1000
+
+    Update README.md
+
+commit ca87a49926fad40954b4b0411ce902cd4c891af0
+Author: angusj <angus@angusj.com>
+Date:   2022-08-03 10:36:34 +1000
+
+    Minor edit to README.md
+
+commit 782b2c79845f9364fb7431789dc4a036a1a9ed4e
+Author: angusj <angus@angusj.com>
+Date:   2022-08-03 10:35:19 +1000
+
+    Updated README.md and removed Docs folder
+
+commit 70f0839c14e1eac877d04087f16a806b932cc745
+Author: angusj <angus@angusj.com>
+Date:   2022-08-03 10:22:49 +1000
+
+    Removed 'beta' status from file headers.
+
+commit a4473c2dcbb7192dffcca3e3a6de4d71d5b676b9
+Author: angusj <angus@angusj.com>
+Date:   2022-08-03 09:08:34 +1000
+
+    Minor changes to PolyTree structure
+    including ChildCount renamed to Count
+    and Child replaced with the array operator
+
+commit d839eda7988542f6c5d39284068d97ebab76cb89
+Author: angusj <angus@angusj.com>
+Date:   2022-07-31 09:01:57 +1000
+
+    Fixed broken open path clipping in C# (#148)
+
+commit cbd51180f1d503624900a7bdc2cb97815f77c751
+Author: angusj <angus@angusj.com>
+Date:   2022-07-30 18:40:30 +1000
+
+    C# & Delphi fixes for infinite loop (#144).
+
+commit ec722a81b84c5d0ef9bd9c7fff0af281be31f606
+Author: angusj <angus@angusj.com>
+Date:   2022-07-30 00:20:33 +1000
+
+    fix infinite loop (#144), only C++ so far
+
+commit ecd5e293df9ccc7458b50d75effa7cf29b6d0613
+Author: angusj <angus@angusj.com>
+Date:   2022-07-28 15:05:13 +1000
+
+    Fixed bugs in previous commit (C# only)
+
+commit dafa798fbf3d9f8fadabc7c62957c430bfdbb175
+Author: angusj <angus@angusj.com>
+Date:   2022-07-28 14:24:08 +1000
+
+    Additional file changes missed in previous update
+
+commit 1b9abb7898a1a348b08f0b20e426024e84e29bbd
+Author: angusj <angus@angusj.com>
+Date:   2022-07-28 14:19:17 +1000
+
+    Fixed minor GetBounds error (#143)
+    Delayed C# Polytree update (#131)
+
+commit 34f7899f522b40fffa5e35ad4b1bb5d06c597eed
+Author: angusj <angus@angusj.com>
+Date:   2022-07-27 16:00:55 +1000
+
+    removed invalid include reference (C++)
+
+commit 11b4aa8d8574950d2d90caa8a4eb0f3f9c402871
+Author: angusj <angus@angusj.com>
+Date:   2022-07-27 15:58:25 +1000
+
+    Fixed broken CMakeLists.txt file
+
+commit 7d225740efce12d3f2561c0805e2d586e8b61c43
+Author: angusj <angus@angusj.com>
+Date:   2022-07-27 15:56:24 +1000
+
+    Significantly improved performance of Polytree construction (#131)
+    Other minor tweaks.
+
+commit 021052790c746252dfbd4066303675f20456efce
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-07-23 14:32:27 +0300
+
+    Do not unnecessarily make functions `virtual` (#141)
+
+commit 9a2bcb9ce6ff50acb667dbe753f4c712ee77a37b
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-07-23 11:23:37 +0300
+
+    Make functions in `Clipper2` available for `Clipper2utils` to use (fixes a MacOS build issue) (#140)
+
+commit dd873d5afab4a41154761b2199bd0fdb35f1e506
+Author: angusj <angus@angusj.com>
+Date:   2022-07-23 17:24:58 +1000
+
+    fixing C++ compiler issues
+
+commit 582d167e72f15c7e2dbaa2f71f1a5e960554667e
+Author: angusj <angus@angusj.com>
+Date:   2022-07-23 17:20:04 +1000
+
+    fixing minor C++ compiler issues
+
+commit 1126d061e777e5bebea3a1da575120455787e4de
+Author: angusj <angus@angusj.com>
+Date:   2022-07-23 16:51:13 +1000
+
+    Fixing minor issues with CI testing
+
+commit e221d2f2fee15f8cf83bbd48ca0ce4164a44e46f
+Author: angusj <angus@angusj.com>
+Date:   2022-07-23 16:24:43 +1000
+
+    Fixed minor issues with formatting (C++)
+
+commit 27d9f02fbfccb6450a100866ebfae11f155fceb0
+Author: angusj <angus@angusj.com>
+Date:   2022-07-23 16:13:43 +1000
+
+    bugfix infinite recursion (#131)
+    Deleted DEFAULT_ORIENTATION_IS_REVERSED constant
+    clipper.h (C++)
+      Fixed bug in PointInPolygon
+      Added decimal precision to float version of Boolean Ops
+    clipper.engine
+      Fixed buggy clipping of open paths (C++, C# & Del.)
+
+commit 18371a8de64bdd9c7b56ddb8603c581428f356d0
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-07-21 03:24:58 +0300
+
+    Add simple program that generates (admittedly somewhat pathological) input data for fuzz testing purposes (#132)
+
+commit ba3fde14bf9dd9108a12c0fc445c1aaba3fc8938
+Author: angusj <angus@angusj.com>
+Date:   2022-07-21 08:50:01 +1000
+
+    fix infinite recursion in C++ (#131)
+
+commit 6a250550d32f7ffff7f08bd4be6570af8f24821a
+Author: angusj <angus@angusj.com>
+Date:   2022-07-19 17:42:19 +1000
+
+    Fixed overly zealous artefact removal (#130)
+
+commit be88c20ef12bb5834b546cedb1ee9617490e5857
+Author: angusj <angus@angusj.com>
+Date:   2022-07-18 23:40:53 +1000
+
+    Minor fix to C++ CI testing (#129)
+
+commit b2ade0edd8e0fe04f532a2aeb18c1ff53e42f8ec
+Author: angusj <angus@angusj.com>
+Date:   2022-07-18 23:27:17 +1000
+
+    Fixed mildly buggy PolyTreeToPaths function (C++)
+
+commit 290354f169cdad0420e40994bddee4e549346e7f
+Author: angusj <angus@angusj.com>
+Date:   2022-07-18 14:07:16 +1000
+
+    Minor update to C# CI testing
+
+commit b0639a71515d88f0e87fc30f82b1239b5c0ab615
+Author: angusj <angus@angusj.com>
+Date:   2022-07-18 13:52:37 +1000
+
+    Fixed recursion loop in Clipper.Engine DeepCheckOwner (#128).
+
+commit 4fc306bd813bcc6b9663a28199846a16e73d3683
+Author: angusj <angus@angusj.com>
+Date:   2022-07-17 15:16:04 +1000
+
+    Renaming OffsetPaths to TranslatePaths (part 2)
+
+commit c55560b5b8fbdab81f382d088c6b3b7d5c7b48a2
+Author: angusj <angus@angusj.com>
+Date:   2022-07-17 14:59:52 +1000
+
+    Renamed OffsetPaths to TranslatePaths
+
+commit 21f01f0bd0cf52fba6b3404ab79f3ffe11b2a7b8
+Author: angusj <angus@angusj.com>
+Date:   2022-07-17 12:33:08 +1000
+
+    Formatting only (added a space after all //).
+
+commit 113e5477577803b6f30a0a89aa02f1f71d2fa737
+Author: angusj <angus@angusj.com>
+Date:   2022-07-17 09:55:05 +1000
+
+    Further improvements to polytree hole assignment (#127)
+    Improved C# CI testing
+    Plus other minor tweaks :).
+
+commit b8bd78ef3635201f5d83c6b3566b2df0c7f05fb8
+Author: angusj <angus@angusj.com>
+Date:   2022-07-14 20:20:51 +1000
+
+    Further improvements to polytree hole assignment (#125)
+
+commit 152a7b6891cd8df68af801eac940f523c29aece3
+Author: angusj <angus@angusj.com>
+Date:   2022-07-14 17:21:42 +1000
+
+    Fixed bug in polytree with incorrect hole assignment (#125)
+
+commit 322c7d1c35ddd1e43069db21960ca555f47264cd
+Author: angusj <angus@angusj.com>
+Date:   2022-07-14 12:31:41 +1000
+
+    Cody tidy
+    Reverted previous revert :).
+    The intial reversion was due to unfounded concerns about performance
+
+commit 278345016ffaecf953ec3267ff849283cb86458d
+Author: angusj <angus@angusj.com>
+Date:   2022-07-14 10:36:28 +1000
+
+    Revert "Code tidy."
+    
+    This reverts commit 5d866ab479a3331eda17492f75c3b5b837b9f53c.
+
+commit 5d866ab479a3331eda17492f75c3b5b837b9f53c
+Author: angusj <angus@angusj.com>
+Date:   2022-07-14 10:20:46 +1000
+
+    Code tidy.
+    (Issue #125 is still to be addressed)
+
+commit bd4168541c6f5349890c13a3683844a4dc01f5dc
+Author: angusj <angus@angusj.com>
+Date:   2022-07-12 13:32:58 +1000
+
+    Fixed buggy PointInPolygon functions (#124)
+
+commit b25c2d28c993b18876b492f5c9dc6814a8b36a1f
+Author: angusj <angus@angusj.com>
+Date:   2022-07-11 22:30:01 +1000
+
+    Fixed additional problems with Polytree ownership (#123)
+    Fixed C# ReferenceEquals (#121)
+
+commit a17831425fcbaff62b734b17dcc96f8985df68a4
+Author: angusj <angus@angusj.com>
+Date:   2022-07-10 18:52:00 +1000
+
+    Fixed PointInPolygonResult (c++)
+
+commit 997957fa8e17fa84800ca4d6064b5925aeee2bcf
+Merge: 09dec9d 478a28d
+Author: angusj <angus@angusj.com>
+Date:   2022-07-10 18:42:24 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 09dec9d35b4b74d9af822f81e2a7141708553d08
+Author: angusj <angus@angusj.com>
+Date:   2022-07-10 18:42:04 +1000
+
+    Renamed PointInPolyResult to PointInPolygonResult (C++)
+
+commit 478a28d5b37ead9d73f69936d3cc98ae2e525d6e
+Author: guuskuiper <38075339+guuskuiper@users.noreply.github.com>
+Date:   2022-07-10 10:40:46 +0200
+
+    Switch to netstandard2.0 and fix unsupported syntax (#122)
+
+commit 0bdc3c2f3b1f4320e30dcfe82dc9a12d2b0790e2
+Author: angusj <angus@angusj.com>
+Date:   2022-07-10 08:20:19 +1000
+
+    Minor documentation update
+
+commit f4976f050d1234929c920f03ce2850c3ec14be83
+Author: angusj <angus@angusj.com>
+Date:   2022-07-10 08:10:28 +1000
+
+    Updated Readme
+
+commit e3a161a4a1d1e3321861b6826fadf21c501b7ba7
+Author: angusj <angus@angusj.com>
+Date:   2022-07-09 22:56:32 +1000
+
+    further C# CI testing fixes
+
+commit 40475c681a479a368139b34bb5ce2634405ff6dc
+Author: angusj <angus@angusj.com>
+Date:   2022-07-09 22:39:53 +1000
+
+    Additional C# CI testing fixes
+
+commit 4a43c4f7060f812e4077490e875df4f9c89d1914
+Author: angusj <angus@angusj.com>
+Date:   2022-07-09 22:22:13 +1000
+
+    fixed broken workflow file
+
+commit 0594d309210a898c7beb379e5e7f56e380106814
+Author: angusj <angus@angusj.com>
+Date:   2022-07-09 22:19:44 +1000
+
+    Added C# very basic CI testing
+
+commit 2caa5bbc74bf32d09ea79a4d887ef9e81bb7e839
+Author: angusj <angus@angusj.com>
+Date:   2022-07-09 21:51:31 +1000
+
+    Fixed incorrect Polytree hierarchy (ie path ownership) (#120)
+    Started some very basic C# testing.
+    Updated C# examples
+    Fixed the buggy DoSimplifyFailingPaths function (Delphi only)
+
+commit 2b52f1c1db84eac2f375ec2aa8bbae8ad9e225db
+Author: angusj <angus@angusj.com>
+Date:   2022-07-03 12:49:15 +1000
+
+    Fixed bugs in TrimCollinear(#117).
+    Improved open path clipping (#116).
+
+commit 7c7983344ae373be9eceae748ea01dff8319cdd8
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-06-27 01:03:26 +0300
+
+    Check that polytree results match the corresponding paths-only results (#115)
+
+commit 79a63daa114f05a94392d7a0fc18caa3fdb21954
+Author: angusj <angus@angusj.com>
+Date:   2022-06-26 21:47:43 +1000
+
+    Improving open path clipping (Delphi only so far)
+    Removed experimental code accidentally included in prev. commit
+
+commit ec04e6629dee091c9f0ba5e14a43d057938ecc0c
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-06-26 09:12:12 +0300
+
+    Problem (very minor): `warning C4244: 'argument': conversion from 'int64_t' to 'long', possible loss of data` (#114)
+    
+    Solution: for `int64_t` values, use `std::llabs` and not `std::labs`
+
+commit 2659289eb19575bc909983269156da72c569e1e3
+Author: angusj <angus@angusj.com>
+Date:   2022-06-26 11:54:25 +1000
+
+    Minor tweak to clipper.engine.cpp
+
+commit 064754ee6f5033f6265b8254f69deeba1df2e4aa
+Author: angusj <angus@angusj.com>
+Date:   2022-06-26 10:38:28 +1000
+
+    fixed additional C++ compile errors
+
+commit 00a767ee004d7f111b94cde060060336155792b2
+Author: angusj <angus@angusj.com>
+Date:   2022-06-26 10:32:57 +1000
+
+    Fixed a C++ compile error
+
+commit 62a6e696e7436c64080714fb796fd0ee5a186205
+Author: angusj <angus@angusj.com>
+Date:   2022-06-26 10:25:59 +1000
+
+    Improved clipping artefact removal
+    Tidied up open path clipping algorithm
+    Fixed C++ compile errors (#113)
+    Changed Polytree.childs and Polytree.Polygon to properties
+
+commit 6f0c5e8a8a54be754136257948afcb61b555423f
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-06-21 10:52:49 -0500
+
+    Update Clipper.Engine.cs (#112)
+
+commit f8a8750c3e19b2e0e6d34b391da1616a29c37286
+Author: angusj <angus@angusj.com>
+Date:   2022-06-21 11:48:46 +1000
+
+    C# library refactor
+      renamed Clipper to Clipper64
+      renamed ClipperFunc to Clipper
+      renamed InternalClipperFunc to InternalClipper
+    Minor tweaks to C# sample apps.
+    Fixed bugs in PointInPolygon function
+    Added TestOrientation.cpp to CI testing
+
+commit 624eddb1c687458f9ec1e126f0e94fada6fc5091
+Author: angusj <angus@angusj.com>
+Date:   2022-06-19 13:50:48 +1000
+
+    Minor bugfix re. open path clipping (C#)
+
+commit c6a026335c9520fc0540029b89d9da2779a87aab
+Author: angusj <angus@angusj.com>
+Date:   2022-06-19 12:49:19 +1000
+
+    Fixed significant bug in ClipperOffset (C#)
+
+commit 151d6ce58fd376342c725bab7d2cf9a544bdfe7a
+Author: angusj <angus@angusj.com>
+Date:   2022-06-19 11:59:18 +1000
+
+    Fixed significant bugs in open path clipping
+    Added TrimCollinear functions (plus CI test)
+
+commit efc32949c6455f2c009a0dc605f4b63985b71954
+Author: angusj <angus@angusj.com>
+Date:   2022-06-17 11:30:32 +1000
+
+    Updated tests
+    Fixed numerous annoying bugs in PointPlotter
+
+commit 8ef8f4633ac27a908676f79b25fc0a18c2660167
+Author: angusj <angus@angusj.com>
+Date:   2022-06-17 09:12:33 +1000
+
+    Removed unused parameter in ClipperOffset's constructor
+
+commit 8963737e8d92c1487597b1a983c97622ce95fed1
+Merge: 1dc3ebf 8bc441e
+Author: angusj <angus@angusj.com>
+Date:   2022-06-17 08:51:28 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2.git into main
+
+commit 1dc3ebf832a522e93f3d8a92c3b3b096751ee778
+Author: angusj <angus@angusj.com>
+Date:   2022-06-17 08:46:22 +1000
+
+    Further Orientation fixes
+
+commit 8bc441e695134c9ef5e79f3f2cfb8ab419baed46
+Author: Damian Dixon <damiandixon@users.noreply.github.com>
+Date:   2022-06-16 23:01:45 +0100
+
+    The variable names did not have a _ on the end. (#111)
+    
+    For join_type and end_type this resulted in a shadow variable warning for the PathGroup constructor.
+    
+    Co-authored-by: Damian Dixon <damian.dixon@igence.com>
+
+commit 0ba3d37b28f3c2ecfe75fb98bb8641e410ce33dd
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-06-17 01:01:24 +0300
+
+    Add more CI builds (#110)
+    
+    * Add gcc-11 and clang-13 builds
+    
+    * Add even a MacOS build
+
+commit 9dcd3022debdefe2da78f006e5e835501e25db4e
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-06-17 01:01:01 +0300
+
+    Remove the `#pragma`s previously needed for clang builds (#109)
+
+commit c3c5984c2c39b533702103170fe3c294340b0a4c
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-06-16 15:33:55 +0300
+
+    Add clang build to GitHub Actions (#106)
+
+commit d17108c35d9bd9280ed04a314b90d1cdcfadecfa
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-06-16 15:31:40 +0300
+
+    Do not pretend `Execute` is `virtual` (#108)
+
+commit 2b9c5abbc1d1d59b8feddf96f7aed7303809dc4a
+Author: Damian Dixon <damiandixon@users.noreply.github.com>
+Date:   2022-06-16 12:35:42 +0100
+
+    Updates to build Clipper2 with clang. (#105)
+    
+    * clang: ignore virtual override warning.
+    
+    * clang: remove used variable
+    
+    * clang: abs takes an int labs takes a long int.
+    
+    * clang: order of initialisation
+    
+    * clang: variable not currently used.
+    
+    * gcc: maybe_unused attribute is not recognised by g++
+    
+    Use the (void)variable; trick to fool the compilers.
+    
+    * gcc/clang: surround the pragma's with a compiler check.
+    
+    Co-authored-by: Damian Dixon <damian.dixon@igence.com>
+
+commit 74ca5f6bea8e8b0bec1458089093d0e9e6c89300
+Author: angusj <angus@angusj.com>
+Date:   2022-06-16 12:42:52 +1000
+
+    Fixed DEFAULT_ORIENTATION_IS_REVERSED bug (#103)
+
+commit 350e15dd944fca5777b0b6721c443c9c28cde3ce
+Author: angusj <angus@angusj.com>
+Date:   2022-06-16 10:55:40 +1000
+
+    Further fixes for Linux compiles
+
+commit 40b1020435dfb2c585c0c289dac18c50d21e0743
+Author: angusj <angus@angusj.com>
+Date:   2022-06-16 10:41:35 +1000
+
+    Minor fix to SvgWriter so will compile in Linux. (C++)
+
+commit efdba499bca7162728a9fa219cac8d70b3d5e89e
+Author: angusj <angus@angusj.com>
+Date:   2022-06-16 10:29:51 +1000
+
+    Fix PolyPath<T>::Area (#102)
+    and clipper.offset.h issue
+
+commit c19ae3eb689167794dd3f79e563396c00ea49a30
+Author: angusj <angus@angusj.com>
+Date:   2022-06-16 10:22:39 +1000
+
+    Updated CMakeList.txt
+
+commit 656ab10972422d6063f66454928916415a3022ba
+Author: angusj <angus@angusj.com>
+Date:   2022-06-16 09:56:36 +1000
+
+    Removed Tests_RO.exe
+
+commit c96d6d22a8ee3e835b471e5ebb2e6a5406be92f9
+Author: angusj <angus@angusj.com>
+Date:   2022-06-16 09:51:48 +1000
+
+    Added missing tests :)
+
+commit 552d4032e07a388269eed3752ea8994beb7f659c
+Author: angusj <angus@angusj.com>
+Date:   2022-06-16 09:46:16 +1000
+
+    Replaced REVERSE_ORIENTATION compiler directive
+      with DEFAULT_ORIENTATION_IS_REVERSED constant (C++,C#,Del.)
+    Default orientation can now be overridden in class constructors
+    Minor changes to SvgWriter (C++)
+    Significant changes in testing units (C++)
+    clipper.svg.utils.h now accommodates Positive/Negative fills too
+
+commit b893db9676e567e5a38a765790da5381ff35e6ed
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-06-15 06:52:51 +0300
+
+    Add GitHub actions build on linux (#99)
+    
+    * Add GitHub Actions Linux build (C++)
+    
+    * Run tests on Linux
+
+commit 7f56966cbd843e0de9eca95ca05d555766cd7d02
+Author: angusj <angus@angusj.com>
+Date:   2022-06-15 08:41:57 +1000
+
+    Fixed _WIN32 compiler directive
+
+commit a00b92cf647c11620cbe8c59dc7984ebd4903d65
+Author: Damian Dixon <damiandixon@users.noreply.github.com>
+Date:   2022-06-14 22:28:37 +0100
+
+    Simple cmake build script and linux build fixes (#98)
+    
+    * High resolution clock call is storing the result in the wrong type.
+    
+    * The stat method requires additional headers on linux
+    
+    * memcpy requires cstring to be included
+    
+    * system call on linuxhas no concept of file associations and thus does not display the svg file.
+    
+    Display the SVG file in firefox
+    
+    * Memory leak checks are using Win32 specific calls.
+    
+    Only compile when compiling on windows.
+    
+    * const_iterator and non-const iterator are not compatible. Just use const_interator.
+    
+    * Add a simple cmake build.
+    
+    * Fix and build InflateDemo1
+    
+    * Add tests to the cmake build
+    
+    Co-authored-by: Damian Dixon <damian.dixon@igence.com>
+
+commit 9d7a666ccb400762621a2b17be7dbd31a339878d
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-06-14 09:44:17 +0300
+
+    Test automation improvements (#97)
+    
+    * Problem: warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (Tests_RO.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+    
+    Solution: explicitly specify `IntDir` to be different for the two test projects
+    
+    * Problem: both Tests and Tests_RO have REVERSE_ORIENTATION #defined
+    
+    Solution: do not #define REVERSE_ORIENTATION in Tests.vcxproj
+    
+    * Run even the reverse-orientation tests in Github Actions
+    
+    * Problem: TestFromTextFile.cpp(103,15): error C3861: 'EXPECT_LQ': identifier not found
+    
+    Solution: Use `EXPECT_EQ`, which appears to have been the intention here
+    
+    * Make it so that tests complete for now, even if it means effectively disabling the orientation-after-offset test when orientation is not reversed
+
+commit 33ee7df66a7f728927e48d00c4c66b68d33d3034
+Author: angusj <angus@angusj.com>
+Date:   2022-06-14 11:43:47 +1000
+
+    Added ReverseSolution property to ClipperOffset
+
+commit 1949bfaedf6175387b97c2c4b7007da48b68552e
+Author: angusj <angus@angusj.com>
+Date:   2022-06-14 11:12:54 +1000
+
+    Fixed cpp unit testing
+      clipping solutions will always have positive areas
+
+commit 656774be75bb0b006740b100653932c9262273b9
+Author: angusj <angus@angusj.com>
+Date:   2022-06-14 09:43:05 +1000
+
+    Fixed resetting using_polytree (#96)
+    Changed Clipper.ReverseOrientation property to ReverseSolution
+    Performance improving changes to C++ code
+
+commit 89f1bdd0be4f0aabb41e11a8b4133c2347f2bb5c
+Author: angusj <angus@angusj.com>
+Date:   2022-06-11 22:11:46 +1000
+
+    PointPlotter bug fixes.
+
+commit 1dee868edaf585f7ada031c328620d27bb5641c3
+Author: angusj <angus@angusj.com>
+Date:   2022-06-11 17:36:55 +1000
+
+    Fixed bug in C++ Distance function (#91)
+
+commit 54310871c76bc9cda06569e3fe83c3ac1f5d5555
+Author: angusj <angus@angusj.com>
+Date:   2022-06-11 16:44:01 +1000
+
+    Tweaks to testing
+
+commit e16a4f91c8ca5f10407ef504ca8c3e5edfc435fb
+Author: angusj <angus@angusj.com>
+Date:   2022-06-11 12:23:19 +1000
+
+    Orientation (again) (#83)
+
+commit 675a6e8720f2e582e18f9cf75c8c17e60343c221
+Author: angusj <angus@angusj.com>
+Date:   2022-06-10 22:22:28 +1000
+
+    Orientation (once again) (#83)
+    Delphi code tidy (#88)
+    Compile on Delphi 6 (#89)
+    Updated PointPlotter utility again.
+
+commit a523187c377ee6cdbd903ecb38b1d1022857b9cb
+Author: angusj <angus@angusj.com>
+Date:   2022-06-09 21:13:12 +1000
+
+    Orientation ... once again :( (#83)
+
+commit 8ab847c41d57d82aa0634a6c56837cc10892954e
+Author: angusj <angus@angusj.com>
+Date:   2022-06-09 19:18:44 +1000
+
+    Fixed Orientation issues (#83)
+    Fixed crash when clipping open paths (#85)
+    Added orientation check after offsetting/inflating (#86)
+    Fixed bug causing slow processing of Polytrees (#87)
+
+commit bd837044313eec0ba120f47381b4c1faa41198dc
+Author: angusj <angus@angusj.com>
+Date:   2022-06-08 08:55:44 +1000
+
+    Fixed bug when calling ClipperOffset::Execute more than once (#74)
+
+commit d0fcf496c7fc7cfeff3be55827d88fc9d9a77348
+Author: angusj <angus@angusj.com>
+Date:   2022-06-07 23:30:11 +1000
+
+    Fixed Delphi code so will now compile in Delphi 7. :)
+
+commit 5c3488dc25323f47d6b6554c1ac6c8229c797328
+Author: angusj <angus@angusj.com>
+Date:   2022-06-07 22:19:56 +1000
+
+    Fixed error in clipper.core.h
+
+commit 6ec90c5f255ced030ac48c92e7b231a2d0ac6270
+Author: angusj <angus@angusj.com>
+Date:   2022-06-07 22:11:59 +1000
+
+    Fixed issue with InflatePaths() and precision (#73)
+    Fixed infinite loop with line clipping (#75)
+    Added PreserveCollinear property to ClipperOffset (#77)
+    Fixed copy C++ PolyPath objects (#79)
+    Fixed null pointer (#81)
+    Fixed REVERSE_ORIENTATION (#82)
+    Fixed IsClockwise (#83)
+    Cleanup C++ (#84)
+
+commit 76e923a2120f116c29c110da870d00b2618a3283
+Author: angusj <angus@angusj.com>
+Date:   2022-06-05 19:43:17 +1000
+
+    Added RamerDouglasPeucker function to Clipper.cs
+    Fixed minor issue in Clipper.Offset.cs (#76)
+
+commit 3c7375fbb380c31d3c0acc8617f6c38abfd4b827
+Author: angusj <angus@angusj.com>
+Date:   2022-06-05 19:24:57 +1000
+
+    Added test for incorrect hole assignment (#71)
+    Fixed bug saving paths in PointPlotter utility
+
+commit f3dcc09666ac32afa2aa0eab7f990ef6a3480b70
+Author: angusj <angus@angusj.com>
+Date:   2022-06-05 17:28:48 +1000
+
+    Fixed holes outside parent (#71)
+    Fix compiler warning (#80)
+
+commit be87c1ed84d61571392eb3a9245554f1224a98e8
+Author: angusj <angus@angusj.com>
+Date:   2022-06-05 16:31:51 +1000
+
+    Holes outside parent (#71) (C# fixe still pending)
+    Updated PointPlotter again
+
+commit 1bf1b6ef9bbacda71a8dfc1fd8f7456e02666165
+Author: angusj <angus@angusj.com>
+Date:   2022-06-04 22:01:46 +1000
+
+    Holes outside parent (#71) (Only fixed in Delphi so far)
+    Updated PointPlotter utility
+
+commit 689aacc4d869de714affb7fc5ff296c62bfe9a45
+Author: angusj <angus@angusj.com>
+Date:   2022-06-03 22:01:19 +1000
+
+    Added PointPlotter utility
+
+commit bc7a13c1744607cc883950aaf00bb019a6e886b6
+Merge: f5ce9c9 7e3f8c2
+Author: angusj <angus@angusj.com>
+Date:   2022-06-03 21:57:55 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2 into main
+
+commit f5ce9c9026baa4434d58fce6565ec8cb11c0a9ec
+Author: angusj <angus@angusj.com>
+Date:   2022-06-03 21:57:07 +1000
+
+    Added PointPlotter utility
+
+commit 1e2006e225e1c264f3fbcbccc8d8c08dae049767
+Author: angusj <angus@angusj.com>
+Date:   2022-06-03 21:49:40 +1000
+
+    Added PointPlotter utility
+
+commit 7e3f8c2556fba3d36f3a4423f6322be90bce3019
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-05-29 09:14:35 +0200
+
+    Fix something that looks like a result of excessive search & replace (case insensitive `RectI` -> `Rect64`) (#70)
+
+commit b039cb906139e97f04abd43b8d9a53b7c4e75e94
+Author: angusj <angus@angusj.com>
+Date:   2022-05-28 09:15:50 +1000
+
+    Minor tweaks to Delphi.Core.pas
+    Modified Delphi sample apps
+
+commit d816b31da9f9686f773fbf8d64e74b6cc0f49b2a
+Author: angusj <angus@angusj.com>
+Date:   2022-05-27 23:09:46 +1000
+
+    Fix integer overflow in Delphi code (#68)
+    Numerous minor changes to Delphi sample utilities
+
+commit 38a8223fca3cf9dfd2b3c3f6bbc9c8921342966f
+Author: angusj <angus@angusj.com>
+Date:   2022-05-27 11:07:08 +1000
+
+    Removed Sqr() from Clipper.Core (#68)
+
+commit 4ea076df2ca6af701ae5ab4efea7cc4e8110b8cd
+Author: angusj <angus@angusj.com>
+Date:   2022-05-27 08:09:26 +1000
+
+    Tidied Point64 & PointD ToString inconsistency (C#) #67
+
+commit be2983dd6e19487fee6683bb4a1309cb327b702f
+Author: angusj <angus@angusj.com>
+Date:   2022-05-26 20:37:23 +1000
+
+    Amended comment
+
+commit 447204ab6bd311cf335b9e5876aef7d2ffbbd117
+Author: angusj <angus@angusj.com>
+Date:   2022-05-26 20:31:44 +1000
+
+    Fixed bug affecting Lazarus compiler (#68)
+
+commit efc27e199b91e52646f9966fa8a85e573553d52a
+Author: angusj <angus@angusj.com>
+Date:   2022-05-26 16:42:44 +1000
+
+    Minor edit to Docs/readme
+
+commit 2b7afba763c60cac40860b1a2b971fb6a3263077
+Author: angusj <angus@angusj.com>
+Date:   2022-05-25 17:12:50 +1000
+
+    Minor edit to Docs/readme
+
+commit 48eb733db2c7a2207df7e0e4ccf66d444a2f2f33
+Author: angusj <angus@angusj.com>
+Date:   2022-05-25 17:05:21 +1000
+
+    Fixed ClipperD Range Error (#56) (Delphi only)
+
+commit e2cfd5955ee5b9e3ec4a83ae28efd4e3c292150e
+Author: angusj <angus@angusj.com>
+Date:   2022-05-24 13:14:48 +1000
+
+    Fixed C++ CI testing.
+
+commit ca063f4ee1161b7dea52853c889a484b8e1317e2
+Author: angusj <angus@angusj.com>
+Date:   2022-05-24 13:02:15 +1000
+
+    Fixed a bug affecting open path clipping (C++, C#)
+
+commit a4b408abbcd51ea3f6884dfaa06e50366e0b4543
+Author: angusj <angus@angusj.com>
+Date:   2022-05-24 09:37:01 +1000
+
+    Fixed issue #62
+
+commit f9be8e4501829325f639331ea1a32aa0e00979c2
+Merge: 5075638 38efd8a
+Author: angusj <angus@angusj.com>
+Date:   2022-05-24 09:26:53 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2 into main
+
+commit 5075638ea06dc00105c2361087e450267eb3306b
+Author: angusj <angus@angusj.com>
+Date:   2022-05-24 09:25:38 +1000
+
+    Fixed issue #62 (C++,C# & D)
+
+commit 38efd8a6c40f245b41801cc0d004ed08b7bd9b68
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-05-22 12:09:01 +0300
+
+    Remove unused variable (#61)
+
+commit 82c14375855cd68b54510127cb501d6491153f83
+Author: angusj <angus@angusj.com>
+Date:   2022-05-22 18:18:12 +1000
+
+    Fixed clip file testing (take 2)
+
+commit cc02dda94d572a93425a48b10da1e2313a38d867
+Author: angusj <angus@angusj.com>
+Date:   2022-05-22 18:14:02 +1000
+
+    Fixed clip tests
+
+commit 51979a43c87d5b46d2d2308756687523450677e7
+Author: angusj <angus@angusj.com>
+Date:   2022-05-22 17:33:15 +1000
+
+    Fixed open path clipping issue (#60)
+    Fixed crash dereferencing a null pointer (#59)
+    Numerous other minor tweaks
+
+commit d671af969a12c165c75ba497533ed08afc392a93
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-05-21 01:02:54 +0300
+
+    Add example input that makes the test program crash when dereferencing a null pointer (#59)
+
+commit da4c170ab9704b879c0e943693c359c93f35bf9d
+Author: angusj <angus@angusj.com>
+Date:   2022-05-21 08:01:13 +1000
+
+    Moved clipper.svg.utils to Utils directory (C++)
+
+commit ea8374ef29b18c0c77f2b303acb1faf16f61cc42
+Author: angusj <angus@angusj.com>
+Date:   2022-05-20 21:54:06 +1000
+
+    Minor edit to ConsolDemo1 (C++)
+    Minor edit to Docs/readme
+
+commit e24abda28b2c467522b5bc41283bdac77ab4dd56
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-05-20 09:52:37 +0300
+
+    Fix Linux build issues, part 2 (#58)
+    
+    * Add `typename` to fix a build issue on Linux (gcc)
+    
+    * Remove superfluous whitespace
+
+commit 7b8075bca4d590760527e029bb57384c70e72c7f
+Author: angusj <angus@angusj.com>
+Date:   2022-05-20 09:38:34 +1000
+
+    Commented out _getch() in demo so tests run without errors
+
+commit e55857a2a58fe3cddb9988d451527c4cb98d3ce0
+Author: angusj <angus@angusj.com>
+Date:   2022-05-20 09:12:48 +1000
+
+    Fix build issues on Linux (gcc) #57
+    Renamed cpp/Utils/TextFileLoad.cpp to ClipFileLoad.cpp
+    Renamed cpp/Utils/TextFileSave.cpp to ClipFileSave.cpp
+    Delphi code tidy (#55)
+
+commit 3b8d5cf8a3a6c4cabd039bf372fb50d395c95267
+Author: angusj <angus@angusj.com>
+Date:   2022-05-19 22:18:16 +1000
+
+    Added Timer to CPP/Utils
+
+commit 643c56411751a6e33d0c5c1b3349d4f7796898c6
+Author: angusj <angus@angusj.com>
+Date:   2022-05-19 11:29:30 +1000
+
+    Code tidy CPP/Utils/TextFileSave
+
+commit b283cf7a82b3dae08f9df4c400996f2bdd4b80e2
+Author: angusj <angus@angusj.com>
+Date:   2022-05-18 23:21:21 +1000
+
+    Minor tweaks (C++)
+
+commit 7264d8dd60769615aa116d285dad9052399f0894
+Author: angusj <angus@angusj.com>
+Date:   2022-05-18 21:23:12 +1000
+
+    bugfixed test app
+
+commit 66dc735dc84e1ce445a71dcfa4bb4c7013483e53
+Author: angusj <angus@angusj.com>
+Date:   2022-05-18 21:18:21 +1000
+
+    Templated ScalePaths function (C++)
+    Improved C++ sample apps
+
+commit 27c55db8b287da8f8216288560215706f08c102f
+Author: angusj <angus@angusj.com>
+Date:   2022-05-18 09:34:23 +1000
+
+    Fixed possible integer overflow (#52)
+
+commit 3a2f8cc0ed49dcf318c6666562a87689308c1df1
+Author: angusj <angus@angusj.com>
+Date:   2022-05-18 09:22:33 +1000
+
+    clipper.core.h (C++) templated numerous functions
+
+commit af3bd1f99324576facc7b581f5235dd8dace70cd
+Author: angusj <angus@angusj.com>
+Date:   2022-05-17 13:00:43 +1000
+
+    Minor tweaks to C++ offset demo
+
+commit c7384555e0227a1cea843b9cf6e46b9ca1c9ab90
+Author: angusj <angus@angusj.com>
+Date:   2022-05-17 12:21:15 +1000
+
+    Removed reference to another deleted file
+
+commit 8bbd66def82de4cefae4bb0736ff27e83f03b355
+Author: angusj <angus@angusj.com>
+Date:   2022-05-17 12:09:05 +1000
+
+    Fixed failed test (removed reference to deletes cpp file)
+
+commit 166780bfd64fbae9c2db796123d5f3cfd462414d
+Author: angusj <angus@angusj.com>
+Date:   2022-05-17 11:50:20 +1000
+
+    Significantly improved Clipper.Offset code
+    and added Clipper.Offset (inflate) demos
+    Plus other minor tweaks
+
+commit 548765f5d19ac8724be36642c842996f3974a574
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-05-14 14:53:18 +0300
+
+    Avoid compiler warnings on Linux (#49)
+
+commit e9c6b38129fb5895893cc6af24aeee2abe1e4e2f
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-05-13 16:48:07 +0300
+
+    Add test case that makes the program crash (#47)
+    
+    * Add test case that makes the program crash (as a result of trying to dereference a null pointer)
+    
+    * Add some `assert`s for clarity
+    
+    Co-authored-by: Angus Johnson <AngusJohnson@users.noreply.github.com>
+
+commit 50291a477d9726fd5887e80c3cfc0d8171e2602d
+Author: angusj <angus@angusj.com>
+Date:   2022-05-13 23:25:14 +1000
+
+    fixed significant clipping bug (c++,C#,D.)
+
+commit 469d8b0d2b2466ce833a18df81afa65029b99a8f
+Merge: f96d557 c67f9a7
+Author: angusj <angus@angusj.com>
+Date:   2022-05-13 23:08:42 +1000
+
+    Merge remote-tracking branch 'origin/main' into main
+
+commit f96d557b40f0dde0e3d50aa4cec88e43c543716d
+Author: angusj <angus@angusj.com>
+Date:   2022-05-13 23:01:45 +1000
+
+    Fixed a significant bug in clipping code that could crash (C++,C#,D.)
+    Minor constness fix (#38)
+    Minor fixes to Clipper.Offset (but more fixes to do)
+
+commit c67f9a788c0276d908364b6c3502a6954a742661
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-05-12 12:13:14 +0300
+
+    Add more test automation (#46)
+    
+    * Extract text file loading functions to a separate .cpp file, so that they can be used in test automation as well
+    
+    * Add running tests from text file
+    
+    * Minor cleanup
+    
+    * Build even the console demo program, to make sure it stays in good shape
+
+commit f8aba3631d7192e32c9f7294b340f14d6a90b8ad
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-05-12 09:19:08 +0300
+
+    Trigger CI run for pull requests, too (#45)
+
+commit f5f97a94d59f128fe89305910b5d322c589f8dd9
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-05-12 01:36:03 +0300
+
+    Minor constness fix (#38)
+
+commit 8e9424ae52074e829a898852f182085f9a6b9a97
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2022-05-12 01:30:19 +0300
+
+    Add minimal CI test suite (#44)
+    
+    * Add very basic tests for Visual Studio
+    
+    * Add GitHub Actions script
+    
+    * Add GitHub Actions status badge
+    
+    * Treat warnings as errors
+
+commit 974723cca275a28382e7d420f4acd2be10475966
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-05-11 00:06:55 -0500
+
+    Fix example project loading. (#42)
+    
+    * Fix example project loading.
+    
+    * Update ConsoleDemo.csproj
+    
+    * Slip a foreach conversion in :)
+
+commit f5051a5fdc9897856a995e1038884faa143bf8f2
+Author: angusj <angus@angusj.com>
+Date:   2022-05-11 12:13:43 +1000
+
+    Restore *foreach* (see #35)
+
+commit 03ac92e78a20824f66512fac7185e51c12bf3ea0
+Author: angusj <angus@angusj.com>
+Date:   2022-05-09 21:30:41 +1000
+
+    C# : Replaced "foreach" with "for" statements for performance (#35)
+    C++: Minor update to demo app
+
+commit 68029e7287b579a14f043bcaacecb85f97d2c856
+Author: Vojtěch Bubník <5830947+bubnikv@users.noreply.github.com>
+Date:   2022-05-09 09:49:02 +0200
+
+    Fixed compilation of ConsoleDemo1: (#37)
+    
+    Fixed paths to includes and Clipper sources after the ConsoleDemo1
+    project was moved to Examples directory.
+    Replaced backlashes with forward slashes in C++ include paths.
+
+commit 28cb4a7a82eb35b80f359cd0e844be15c9ad8973
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-05-08 22:45:17 -0500
+
+    Bug fix for SetZ (#36)
+    
+    Constructors were missing for certain scale cases.
+
+commit 9dce946b11e9928808077d2791ee8d86f4ba8e02
+Author: angusj <angus@angusj.com>
+Date:   2022-05-09 08:48:29 +1000
+
+    C# bugfixes (#35)
+
+commit 23aed3b04c243644f10eaca49f813679daf5975d
+Author: angusj <angus@angusj.com>
+Date:   2022-05-08 20:43:53 +1000
+
+    C# code tidy
+
+commit 25211adc548e54dd5c4ba3154754c674b51621ca
+Author: angusj <angus@angusj.com>
+Date:   2022-05-08 18:33:49 +1000
+
+    Fixed another bug in C# clipping.
+
+commit 03033cd24e7d98fb02fa43c100671a2342f9774b
+Author: angusj <angus@angusj.com>
+Date:   2022-05-08 12:51:42 +1000
+
+    C# clipping bugfix
+    Updated C# demo
+
+commit 3b23a393529bd09d383aa389393f77401e3d6dd8
+Author: angusj <angus@angusj.com>
+Date:   2022-05-05 19:10:02 +1000
+
+    Removed unicode byte marks from 2 Delphi files
+
+commit 54594908c90ef0bf867ffdb75e9ff9282ec58ae4
+Author: angusj <angus@angusj.com>
+Date:   2022-05-05 16:38:07 +1000
+
+    Minor C# bugfix
+
+commit aed9a491f8604bc4e9835dcb734f0782c1b4feda
+Author: angusj <angus@angusj.com>
+Date:   2022-05-05 16:23:13 +1000
+
+    Minor tidy up.
+
+commit 8e8925bcb63dce21396aa1487dc1de867d456872
+Author: angusj <angus@angusj.com>
+Date:   2022-05-05 14:46:53 +1000
+
+    Fixed bug affecting open paths and REVERSE_ORIENTATION
+    Other minor tweaks
+
+commit 04c591e1057464455931e85e43155ee65f9d8589
+Author: angusj <angus@angusj.com>
+Date:   2022-05-04 21:01:48 +1000
+
+    Fixed a bug clipping open paths
+    Reverted to using aliases in c# code (#26)
+
+commit 69cc57fb5d547d2c3398e657983d4b6506a8e2d2
+Author: angusj <angus@angusj.com>
+Date:   2022-05-03 19:24:17 +1000
+
+    Fixed incorrect c++ performance.
+
+commit 68402d766116d9bee5e80c0c7cb6e061c6024c11
+Author: angusj <angus@angusj.com>
+Date:   2022-05-03 16:12:12 +1000
+
+    Fixed another but in C++ PolyTrees.
+
+commit 65849b0fc354f73fbc57665d6666ea5cdd8585de
+Author: angusj <angus@angusj.com>
+Date:   2022-05-02 19:22:28 +1000
+
+    Fixed Polytree build error. (#28 and #30)
+
+commit 5fbb21e2451ce64a30a4519088029c9cbbc798c2
+Author: angusj <angus@angusj.com>
+Date:   2022-05-02 14:21:32 +1000
+
+    Fixed REVERSE_ORIENTATION bug in C++
+
+commit f5e11706addeceb2c6bcf2f14dea7c96cd25f8ca
+Author: angusj <angus@angusj.com>
+Date:   2022-05-02 08:27:20 +1000
+
+    Polytree build error (see #28)
+
+commit 84cfb7c2ba43d8ded19f87863452259ca164892b
+Author: angusj <angus@angusj.com>
+Date:   2022-05-01 23:04:28 +1000
+
+    remove aliases in c# code (see #26)
+
+commit 214f71f8762dea386e5892523a017fd3962690ec
+Author: angusj <angus@angusj.com>
+Date:   2022-05-01 22:35:09 +1000
+
+    Further minor bugfixes to C++ code
+
+commit 699db20ed54b58bc2fc5f8e27824d909c78d90d7
+Author: angusj <angus@angusj.com>
+Date:   2022-05-01 13:10:15 +1000
+
+    Minor bugfixes and futher updates to C++ sample file.
+
+commit a36c49a2c18a4675bc8bb92c747b85687a517a21
+Author: angusj <angus@angusj.com>
+Date:   2022-04-30 09:00:08 +1000
+
+    Fixed a significant bug in C++ code.
+
+commit 0b7d978f23c9eef4088f226e992ba1303719d09e
+Author: angusj <angus@angusj.com>
+Date:   2022-04-28 20:54:08 +1000
+
+    Numerous updates to C++ code
+
+commit 07accad68b4c2671e783e1d3ec12765e8efbcca2
+Author: angusj <angus@angusj.com>
+Date:   2022-04-27 22:42:13 +1000
+
+    Simplified C++ demo
+
+commit c61c797cf887f0ca7d9789afb25742a6de9f0b8a
+Author: angusj <angus@angusj.com>
+Date:   2022-04-27 22:19:05 +1000
+
+    Minor bug fixes and tidy up to C++ code
+
+commit 16eee9bb5dfe85abbbabc24c1b86a7e5e7bd9b4f
+Author: angusj <angus@angusj.com>
+Date:   2022-04-27 18:13:50 +1000
+
+    Added a C++ translation
+    (with Polytree and float support still to come)
+    Other minor tweaks
+
+commit d8fe7f7f1e2f7585b3a83823cc0f3a0aa9555a80
+Author: angusj <angus@angusj.com>
+Date:   2022-04-20 10:57:12 +1000
+
+    Fixed significant bug in C# code that was introduced in previous revision.
+
+commit 90bab1da6f8477c70d1d09b781605c97a0f6d1be
+Author: angusj <angus@angusj.com>
+Date:   2022-04-19 15:46:33 +1000
+
+    Several minor bugfixes in previous merge revision.
+
+commit 8b37097c30af2baad8c4920e7d43eed429c92a46
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-04-19 00:02:18 -0500
+
+    Various clean-ups (#23)
+    
+    * Various clean-ups
+    
+    Make classes static where appropriate (i.e. Func classes, which are never instantiated)
+    Various null-related adjustments.
+    
+    * Update Clipper.Engine.cs
+    
+    * Update Clipper.Engine.cs
+    
+    * Update Clipper.Engine.cs
+    
+    * Update Clipper.Engine.cs
+    
+    * Update Clipper.Engine.cs
+    
+    * Update Clipper.Engine.cs
+    
+    * Update Clipper.Engine.cs
+    
+    * Update Clipper.Engine.cs
+    
+    Not sure what the InsertLocalMinimaIntoAEL 'InsertRightEdge(leftBound, rightBound); ///////' comment marker might be about. It looks important based on the number of slashes....
+    
+    * Update Clipper.Offset.cs
+    
+    * Update Clipper.Offset.cs
+    
+    * Update Clipper.Engine.cs
+
+commit fcf7b77bef7033ed805ba522317a943e3b4e3f59
+Author: angusj <angus@angusj.com>
+Date:   2022-04-18 12:51:41 +1000
+
+    Fixed significant bugs introduced in previous revision
+
+commit ca00b69e1ccb9af33805946bddf722acc6c078d9
+Author: angusj <angus@angusj.com>
+Date:   2022-04-17 13:05:02 +1000
+
+    Clipper.Offset: fixed rounding ends of open paths
+    Clipper.SVG.pas: Moved to Examples folder
+    Added Delphi Example1
+
+commit 0f800eaca9ba8ec962d1d520d5fc3bc2600bae39
+Author: angusj <angus@angusj.com>
+Date:   2022-04-17 10:03:47 +1000
+
+    Minor code tidy
+
+commit 74424ad9f6115f1b9f1cf3ea7933f759482d6223
+Author: angusj <angus@angusj.com>
+Date:   2022-04-17 09:36:59 +1000
+
+    Moved Delphi library to subfolder
+    Added Delphi benchmark utility
+    Added Test folder with test polygons
+
+commit 062e83455638c6d1afae343b96bba28bf0772595
+Author: angusj <angus@angusj.com>
+Date:   2022-04-16 21:59:17 +1000
+
+    Minor C# bugfixes to previous revision
+
+commit 200d58f3c229a8100ccad19ba0909b7a9bf7341f
+Author: angusj <angus@angusj.com>
+Date:   2022-04-16 19:45:46 +1000
+
+    Minor bugfix in joins
+
+commit c8be2ac46326a2533e35799ff297f798cddebded
+Author: angusj <angus@angusj.com>
+Date:   2022-04-16 15:33:34 +1000
+
+    C# and Delphi: Significantly improved joining of "touching" solution polygons.
+    C# only: Attended compiler warnings re null pointers.
+
+commit 872784da46cdcf53247d44afeaf2e2f717d7eb86
+Author: angusj <angus@angusj.com>
+Date:   2022-04-11 16:44:57 +1000
+
+    Incorrect description in Minkowski header
+
+commit 90d8e78c7bd6f88880630e27231f3b447ead3a8c
+Author: angusj <angus@angusj.com>
+Date:   2022-04-11 16:40:18 +1000
+
+    Added Minkowski unit
+    Other trivial changes
+
+commit 238ecc49f4c7e9f1de2582f158f10b60c596ad95
+Author: angusj <angus@angusj.com>
+Date:   2022-04-11 11:18:36 +1000
+
+    Minor changes to rarely executed code
+
+commit ab346e69f767710cdd50ad96d69dea10362819f8
+Author: angusj <angus@angusj.com>
+Date:   2022-04-10 22:37:32 +1000
+
+    trivial edit to polygon joins
+
+commit 7fcfadbf4c4d8bcbf591ac44dd43f529305193b7
+Merge: 8a5e074 aa94d64
+Author: angusj <angus@angusj.com>
+Date:   2022-04-10 22:13:57 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2 into main
+
+commit 8a5e074da75687559f2439cbddb95de2fbfe1adc
+Author: angusj <angus@angusj.com>
+Date:   2022-04-10 22:11:42 +1000
+
+    Minor bugfixes in clipping solution joining
+
+commit aa94d64fcad6e61bbff409b27fe0b410d607c16e
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-04-08 13:40:11 -0500
+
+    Update README.md (#21)
+
+commit 39f621c041e63e63b216c25d691758ce249aa763
+Author: angusj <angus@angusj.com>
+Date:   2022-04-08 20:05:58 +1000
+
+    Fixed recent bug in cleaning collinear edges
+    Updated ReadMe
+
+commit 82577fd52cbe59a5db29a7157f840eb889e35059
+Author: DJGosnell <DJGosnell@users.noreply.github.com>
+Date:   2022-04-07 15:58:29 -0400
+
+    Modified the spacing to enforce two spaces for indention. (#18)
+
+commit c2e5f159df2137833a116cc071e6b315b439c927
+Author: angusj <angus@angusj.com>
+Date:   2022-04-07 22:48:42 +1000
+
+    Moved Clipper.SVG.cs to a more sensible location
+
+commit ef75c0deb5780ae3afa51e822c5a6765492eaec1
+Author: angusj <angus@angusj.com>
+Date:   2022-04-07 15:45:38 +1000
+
+    Added Clipper.SVG.pas
+
+commit b2c1f315db3c771f798afbcae474ea6b6ca22f78
+Author: angusj <angus@angusj.com>
+Date:   2022-04-07 14:59:46 +1000
+
+    Clipper2LibExample tidy
+
+commit d6609b448f1bf3de90984674cd21fd659c6465dc
+Author: angusj <angus@angusj.com>
+Date:   2022-04-07 14:18:59 +1000
+
+    Clipper.SVG.cs - minor bugfixes
+    Clipper2LibExample - embellished with SVG
+
+commit b2c6b06e6dcb324b244abf2406a204c19af50690
+Author: DJGosnell <DJGosnell@users.noreply.github.com>
+Date:   2022-04-06 16:50:49 -0400
+
+    C# Formatting and Benchmark Updates (#17)
+    
+    * Added standard .editorconfig and applied formatting.
+    
+    * Updated benchmarks to use same code as is used in the other performance tests for consistency.
+    
+    * Cleaned up benchmark code in the example program.
+    
+    * Updated targeting for .NET Standard 2.0 and .NET 5.0
+
+commit 88f35f041b4d78bf05c907982b24c5a0edbdaea2
+Author: angusj <angus@angusj.com>
+Date:   2022-04-06 15:16:26 +1000
+
+    Fixed bugs in C# code that degraded performance
+    Added Clipper.SVG (useful for debugging)
+
+commit 17964b60849c5beb1dc22e6dfee855b8eb92d31f
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-04-05 09:30:24 -0500
+
+    Clean-up and bug fix (#13)
+    
+    * Clean-up and bug fix
+    
+    Fixed missing closed parenthesis in USINGZ mode in Clipper.Engine.
+    Also reformatted code to clean it up and make it more consistent with regard to indentation (IDE did the heavy lifting here).
+    
+    * Restore missing privates
+    
+    Accidentally removed
+
+commit 71654ec4658520e0597d48f3cd3fc20daff19497
+Author: angusj <angus@angusj.com>
+Date:   2022-04-05 17:25:07 +1000
+
+    Minor changes to C# code making a couple of struct immutable
+
+commit f894edda60a4a01d67dbc4fd4e9ba513cbe2f76d
+Author: DJGosnell <DJGosnell@users.noreply.github.com>
+Date:   2022-04-04 17:24:03 -0400
+
+    C# Performance (#11)
+    
+    * Added Clipper2Lib to a project.
+    Added benchmark library.
+    Added example application.
+    Added .gitignore file for dotnet projects.
+    
+    * Inlined methods where possible.
+
+commit 141f78da71d6fb65d298b8dabf70faca7bba4c04
+Author: angusj <angus@angusj.com>
+Date:   2022-04-04 20:02:38 +1000
+
+    Minor documentation update
+
+commit 098394b89770fbf19f07f63bd01e1813ebe0bc2b
+Author: angusj <angus@angusj.com>
+Date:   2022-04-04 15:18:59 +1000
+
+    Another minor C# bug fixed.
+
+commit 20f8c0bbae34adafaf88c4f97d0c3c98fe48194f
+Author: angusj <angus@angusj.com>
+Date:   2022-04-04 12:18:05 +1000
+
+    Fixed numerous minor bugs in recent C# code updates
+
+commit 74ed162470104592bae51dee8f90de23e08114c1
+Author: angusj <angus@angusj.com>
+Date:   2022-04-03 23:12:17 +1000
+
+    Updated C# code with "touching polygon" merging
+
+commit d45a8d20211e5acd7753130402a8fdac8403c8fb
+Author: angusj <angus@angusj.com>
+Date:   2022-04-02 21:10:51 +1000
+
+    Fixed orientation issues
+
+commit fb09f22d3bdb4224e3f1bc3a2fb2cd4cfce12095
+Author: angusj <angus@angusj.com>
+Date:   2022-04-02 07:33:08 +1000
+
+    Minor tweaks
+
+commit 9f1e19a72822bec1c13432e7a45fa0cce9a55d60
+Author: angusj <angus@angusj.com>
+Date:   2022-04-01 22:58:00 +1000
+
+    Minor bugfix and code tidy
+
+commit e7276d27c24628e2a0034b08259cacdbac0fd62b
+Author: angusj <angus@angusj.com>
+Date:   2022-04-01 12:55:18 +1000
+
+    Bugfixed recent changes in Delphi code.
+
+commit 146232c1202bc30e300bf95ef664b7a47816e938
+Author: angusj <angus@angusj.com>
+Date:   2022-03-31 22:36:42 +1000
+
+    Added INVERTEDYAXIS precompiler switch.
+    This accommodates software development in environments using inverted Y-axis displays that reverse observed winding directions.
+    Other minor tweaks.
+
+commit 1cfedd7e483511e3e7eb7f95c01635ad41e624da
+Author: angusj <angus@angusj.com>
+Date:   2022-03-31 14:59:54 +1000
+
+    Documentation update
+
+commit ffc6b0bcff05d73d10fb875a3fcf4e826ba8ca59
+Author: angusj <angus@angusj.com>
+Date:   2022-03-31 12:19:15 +1000
+
+    Minor code refactor
+    Documentation changes
+
+commit 5e30e06cb568ffe61ff0b5ecce8c06948830df9f
+Author: angusj <angus@angusj.com>
+Date:   2022-03-31 08:05:16 +1000
+
+    Another major update to Clipper2 (Delphi code only so far) that performs near complete merging of solution polygons. And this is done without a significant cost to performance.
+
+commit 9120ac382dffea79f73536a2666fe7cd692e2e48
+Author: angusj <angus@angusj.com>
+Date:   2022-03-20 08:06:49 +1000
+
+    Minor edit of doc readme
+
+commit a6fcdaf87707fe8929e4652279aee195f050596f
+Author: angusj <angus@angusj.com>
+Date:   2022-03-19 14:50:39 +1000
+
+    minor doc edit
+
+commit 75c9901f55ce9c2e5a982c7d21746435723d2bf0
+Author: angusj <angus@angusj.com>
+Date:   2022-03-19 14:37:51 +1000
+
+    Minor doc edit
+
+commit 94b5e181a963fd5105996131f76fd8fe31e81637
+Author: angusj <angus@angusj.com>
+Date:   2022-03-19 14:32:59 +1000
+
+    Renamed ClipperLib2 namespace to ClipperLib2 (C#)
+    Changed InflatePaths function in C# to emulate same function in Delphi.
+
+commit 48e31b6d9737756f334a1f079b18dd9d813ad794
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-19 14:13:25 +1000
+
+    Update readme.md
+
+commit 668c0fa469364d3bfe8788fc9628541a68017242
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-19 12:38:02 +1000
+
+    Update readme.md
+    
+    minor update to Docs readme
+
+commit 3658d63ca37a8ef7647bcf6a062d5273a50279ec
+Author: angusj <angus@angusj.com>
+Date:   2022-03-19 12:16:35 +1000
+
+    Added MakePath function to library
+
+commit ee0da36d2a05af1fff98e84b0eb3f2caaff0a640
+Author: angusj <angus@angusj.com>
+Date:   2022-03-19 12:12:44 +1000
+
+    anothr minor doc edit
+
+commit 5866a206c5ad2c4da3042e64b6c69be3704177dd
+Author: angusj <angus@angusj.com>
+Date:   2022-03-19 11:43:54 +1000
+
+    another minor doc edit
+
+commit 8c90a3b3fb0b68f49f5f4b344384eb173cbf0baf
+Author: angusj <angus@angusj.com>
+Date:   2022-03-19 11:11:33 +1000
+
+    Another minor Doc edit
+
+commit 9b4534698c3a7c1cd3cce2917f997da99d42588c
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-19 10:17:28 +1000
+
+    Update readme.md
+
+commit 3f429e45313ed50581f4b46ebf512238408dfc05
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-19 10:13:14 +1000
+
+    Added examples of library functions
+
+commit 7e9c0b3fb1689a7f875c134dbae901ef14239117
+Author: angusj <angus@angusj.com>
+Date:   2022-03-19 09:02:34 +1000
+
+    Minor doc edit
+
+commit 42d68ab4a9731c2f3e43aa535eb2b905594d54fa
+Author: angusj <angus@angusj.com>
+Date:   2022-03-18 17:16:16 +1000
+
+    Minor edit
+
+commit c5d791076a252490f7de6ae32b9d883336e86902
+Merge: ee04eb2 8e46185
+Author: angusj <angus@angusj.com>
+Date:   2022-03-18 16:30:12 +1000
+
+    Files merged
+
+commit ee04eb296e1538db09e4e58e5bcd9d79571e3575
+Author: angusj <angus@angusj.com>
+Date:   2022-03-18 16:26:24 +1000
+
+    Fixed a bug in Clipper.Offset.cs
+    Changed ClipperD constuctor to accept a decimal precision value instead of a scale.
+    Minor code tidy.
+
+commit 8e46185855d47f5731ad4ddd107cdd4e68427210
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-18 11:56:10 +1000
+
+    Update readme.md
+
+commit c37823a21f2a61bd399952875ab83a664bb2da58
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-18 11:53:12 +1000
+
+    Update readme.md
+
+commit 7807dd6b664e31148da0b8853ec181eab7dbcaf3
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-18 10:00:30 +1000
+
+    Update readme.md
+
+commit 3c3e6266ab46c38a38ad0bc9252f94ed7b629286
+Author: angusj <angus@angusj.com>
+Date:   2022-03-18 09:57:50 +1000
+
+    Minor edit of doc readme
+
+commit 7936f588ed487bb0769fbf90aeb1bfdf7f523dd8
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-18 09:41:41 +1000
+
+    Update readme.md
+
+commit f07d2b311a733ce3955cc0025a09e8e9c4aff3bd
+Author: angusj <angus@angusj.com>
+Date:   2022-03-18 09:26:50 +1000
+
+    Minor documentation changes
+
+commit 5ff47dcc0cbf94acccc95e18589715b9d7c76c0d
+Author: angusj <angus@angusj.com>
+Date:   2022-03-18 08:56:40 +1000
+
+    Minor update to docs
+
+commit 45b9d5510d08eddd000c967a31b10a7edb4e3920
+Merge: affca3f 06549f3
+Author: angusj <angus@angusj.com>
+Date:   2022-03-18 08:47:13 +1000
+
+    Merge branch 'main' of https://github.com/AngusJohnson/Clipper2 into main
+
+commit affca3fb45bf334203283225a41ad683f944abcf
+Author: angusj <angus@angusj.com>
+Date:   2022-03-18 08:43:56 +1000
+
+    Minor changes to documentation
+
+commit 06549f36031170bdf64a75490af812fb2dc745ae
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-18 08:13:21 +1000
+
+    Update README.md
+
+commit d7707074cfef464239960b936daa32a2b097ce91
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-15 20:26:06 +1000
+
+    typo
+
+commit 31c88b4b0cf1f9204b565bcb31eed08c7091bc5d
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-15 15:22:13 +1000
+
+    Update README.md
+
+commit d73798e5d06839dc70ea00db48247fb73bd4bb73
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-15 15:20:12 +1000
+
+    Update README.md
+
+commit ca6d9b4fa9a22ba967da546e27e236c41b7c2361
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-15 14:29:54 +1000
+
+    Update README.md
+
+commit 30c8eee5db06904bf753cd7501abfd7320011360
+Author: angusj <angus@angusj.com>
+Date:   2022-03-14 20:47:33 +1000
+
+    Code tidy
+
+commit 624de55277b954f0d1e2e9c387b70eb5881ca835
+Author: angusj <angus@angusj.com>
+Date:   2022-03-14 15:10:51 +1000
+
+    Minor edit
+
+commit cc15376a92072a6cd4dddab31bcadad7bedac06d
+Author: angusj <angus@angusj.com>
+Date:   2022-03-14 15:09:36 +1000
+
+    Minor edit
+
+commit 1b8bf5388ae37f93db938e8be771213e93a79e47
+Author: angusj <angus@angusj.com>
+Date:   2022-03-14 14:53:37 +1000
+
+    Minor Doc readme update
+
+commit a385292e2a450021202939e2b5f5b95d4cab6eb6
+Merge: 82825a2 8d863e7
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-14 09:16:31 +1000
+
+    Merge pull request #3 from philstopford/main
+    
+    Update readme.txt
+
+commit 8d863e781d54c70fb7db55ec052ad43c06c2ce09
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-03-13 18:15:24 -0500
+
+    Update readme.txt
+
+commit 246094765da352b799bffa49563feb36faf59cd9
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-03-13 18:14:11 -0500
+
+    Update readme.txt
+
+commit 60e7de14cc17a72a54671fb31d3e0b93fe4d6d7f
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-03-13 18:11:23 -0500
+
+    Update readme.txt
+
+commit 809b115ff3019269411fbb6cb2f33fed277c7325
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2022-03-13 18:07:26 -0500
+
+    Update readme.txt
+
+commit 82825a2b2f819274a09a8636af4e2ff4e8da1c27
+Author: angusj <angus@angusj.com>
+Date:   2022-03-12 16:27:13 +1000
+
+    ClipperOffset bugfix.
+
+commit a77bcd4c989c335398e52c33dbd414ebe4563852
+Author: angusj <angus@angusj.com>
+Date:   2022-03-12 11:31:51 +1000
+
+    Clipper.PreserveCollinear property added (default = true)
+    Fixed Open path clipping in Delphi code
+
+commit 640071727423fa2a6cda276775ff59a78e9e81de
+Author: angusj <angus@angusj.com>
+Date:   2022-03-11 22:07:51 +1000
+
+    Further refactoring
+
+commit 75c1249235fa65cb618f6a8c30a723b2e53c5b91
+Author: angusj <angus@angusj.com>
+Date:   2022-03-11 21:01:52 +1000
+
+    Refactoring and code tidy
+
+commit 2d53a53db609afeaec8d3cab07b49913ffa26024
+Author: angusj <angus@angusj.com>
+Date:   2022-03-11 15:13:43 +1000
+
+    Code tidy.
+
+commit 3241fc2b2ec2e25ded65dfb67c56f3a83e041f93
+Author: angusj <angus@angusj.com>
+Date:   2022-03-11 11:22:19 +1000
+
+    Fixed a significant clipping bug
+
+commit 7687563db1b9a7e40032d65a9253437660de5c59
+Author: angusj <angus@angusj.com>
+Date:   2022-03-10 21:22:10 +1000
+
+    Numerous minor bug fixes, code optimizations and tidy
+
+commit 3cba8df901e7a0356b61827c58567841f20adc37
+Author: angusj <angus@angusj.com>
+Date:   2022-03-09 10:24:59 +1000
+
+    Important bugfix for clipping in C# port.
+
+commit b39edbac9e0331c92cbeae1f8ac591f28d0adac0
+Author: angusj <angus@angusj.com>
+Date:   2022-03-08 21:47:14 +1000
+
+    Added optionals support for Z coordinates
+    Fixed minor bugs with open paths
+    Numerous minor refactorings
+
+commit 299eddb890dfc736b66c2f28eac015224ca00526
+Author: angusj <angus@angusj.com>
+Date:   2022-03-06 12:02:22 +1000
+
+    Improved readme.
+
+commit 65d93ed8359bf391d591578aab093e888976bc8e
+Author: angusj <angus@angusj.com>
+Date:   2022-03-06 11:44:31 +1000
+
+    Added AddOpenSubject to Clipper class
+    Tweaked internal code (Clipper.IsValidAelOrder)
+
+commit 5e404d399e908e8c16257978dea834f490298eca
+Author: angusj <angus@angusj.com>
+Date:   2022-03-04 20:13:23 +1000
+
+    Fixed a rare crash when clipping open paths
+
+commit 2d9f6754fa377d9e14c166e4a59ea502aad1451f
+Author: angusj <angus@angusj.com>
+Date:   2022-03-02 12:31:01 +1000
+
+    Fixed incomplete renaming of TPath to TPath64
+
+commit c5b8a5a1711c09450a0a96a7374faa9f57d37554
+Author: angusj <angus@angusj.com>
+Date:   2022-03-02 09:32:20 +1000
+
+    Renamed Path and Paths to Path64 and Paths64.
+    Minor bugfix in Clipper.Offset
+
+commit 2e943710c1c4a5f0420ec24eb5ee09fa963827dc
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-01 08:35:03 +1000
+
+    Rename csharp/Clipper.Offset.cs to CSharp/Clipper.Offset.cs
+
+commit 53b113e990ebf574d5fccb0fb9dbc075c3e5fbb7
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-01 08:34:35 +1000
+
+    Rename csharp/Clipper.Engine.cs to CSharp/Clipper.Engine.cs
+
+commit 8a7bf36eb317d14d2095feb98e7355dbb4487e9b
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-01 08:34:01 +1000
+
+    Rename csharp/Clipper.Core.cs to CSharp/Clipper.Core.cs
+
+commit 963a61abd6c8bbd0a534c93cebef27fbabbac81c
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-03-01 08:32:47 +1000
+
+    Rename csharp/Clipper.cs to CSharp/Clipper.cs
+    
+    folder renamed
+
+commit 32027c6c172fc837815dfe6fef9756cfd2f79385
+Author: angusj <angus@angusj.com>
+Date:   2022-03-01 08:18:49 +1000
+
+    documentation: triginometry
+
+commit 3d14ecea15110d02fa26203ff7fb549828c13153
+Author: angusj <angus@angusj.com>
+Date:   2022-03-01 08:09:47 +1000
+
+    Initial commit 3
+
+commit d55a78d308663ac54f76ad220459a777e3e17523
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-02-25 07:37:56 +1000
+
+    Update README.md
+
+commit d760a580d01fb5caaf6fe33388dd17b20b6ac82f
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-02-24 09:25:40 +1000
+
+    Update README.md
+
+commit 8ded82c20e83c5aa8f19a9e3dbfd29d6574d3d15
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2022-02-24 09:19:13 +1000
+
+    Initial commit
