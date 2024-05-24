@@ -30,7 +30,10 @@ procedure SIRegisterTHEADER(Cl: TPSPascalCompiler);
 {$ENDIF}
 procedure SIRegisterTCUSTOMRADIOGROUP(Cl: TPSPascalCompiler);
 procedure SIRegisterTRADIOGROUP(Cl: TPSPascalCompiler);
-
+{$IFDEF DELPHI14UP}
+procedure SIRegisterTCUSTOMLINKLABEL(Cl: TPSPascalCompiler);
+procedure SIRegisterTLINKLABEL(Cl: TPSPascalCompiler);
+{$ENDIF}
 procedure SIRegister_ExtCtrls(cl: TPSPascalCompiler);
 
 implementation
@@ -39,6 +42,9 @@ begin
   with Cl.AddClassN(cl.FindClass('TGraphicControl'), 'TShape') do
   begin
     {$IFDEF DELPHI4UP}
+    RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
     RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Brush', 'TBrush', iptrw);
@@ -66,6 +72,9 @@ begin
   with Cl.AddClassN(cl.FindClass('TGraphicControl'), 'TImage') do
   begin
     {$IFDEF DELPHI4UP}
+    RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
     RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Canvas', 'TCanvas', iptr);
@@ -99,6 +108,9 @@ begin
     {$IFDEF DELPHI4UP}
     RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
+    {$IFDEF FPC}
+    RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
     RegisterProperty('Canvas', 'TCanvas', iptr);
     RegisterProperty('Color', 'TColor', iptrw);
     RegisterProperty('Font', 'TFont', iptrw);
@@ -129,6 +141,9 @@ begin
   with Cl.AddClassN(cl.FindClass('TGraphicControl'), 'TBevel') do
   begin
     {$IFDEF DELPHI4UP}
+    RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
     RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Shape', 'TBevelShape', iptrw);
@@ -309,6 +324,45 @@ begin
   end;
 end;
 
+{$IFDEF DELPHI14UP}
+
+procedure SIRegisterTCUSTOMLINKLABEL(Cl: TPSPascalCompiler);
+begin
+  with Cl.AddClassN(cl.FindClass('TWinControl'), 'TCustomLinkLabel') do
+  begin
+    RegisterProperty('Alignment', 'TAlignment', iptrw); //actual type: taLeftJustify..taRightJustify
+    RegisterProperty('AutoSize', 'Boolean', iptrw);
+    RegisterProperty('UseVisualStyle', 'Boolean', iptrw);
+    RegisterProperty('OnLinkClick', 'TSysLinkEvent', iptrw);  
+  end;
+end;
+
+procedure SIRegisterTLINKLABEL(Cl: TPSPascalCompiler);
+begin
+  with Cl.AddClassN(cl.FindClass('TCustomLinkLabel'), 'TLinkLabel') do
+  begin
+    RegisterProperty('Anchors', 'TAnchors', iptrw);
+    RegisterProperty('Caption', 'string', iptrw);
+    RegisterProperty('Color', 'TColor', iptrw);
+    RegisterProperty('Font', 'TFont', iptrw);
+    RegisterProperty('ParentColor', 'Boolean', iptrw);
+    RegisterProperty('ParentFont', 'Boolean', iptrw);
+
+    {$IFNDEF PS_MINIVCL}
+    RegisterProperty('DragCursor', 'LongInt', iptrw);
+    RegisterProperty('DragMode', 'TDragMode', iptrw);
+    RegisterProperty('ParentShowHint', 'Boolean', iptrw);
+    RegisterProperty('OnClick', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
+    RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
+    RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
+    RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
+    {$ENDIF}
+  end;
+end;
+
+{$ENDIF}
+
 procedure SIRegister_ExtCtrls_TypesAndConsts(cl: TPSPascalCompiler);
 begin
   cl.AddTypeS('TShapeType', '(stRectangle, stSquare, stRoundRect, stRoundSquare, stEllipse, stCircle)');
@@ -318,6 +372,10 @@ begin
   cl.AddTypeS('TBevelWidth', 'LongInt');
   cl.AddTypeS('TBorderWidth', 'LongInt');
   cl.AddTypeS('TSectionEvent', 'procedure(Sender: TObject; ASection, AWidth: Integer)');
+  {$IFDEF DELPHI14UP}
+  cl.AddTypeS('TSysLinkType', '(sltURL, sltID)');
+  cl.AddTypeS('TSysLinkEvent', 'procedure(Sender: TObject; const Link: string; LinkType: TSysLinkType)');
+  {$ENDIF}
 end;
 
 procedure SIRegister_ExtCtrls(cl: TPSPascalCompiler);
@@ -343,6 +401,10 @@ begin
   {$ENDIF}
   SIRegisterTCUSTOMRADIOGROUP(Cl);
   SIRegisterTRADIOGROUP(Cl);
+  {$ENDIF}
+  {$IFDEF DELPHI14UP}
+  SIRegisterTCUSTOMLINKLABEL(Cl);
+  SIRegisterTLINKLABEL(Cl);
   {$ENDIF}
 end;
 

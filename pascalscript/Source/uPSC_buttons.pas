@@ -29,6 +29,9 @@ begin
     {$IFDEF DELPHI4UP}
     RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
+    {$IFDEF FPC}
+    RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
     RegisterProperty('GroupIndex', 'Integer', iptrw);
     RegisterProperty('Down', 'Boolean', iptrw);
     RegisterProperty('Caption', 'string', iptrw);
@@ -53,6 +56,9 @@ begin
   with Cl.AddClassN(cl.FindClass('TButton'), 'TBitBtn') do
   begin
     {$IFDEF DELPHI4UP}
+    RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
     RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Glyph', 'TBitmap', iptrw);
@@ -83,7 +89,7 @@ begin
   SIRegisterTBITBTN(cl);
 end;
 
-// PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
+// PS_MINIVCL changes by Martijn Laan
 
 
 end.

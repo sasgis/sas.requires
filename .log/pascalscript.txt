@@ -1,8 +1,44 @@
-commit 1f24eda06ae947ca5b4f43f45fb72017e340d01b
-Author: evgenyk2 <git2@evgenysoft.com>
-Date:   2021-09-16 11:57:52 +0300
+commit fa5fcb67e77eeca980eeb944a66c7d5e4ceff165
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-05-15 19:25:31 +0200
 
-    Cherry pick into stable: Delphi 11 support was added
+    Cherry pick into stable: FPC Fix, missing Anchors properties (#252)
+
+commit 35f36fc22cf8497899b948a48e3dd9abc89c60ed
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-05-15 18:18:02 +0200
+
+    Cherry pick into stable: Improve previous: Use AnyString instead of const because types like Integer don't work because of the lack of 'var' in the prototypes. Putting 'var' + 'const' does not work at run time and was not able to fix this. Also improve AnyString: the compiler didn't actually check that an AnyString parameter in the call was actually a string type, instead it accepted any type as if the prototype said 'const'.
+
+commit 9885846d2bc27546e8314bc02119d45a3659d056
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-05-15 16:35:38 +0200
+
+    Cherry pick into stable: Fix two TStream issues: 1) It's not abstract anymore. Don't know since when exactly but at least in Sidney it's not abstract. 2) Read/Write(Buffer) prototype is bad and very impractical on Unicode. Make it like it really is: they accept a var of any type and this can be done in PS by using 'const' as the type and still _not_ using 'var'. Tested it to work unchanged when a string type is used in the call anyway. Also note this fix has no runtime changes so it's not surprising that it still works.
+
+commit d1dce5fec96f3432009c94f0154f981abb420d1f
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-05-15 08:09:13 +0200
+
+    Cherry pick into stable: Remove really old and non-functional email adress.
+
+commit 7c52c822f320404a400a14406a1ef2fe5dee588d
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-05-12 09:08:14 +0200
+
+    Cherry pick into stable: Make this work on Unicode: var S: set of AnsiChar; begin S := ['a', 'b']; end;
+
+commit b0d63ded120276b0721534b598695913a59b6c76
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-05-10 14:36:21 +0200
+
+    Cherry pick into stable: Add TLinkLabel from Delphi 2010.
+
+commit cb4a077428e9b1daeb1653b08d297200bd21e4bb
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-03-04 09:59:25 +0100
+
+    Cherry pick into stable: D29 packages were added & Delphi 11 support was added (2*).
 
 commit 7c999f8e8b29139cea4cc8e0a00a2551d467137d
 Author: Martijn Laan <martijnlaan@gmail.com>

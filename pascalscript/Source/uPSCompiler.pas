@@ -2746,6 +2746,29 @@ begin
   end;
 end;
 
+function IsCharType(b: TPSBaseType): Boolean;
+begin
+  case b of
+    btChar{$IFNDEF PS_NOWIDESTRING}, btWideChar{$ENDIF}: Result := True;
+  else
+    Result := False;
+  end;
+end;
+
+function IsStringType(b: TPSBaseType): Boolean;
+begin
+  case b of
+    btString{$IFNDEF PS_NOWIDESTRING}, btWideString, btUnicodeString{$ENDIF}: Result := True;
+  else
+    Result := False;
+  end;
+end;
+
+function IsStringOrCharType(b: TPSBaseType): Boolean;
+begin
+  Result := IsStringType(b) or IsCharType(b);
+end;
+
 function IsRealType(b: TPSBaseType): Boolean;
 begin
   case b of
@@ -5234,9 +5257,8 @@ begin
         begin
           Params[c].ExpectedType := GetTypeNo(BlockInfo, Params[c].Val);
           if PType <> nil then
-          if (Params[c].ExpectedType = nil) or not (Params[c].ExpectedType.BaseType in [btString,
-            {$IFNDEF PS_NOWIDESTRING}btWideString, btUnicodeString, btWideChar,{$ENDIF}
-            btChar]) then begin
+          if (Params[c].ExpectedType = nil) or not IsStringOrCharType(Params[c].ExpectedType.BaseType) then
+          begin
             MakeError('', ecTypeMismatch, '');
             Result := False;
             exit;
@@ -6091,7 +6113,9 @@ function TPSPascalCompiler.ProcessSub(BlockInfo: TPSBlockInfo): Boolean;
       for i := 0 to arr.count -1 do
       begin
         mType := GetTypeNo(BlockInfo, arr.Item[i]);
-        if (mType <> SetType.SetType) and not (IsIntType(mType.FBaseType) and IsIntType(SetType.SetType.BaseType)) then
+        if (mType <> SetType.SetType) and
+           not (IsIntType(mType.FBaseType) and IsIntType(SetType.SetType.BaseType)) and
+           not (IsCharType(mType.FBaseType) and IsCharType(SetType.SetType.BaseType)) then
         begin
           with MakeError('', ecTypeMismatch, '') do
           begin
@@ -9550,8 +9574,17 @@ begin
       end
       else
       begin
-        if (Tmp.ExpectedType = nil) or (Tmp.ExpectedType = FAnyString) then
+        if Tmp.ExpectedType = nil then
+          Tmp.ExpectedType := GetTypeNo(BlockInfo, tmp.Val)
+        else if Tmp.ExpectedType = FAnyString then begin
           Tmp.ExpectedType := GetTypeNo(BlockInfo, tmp.Val);
+          if not IsStringType(Tmp.ExpectedType.BaseType) then
+          begin
+            MakeError('', ecTypeMismatch, '');
+            Cleanup;
+            exit;
+          end;
+        end;
         if Tmp.ExpectedType.BaseType = btPChar then
         begin
           Tmp.TempVar := AllocStackReg(at2ut(FindBaseType(btstring)))

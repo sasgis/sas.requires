@@ -213,9 +213,15 @@ procedure RIRegisterTSTREAM(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TSTREAM) do
   begin
+    {$IFNDEF DELPHI_SYDNEY_UP}
     RegisterVirtualAbstractMethod(TMemoryStream, @TMemoryStream.READ, 'Read');
     RegisterVirtualAbstractMethod(TMemoryStream, @TMemoryStream.WRITE, 'Write');
     RegisterVirtualAbstractMethod(TMemoryStream, @TMemoryStream.SEEK, 'Seek');
+    {$ELSE}
+    RegisterVirtualMethod(@TStream.READ, 'Read');
+    RegisterVirtualMethod(@TStream.WRITE, 'Write');
+    RegisterVirtualMethod(@TStream.SEEK, 'Seek');
+    {$ENDIF}
     RegisterMethod(@TSTREAM.READBUFFER, 'ReadBuffer');
     RegisterMethod(@TSTREAM.WRITEBUFFER, 'WriteBuffer');
     RegisterMethod(@TSTREAM.COPYFROM, 'CopyFrom');
@@ -444,6 +450,6 @@ begin
   {$ENDIF}
 end;
 
-// PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
+// PS_MINIVCL changes by Martijn Laan
 
 end.
