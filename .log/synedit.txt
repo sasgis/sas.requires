@@ -1,3 +1,9 @@
+commit 033425b04eb5e6fba4d05e53a9e41155b236fa15
+Author: zed <starmen@tut.by>
+Date:   2024-05-24 17:03:13 +0300
+
+    fix for Delphi 12.x support
+
 commit e80ce15858733642bf142dcdf402fcdda9998dd8
 Author: Uwe Schuster <jedivcs@bitcommander.de>
 Date:   2022-01-29 15:25:45 +0100
