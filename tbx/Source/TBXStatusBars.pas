@@ -32,7 +32,7 @@ interface
 
 uses
   Windows, Messages, Classes, SysUtils, Controls, Forms, Graphics, TBX,
-  TBXThemes, TB2ITem, ImgList;
+  TBXThemes, TB2ITem, ImgList, UITypes;
 
 type
   TTBXCustomStatusBar = class;

@@ -1,3 +1,15 @@
+commit 2565ea0bc68cda05330b55647b84f8a6dcc7f9b0
+Author: zed <starmen@tut.by>
+Date:   2024-05-24 16:13:33 +0300
+
+    Update project files and fix warnings for Delphi 12.x
+
+commit 2bc1a495c82a2ad2f78340661a5909e8351623ec
+Author: zed <starmen@tut.by>
+Date:   2024-05-24 15:49:37 +0300
+
+    Delphi 12.x fix
+
 commit 8a9845e4962244161cf2e82f8351fdc1223f0fdb
 Author: zed <starmen@tut.by>
 Date:   2023-11-13 13:33:25 +0300

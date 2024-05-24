@@ -31,7 +31,7 @@ interface
 {$I TBX.inc}
 
 uses
-  Windows, Classes, Controls, SysUtils, Graphics, ImgList, Dialogs,
+  Windows, Classes, Controls, SysUtils, Graphics, ImgList, Dialogs, UITypes,
   {$IFDEF JR_D6} DesignIntf, DesignEditors, VCLEditors, {$ELSE} DsgnIntf, {$ENDIF}
   TB2Reg, TB2Toolbar, TB2Item, TBX, TBXMDI, TBXSwitcher, TB2DsgnItemEditor,
   TBXExtItems, TBXLists, TBXDkPanels, TBXToolPals, TBXStatusBars,
