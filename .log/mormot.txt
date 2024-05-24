@@ -1,3 +1,70 @@
+commit 214a6fa1d9cd3a1d5208f4e8b11b2530707694bf
+Merge: 9cc2e4c6 a24cd54a
+Author: ab <webcontact01@synopse.info>
+Date:   2024-05-18 21:06:59 +0200
+
+    Merge pull request #453 from rosch100/master
+    
+    Fixes for access violations in SynDBExplorer
+
+commit a24cd54a7894e38d8137dfd1061e7f19beeccb12
+Author: Roland Schramme <roland.schramme@altanis.de>
+Date:   2024-05-16 20:01:46 +0200
+
+    Fixed:
+    - Access violations in SynDBExplorerExportTables.pas and SynDBExplorerQueryBuilder.pas
+    Changed:
+    - Forms sizeable: SynDBExplorerExportTables.dfm, SynDBExplorerQueryBuilder.dfm
+
+commit b8f466d74f22bfdec7f9712908a29a714b3f312b
+Merge: e2ae8358 989c4d70
+Author: Roland Schramme <roland.schramme@altanis.de>
+Date:   2024-05-16 19:59:41 +0200
+
+    Merge branch 'Branch_9cc2e4c6'
+    
+    # Conflicts:
+    #       SQLite3/Samples/12 - SynDB Explorer/SynDBExplorerQueryBuilder.dfm
+    #       SQLite3/Samples/12 - SynDB Explorer/SynDBExplorerQueryBuilder.pas
+
+commit 989c4d70f7cac1a06ea2f03251b07260e972e199
+Author: Roland Schramme <roland.schramme@altanis.de>
+Date:   2024-05-16 19:56:36 +0200
+
+    Fixed:
+    - Access violations in SynDBExplorerExportTables.pas and SynDBExplorerQueryBuilder.pas
+    Changed:
+    - Forms sizeable: SynDBExplorerExportTables.dfm, SynDBExplorerQueryBuilder.dfm
+
+commit e2ae8358f6b24c9d81166cc48ac132c2389b45d3
+Author: Roland Schramme <roland.schramme@altanis.de>
+Date:   2024-05-16 18:43:16 +0200
+
+    Fixed:
+    - Access violations in SynDBExplorerExportTables.pas and SynDBExplorerQueryBuilder.pas
+    Changed:
+    - Forms sizeable: SynDBExplorerExportTables.dfm, SynDBExplorerQueryBuilder.dfm
+
+commit 9cc2e4c66943088dddc698fc78044de8007464e5
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-03-15 18:47:37 +0100
+
+    fixed TSynLogFileView
+
+commit 948b2dd809b1e65ba90438534acc1b81ffddefee
+Merge: 63290881 e3dafecd
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-03-13 17:25:33 +0100
+
+    Merge remote-tracking branch 'refs/remotes/origin/master'
+
+commit 632908818d798edda5aaa6b464e15e237a1a138b
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-03-13 17:25:04 +0100
+
+    fixed SQlite3 static compilation on x86_64-linux
+    - we should not use the same sqlite3.o as with mORMot 2
+
 commit e3dafecdcb5b63e41540fa44e0576c85fb0e8cf2
 Merge: 4404525c e118a9d8
 Author: ab <webcontact01@synopse.info>
