@@ -5,8 +5,8 @@ interface
 uses
   {$IFNDEF FPC} Windows, {$ELSE} LCLIntf, LCLType, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Menus, Dialogs, ComCtrls,
-  ExtCtrls, StdCtrls, Math, GR32, GR32_Image, GR32_Layers, GR32_System,
-  GR32_RangeBars;
+  ExtCtrls, StdCtrls, Math,
+  GR32, GR32_Image, GR32_Layers, GR32_System, GR32_RangeBars;
 
 type
   TFormGammaBlur = class(TForm)
@@ -20,12 +20,14 @@ type
     GaugeBarBlurRadius: TGaugeBar;
     LabelBlur: TLabel;
     LabelBlurValue: TLabel;
-    LabelBlurType: TLabel;
-    RadioButtonGaussianBlur: TRadioButton;
-    RadioButtonFastBlur: TRadioButton;
+    Panel1: TPanel;
     LabelTestImage: TLabel;
     RadioButtonRedGreen: TRadioButton;
     RadioButtonCircles: TRadioButton;
+    Panel2: TPanel;
+    LabelBlurType: TLabel;
+    RadioButtonGaussianBlur: TRadioButton;
+    RadioButtonFastBlur: TRadioButton;
     procedure PaintBoxIncorrectPaintBuffer(Sender: TObject);
     procedure PaintBoxCorrectPaintBuffer(Sender: TObject);
     procedure GaugeBarGammaChange(Sender: TObject);
@@ -44,15 +46,19 @@ var
 
 implementation
 
-uses
-  {$IFNDEF FPC} JPEG, {$ELSE} LazJPG, {$ENDIF}
-  GR32_Polygons, GR32_VectorUtils, GR32_Gamma, GR32_Blurs, GR32_Resamplers;
-
 {$IFDEF FPC}
 {$R *.lfm}
 {$ELSE}
 {$R *.dfm}
 {$ENDIF}
+
+uses
+  GR32_Math,
+  GR32_Polygons,
+  GR32_VectorUtils,
+  GR32_Gamma,
+  GR32_Blurs,
+  GR32_Resamplers;
 
 { TFrmGammaBlur }
 
@@ -99,7 +105,7 @@ var
   Index: Integer;
 begin
   Bitmap.Clear(clBlack32);
-  RandSeed := $DEADBABE;
+  RandSeed := integer($DEADBABE);
   for Index := 0 to 70 do
   begin
     Points := Circle(Bitmap.Width * Random, Bitmap.Height * Random,

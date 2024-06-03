@@ -38,17 +38,11 @@ interface
 {$I GR32.inc}
 
 uses
-{$IFDEF FPC}
-  {$IFDEF Windows}
-  Windows,
-  {$ELSE}
   Types,
-  {$ENDIF}
-{$ELSE}
-  Types, Windows,
-{$ENDIF}
   RTLConsts,
-  GR32, SysUtils, Classes, TypInfo;
+  SysUtils,
+  Classes,
+  TypInfo;
 
 const
   BUCKET_MASK = $FF;               
@@ -153,6 +147,7 @@ type
   public
     destructor Destroy; override;
     function Add(const Rect: TRect): Integer;
+    procedure Assign(Source: TRectList);
     procedure Clear; virtual;
     procedure Delete(Index: Integer);
     procedure Exchange(Index1, Index2: Integer);
@@ -427,11 +422,7 @@ function TPointerMap.Exists(Item: PItem; out BucketIndex, ItemIndex: Integer): B
 var
   I: Integer;
 begin
-{$IFDEF HAS_NATIVEINT}
   BucketIndex := NativeUInt(Item) shr 8 and BUCKET_MASK; // KISS pointer hash(TM)
-{$ELSE}
-  BucketIndex := Cardinal(Item) shr 8 and BUCKET_MASK; // KISS pointer hash(TM)
-{$ENDIF}
   // due to their randomness, pointers most commonly differ at byte 1, we use
   // this characteristic for our hash and just apply the mask to it.
   // Worst case scenario happens when most changes are at byte 0, which causes
@@ -453,15 +444,7 @@ var
   BucketIndex, ItemIndex: Integer;
 begin
   if not Exists(Item, BucketIndex, ItemIndex) then
-{$IFDEF FPC}
-    raise EListError.CreateFmt(SItemNotFound, [Item])
-{$ELSE}
-{$IFDEF HAS_NATIVEINT}
-    raise EListError.CreateFmt(SItemNotFound, [NativeInt(Item)])
-{$ELSE}
-    raise EListError.CreateFmt(SItemNotFound, [Integer(Item)])
-{$ENDIF}
-{$ENDIF}
+    raise EListError.CreateFmt(SItemNotFound, [NativeUInt(Item)])
   else
     Result := FBuckets[BucketIndex].Items[ItemIndex].Data;
 end;
@@ -471,15 +454,7 @@ var
   BucketIndex, ItemIndex: Integer;
 begin
   if not Exists(Item, BucketIndex, ItemIndex) then
-{$IFDEF FPC}
-    raise EListError.CreateFmt(SItemNotFound, [Item])
-{$ELSE}
-{$IFDEF HAS_NATIVEINT}
-    raise EListError.CreateFmt(SItemNotFound, [NativeInt(Item)])
-{$ELSE}
-    raise EListError.CreateFmt(SItemNotFound, [Integer(Item)])
-{$ENDIF}
-{$ENDIF}
+    raise EListError.CreateFmt(SItemNotFound, [NativeUInt(Item)])
   else
     FBuckets[BucketIndex].Items[ItemIndex].Data := Data;
 end;
@@ -541,6 +516,13 @@ begin
   Inc(FCount);
 end;
 
+procedure TRectList.Assign(Source: TRectList);
+begin
+  SetCount(Source.Count);
+  if (FCount > 0) then
+    System.Move(Source.FList^, FList^, FCount * SizeOf(TRect));
+end;
+
 procedure TRectList.Clear;
 begin
   SetCount(0);
@@ -589,7 +571,7 @@ end;
 function TRectList.IndexOf(const Rect: TRect): Integer;
 begin
   Result := 0;
-  while (Result < FCount) and not EqualRect(FList^[Result], Rect) do
+  while (Result < FCount) and not (FList^[Result] = Rect) do
     Inc(Result);
   if Result = FCount then
     Result := -1;
@@ -762,6 +744,8 @@ end;
 destructor TLinkedList.Destroy;
 begin
   Clear;
+
+  inherited Destroy;
 end;
 
 procedure TLinkedList.DoFreeData(Data: Pointer);
@@ -862,3 +846,4 @@ begin
 end;
 
 end.
+

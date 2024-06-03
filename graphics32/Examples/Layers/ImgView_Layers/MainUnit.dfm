@@ -5,23 +5,18 @@ object MainForm: TMainForm
   ClientHeight = 590
   ClientWidth = 787
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
+  ParentFont = True
   Menu = MainMenu
-  OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 15
   object ImgView: TImgView32
     Left = 0
     Top = 0
     Width = 656
     Height = 590
     Align = alClient
+    Bitmap.DrawMode = dmBlend
     Bitmap.ResamplerClassName = 'TNearestResampler'
     BitmapAlign = baCustom
     Scale = 1.000000000000000000
@@ -30,14 +25,11 @@ object MainForm: TMainForm
     ScrollBars.Style = rbsDefault
     ScrollBars.Size = 16
     SizeGrip = sgNone
-    OverSize = 0
+    OverSize = 20
     TabOrder = 0
     TabStop = True
     OnKeyDown = ImgViewKeyDown
     OnMouseDown = ImgViewMouseDown
-    OnMouseWheelDown = ImgViewMouseWheelDown
-    OnMouseWheelUp = ImgViewMouseWheelUp
-    OnPaintStage = ImgViewPaintStage
   end
   object PnlControl: TPanel
     Left = 656
@@ -51,37 +43,10 @@ object MainForm: TMainForm
       Left = 0
       Top = 0
       Width = 131
-      Height = 130
+      Height = 77
       Align = alTop
       TabOrder = 0
       Visible = False
-      object LblScale: TLabel
-        Left = 8
-        Top = 24
-        Width = 29
-        Height = 13
-        Caption = 'Scale:'
-      end
-      object ScaleCombo: TComboBox
-        Left = 16
-        Top = 40
-        Width = 105
-        Height = 21
-        DropDownCount = 9
-        TabOrder = 0
-        Text = '100%'
-        OnChange = ScaleComboChange
-        Items.Strings = (
-          '    25%'
-          '    50%'
-          '    75%'
-          '  100%'
-          '  200%'
-          '  300%'
-          '  400%'
-          '  800%'
-          '1600%')
-      end
       object PnlImageHeader: TPanel
         Left = 1
         Top = 1
@@ -90,39 +55,40 @@ object MainForm: TMainForm
         Align = alTop
         BevelOuter = bvNone
         Caption = 'Image Properties'
-        Color = clBtnShadow
+        Color = 10178048
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindow
+        Font.Color = clWhite
         Font.Height = -11
-        Font.Name = 'Tahoma'
+        Font.Name = 'Segoe UI'
         Font.Style = []
+        ParentBackground = False
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 0
       end
       object CbxImageInterpolate: TCheckBox
         Left = 16
-        Top = 72
+        Top = 23
         Width = 97
         Height = 17
         Caption = 'Interpolated'
-        TabOrder = 2
+        TabOrder = 1
         OnClick = CbxImageInterpolateClick
       end
       object CbxOptRedraw: TCheckBox
         Left = 16
-        Top = 96
+        Top = 47
         Width = 105
         Height = 17
         Caption = 'Optimize Repaints'
         Checked = True
         State = cbChecked
-        TabOrder = 3
+        TabOrder = 2
         OnClick = CbxOptRedrawClick
       end
     end
     object PnlBitmapLayer: TPanel
       Left = 0
-      Top = 130
+      Top = 77
       Width = 131
       Height = 168
       Align = alTop
@@ -131,8 +97,8 @@ object MainForm: TMainForm
       object LblOpacity: TLabel
         Left = 8
         Top = 24
-        Width = 41
-        Height = 13
+        Width = 44
+        Height = 15
         Caption = 'Opacity:'
       end
       object PnlBitmapLayerHeader: TPanel
@@ -143,12 +109,13 @@ object MainForm: TMainForm
         Align = alTop
         BevelOuter = bvNone
         Caption = 'Bitmap Layer Properties'
-        Color = clBtnShadow
+        Color = 10178048
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindow
+        Font.Color = clWhite
         Font.Height = -11
-        Font.Name = 'Tahoma'
+        Font.Name = 'Segoe UI'
         Font.Style = []
+        ParentBackground = False
         ParentFont = False
         TabOrder = 0
       end
@@ -205,7 +172,7 @@ object MainForm: TMainForm
     end
     object PnlMagnification: TPanel
       Left = 0
-      Top = 408
+      Top = 355
       Width = 131
       Height = 168
       Align = alTop
@@ -214,22 +181,22 @@ object MainForm: TMainForm
       object LblMagifierOpacity: TLabel
         Left = 8
         Top = 24
-        Width = 41
-        Height = 13
+        Width = 44
+        Height = 15
         Caption = 'Opacity:'
       end
       object LblMagnification: TLabel
         Left = 8
         Top = 64
-        Width = 67
-        Height = 13
+        Width = 77
+        Height = 15
         Caption = 'Magnification:'
       end
       object LblRotation: TLabel
         Left = 8
         Top = 104
-        Width = 45
-        Height = 13
+        Width = 48
+        Height = 15
         Caption = 'Rotation:'
       end
       object PnlMagnificationHeader: TPanel
@@ -240,12 +207,13 @@ object MainForm: TMainForm
         Align = alTop
         BevelOuter = bvNone
         Caption = 'Magnifier (All) Properties'
-        Color = clBtnShadow
+        Color = 10178048
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindow
+        Font.Color = clWhite
         Font.Height = -11
-        Font.Name = 'Tahoma'
+        Font.Name = 'Segoe UI'
         Font.Style = []
+        ParentBackground = False
         ParentFont = False
         TabOrder = 0
       end
@@ -304,7 +272,7 @@ object MainForm: TMainForm
     end
     object PnlButtonMockup: TPanel
       Left = 0
-      Top = 298
+      Top = 245
       Width = 131
       Height = 110
       Align = alTop
@@ -313,15 +281,15 @@ object MainForm: TMainForm
       object LblBorderRadius: TLabel
         Left = 8
         Top = 24
-        Width = 71
-        Height = 13
+        Width = 76
+        Height = 15
         Caption = 'Border Radius:'
       end
       object LblBorderWidth: TLabel
         Left = 8
         Top = 64
-        Width = 67
-        Height = 13
+        Width = 73
+        Height = 15
         Caption = 'Border Width:'
       end
       object PnlButtonMockupHeader: TPanel
@@ -332,12 +300,13 @@ object MainForm: TMainForm
         Align = alTop
         BevelOuter = bvNone
         Caption = 'Button (All) Properties'
-        Color = clBtnShadow
+        Color = 10178048
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindow
+        Font.Color = clWhite
         Font.Height = -11
-        Font.Name = 'Tahoma'
+        Font.Name = 'Segoe UI'
         Font.Style = []
+        ParentBackground = False
         ParentFont = False
         TabOrder = 0
       end
@@ -387,6 +356,9 @@ object MainForm: TMainForm
         Caption = 'Open...'
         OnClick = MnuFileOpenClick
       end
+      object Saveas1: TMenuItem
+        Action = ActionSave
+      end
       object N6: TMenuItem
         Caption = '-'
       end
@@ -395,15 +367,27 @@ object MainForm: TMainForm
         OnClick = MnuPrintClick
       end
     end
+    object MenuItemEdit: TMenuItem
+      Caption = 'Edit'
+      object MenuItemCopy: TMenuItem
+        Action = ActionCopy
+      end
+      object MenuItemPasteNew: TMenuItem
+        Action = ActionPasteNew
+      end
+      object MenuItemPasteInto: TMenuItem
+        Action = ActionPasteInto
+      end
+    end
     object MnuLayers: TMenuItem
       Caption = 'Layers'
       OnClick = MnuLayersClick
       object MnuNewBitmapLayer: TMenuItem
-        Caption = 'New Bitmap Layer'
+        Caption = 'New Bitmap Layer...'
         OnClick = MnuNewBitmapLayerClick
       end
       object MnuNewBitmapRGBA: TMenuItem
-        Caption = 'New Bitmap Layer with Alpha Channel'
+        Caption = 'New Bitmap Layer with Alpha Channel...'
         OnClick = MnuNewBitmapRGBAClick
       end
       object MnuNewCustomLayer: TMenuItem
@@ -499,7 +483,7 @@ object MainForm: TMainForm
       end
     end
   end
-  object OpenPictureDialog: TOpenPictureDialog
+  object OpenDialog: TOpenDialog
     Filter = 
       'All (*.tga;*.dds;*.dib;*.tif;*.gif;*.png;*.png;*.gif;*.png;*.jpg' +
       ';*.jpeg;*.bmp;*.tif;*.tiff;*.ico;*.emf;*.wmf)|*.tga;*.dds;*.dib;' +
@@ -516,7 +500,40 @@ object MainForm: TMainForm
     Top = 56
   end
   object SaveDialog: TSaveDialog
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Left = 64
     Top = 104
+  end
+  object ActionList: TActionList
+    Left = 240
+    Top = 180
+    object ActionCopy: TAction
+      Caption = 'Copy'
+      ShortCut = 16451
+      OnExecute = ActionCopyExecute
+      OnUpdate = ActionCopyUpdate
+    end
+    object ActionPasteNew: TAction
+      Caption = 'Paste as new layer'
+      ShortCut = 16470
+      OnExecute = ActionPasteNewExecute
+      OnUpdate = ActionPasteNewUpdate
+    end
+    object ActionPasteInto: TAction
+      Caption = 'Paste into selection'
+      ShortCut = 24662
+      OnExecute = ActionPasteIntoExecute
+      OnUpdate = ActionPasteIntoUpdate
+    end
+    object ActionSave: TAction
+      Caption = 'Save as...'
+      OnExecute = ActionSaveExecute
+    end
+  end
+  object TimerMarchingAnts: TTimer
+    Interval = 50
+    OnTimer = TimerMarchingAntsTimer
+    Left = 388
+    Top = 312
   end
 end

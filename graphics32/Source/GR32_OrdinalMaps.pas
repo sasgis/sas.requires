@@ -29,9 +29,6 @@ unit GR32_OrdinalMaps;
  * Portions created by the Initial Developer are Copyright (C) 2000-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
- * Michael Hansen
- *
  * ***** END LICENSE BLOCK ***** *)
 
 interface
@@ -39,19 +36,11 @@ interface
 {$I GR32.inc}
 
 uses
-{$IFDEF FPC}
-  Controls, Graphics,
-  {$IFDEF Windows}
-    Windows,
-  {$ENDIF}
-{$ELSE}
-  Windows, Controls, Graphics,
-{$ENDIF}
-  Classes, SysUtils, GR32;
+  Classes,
+  GR32;
 
 type
-  TConversionType = (ctRed, ctGreen, ctBlue, ctAlpha, ctUniformRGB,
-    ctWeightedRGB);
+  TConversionType = (ctRed, ctGreen, ctBlue, ctAlpha, ctUniformRGB, ctWeightedRGB);
 
 {$IFDEF FPC}
   PInteger = ^Integer;
@@ -78,9 +67,9 @@ type
 
   TByteMap = class(TCustomMap)
   private
-    function GetValue(X, Y: Integer): Byte; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    function GetValPtr(X, Y: Integer): PByte; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    procedure SetValue(X, Y: Integer; Value: Byte); {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
+    function GetValue(X, Y: Integer): Byte; {$IFDEF USEINLINING} inline; {$ENDIF}
+    function GetValPtr(X, Y: Integer): PByte; {$IFDEF USEINLINING} inline; {$ENDIF}
+    procedure SetValue(X, Y: Integer; Value: Byte); {$IFDEF USEINLINING} inline; {$ENDIF}
     function GetScanline(Y: Integer): PByteArray;
   protected
     FBits: PByteArray;
@@ -124,9 +113,9 @@ type
 
   TWordMap = class(TCustomMap)
   private
-    function GetValPtr(X, Y: Integer): PWord; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    function GetValue(X, Y: Integer): Word; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    procedure SetValue(X, Y: Integer; const Value: Word); {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
+    function GetValPtr(X, Y: Integer): PWord; {$IFDEF USEINLINING} inline; {$ENDIF}
+    function GetValue(X, Y: Integer): Word; {$IFDEF USEINLINING} inline; {$ENDIF}
+    procedure SetValue(X, Y: Integer; const Value: Word); {$IFDEF USEINLINING} inline; {$ENDIF}
     function GetScanline(Y: Integer): PWordArray;
   protected
     FBits: PWordArray;
@@ -149,9 +138,9 @@ type
 
   TIntegerMap = class(TCustomMap)
   private
-    function GetValPtr(X, Y: Integer): PInteger; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    function GetValue(X, Y: Integer): Integer; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    procedure SetValue(X, Y: Integer; const Value: Integer); {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
+    function GetValPtr(X, Y: Integer): PInteger; {$IFDEF USEINLINING} inline; {$ENDIF}
+    function GetValue(X, Y: Integer): Integer; {$IFDEF USEINLINING} inline; {$ENDIF}
+    procedure SetValue(X, Y: Integer; const Value: Integer); {$IFDEF USEINLINING} inline; {$ENDIF}
     function GetScanline(Y: Integer): PIntegerArray;
   protected
     FBits: PIntegerArray;
@@ -174,9 +163,9 @@ type
 
   TCardinalMap = class(TCustomMap)
   private
-    function GetValPtr(X, Y: Cardinal): PCardinal; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    function GetValue(X, Y: Cardinal): Cardinal; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    procedure SetValue(X, Y: Cardinal; const Value: Cardinal); {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
+    function GetValPtr(X, Y: Cardinal): PCardinal; {$IFDEF USEINLINING} inline; {$ENDIF}
+    function GetValue(X, Y: Cardinal): Cardinal; {$IFDEF USEINLINING} inline; {$ENDIF}
+    procedure SetValue(X, Y: Cardinal; const Value: Cardinal); {$IFDEF USEINLINING} inline; {$ENDIF}
     function GetScanline(Y: Integer): PCardinalArray;
   protected
     FBits: PCardinalArray;
@@ -199,9 +188,9 @@ type
 
   TFloatMap = class(TCustomMap)
   private
-    function GetValPtr(X, Y: Integer): GR32.PFloat; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    function GetValue(X, Y: Integer): TFloat; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    procedure SetValue(X, Y: Integer; const Value: TFloat); {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
+    function GetValPtr(X, Y: Integer): GR32.PFloat; {$IFDEF USEINLINING} inline; {$ENDIF}
+    function GetValue(X, Y: Integer): TFloat; {$IFDEF USEINLINING} inline; {$ENDIF}
+    procedure SetValue(X, Y: Integer; const Value: TFloat); {$IFDEF USEINLINING} inline; {$ENDIF}
     function GetScanline(Y: Integer): PFloatArray;
   protected
     FBits: PFloatArray;
@@ -221,14 +210,13 @@ type
     property Scanline[Y: Integer]: PFloatArray read GetScanline;
   end;
 
-{$IFDEF COMPILER2010}
 
   { TGenericMap<T> }
 
   TGenericMap<T> = class(TCustomMap)
   private
-    function GetValue(X, Y: Integer): T; {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
-    procedure SetValue(X, Y: Integer; const Value: T); {$IFDEF INLININGSUPPORTED} inline; {$ENDIF}
+    function GetValue(X, Y: Integer): T; {$IFDEF USEINLINING} inline; {$ENDIF}
+    procedure SetValue(X, Y: Integer; const Value: T); {$IFDEF USEINLINING} inline; {$ENDIF}
   protected
     FBits: Pointer;
     procedure ChangeSize(var Width, Height: Integer; NewWidth, NewHeight: Integer); override;
@@ -245,12 +233,14 @@ type
     property Bits: Pointer read FBits;
   end;
 
-{$ENDIF}
 
 implementation
 
 uses
-  Math, GR32_LowLevel, GR32_Blend, GR32_Resamplers;
+  Math,
+  GR32_LowLevel,
+  GR32_Blend,
+  GR32_Resamplers;
 
 function Bytes(Bits: Integer): Integer;
 begin
@@ -602,7 +592,7 @@ var
   Index: Integer;
 begin
   for Index := 0 to FWidth * FHeight - 1 do
-    FBits^[Index] := Max(FBits^[Index] + Value, 0);
+    FBits^[Index] := Max(FBits^[Index] - Value, 0);
 end;
 
 procedure TByteMap.ReadFrom(Source: TCustomBitmap32; Conversion: TConversionType);
@@ -1320,8 +1310,6 @@ begin
 end;
 
 
-{$IFDEF COMPILER2010}
-
 { TGenericMap<T> }
 
 constructor TGenericMap<T>.Create;
@@ -1394,7 +1382,5 @@ procedure TGenericMap<T>.SetValue(X, Y: Integer; const Value: T);
 begin
   Move(Value, PByte(FBits)[(X + Y * Width) * SizeOf(T)], SizeOf(T));
 end;
-
-{$ENDIF}
 
 end.

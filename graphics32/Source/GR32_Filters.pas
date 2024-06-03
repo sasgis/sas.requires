@@ -82,7 +82,9 @@ procedure CheckParams(Dst, Src: TCustomBitmap32; ResizeDst: Boolean = True);
 implementation
 
 uses
-  {$IFDEF COMPILERXE2_UP}Types, {$ENDIF} GR32_System, GR32_Bindings,
+  Types,
+  GR32_System,
+  GR32_Bindings,
   GR32_Lowlevel;
 
 const
@@ -1686,12 +1688,12 @@ begin
   Registry.Add(FID_ORLINEEX, @OrLineEx_ASM);
   Registry.Add(FID_XORLINEEX, @XorLineEx_ASM);
 {$IFNDEF OMIT_MMX}
-  Registry.Add(FID_ANDLINEEX, @AndLineEx_MMX, [ciMMX]);
-  Registry.Add(FID_ORLINEEX, @OrLineEx_MMX, [ciMMX]);
-  Registry.Add(FID_XORLINEEX, @XorLineEx_MMX, [ciMMX]);
-  Registry.Add(FID_ANDLINEEX, @AndLineEx_EMMX, [ciEMMX]);
-  Registry.Add(FID_ORLINEEX, @OrLineEx_EMMX, [ciEMMX]);
-  Registry.Add(FID_XORLINEEX, @XorLineEx_EMMX, [ciEMMX]);
+  Registry.Add(FID_ANDLINEEX, @AndLineEx_MMX, [isMMX]);
+  Registry.Add(FID_ORLINEEX, @OrLineEx_MMX, [isMMX]);
+  Registry.Add(FID_XORLINEEX, @XorLineEx_MMX, [isMMX]);
+  Registry.Add(FID_ANDLINEEX, @AndLineEx_EMMX, [isExMMX]);
+  Registry.Add(FID_ORLINEEX, @OrLineEx_EMMX, [isExMMX]);
+  Registry.Add(FID_XORLINEEX, @XorLineEx_EMMX, [isExMMX]);
 {$ENDIF}
 {$ENDIF}
 

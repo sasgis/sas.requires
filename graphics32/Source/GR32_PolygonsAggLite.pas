@@ -495,18 +495,8 @@ begin
       Dec(B)
     until (B^^.PackedCoord <= Stop^.PackedCoord);
 
-    {$IFDEF FPC}
-    if PtrInt(A) > PtrInt(B) then
+    if NativeUInt(A) > NativeUInt(B) then
       Break;
-    {$ELSE}
-    {$IFDEF HAS_NATIVEINT}
-    if NativeInt(A) > NativeInt(B) then
-      Break;
-    {$ELSE}
-    if Integer(A) > Integer(B) then
-      Break;
-    {$ENDIF}
-    {$ENDIF}
 
     SwapCells(A, B);
   end;
@@ -624,29 +614,13 @@ var
   end;
 
 begin
-  {$IFDEF FPC}
-  Limit := PPCell(PtrInt(Start) + Num * SizeOf(PCell));
-  {$ELSE}
-  {$IFDEF HAS_NATIVEINT}
   Limit := PPCell(NativeUInt(Start) + Num * SizeOf(PCell));
-  {$ELSE}
-  Limit := PPCell(Cardinal(Start) + Num * SizeOf(PCell));
-  {$ENDIF}
-  {$ENDIF}
   Base  := Start;
   Top   := @Stack[0];
 
   while True do
   begin
-    {$IFDEF FPC}
-    Len := (PtrInt(Limit) - PtrInt(Base)) div SizeOf(PCell);
-    {$ELSE}
-    {$IFDEF HAS_NATIVEINT}
     Len := (NativeInt(Limit) - NativeInt(Base)) div SizeOf(PCell);
-    {$ELSE}
-    Len := (Integer(Limit) - Integer(Base)) div SizeOf(PCell);
-    {$ENDIF}
-    {$ENDIF}
 
     if Len > QSortThreshold then
     begin
@@ -669,15 +643,7 @@ begin
       SwapCells(Base, J);
 
       // now, push the largest sub-array
-      {$IFDEF FPC}
-      if PtrInt(J) - PtrInt(Base) > PtrInt(Limit) - PtrInt(I) then
-      {$ELSE}
-      {$IFDEF HAS_NATIVEINT}
       if NativeInt(J) - NativeInt(Base) > NativeInt(Limit) - NativeInt(I) then
-      {$ELSE}
-      if Integer(J) - Integer(Base) > Integer(Limit) - Integer(I) then
-      {$ENDIF}
-      {$ENDIF}
       begin
         Top^ := Base;
         Inc(Top);
@@ -700,31 +666,11 @@ begin
       I := J;
       Inc(I);
 
-      {$IFDEF FPC}
-      while PtrInt(I) < PtrInt(Limit) do
-      {$ELSE}
-      {$IFDEF HAS_NATIVEINT}
       while NativeInt(I) < NativeInt(Limit) do
-      {$ELSE}
-      while Integer(I) < Integer(Limit) do
-      {$ENDIF}
-      {$ENDIF}
       begin
-        {$IFDEF FPC}
-        while LessThan(PPCell(PtrInt(J) + SizeOf(PCell)), J) do
-        begin
-          SwapCells(PPCell(PtrInt(J) + SizeOf(PCell)), J);
-        {$ELSE}
-        {$IFDEF HAS_NATIVEINT}
         while LessThan(PPCell(NativeUInt(J) + SizeOf(PCell)), J) do
         begin
           SwapCells(PPCell(NativeUInt(J) + SizeOf(PCell)), J);
-        {$ELSE}
-        while LessThan(PPCell(Cardinal(J) + SizeOf(PCell)), J) do
-        begin
-          SwapCells(PPCell(Cardinal(J) + SizeOf(PCell)), J);
-        {$ENDIF}
-        {$ENDIF}
           if J = Base then
             Break;
           Dec(J);
@@ -733,15 +679,7 @@ begin
         Inc(I);
       end;
 
-      {$IFDEF FPC}
-      if PtrInt(Top) > PtrInt(@Stack[0]) then
-      {$ELSE}
-      {$IFDEF HAS_NATIVEINT}
       if NativeInt(Top) > NativeInt(@Stack[0]) then
-      {$ELSE}
-      if Integer(Top) > Integer(@Stack[0]) then
-      {$ENDIF}
-      {$ENDIF}
       begin
         Dec(Top, 2);
         Base := Top^;
@@ -835,12 +773,12 @@ asm
         NEG     R8D
 
 @LoopStart:
-        MOVZX   R9D, [R10 + 4 * R8].QWORD
-        MOVZX   ECX, [EBP + $0B].QWORD         // ECX = C.A
+        MOVZX   R9D, [R10 + 4 * R8]
+        MOVZX   ECX, [EBP + $0B]               // ECX = C.A
         IMUL    R9D, ECX                       // R9D = Alpha
 
-        MOVZX   ECX, [R11 + 4 * R8].QWORD
-        MOVZX   EDX, [EBP + $08].QWORD         // EDX = C.R
+        MOVZX   ECX, [R11 + 4 * R8]
+        MOVZX   EDX, [EBP + $08]               // EDX = C.R
         SUB     EDX, ECX
         IMUL    EDX, R9D
         SHL     ECX, $10
@@ -848,8 +786,8 @@ asm
         SHR     EDX, $10
         MOV     [R11 + 4 * R8], DL             // store to pointer
 
-        MOVZX   ECX, [R11 + 4 * R8 + 1].QWORD
-        MOVZX   EDX, [EBP + $09].QWORD         // EDX = C.G
+        MOVZX   ECX, [R11 + 4 * R8 + 1]
+        MOVZX   EDX, [EBP + $09]               // EDX = C.G
         SUB     EDX, ECX
         IMUL    EDX, R9D
         SHL     ECX, $10
@@ -857,8 +795,8 @@ asm
         SHR     EDX, $10
         MOV     [R11 + 4 * R8 + 1], DL         // store to pointer
 
-        MOVZX   ECX, [R11 + 4 * R8 + 2].QWORD
-        MOVZX   EDX, [EBP + $0A].QWORD         // EDX = C.B
+        MOVZX   ECX, [R11 + 4 * R8 + 2]
+        MOVZX   EDX, [EBP + $0A]               // EDX = C.B
         SUB     EDX, ECX
         IMUL    EDX, R9D
         SHL     ECX, $10
@@ -866,8 +804,8 @@ asm
         SHR     EDX, $10
         MOV     [R11 + 4 * R8 + 2], DL         // store to pointer
 
-        MOVZX   ECX, [R11 + 4 * R8 + 3].QWORD
-        MOVZX   EDX, [EBP + $0B].QWORD         // EDX = C.A
+        MOVZX   ECX, [R11 + 4 * R8 + 3]
+        MOVZX   EDX, [EBP + $0B]               // EDX = C.A
         SUB     EDX, ECX
         IMUL    EDX, R9D
         SHL     ECX, $10
@@ -1164,7 +1102,7 @@ begin
   FreeMem(FSortedCells);
   if FNumBlocks <> 0 then
   begin
-    Ptr := PPCell(Cardinal(FCells) + (FNumBlocks - 1) * SizeOf(PCell));
+    Ptr := PPCell(NativeUInt(FCells) + (FNumBlocks - 1) * SizeOf(PCell));
     while FNumBlocks <> 0 do
     begin
       FreeMem(Ptr^);
@@ -1228,11 +1166,11 @@ begin
       FCells := NewCells;
       Inc(FMaxBlocks, CCellBlockPool);
     end;
-    GetMem(PPCell(Cardinal(FCells) + FNumBlocks * SizeOf(PCell))^,
+    GetMem(PPCell(NativeUInt(FCells) + FNumBlocks * SizeOf(PCell))^,
       Cardinal(CCellBlockSize) * SizeOf(TCell));
     Inc(FNumBlocks);
   end;
-  FCurCellPtr := PPCell(Cardinal(FCells) + FCurBlock * SizeOf(PCell))^;
+  FCurCellPtr := PPCell(NativeUInt(FCells) + FCurBlock * SizeOf(PCell))^;
   Inc(FCurBlock);
 end;
 
@@ -1572,7 +1510,7 @@ begin
     Inc(SortedPtr);
     Inc(CellPtr);
   end;
-  PPCell(Cardinal(FSortedCells) + FNumCells * SizeOf(PCell))^ := nil;
+  PPCell(NativeUInt(FSortedCells) + FNumCells * SizeOf(PCell))^ := nil;
 
   QSortCells(FSortedCells, FNumCells);
 end;
@@ -1613,15 +1551,7 @@ var
       Dec(NumSpans);
       Inc(CurCount);
       Inc(CurStartPtr);
-      {$IFDEF FPC}
-      CurX := (PtrInt(CurStartPtr^) - PtrInt(BaseCovers)) div SizeOf(TColor32) + BaseX;
-      {$ELSE}
-      {$IFDEF HAS_NATIVEINT}
       CurX := (NativeInt(CurStartPtr^) - NativeInt(BaseCovers)) div SizeOf(TColor32) + BaseX;
-      {$ELSE}
-      CurX := (Integer(CurStartPtr^) - Integer(BaseCovers)) div SizeOf(TColor32) + BaseX;
-      {$ENDIF}
-      {$ENDIF}
       Covers := CurStartPtr^;
       NumPix := CurCount^;
 
@@ -1647,15 +1577,7 @@ var
       Dec(NumSpans);
       Inc(CurCount);
       Inc(CurStartPtr);
-      {$IFDEF FPC}
-      CurX := (PtrInt(CurStartPtr^) - PtrInt(BaseCovers)) div SizeOf(TColor32) + BaseX;
-      {$ELSE}
-      {$IFDEF HAS_NATIVEINT}
       CurX := (NativeInt(CurStartPtr^) - NativeInt(BaseCovers)) div SizeOf(TColor32) + BaseX;
-      {$ELSE}
-      CurX := (Integer(CurStartPtr^) - Integer(BaseCovers)) div SizeOf(TColor32) + BaseX;
-      {$ENDIF}
-      {$ENDIF}
 
       Covers := CurStartPtr^;
       NumPix := CurCount^;
@@ -1766,7 +1688,7 @@ var
   R: TFloatRect;
 begin
   R := ClipRect;
-  InflateRect(R, 0.05, 0.05);
+  GR32.InflateRect(R, 0.05, 0.05);
   APoints := ClipPolygon (Points, R);
 
   OutLine := TOutline.Create;
@@ -1823,7 +1745,7 @@ begin
   APoints := Points;
   // temporary fix for floating point rounding errors - corr. - to + by pws
   R := ClipRect;
-  InflateRect(R, 0.05, 0.05);
+  GR32.InflateRect(R, 0.05, 0.05);
   FirstValid := -1;
   for i := 0 to High(APoints) do
   begin
@@ -1891,26 +1813,37 @@ end;
 const
   FID_FILLSPAN = 0;
 
+const
+  FillSpanBindingFlagPascal = $0001;
+
+const
+  FillSpanRegistryPriorityASM = -256;
+  FillSpanRegistryPriorityMMX = -512;
+  FillSpanRegistryPrioritySSE2 = -768;
+
+var
+  FillSpanRegistry: TFunctionRegistry;
+
 procedure RegisterBindings;
 begin
-  BlendRegistry := NewRegistry('GR32_PolygonsAggLite bindings');
-  BlendRegistry.RegisterBinding(FID_FILLSPAN, @@FILLSPAN);
+  FillSpanRegistry := NewRegistry('GR32_PolygonsAggLite bindings');
+  FillSpanRegistry.RegisterBinding(FID_FILLSPAN, @@FILLSPAN);
 
   // pure pascal
-  BlendRegistry.Add(FID_FILLSPAN, @FILLSPAN_Pas);
+  FillSpanRegistry.Add(FID_FILLSPAN, @FILLSPAN_Pas, FillSpanBindingFlagPascal);
 
 {$IFNDEF PUREPASCAL}
-  BlendRegistry.Add(FID_FILLSPAN, @FILLSPAN_ASM, []);
+  FillSpanRegistry.Add(FID_FILLSPAN, @FILLSPAN_ASM, 0, FillSpanRegistryPriorityASM);
 {$IFNDEF OMIT_MMX}
-  BlendRegistry.Add(FID_FILLSPAN, @FILLSPAN_MMX, [ciMMX]);
+  FillSpanRegistry.Add(FID_FILLSPAN, @FILLSPAN_MMX, [isMMX], 0, FillSpanRegistryPriorityMMX);
 {$ENDIF}
 
 {$IFNDEF OMIT_SSE2}
-  BlendRegistry.Add(FID_FILLSPAN, @FILLSPAN_SSE2, [ciSSE2]);
+  FillSpanRegistry.Add(FID_FILLSPAN, @FILLSPAN_SSE2, [isSSE2], 0, FillSpanRegistryPrioritySSE2);
 {$ENDIF}
 {$ENDIF}
 
-  BlendRegistry.RebindAll;
+  FillSpanRegistry.RebindAll;
 end;
 
 initialization

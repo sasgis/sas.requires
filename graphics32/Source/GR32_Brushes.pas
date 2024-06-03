@@ -28,16 +28,19 @@ unit GR32_Brushes;
  * Portions created by the Initial Developer are Copyright (C) 2012
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
- *
  * ***** END LICENSE BLOCK ***** *)
 
 interface
 
 {$I GR32.inc}
 
+{-$define GR32_DEBUG_BRUSH}
+
 uses
   Classes, GR32, GR32_Polygons, GR32_Transforms;
+
+type
+  TBooleanArray = array of boolean;
 
 type
   TCustomBrush = class;
@@ -47,21 +50,26 @@ type
 
   { TBrushCollection }
   TBrushCollection = class(TNotifiablePersistent)
-  private
+  strict private
     FItems: TList;
     FOwner: TPersistent;
-    procedure InsertItem(Item: TCustomBrush);
-    procedure RemoveItem(Item: TCustomBrush);
     function GetCount: Integer;
     function GetItem(Index: Integer): TCustomBrush;
     procedure SetItem(Index: Integer; const Value: TCustomBrush);
+  protected
+    procedure InsertItem(Item: TCustomBrush);
+    procedure RemoveItem(Item: TCustomBrush);
+    procedure MoveItem(OldIndex, NewIndex: integer);
   public
     constructor Create(AOwner: TPersistent);
     destructor Destroy; override;
+
     function Add(ItemClass: TBrushClass): TCustomBrush;
     procedure Clear;
     procedure Delete(Index: Integer);
     function Insert(Index: Integer; ItemClass: TBrushClass): TCustomBrush;
+    function IndexOf(Item: TCustomBrush): integer;
+
     property Owner: TPersistent read FOwner;
     property Count: Integer read GetCount;
     property Items[Index: Integer]: TCustomBrush read GetItem write SetItem; default;
@@ -69,27 +77,42 @@ type
 
   { TCustomBrush }
   TCustomBrush = class(TNotifiablePersistent)
-  private
+  strict private
     FBrushCollection: TBrushCollection;
     FVisible: Boolean;
+    FBatchCount: integer;
     function GetIndex: Integer;
     procedure SetBrushCollection(const Value: TBrushCollection);
     procedure SetVisible(const Value: Boolean);
   protected
     procedure SetIndex(Value: Integer); virtual;
     procedure UpdateRenderer(Renderer: TCustomPolygonRenderer); virtual;
+
+    function ProcessPolyPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean): TArrayOfArrayOfFloatPoint; virtual;
+
+    procedure RenderPolyPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation); virtual;
+
+    procedure BeginPolygon; virtual;
+    procedure EndPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation); virtual;
   public
     constructor Create(ABrushCollection: TBrushCollection); virtual;
     destructor Destroy; override;
+
     procedure Changed; override;
-    procedure PolyPolygonFS(Renderer: TCustomPolygonRenderer;
-      const Points: TArrayOfArrayOfFloatPoint;
-      const ClipRect: TFloatRect; Transformation: TTransformation;
-      Closed: Boolean); virtual;
-    procedure PolygonFS(Renderer: TCustomPolygonRenderer;
-      const Points: TArrayOfFloatPoint;
-      const ClipRect: TFloatRect; Transformation: TTransformation;
-      Closed: Boolean); virtual;
+
+    // Single polygon, either open or closed
+    procedure PolygonFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean); virtual;
+    // Polypolygons, either all open or all closed
+    procedure PolyPolygonFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean); virtual;
+    // Polypolygons, individually open or closed
+    procedure PolyPolygonMixedFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation; Closed: TBooleanArray); virtual;
+
     property Index: Integer read GetIndex write SetIndex;
     property BrushCollection: TBrushCollection read FBrushCollection write SetBrushCollection;
     property Visible: Boolean read FVisible write SetVisible;
@@ -98,7 +121,7 @@ type
 
   { TSolidBrush }
   TSolidBrush = class(TCustomBrush)
-  private
+  strict private
     FFillColor: TColor32;
     FFillMode: TPolyFillMode;
     FFiller: TCustomPolygonFiller;
@@ -109,6 +132,7 @@ type
     procedure UpdateRenderer(Renderer: TCustomPolygonRenderer); override;
   public
     constructor Create(ABrushCollection: TBrushCollection); override;
+
     property FillColor: TColor32 read FFillColor write SetFillColor;
     property FillMode: TPolyFillMode read FFillMode write SetFillMode;
     property Filler: TCustomPolygonFiller read FFiller write SetFiller;
@@ -116,25 +140,25 @@ type
 
   { TNestedBrush }
   TNestedBrush = class(TSolidBrush)
-  private
+  strict private
     FBrushes: TBrushCollection;
   public
     constructor Create(ABrushCollection: TBrushCollection); override;
     destructor Destroy; override;
-    procedure PolyPolygonFS(Renderer: TCustomPolygonRenderer;
-      const Points: TArrayOfArrayOfFloatPoint;
-      const ClipRect: TFloatRect; Transformation: TTransformation;
-      Closed: Boolean); override;
-    procedure PolygonFS(Renderer: TCustomPolygonRenderer;
-      const Points: TArrayOfFloatPoint;
-      const ClipRect: TFloatRect; Transformation: TTransformation;
-      Closed: Boolean); override;
+
+    procedure PolygonFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean); override;
+    procedure PolyPolygonFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean); override;
+    procedure PolyPolygonMixedFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation; Closed: TBooleanArray); override;
+
     property Brushes: TBrushCollection read FBrushes;
   end;
 
   { TStrokeBrush }
   TStrokeBrush = class(TSolidBrush)
-  private
+  strict private
     FStrokeWidth: TFloat;
     FJoinStyle: TJoinStyle;
     FMiterLimit: TFloat;
@@ -143,12 +167,12 @@ type
     procedure SetEndStyle(const Value: TEndStyle);
     procedure SetJoinStyle(const Value: TJoinStyle);
     procedure SetMiterLimit(const Value: TFloat);
+  protected
+    function ProcessPolyPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean): TArrayOfArrayOfFloatPoint; override;
   public
     constructor Create(BrushCollection: TBrushCollection); override;
-    procedure PolyPolygonFS(Renderer: TCustomPolygonRenderer;
-      const Points: TArrayOfArrayOfFloatPoint;
-      const ClipRect: TFloatRect; Transformation: TTransformation;
-      Closed: Boolean); override;
+
     property StrokeWidth: TFloat read FStrokeWidth write SetStrokeWidth;
     property JoinStyle: TJoinStyle read FJoinStyle write SetJoinStyle;
     property EndStyle: TEndStyle read FEndStyle write SetEndStyle;
@@ -157,19 +181,19 @@ type
 
   { TGrowBrush }
   TGrowBrush = class(TNestedBrush)
-  private
+  strict private
     FGrowAmount: TFloat;
     FJoinStyle: TJoinStyle;
     FMiterLimit: TFloat;
     procedure SetGrowAmount(const Value: TFloat);
     procedure SetJoinStyle(const Value: TJoinStyle);
     procedure SetMiterLimit(const Value: TFloat);
+  protected
+    function ProcessPolyPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean): TArrayOfArrayOfFloatPoint; override;
   public
     constructor Create(BrushCollection: TBrushCollection); override;
-    procedure PolyPolygonFS(Renderer: TCustomPolygonRenderer;
-      const Points: TArrayOfArrayOfFloatPoint;
-      const ClipRect: TFloatRect; Transformation: TTransformation;
-      Closed: Boolean); override;
+
     property GrowAmount: TFloat read FGrowAmount write SetGrowAmount;
     property JoinStyle: TJoinStyle read FJoinStyle write SetJoinStyle;
     property MiterLimit: TFloat read FMiterLimit write SetMiterLimit;
@@ -177,16 +201,18 @@ type
 
   { TDashedBrush }
   TDashedBrush = class(TStrokeBrush)
-  private
+  strict private
     FDashOffset: TFloat;
     FDashArray: TArrayOfFloat;
     procedure SetDashOffset(const Value: TFloat);
+    procedure DoSetDashArray(const ADashArray: TArrayOfFloat); // TODO :Rename once SetDashArray is removed
+  protected
+    function ProcessPolyPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+      const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean): TArrayOfArrayOfFloatPoint; override;
   public
-    procedure PolyPolygonFS(Renderer: TCustomPolygonRenderer;
-      const Points: TArrayOfArrayOfFloatPoint;
-      const ClipRect: TFloatRect; Transformation: TTransformation;
-      Closed: Boolean); override;
-    procedure SetDashArray(const ADashArray: array of TFloat);
+    procedure SetDashArray(const ADashArray: TArrayOfFloat); deprecated 'Use DashArray property';
+
+    property DashArray: TArrayOfFloat read FDashArray write DoSetDashArray;
     property DashOffset: TFloat read FDashOffset write SetDashOffset;
   end;
 
@@ -217,6 +243,8 @@ end;
 
 constructor TBrushCollection.Create(AOwner: TPersistent);
 begin
+  inherited Create;
+  FOwner := AOwner;
   FItems := TList.Create;
 end;
 
@@ -242,6 +270,11 @@ begin
   Result := FItems[Index];
 end;
 
+function TBrushCollection.IndexOf(Item: TCustomBrush): integer;
+begin
+  Result := FItems.IndexOf(Item);
+end;
+
 function TBrushCollection.Insert(Index: Integer;
   ItemClass: TBrushClass): TCustomBrush;
 begin
@@ -249,41 +282,39 @@ begin
   try
     Result := Add(ItemClass);
     Result.Index := Index;
-    //Notify(lnLayerInserted, Result, Index);
   finally
     EndUpdate;
   end;
 end;
 
 procedure TBrushCollection.InsertItem(Item: TCustomBrush);
-(*
-var
-  Index: Integer;
-*)
 begin
   BeginUpdate;
   try
-    {Index := } FItems.Add(Item);
-    Item.FBrushCollection := Self;
-    //Notify(lnLayerAdded, Item, Index);
+    FItems.Add(Item);
+    Changed;
   finally
     EndUpdate;
   end;
+end;
+
+procedure TBrushCollection.MoveItem(OldIndex, NewIndex: integer);
+begin
+  FItems.Move(OldIndex, NewIndex);
 end;
 
 procedure TBrushCollection.RemoveItem(Item: TCustomBrush);
 var
   Index: Integer;
 begin
+  Index := FItems.IndexOf(Item);
+  if (Index < 0) then
+    exit;
+
   BeginUpdate;
   try
-    Index := FItems.IndexOf(Item);
-    if Index >= 0 then
-    begin
-      FItems.Delete(Index);
-      Item.FBrushCollection := nil;
-      //Notify(lnLayerDeleted, Item, Index);
-    end;
+    FItems.Delete(Index);
+    Changed;
   finally
     EndUpdate;
   end;
@@ -297,15 +328,9 @@ end;
 
 { TCustomBrush }
 
-procedure TCustomBrush.Changed;
-begin
-  inherited;
-  if Assigned(FBrushCollection) then
-    FBrushCollection.Changed;
-end;
-
 constructor TCustomBrush.Create(ABrushCollection: TBrushCollection);
 begin
+  inherited Create;
   BrushCollection := ABrushCollection;
   FVisible := True;
 end;
@@ -316,39 +341,127 @@ begin
   inherited;
 end;
 
+procedure TCustomBrush.BeginPolygon;
+begin
+  Assert(FBatchCount = 0);
+  Inc(FBatchCount);
+end;
+
+procedure TCustomBrush.EndPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation);
+begin
+  Assert(FBatchCount = 1);
+  Dec(FBatchCount);
+  RenderPolyPolygon(Renderer, Points, ClipRect, Transformation);
+end;
+
+procedure TCustomBrush.Changed;
+begin
+  inherited;
+
+  if (LockUpdateCount = 0) and (FBrushCollection <> nil) then
+    FBrushCollection.Changed;
+end;
+
 function TCustomBrush.GetIndex: Integer;
 begin
-  if Assigned(FBrushCollection) then
-    Result := FBrushCollection.FItems.IndexOf(Self)
+  if (FBrushCollection <> nil) then
+    Result := FBrushCollection.IndexOf(Self)
   else
     Result := -1;
 end;
 
-procedure TCustomBrush.PolygonFS(Renderer: TCustomPolygonRenderer;
-  const Points: TArrayOfFloatPoint;
-  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean);
+function TCustomBrush.ProcessPolyPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean): TArrayOfArrayOfFloatPoint;
 begin
-  //PolyPolygonFS(Renderer, PolyPolygon(Points), ClipRect, Transformation, Closed);
-  //Renderer.PolygonFS(Points, ClipRect, Transformation);
-  PolyPolygonFS(Renderer, PolyPolygon(Points), ClipRect, Transformation, Closed);
+  Result := Points;
 end;
 
-procedure TCustomBrush.PolyPolygonFS(Renderer: TCustomPolygonRenderer;
-  const Points: TArrayOfArrayOfFloatPoint;
-  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean);
+procedure TCustomBrush.RenderPolyPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation);
 begin
   UpdateRenderer(Renderer);
   Renderer.PolyPolygonFS(Points, ClipRect, Transformation);
+{$ifdef GR32_DEBUG_BRUSH}
+  PolyPolylineFS(TPolygonRenderer32(Renderer).Bitmap, Points, clBlue32, True);
+{$endif GR32_DEBUG_BRUSH}
+end;
+
+procedure TCustomBrush.PolygonFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfFloatPoint; const ClipRect: TFloatRect;
+  Transformation: TTransformation; Closed: Boolean);
+begin
+  PolyPolygonFS(Renderer, [Points], ClipRect, Transformation, Closed);
+end;
+
+procedure TCustomBrush.PolyPolygonFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean);
+var
+  Buffer: TArrayOfArrayOfFloatPoint;
+begin
+  BeginPolygon;
+  Buffer := ProcessPolyPolygon(Renderer, Points, ClipRect, Transformation, Closed);
+  EndPolygon(Renderer, Buffer, ClipRect, Transformation);
+end;
+
+procedure TCustomBrush.PolyPolygonMixedFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: TBooleanArray);
+var
+  Start, Next: Integer;
+  i: integer;
+  Buffer: TArrayOfArrayOfFloatPoint;
+  RunBuffer: TArrayOfArrayOfFloatPoint;
+  RunClosed: boolean;
+begin
+  if (Length(Points) = 0) then
+    exit;
+
+  // Assume some paths are closed, some are open
+  BeginPolygon;
+  begin
+    Buffer := nil;
+    Start := 0;
+    // Find contiguous chunks of path with same "closedness"
+    while (Start < Length(Points)) do
+    begin
+      RunClosed := Closed[Start];
+      // Find a run of same "closedness"
+      Next := Start+1;
+      while (Next < Length(Points)) and (Closed[Next] = RunClosed) do
+        Inc(Next);
+
+      // Run goes from Start to Next-1
+      SetLength(RunBuffer, Next-Start);
+      i := 0;
+      while (Start < Next) do
+      begin
+        RunBuffer[i] := Points[Start];
+        Inc(Start);
+        Inc(i);
+      end;
+
+      // Process this run
+      Buffer := Buffer + ProcessPolyPolygon(Renderer, RunBuffer, ClipRect, Transformation, RunClosed);
+    end;
+  end;
+  EndPolygon(Renderer, Buffer, ClipRect, Transformation);
 end;
 
 procedure TCustomBrush.SetBrushCollection(const Value: TBrushCollection);
+var
+  OldBrushCollection: TBrushCollection;
 begin
   if FBrushCollection <> Value then
   begin
-    if Assigned(FBrushCollection) then
-      FBrushCollection.RemoveItem(Self);
-    if Assigned(Value) then
-      Value.InsertItem(Self);
+    OldBrushCollection := FBrushCollection;
+    FBrushCollection := nil;
+
+    if (OldBrushCollection <> nil) then
+      OldBrushCollection.RemoveItem(Self);
+
+    FBrushCollection := Value;
+
+    if (FBrushCollection <> nil) then
+      FBrushCollection.InsertItem(Self);
   end;
 end;
 
@@ -357,21 +470,25 @@ var
   CurIndex: Integer;
 begin
   CurIndex := GetIndex;
-  if (CurIndex >= 0) and (CurIndex <> Value) then
-    with FBrushCollection do
-    begin
-      if Value < 0 then Value := 0;
-      if Value >= Count then Value := Count - 1;
-      if Value <> CurIndex then
-      begin
-        if Visible then BeginUpdate;
-        try
-          FBrushCollection.FItems.Move(CurIndex, Value);
-        finally
-          if Visible then EndUpdate;
-        end;
-      end;
-    end;
+  if (CurIndex < 0) or (CurIndex = Value) then
+    exit;
+
+  if (Value < 0) then
+    Value := 0;
+  if (Value >= BrushCollection.Count) then
+    Value := BrushCollection.Count - 1;
+
+  if (Value = CurIndex) then
+    exit;
+
+  if Visible then
+    BrushCollection.BeginUpdate;
+  try
+    BrushCollection.MoveItem(CurIndex, Value);
+  finally
+    if Visible then
+      BrushCollection.EndUpdate;
+  end;
 end;
 
 procedure TCustomBrush.SetVisible(const Value: Boolean);
@@ -385,7 +502,6 @@ end;
 
 procedure TCustomBrush.UpdateRenderer(Renderer: TCustomPolygonRenderer);
 begin
-
 end;
 
 
@@ -403,9 +519,8 @@ begin
   inherited;
 end;
 
-procedure TNestedBrush.PolygonFS(Renderer: TCustomPolygonRenderer;
-  const Points: TArrayOfFloatPoint; const ClipRect: TFloatRect;
-  Transformation: TTransformation; Closed: Boolean);
+procedure TNestedBrush.PolygonFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean);
 var
   I: Integer;
 begin
@@ -414,9 +529,8 @@ begin
       FBrushes[I].PolygonFS(Renderer, Points, ClipRect, Transformation, Closed);
 end;
 
-procedure TNestedBrush.PolyPolygonFS(Renderer: TCustomPolygonRenderer;
-  const Points: TArrayOfArrayOfFloatPoint; const ClipRect: TFloatRect;
-  Transformation: TTransformation; Closed: Boolean);
+procedure TNestedBrush.PolyPolygonFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean);
 var
   I: Integer;
 begin
@@ -424,6 +538,17 @@ begin
     if FBrushes[I].Visible then
       FBrushes[I].PolyPolygonFS(Renderer, Points, ClipRect, Transformation, Closed);
 end;
+
+procedure TNestedBrush.PolyPolygonMixedFS(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: TBooleanArray);
+var
+  I: Integer;
+begin
+  for I := 0 to FBrushes.Count - 1 do
+    if FBrushes[I].Visible then
+      FBrushes[I].PolyPolygonMixedFS(Renderer, Points, ClipRect, Transformation, Closed);
+end;
+
 
 
 
@@ -478,20 +603,24 @@ end;
 constructor TStrokeBrush.Create(BrushCollection: TBrushCollection);
 begin
   inherited;
+
+  BeginLockUpdate;
+  FillMode := pfWinding;
+  EndLockUpdate;
+
   FStrokeWidth := 1;
-  FFillMode := pfWinding;
   FMiterLimit := DEFAULT_MITER_LIMIT;
 end;
 
-procedure TStrokeBrush.PolyPolygonFS(Renderer: TCustomPolygonRenderer;
-  const Points: TArrayOfArrayOfFloatPoint; const ClipRect: TFloatRect;
-  Transformation: TTransformation; Closed: Boolean);
-var
-  APoints: TArrayOfArrayOfFloatPoint;
+function TStrokeBrush.ProcessPolyPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean): TArrayOfArrayOfFloatPoint;
 begin
-  APoints := BuildPolyPolyLine(Points, Closed, StrokeWidth, JoinStyle,
-    EndStyle, MiterLimit);
-  inherited PolyPolygonFS(Renderer, APoints, ClipRect, Transformation, Closed);
+  Result := BuildPolyPolyLine(Points, Closed, StrokeWidth, JoinStyle, EndStyle, MiterLimit);
+  Result := inherited ProcessPolyPolygon(Renderer, Result, ClipRect, Transformation, True);
+
+{$ifdef GR32_DEBUG_BRUSH}
+  PolyPolylineFS(TPolygonRenderer32(Renderer).Bitmap, Points, clRed32, Closed);
+{$endif GR32_DEBUG_BRUSH}
 end;
 
 procedure TStrokeBrush.SetEndStyle(const Value: TEndStyle);
@@ -533,26 +662,31 @@ end;
 
 { TDashedBrush }
 
-procedure TDashedBrush.PolyPolygonFS(Renderer: TCustomPolygonRenderer;
-  const Points: TArrayOfArrayOfFloatPoint; const ClipRect: TFloatRect;
-  Transformation: TTransformation; Closed: Boolean);
+procedure TDashedBrush.DoSetDashArray(const ADashArray: TArrayOfFloat);
+begin
+  FDashArray := Copy(ADashArray);
+  Changed;
+end;
+
+function TDashedBrush.ProcessPolyPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean): TArrayOfArrayOfFloatPoint;
 var
   I: Integer;
 begin
-  for I := 0 to High(Points) do
-    inherited PolyPolygonFS(
-      Renderer, BuildDashedLine(Points[I], FDashArray, FDashOffset, Closed),
-      ClipRect, Transformation, False);
+  if (Length(FDashArray) > 0) then
+  begin
+    Result := nil;
+    for I := 0 to High(Points) do
+      Result := Result + BuildDashedLine(Points[I], FDashArray, FDashOffset, Closed);
+
+    Result := inherited ProcessPolyPolygon(Renderer, Result, ClipRect, Transformation, False);
+  end else
+    Result := inherited ProcessPolyPolygon(Renderer, Points, ClipRect, Transformation, Closed);
 end;
 
-procedure TDashedBrush.SetDashArray(const ADashArray: array of TFloat);
-var
-  L: Integer;
+procedure TDashedBrush.SetDashArray(const ADashArray: TArrayOfFloat);
 begin
-  L := Length(ADashArray);
-  SetLength(FDashArray, L);
-  Move(ADashArray[0], FDashArray[0], L * SizeOf(TFloat));
-  Changed;
+  DoSetDashArray(ADashArray);
 end;
 
 procedure TDashedBrush.SetDashOffset(const Value: TFloat);
@@ -573,17 +707,16 @@ begin
   FMiterLimit := DEFAULT_MITER_LIMIT;
 end;
 
-procedure TGrowBrush.PolyPolygonFS(Renderer: TCustomPolygonRenderer;
-  const Points: TArrayOfArrayOfFloatPoint; const ClipRect: TFloatRect;
-  Transformation: TTransformation; Closed: Boolean);
+function TGrowBrush.ProcessPolyPolygon(Renderer: TCustomPolygonRenderer; const Points: TArrayOfArrayOfFloatPoint;
+  const ClipRect: TFloatRect; Transformation: TTransformation; Closed: Boolean): TArrayOfArrayOfFloatPoint;
 var
   I: Integer;
-  APoints: TArrayOfArrayOfFloatPoint;
 begin
-  SetLength(APoints, Length(Points));
+  SetLength(Result, Length(Points));
   for I := 0 to High(Points) do
-    APoints[I] := Grow(Points[I], GrowAmount, JoinStyle, Closed, MiterLimit);
-  inherited PolyPolygonFS(Renderer, APoints, ClipRect, Transformation, True);
+    Result[I] := Grow(Points[I], GrowAmount, JoinStyle, Closed, MiterLimit);
+
+  Result := inherited ProcessPolyPolygon(Renderer, Result, ClipRect, Transformation, Closed);
 end;
 
 procedure TGrowBrush.SetGrowAmount(const Value: TFloat);

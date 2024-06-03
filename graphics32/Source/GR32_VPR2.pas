@@ -37,7 +37,7 @@ interface
 {$I GR32.inc}
 
 uses
-  GR32, GR32_Gamma, GR32_Polygons, GR32_OrdinalMaps;
+  GR32, GR32_Polygons, GR32_OrdinalMaps;
 
 type
   PIntSpan = ^TIntSpan;
@@ -82,7 +82,12 @@ type
 implementation
 
 uses
-  Math, GR32_VectorUtils, GR32_Math, GR32_LowLevel, GR32_Blend;
+  Math,
+  Types,
+  GR32_VectorUtils,
+  GR32_Math,
+  GR32_LowLevel,
+  GR32_Blend;
 
 { TPolygonRenderer32VPR2 }
 
@@ -220,9 +225,6 @@ begin
       V := Abs(Round(Last * $10000));
       if V > $10000 then V := $10000;
       V := V * M shr 24;
-{$IFDEF USEGR32GAMMA}
-      V := GAMMA_ENCODING_TABLE[V];
-{$ENDIF}
       C.A := V;
     end;
     AlphaValues[I] := Color;
@@ -248,9 +250,6 @@ begin
       V := V and $01ffff;
       if V >= $10000 then V := V xor $1ffff;
       V := V * M shr 24;
-{$IFDEF USEGR32GAMMA}
-      V := GAMMA_ENCODING_TABLE[V];
-{$ENDIF}
       C.A := V;
     end;
     AlphaValues[I] := Color;
@@ -311,10 +310,8 @@ begin
 end;
 {$IFDEF UseStackAlloc}{$W-}{$ENDIF}
 
-{$ifndef COMPILERXE2_UP}
 type
   TRoundingMode = Math.TFPURoundingMode;
-{$endif COMPILERXE2_UP}
 
 procedure TPolygonRenderer32VPR2.PolyPolygonFS(
   const Points: TArrayOfArrayOfFloatPoint; const ClipRect: TFloatRect);
@@ -474,9 +471,6 @@ begin
       V := Abs(Coverage[I]);
       if V > $ffff then V := $ffff;
       V := V * M shr 24;
-{$IFDEF USEGR32GAMMA}
-      V := GAMMA_ENCODING_TABLE[V];
-{$ENDIF}
       C.A := V;
     end;
     AlphaValues[I] := Color;
@@ -499,9 +493,6 @@ begin
       V := V and $01ffff;
       if V >= $10000 then V := V xor $1ffff;
       V := V * M shr 24;
-{$IFDEF USEGR32GAMMA}
-      V := GAMMA_ENCODING_TABLE[V];
-{$ENDIF}
       C.A := V;
     end;
     AlphaValues[I] := Color;
@@ -577,7 +568,11 @@ begin
 
   // temporary fix for floating point rounding errors
   R := ClipRect;
-  InflateRect(R, -0.05, -0.05);
+{$ifndef FPC}
+  R.Inflate(-0.05, -0.05);
+{$else}
+  GR32.InflateRect(R, -0.05, -0.05);
+{$endif}
 
   SetLength(FXSpan, Bitmap.Height);
   for I := 0 to High(FXSpan) do
@@ -611,6 +606,8 @@ end;
 
 initialization
   RegisterPolygonRenderer(TPolygonRenderer32VPR2);
-  RegisterPolygonRenderer(TPolygonRenderer32VPR2X);
 
+  // TPolygonRenderer32VPR2X has been disabled as it's incomplete.
+  // It causes AVs - and always have.
+  // RegisterPolygonRenderer(TPolygonRenderer32VPR2X);
 end.

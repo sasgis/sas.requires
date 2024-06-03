@@ -40,11 +40,11 @@ uses
   Windows, Types, GR32, GR32_Paths;
 
 procedure TextToPath(Font: HFONT; Path: TCustomPath;
-  const ARect: TFloatRect; const Text: WideString; Flags: Cardinal); overload;
+  const ARect: TFloatRect; const Text: string; Flags: Cardinal); overload;
 
-function MeasureTextDC(DC: HDC; const ARect: TFloatRect; const Text: WideString;
+function MeasureTextDC(DC: HDC; const ARect: TFloatRect; const Text: string;
   Flags: Cardinal): TFloatRect; overload;
-function MeasureText(Font: HFONT; const ARect: TFloatRect; const Text: WideString;
+function MeasureText(Font: HFONT; const ARect: TFloatRect; const Text: string;
   Flags: Cardinal): TFloatRect;
 
 type
@@ -101,7 +101,7 @@ var
   CurvePtr: PTTPolyCurve;
   P1, P2, P3: TFloatPoint;
 begin
-  Res := GetGlyphOutlineW(Handle, Glyph, GGODefaultFlags[UseHinting], Metrics,
+  Res := GetGlyphOutline(Handle, Glyph, GGODefaultFlags[UseHinting], Metrics,
     0, nil, VertFlip_mat2);
   Result := DstX + Metrics.gmCellIncX <= MaxX;
   if not Result or not Assigned(Path) then Exit;
@@ -109,7 +109,7 @@ begin
   GetMem(GlyphMemPtr, Res);
   BufferPtr := GlyphMemPtr;
 
-  Res := GetGlyphOutlineW(Handle, Glyph, GGODefaultFlags[UseHinting], Metrics,
+  Res := GetGlyphOutline(Handle, Glyph, GGODefaultFlags[UseHinting], Metrics,
     Res, BufferPtr, VertFlip_mat2);
 
   if (Res = GDI_ERROR) or (BufferPtr^.dwType <> TT_POLYGON_TYPE) then
@@ -121,7 +121,7 @@ begin
   while Res > 0 do
   begin
     S := BufferPtr.cb - SizeOf(TTTPolygonHeader);
-    PtrUInt(CurvePtr) := PtrUInt(BufferPtr) + SizeOf(TTTPolygonHeader);
+    PByte(CurvePtr) := PByte(BufferPtr) + SizeOf(TTTPolygonHeader);
     P1 := PointFXtoPointF(BufferPtr.pfxStart);
     Path.MoveTo(P1.X + DstX, P1.Y + DstY);
     while S > 0 do
@@ -166,20 +166,20 @@ begin
       K := (CurvePtr.cpfx - 1) * SizeOf(TPointFX) + SizeOf(TTPolyCurve);
       Dec(S, K);
 
-      Inc(PtrInt(CurvePtr), K);
+      Inc(PByte(CurvePtr), K);
     end;
 
     Path.EndPath(True);
 
     Dec(Res, BufferPtr.cb);
-    Inc(PtrInt(BufferPtr), BufferPtr.cb);
+    Inc(PByte(BufferPtr), BufferPtr.cb);
   end;
 
   FreeMem(GlyphMemPtr);
 end;
 
-procedure InternalTextToPath(DC: HDC; Path: TCustomPath; const ARect: TFloatRect;
-  const Text: WideString; Flags: Cardinal);
+procedure InternalTextToPath(DC: HDC; Path: TCustomPath; var ARect: TFloatRect;
+  const Text: string; Flags: Cardinal);
 const
   CHAR_CR = 10;
   CHAR_NL = 13;
@@ -191,7 +191,7 @@ var
   CharValue: Integer;
   CharOffsets: TArrayOfInteger;
   X, Y, XMax, YMax, MaxRight: Single;
-  S: WideString;
+  S: string;
   TextPath: TFlattenedPath;
   OwnedPath: TFlattenedPath;
 {$IFDEF USEKERNING}
@@ -269,7 +269,7 @@ var
     SpcCount := 0;
   end;
 
-  function MeasureTextX(const S: WideString): Integer;
+  function MeasureTextX(const S: string): Integer;
   var
     I: Integer;
   begin
@@ -277,7 +277,7 @@ var
     for I := 1 to Length(S) do
     begin
       CharValue := Ord(S[I]);
-      GetGlyphOutlineW(DC, CharValue,
+      GetGlyphOutline(DC, CharValue,
         GGODefaultFlags[UseHinting], GlyphMetrics, 0, nil, VertFlip_mat2);
       Inc(Result, GlyphMetrics.gmCellIncX);
     end;
@@ -338,7 +338,7 @@ begin
   SetLength(CharOffsets, TextLen +1);
   CharOffsets[0] := 0;
 
-  GetGlyphOutlineW(DC, CHAR_SP, GGODefaultFlags[UseHinting],
+  GetGlyphOutline(DC, CHAR_SP, GGODefaultFlags[UseHinting],
     GlyphMetrics, 0, nil, VertFlip_mat2);
   SpcX := GlyphMetrics.gmCellIncX;
 
@@ -442,6 +442,12 @@ begin
 
   X := ARect.Right - XMax;
   Y := ARect.Bottom - YMax;
+  case (Flags and DT_HORZ_ALIGN_MASK) of
+    DT_LEFT   : ARect := FloatRect(ARect.Left, ARect.Top, XMax, YMax);
+    DT_CENTER : ARect := FloatRect(ARect.Left + X * 0.5, ARect.Top, XMax + X * 0.5, YMax);
+    DT_RIGHT  : ARect := FloatRect(ARect.Left + X, ARect.Top, ARect.Right, YMax);
+    DT_JUSTIFY: ARect := FloatRect(ARect.Left, ARect.Top, ARect.Right, YMax);
+  end;
   if Flags and (DT_VCENTER or DT_BOTTOM) <> 0 then
   begin
     if Flags and DT_VCENTER <> 0 then
@@ -450,6 +456,8 @@ begin
       for I := 0 to High(TextPath.Path) do
         for J := 0 to High(TextPath.Path[I]) do
           TextPath.Path[I][J].Y := TextPath.Path[I][J].Y + Y;
+
+    OffsetRect(ARect, 0, Y);
   end;
 
 {$IFDEF USEKERNING}
@@ -471,34 +479,32 @@ begin
 end;
 
 procedure TextToPath(Font: HFONT; Path: TCustomPath; const ARect: TFloatRect;
-  const Text: WideString; Flags: Cardinal); overload;
+  const Text: string; Flags: Cardinal); overload;
 var
   DC: HDC;
   SavedFont: HFONT;
+  R: TFloatRect;
 begin
   DC := GetDC(0);
   try
     SavedFont := SelectObject(DC, Font);
-    InternalTextToPath(DC, Path, ARect, Text, Flags);
+    R := ARect;
+    InternalTextToPath(DC, Path, R, Text, Flags);
     SelectObject(DC, SavedFont);
   finally
     ReleaseDC(0, DC);
   end;
 end;
 
-function MeasureTextDC(DC: HDC; const ARect: TFloatRect; const Text: WideString;
+function MeasureTextDC(DC: HDC; const ARect: TFloatRect; const Text: string;
   Flags: Cardinal): TFloatRect;
 begin
   Result := ARect;
   InternalTextToPath(DC, nil, Result, Text, Flags);
-  Result.Left := Round(Result.Left);
-  Result.Top := Round(Result.Top);
-  Result.Right := Round(Result.Right);
-  Result.Bottom := Round(Result.Bottom);
 end;
 
 function MeasureText(Font: HFONT; const ARect: TFloatRect;
-  const Text: WideString; Flags: Cardinal): TFloatRect;
+  const Text: string; Flags: Cardinal): TFloatRect;
 var
   DC: HDC;
   SavedFont: HFONT;

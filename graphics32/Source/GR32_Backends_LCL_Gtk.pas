@@ -23,12 +23,10 @@ unit GR32_Backends_LCL_Gtk;
  * The Original Code is Backend Extension for Graphics32
  *
  * The Initial Developer of the Original Code is
- * Felipe Monteiro de Carvalho <felipemonteiro.carvalho@gmail.com>
+ * Anders Melander <anders@melander.dk>
  *
- * Portions created by the Initial Developer are Copyright (C) 2007-2012
+ * Portions created by the Initial Developer are Copyright (C) 2007-2024
  * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** *)
 
@@ -39,9 +37,10 @@ interface
 {$DEFINE VerboseGR32GTK}
 
 uses
-  LCLIntf, LCLType, types, Controls, SysUtils, Classes,
+  LCLIntf, LCLType,
+  Types, Controls, SysUtils, Classes,
 {$IFDEF LCLGtk2}
-  gdk2, gdk2pixbuf, glib2, gtk2Def,
+  gdk2, gdk2pixbuf, glib2, gtk2Def, gtk2,
 {$ELSE}
   gdk, gdkpixbuf, glib, gtkdef,
 {$ENDIF}
@@ -52,31 +51,83 @@ type
 
   { TLCLBackend }
 
-  TLCLBackend = class(TCustomBackend, IPaintSupport, ITextSupport,
-    IFontSupport, ICanvasSupport, IDeviceContextSupport,
-    IInteroperabilitySupport)
+  TLCLBackend = class(TCustomBackend,
+      IPaintSupport,
+      ITextSupport,
+      IFontSupport,
+      ICanvasSupport,
+      IDeviceContextSupport,
+      IInteroperabilitySupport,
+      IUpdateRectSupport
+    )
   private
     FFont: TFont;
     FOnFontChange: TNotifyEvent;
     FOnCanvasChange: TNotifyEvent;
-
     FWidth, FHeight: Cardinal;
     FRawImage: TRawImage;
     FBitmap: TBitmap;
-
+    FPixmapDirty: boolean;
+    FCanvasDirty: boolean;
+  private
     procedure CanvasChangedHandler(Sender: TObject);
+    procedure CanvasChanged;
+
+    procedure CopyPixmapToCanvas;
+    procedure CopyCanvasToPixmap;
+
+    procedure NeedBits; {$IFDEF USEINLINING} inline; {$ENDIF}
+    procedure NeedCanvas; {$IFDEF USEINLINING} inline; {$ENDIF}
   protected
-    FFontHandle: HFont;
-    FBitmapInfo: TBitmapInfo;
-    FHDC: HDC;
-
-    { BITS_GETTER }
+{$IFDEF BITS_GETTER}
     function GetBits: PColor32Array; override;
-
+{$ELSE BITS_GETTER}
+  {$MESSAGE FATAL LCL GTK backend requires that BITS_GETTER is defined}
+{$ENDIF BITS_GETTER}
     procedure InitializeSurface(NewWidth, NewHeight: Integer; ClearBuffer: Boolean); override;
     procedure FinalizeSurface; override;
-
-    procedure CanvasChanged;
+  protected
+    // IPaintSupport
+    procedure DoPaint(ABuffer: TBitmap32; AInvalidRects: TRectList; ACanvas: TCanvas; APaintBox: TCustomPaintBox32);
+    procedure ImageNeeded;
+    procedure CheckPixmap;
+  protected
+    // IDeviceContextSupport
+    function GetHandle: HDC;
+    procedure Draw(const DstRect, SrcRect: TRect; hSrc: HDC); overload;
+    procedure DrawTo(hDst: HDC; DstX, DstY: Integer); overload;
+    procedure DrawTo(hDst: HDC; const DstRect, SrcRect: TRect); overload;
+  protected
+    // ITextSupport
+    procedure Textout(X, Y: Integer; const Text: string); overload;
+    procedure Textout(X, Y: Integer; const ClipRect: TRect; const Text: string); overload;
+    procedure Textout(var DstRect: TRect; const Flags: Cardinal; const Text: string); overload;
+    function  TextExtent(const Text: string): TSize;
+  protected
+    // IFontSupport
+    function GetOnFontChange: TNotifyEvent;
+    procedure SetOnFontChange(Handler: TNotifyEvent);
+    function GetFont: TFont;
+    procedure SetFont(const AFont: TFont);
+    procedure UpdateFont;
+    property Font: TFont read GetFont;
+  protected
+    // IInteroperabilitySupport
+    function CopyFrom(ImageBitmap: TFPImageBitmap): Boolean; overload;
+    function CopyFrom(Graphic: TGraphic): Boolean; overload;
+  protected
+    // ICanvasSupport
+    function GetCanvasChange: TNotifyEvent;
+    procedure SetCanvasChange(Handler: TNotifyEvent);
+    function GetCanvas: TCanvas;
+    function CanvasAllocated: Boolean;
+    procedure DeleteCanvas;
+  protected
+    { IUpdateRectSupport }
+    procedure InvalidateRect(AControl: TWinControl; const ARect: TRect);
+    procedure GetUpdateRects(AControl: TWinControl; AUpdateRects: TRectList; AReservedCapacity: integer; var AFullUpdate: boolean);
+  protected
+    property Canvas: TCanvas read GetCanvas;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -84,62 +135,12 @@ type
     procedure Changed; override;
 
     function Empty: Boolean; override;
-  public
-    { IPaintSupport }
-    procedure DoPaint(ABuffer: TBitmap32; AInvalidRects: TRectList; ACanvas: TCanvas; APaintBox: TCustomPaintBox32);
-    procedure ImageNeeded;
-    procedure CheckPixmap;
-
-    { IDeviceContextSupport }
-    function GetHandle: HDC;
-
-    procedure Draw(const DstRect, SrcRect: TRect; hSrc: HDC); overload;
-    procedure DrawTo(hDst: HDC; DstX, DstY: Integer); overload;
-    procedure DrawTo(hDst: HDC; const DstRect, SrcRect: TRect); overload;
-
-    property Handle: HDC read GetHandle;
-
-    { ITextSupport }
-    procedure Textout(X, Y: Integer; const Text: string); overload;
-    procedure Textout(X, Y: Integer; const ClipRect: TRect; const Text: string); overload;
-    procedure Textout(var DstRect: TRect; const Flags: Cardinal; const Text: string); overload;
-    function  TextExtent(const Text: string): TSize;
-
-    procedure TextoutW(X, Y: Integer; const Text: Widestring); overload;
-    procedure TextoutW(X, Y: Integer; const ClipRect: TRect; const Text: Widestring); overload;
-    procedure TextoutW(var DstRect: TRect; const Flags: Cardinal; const Text: Widestring); overload;
-    function  TextExtentW(const Text: Widestring): TSize;
-
-    { IFontSupport }
-    function GetOnFontChange: TNotifyEvent;
-    procedure SetOnFontChange(Handler: TNotifyEvent);
-    function GetFont: TFont;
-    procedure SetFont(const Font: TFont);
-    procedure UpdateFont;
-
-    property Font: TFont read GetFont write SetFont;
-    property OnFontChange: TNotifyEvent read FOnFontChange write FOnFontChange;
-
-    { IInteroperabilitySupport }
-    function CopyFrom(ImageBitmap: TFPImageBitmap): Boolean; overload;
-    function CopyFrom(Graphic: TGraphic): Boolean; overload;
-
-    { ICanvasSupport }
-    function GetCanvasChange: TNotifyEvent;
-    procedure SetCanvasChange(Handler: TNotifyEvent);
-    function GetCanvas: TCanvas;
-
-    procedure DeleteCanvas;
-    function CanvasAllocated: Boolean;
-
-    property Canvas: TCanvas read GetCanvas;
-    property OnCanvasChange: TNotifyEvent read GetCanvasChange write SetCanvasChange;
-
   end;
 
 implementation
 
 uses
+  Math,
   GR32_LowLevel;
 
 { TLCLBackend }
@@ -147,9 +148,6 @@ uses
 constructor TLCLBackend.Create;
 begin
   inherited;
-  FBitmap := TBitmap.Create;
-  FBitmap.Canvas.OnChange := CanvasChangedHandler;
-  FFont := TFont.Create;
 end;
 
 destructor TLCLBackend.Destroy;
@@ -160,10 +158,94 @@ begin
   inherited;
 end;
 
+procedure TLCLBackend.NeedBits;
+begin
+  // If canvas was modified, copy it back to the pixmap
+  if (FCanvasDirty) then
+    CopyCanvasToPixmap;
+end;
+
+procedure TLCLBackend.NeedCanvas;
+begin
+  if (FBitmap = nil) then
+  begin
+    FBitmap := TBitmap.Create;
+    FBitmap.Canvas.Brush.Style := bsClear; // Otherwise text is drawn opaque
+    FBitmap.Canvas.OnChange := CanvasChangedHandler;
+
+    FBitmap.LoadFromRawImage(FRawImage, False);
+
+    FPixmapDirty := False;
+    FCanvasDirty := False;
+  end;
+
+  // If pixmap was modified ensure that canvas is up to date
+  if (FPixmapDirty) then
+    CopyPixmapToCanvas;
+end;
+
+procedure TLCLBackend.CopyCanvasToPixmap;
+var
+  PixBuf: PGdkPixbuf;
+  P: TPoint;
+  SourceBits: pointer;
+begin
+  // Allocate a new pixbuf, 8 bits per channel with alpha.
+  PixBuf := gdk_pixbuf_new(GDK_COLORSPACE_RGB, True, 8, FWidth, FHeight);
+  try
+
+    P := TGtkDeviceContext(Canvas.Handle).Offset;
+
+    // Fill the pixbuf with the canvas pixel data
+    if (gdk_pixbuf_get_from_drawable(PixBuf,
+      TGtkDeviceContext(Canvas.Handle).Drawable, nil,
+      P.X,P.Y, 0,0, FWidth, FHeight) = nil) then
+      raise Exception.Create('[TLCLBackend.CopyCanvasToPixmap] gdk_pixbuf_get_from_drawable failed');
+
+    // Note: we cant directly assign data pointer to FBits here, 
+    // because the pointer will be soon disposed (see 'finally' below).
+    // Instead, we should do copy the pixels (pointer content) to FBits to keep it accesible later.
+
+    // Get a pointer to the pixbuf pixel data
+    SourceBits := gdk_pixbuf_get_pixels(PixBuf);
+
+    // Copy data (pointer content) from pixbuf to pixmap
+    MoveLongword(SourceBits^, FBits^, FWidth*FHeight);
+
+  finally
+    g_object_unref(PixBuf);
+  end;
+
+  FPixmapDirty := False;
+  FCanvasDirty := False;
+end;
+
+procedure TLCLBackend.CopyPixmapToCanvas;
+var
+  P: TPoint;
+begin
+  P := TGtkDeviceContext(FBitmap.Canvas.Handle).Offset;
+
+  // Draw the pixbuf data onto the canvas.
+  gdk_draw_rgb_32_image(TGtkDeviceContext(FBitmap.Canvas.Handle).Drawable,
+    TGtkDeviceContext(FBitmap.Canvas.Handle).GC, P.X, P.Y, FWidth, FHeight,
+    GDK_RGB_DITHER_NONE, pguchar(FBits), FWidth * SizeOf(TColor32));
+
+  FPixmapDirty := False;
+  FCanvasDirty := False;
+end;
+
+{$IFDEF BITS_GETTER}
 function TLCLBackend.GetBits: PColor32Array;
 begin
+  NeedBits;
+
   Result := FBits;
+
+  // Since caller now has direct access to the pixmap, assume it will be modified
+  FPixmapDirty := True;
 end;
+{$ENDIF}
 
 procedure TLCLBackend.CanvasChangedHandler(Sender: TObject);
 begin
@@ -172,44 +254,43 @@ end;
 
 procedure TLCLBackend.CanvasChanged;
 begin
+  FCanvasDirty := True;
+
   if Assigned(FOnCanvasChange) then
     FOnCanvasChange(Self);
 end;
 
 procedure TLCLBackend.InitializeSurface(NewWidth, NewHeight: Integer; ClearBuffer: Boolean);
-var
-  LazImage: TLazIntfImage;
 begin
   { We allocate our own memory for the image }
+  FRawImage.Init;
+{$ifdef RGBA_FORMAT}
+  FRawImage.Description.Init_BPP32_R8G8B8A8_BIO_TTB(NewWidth, NewHeight);
+{$else RGBA_FORMAT}
   FRawImage.Description.Init_BPP32_B8G8R8A8_BIO_TTB(NewWidth, NewHeight);
+{$endif RGBA_FORMAT}
 
   FRawImage.CreateData(ClearBuffer);
   FBits := PColor32Array(FRawImage.Data);
 
-  if FBits = nil then
-    raise Exception.Create('[TLCLBackend.InitializeSurface] ERROR FBits = nil');
+  if (FBits = nil) then
+    raise Exception.Create('[TLCLBackend.InitializeSurface] FBits = nil');
 
-  LazImage := TLazIntfImage.Create(FRawImage, False);
-  try
-    FBitmap.LoadFromIntfImage(LazImage);
+  FWidth := NewWidth;
+  FHeight := NewHeight;
 
-    FWidth := NewWidth;
-    FHeight := NewHeight;
-  finally
-    LazImage.Free;
-  end;
+  FPixmapDirty := True;
 end;
 
 procedure TLCLBackend.FinalizeSurface;
 begin
-  if Assigned(FBits) then
+  if (FBits <> nil) then
   begin
     FRawImage.FreeData;
     FBits := nil;
 
-    FBitmap.ReleaseHandle;
+    FreeAndNil(FBitmap);
   end;
-  FBits := nil;
 end;
 
 procedure TLCLBackend.Changed;
@@ -219,7 +300,7 @@ end;
 
 function TLCLBackend.Empty: Boolean;
 begin
-  Result := FBits = nil;
+  Result := (FBits = nil);
 end;
 
 { IPaintSupport }
@@ -244,7 +325,7 @@ begin
   gdk_draw_rgb_32_image(TGtkDeviceContext(ACanvas.Handle).Drawable,
     TGtkDeviceContext(ACanvas.Handle).GC, P.X, P.Y,
     ABuffer.Width, ABuffer.Height,
-    GDK_RGB_DITHER_NONE, pguchar(ABuffer.Bits), ABuffer.Width * 4
+    GDK_RGB_DITHER_NONE, pguchar(ABuffer.Bits), ABuffer.Width * SizeOf(TColor32)
   );
 end;
 
@@ -258,16 +339,20 @@ end;
 
 procedure TLCLBackend.Draw(const DstRect, SrcRect: TRect; hSrc: HDC);
 begin
-  StretchMaskBlt(Canvas.Handle, DstRect.Left, DstRect.Top,
+  NeedCanvas;
+
+  StretchMaskBlt(FBitmap.Canvas.Handle, DstRect.Left, DstRect.Top,
     DstRect.Right - DstRect.Left, DstRect.Bottom - DstRect.Top,
     hSrc, SrcRect.Left, SrcRect.Top, SrcRect.Right - SrcRect.Left,
-    SrcRect.Bottom - SrcRect.Top, 0, 0, 0, Canvas.CopyMode);
+    SrcRect.Bottom - SrcRect.Top, 0, 0, 0, FBitmap.Canvas.CopyMode);
 end;
 
 procedure TLCLBackend.DrawTo(hDst: HDC; DstX, DstY: Integer);
 var
   P: TPoint;
 begin
+  NeedBits;
+
   P := TGtkDeviceContext(hDst).Offset;
 
   Inc(DstX, P.X);
@@ -275,7 +360,7 @@ begin
 
   gdk_draw_rgb_32_image(TGtkDeviceContext(hDst).Drawable,
     TGtkDeviceContext(hDst).GC, DstX, DstY, FWidth, FHeight,
-    GDK_RGB_DITHER_NONE, PGuChar(FRawImage.Data), FWidth * 4
+    GDK_RGB_DITHER_NONE, PGuChar(FBits), FWidth * SizeOf(TColor32)
   );
 end;
 
@@ -284,6 +369,8 @@ var
   P: TPoint;
   DR: TRect;
 begin
+  NeedBits;
+
   P := TGtkDeviceContext(hDst).Offset;
   DR := DstRect;
 
@@ -292,8 +379,8 @@ begin
 
   gdk_draw_rgb_32_image(TGtkDeviceContext(hDst).Drawable,
     TGtkDeviceContext(hDst).GC, DR.Left, DR.Top, SrcRect.Right - SrcRect.Left,
-    SrcRect.Bottom - SrcRect.Top, GDK_RGB_DITHER_NONE, PGuChar(FRawImage.Data),
-    FWidth * 4
+    SrcRect.Bottom - SrcRect.Top, GDK_RGB_DITHER_NONE, PGuChar(FBits),
+    FWidth * SizeOf(TColor32)
   );
 end;
 
@@ -301,25 +388,86 @@ end;
 { ITextSupport }
 
 procedure TLCLBackend.Textout(X, Y: Integer; const Text: string);
+var
+  Extent: TSize;
+  ChangeRect: TRect;
 begin
+  if Empty then
+    Exit;
+
   UpdateFont;
 
-  if not FOwner.MeasuringMode then
-    Canvas.TextOut(X, Y, Text);
+  if (not FOwner.MeasuringMode) then
+  begin
+    if FOwner.Clipping then
+    begin
+      LCLIntf.ExtTextOut(Canvas.Handle, X, Y, ETO_CLIPPED, @FOwner.ClipRect, PChar(Text), Length(Text), nil);
+      CanvasChanged;
+    end else
+      Canvas.TextOut(X, Y, Text);
+  end;
+
+  Extent := TextExtent(Text);
+  ChangeRect := MakeRect(X, Y, X + Extent.cx + 1, Y + Extent.cy + 1);
+  if FOwner.Clipping then
+    ChangeRect.Intersect(FOwner.ClipRect);
+  FOwner.Changed(ChangeRect);
 end;
 
 procedure TLCLBackend.Textout(X, Y: Integer; const ClipRect: TRect; const Text: string);
+var
+  Extent: TSize;
+  ActualClipRect: TRect;
+  ChangeRect: TRect;
 begin
+  if Empty then
+    Exit;
+
   UpdateFont;
 
-  LCLIntf.ExtTextOut(Canvas.Handle, X, Y, ETO_CLIPPED, @ClipRect, PChar(Text), Length(Text), nil);
+  ActualClipRect := ClipRect;
+  if FOwner.Clipping then
+    ActualClipRect.Intersect(FOwner.ClipRect);
+
+  if (not FOwner.MeasuringMode) then
+  begin
+    LCLIntf.ExtTextOut(Canvas.Handle, X, Y, ETO_CLIPPED, @ActualClipRect, PChar(Text), Length(Text), nil);
+
+    CanvasChanged;
+  end;
+
+  Extent := TextExtent(Text);
+  ChangeRect := MakeRect(X, Y, X + Extent.cx + 1, Y + Extent.cy + 1);
+  ChangeRect.Intersect(ActualClipRect);
+  FOwner.Changed(ChangeRect);
 end;
 
 procedure TLCLBackend.Textout(var DstRect: TRect; const Flags: Cardinal; const Text: string);
+var
+  ChangeRect: TRect;
+  TextCopy: string;
 begin
+  if Empty then
+    Exit;
+
   UpdateFont;
 
-  LCLIntf.DrawText(Canvas.Handle, PChar(Text), Length(Text), DstRect, Flags);
+  if (not FOwner.MeasuringMode) then
+  begin
+    TextCopy := Text;
+    if (Flags and DT_MODIFYSTRING <> 0) then
+      UniqueString(TextCopy); // string must be writable
+
+    LCLIntf.DrawText(Canvas.Handle, PChar(TextCopy), Length(TextCopy), DstRect, Flags);
+
+    CanvasChanged;
+  end else
+    LCLIntf.DrawText(Canvas.Handle, PChar(TextCopy), Length(TextCopy), DstRect, (Flags or DT_CALCRECT) and (not DT_MODIFYSTRING));
+
+  ChangeRect := DstRect;
+  if FOwner.Clipping then
+    ChangeRect.Intersect(FOwner.ClipRect);
+  FOwner.Changed(ChangeRect);
 end;
 
 function TLCLBackend.TextExtent(const Text: string): TSize;
@@ -332,54 +480,108 @@ begin
   Result := Canvas.TextExtent(Text);
 end;
 
-procedure TLCLBackend.TextoutW(X, Y: Integer; const Text: Widestring);
-begin
-  Canvas.TextOut(X, Y, Text);
-end;
-
-procedure TLCLBackend.TextoutW(X, Y: Integer; const ClipRect: TRect; const Text: Widestring);
-begin
-  Canvas.ClipRect := ClipRect;;
-  Canvas.TextOut(X, Y, Text);
-end;
-
-procedure TLCLBackend.TextoutW(var DstRect: TRect; const Flags: Cardinal; const Text: Widestring);
-begin
-  TextOut(DstRect, Flags, Text);
-end;
-
-function TLCLBackend.TextExtentW(const Text: Widestring): TSize;
-begin
-  Result := TextExtent(Text);
-end;
-
-
 { IFontSupport }
 
 function TLCLBackend.GetOnFontChange: TNotifyEvent;
 begin
-  Result := FFont.OnChange;
+  Result := Font.OnChange;
 end;
 
 procedure TLCLBackend.SetOnFontChange(Handler: TNotifyEvent);
 begin
-  FFont.OnChange := Handler;
+  Font.OnChange := Handler;
 end;
 
 function TLCLBackend.GetFont: TFont;
 begin
+  if (FFont = nil) then
+    FFont := TFont.Create;
   Result := FFont;
 end;
 
-procedure TLCLBackend.SetFont(const Font: TFont);
+procedure TLCLBackend.SetFont(const AFont: TFont);
 begin
-  FFont.Assign(Font);
+  Font.Assign(AFont);
 end;
 
 procedure TLCLBackend.UpdateFont;
 begin
-  FFont.OnChange := FOnFontChange;
+  Font.OnChange := FOnFontChange;
   Canvas.Font := FFont;
+end;
+
+
+{ IUpdateRectSupport }
+procedure TLCLBackend.InvalidateRect(AControl: TWinControl; const ARect: TRect);
+var
+  Widget: PGtkWidget;
+  UpdateRect: TGdkRectangle;
+begin
+  // https://lazka.github.io/pgi-docs/Gdk-3.0/classes/Window.html#Gdk.Window.invalidate_rect
+  // https://developer-old.gnome.org/pygtk/stable/class-gdkwindow.html#method-gdkwindow--invalidate-rect
+
+  // procedure gdk_window_invalidate_rect(window:PGdkWindow; rect:PGdkRectangle; invalidate_children:gboolean); cdecl; external gdklib;
+
+  Widget := PGtkWidget(AControl.Handle);
+
+  UpdateRect.x := ARect.Left;
+  UpdateRect.y := ARect.Top;
+  UpdateRect.Width := ARect.Right-ARect.Left;
+  UpdateRect.Height := ARect.Bottom-ARect.Top;
+
+  gdk_window_invalidate_rect(Widget.window, @UpdateRect, False);
+end;
+
+procedure TLCLBackend.GetUpdateRects(AControl: TWinControl; AUpdateRects: TRectList; AReservedCapacity: integer;
+  var AFullUpdate: boolean);
+var
+  Widget: PGtkWidget;
+  UpdateRegion: PGdkRegion;
+  UpdateRects: PGdkRectangle;
+  UpdateRect: PGdkRectangle;
+  Count: integer;
+  r: TRect;
+  i: integer;
+begin
+  // TODO : How do we get the update rect with GTK?
+  // TGdkWindow.get_update_area ?
+  // https://developer-old.gnome.org/pygtk/stable/class-gdkwindow.html#method-gdkwindow--get-update-area
+
+  // function gdk_window_get_update_area(window:PGdkWindow):PGdkRegion; cdecl; external gdklib;
+
+  Widget := PGtkWidget(AControl.Handle);
+
+  UpdateRegion := gdk_window_get_update_area(Widget.window);
+  if (UpdateRegion = PGdkRegion(GDK_NONE)) then
+    exit;
+  try
+
+    if (gdk_region_empty(UpdateRegion)) then
+      exit;
+
+    gdk_region_get_rectangles(UpdateRegion, UpdateRects, @Count);
+    try
+      if (Count = 0) then
+        exit;
+
+      // Final count is known so set capacity to avoid reallocation
+      AUpdateRects.Capacity := Math.Max(AUpdateRects.Capacity, AUpdateRects.Count + AReservedCapacity + Count);
+
+      UpdateRect := UpdateRects;
+      for i := 0 to Count-1 do
+      begin
+        r := MakeRect(UpdateRect.x, UpdateRect.y, UpdateRect.x+UpdateRect.Width, UpdateRect.y+UpdateRect.Height);
+        AUpdateRects.Add(r);
+        Inc(UpdateRect);
+      end;
+
+    finally
+      g_free(UpdateRects)
+    end;
+  finally
+    gdk_region_destroy(UpdateRegion);
+  end;
+
 end;
 
 
@@ -391,13 +593,13 @@ type
 function TLCLBackend.CopyFrom(ImageBitmap: TFPImageBitmap): Boolean;
 var
   Src: TLazIntfImage;
-  Dest: TLazIntfImage;
   X, Y: Integer;
   SrcLine: PCardinalArray;
   DestLine: PByte;
 begin
+  NeedBits; // Ensure that pixmap is up to date
+
   Src := ImageBitmap.CreateIntfImage;
-  Dest := FBitmap.CreateIntfImage;
   try
     if ImageBitmap.Transparent then
     begin
@@ -407,13 +609,13 @@ begin
         DestLine := FRawImage.GetLineStart(Y);
         for X := 0 to Src.Width - 1 do
         begin
-          DestLine^ := Blue(SrcLine^[X]);
+          DestLine^ := BlueComponent(SrcLine^[X]);
           Inc(DestLine);
-          DestLine^ := Green(SrcLine^[X]);
+          DestLine^ := GreenComponent(SrcLine^[X]);
           Inc(DestLine);
-          DestLine^ := Red(SrcLine^[X]);
+          DestLine^ := RedComponent(SrcLine^[X]);
           Inc(DestLine);
-          DestLine^ := SrcLine^[X] shr 24;
+          DestLine^ := AlphaComponent(SrcLine^[X]);
           Inc(DestLine);
         end;
       end;
@@ -426,11 +628,11 @@ begin
         DestLine := FRawImage.GetLineStart(Y);
         for X := 0 to Src.Width - 1 do
         begin
-          DestLine^ := Blue(SrcLine^[X]);
+          DestLine^ := BlueComponent(SrcLine^[X]);
           Inc(DestLine);
-          DestLine^ := Green(SrcLine^[X]);
+          DestLine^ := GreenComponent(SrcLine^[X]);
           Inc(DestLine);
-          DestLine^ := Red(SrcLine^[X]);
+          DestLine^ := RedComponent(SrcLine^[X]);
           Inc(DestLine);
           DestLine^ := $FF;
           Inc(DestLine);
@@ -444,15 +646,15 @@ begin
   Result := True;
 end;
 
-
 function TLCLBackend.CopyFrom(Graphic: TGraphic): Boolean;
 begin
-  if Graphic is TFPImageBitmap then
-    Result := CopyFrom(TFPImageBitmap(Graphic));
+  Result := (Graphic is TFPImageBitmap) and CopyFrom(TFPImageBitmap(Graphic));
 
   if not Result then
   begin
-    TGraphicAccess(Graphic).Draw(Canvas, MakeRect(0, 0, Canvas.Width, Canvas.Height));
+    NeedCanvas;
+
+    TGraphicAccess(Graphic).Draw(FBitmap.Canvas, MakeRect(0, 0, FBitmap.Canvas.Width, FBitmap.Canvas.Height));
     Result := True;
   end;
 end;
@@ -472,16 +674,19 @@ end;
 
 function TLCLBackend.GetCanvas: TCanvas;
 begin
-  Result := FBitmap.Canvas;
-end;
+  NeedCanvas;
 
-procedure TLCLBackend.DeleteCanvas;
-begin
+  Result := FBitmap.Canvas;
 end;
 
 function TLCLBackend.CanvasAllocated: Boolean;
 begin
-  Result := Canvas <> nil;
+  result := GetCanvas() <> nil;
+end;
+
+procedure TLCLBackend.DeleteCanvas;
+begin
+
 end;
 
 end.

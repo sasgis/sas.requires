@@ -1,3 +1,4229 @@
+commit ae749e51d3f538b33a1b3d37c72c05fc5336fb57
+Merge: 2ca61889 d398e2c3
+Author: zed <starmen@tut.by>
+Date:   2024-06-03 15:55:53 +0300
+
+    Merge branch 'master' into sasgis
+
+commit d398e2c396bf6a8a363a193b8f5a544d05621a99
+Merge: f0a5a254 8a1c11c3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-28 14:45:16 +0200
+
+    Merge branch 'Blur'
+
+commit 8a1c11c33265e48b31c04f9e842cf20aa8727b39
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-08 10:38:46 +0200
+
+    Cleaned up Blurs example
+
+commit f0a5a2542b17577f6fec80e4835e10705f42edc1
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-25 22:13:21 +0200
+
+    Do not perform optimized repaint measuring-mode on hidden layers.
+    
+    Fixes #314
+
+commit a16e1cfeca9c66f050ebdee6c2218bfeb72668d8
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-20 02:31:20 +0200
+
+    TImgView32: Fix for AV when centering an already centered image
+    
+    Fix for image not centered when loaded.
+    Refreshed ImgView_Layers example and fixed a few minor UI glitches.
+
+commit bf18523b100bc326a3df877d86e0f55e844a513b
+Merge: 671bcdee f713fddc
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-19 00:46:02 +0200
+
+    Merge branch 'ForwardProjectiveTransform_RubberBand'
+
+commit 671bcdee59626a8ce697f0e1592f20ca3507a0fe
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-19 00:45:34 +0200
+
+    TImgView32: Fix for scrollbars not being painted when Visibility=svAlways
+
+commit b0e68bcd27606ab29ed8d51534a4a2ebb2d00621
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-18 22:26:06 +0200
+
+    Fix for TCustomImage32 tiling performance regression introduced by commit ee89546ff5552771dcd40f21b988f9c9d2707372
+
+commit 37cbb306bcdcf688ab52f63593f9dd73d1ec8c0f
+Merge: 5d49b772 c2de9cc0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-18 21:43:38 +0200
+
+    Merge branch 'TImgView32-scrolling'
+    
+    # Conflicts:
+    #       Source/GR32_Image.pas
+
+commit 5d49b772f7575a1ff0f770002372713f758ab2af
+Merge: bb52dd9b 8e2c6baf
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-18 21:39:38 +0200
+
+    Merge branch 'PaintStages'
+
+commit 8e2c6baf48ed5548eba23da2f65a0140f00ec159
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-18 21:39:09 +0200
+
+    TCustomImage32: The paint stages list is now cached and only recompiled when necessary.
+
+commit c2de9cc0cd05214a13d18dc78e81cee8e65ab5d2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-15 18:25:43 +0200
+
+    TImgView32 scroll and offset handling completely rewritten
+
+commit f713fddcf5027eba8d034b66b6e43c2e3d8ce3fa
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-12 04:34:14 +0200
+
+    Sphere example: Adaptive pixel size during manual pan & rotate
+
+commit 142aa3e0b3c6204c38c60e3a3e620e43b3f237e2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-07 21:02:30 +0200
+
+    Added Sphere example showcasing TSphereTransformation
+
+commit 846ea9b5f007a8b14281f301248c874d2c20acad
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-07 13:37:10 +0200
+
+    Added TSphereTransformation; Transforms a map (planisphere) into a Spherical projection.
+
+commit 1da31a51bfb31e465a35cb927717bd396d29870a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-07 12:13:37 +0200
+
+    Updated Perspective Correction example with draft rasterizer
+
+commit cfbd590c2c839bbab86577483493931839e1a847
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-07 12:12:32 +0200
+
+    Added TDraftRasterizer
+
+commit f3734eeb70d8964e5c63a4a73b7333d6204142d5
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-06 18:07:07 +0200
+
+    Resolved some rasterizer and layer inlining hints
+
+commit 6d87d6bf74d73e2438a6d78f03a43a672e351e52
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-06 16:10:11 +0200
+
+    Updated Perspective Correction example to showcase the different multi-threaded rasterizers.
+
+commit 07727b79471535c7843827db03e7a5c182a0523e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-06 16:08:35 +0200
+
+    Two new multi-threaded rasterizers has been introduced based on the PPL:
+    
+    TParallelRegularRasterizer uses TParallel.For and TTaskRegularRasterizer uses TTask with manual partitioning.
+    Both vastly outperforms the old TThread-based TMultithreadedRegularRasterizer which has now been renamed TThreadRegularRasterizer and deprecated (for XE7 and later). TMultithreadedRegularRasterizer is now an alias for TParallelRegularRasterizer when that is available (XE7 and later).
+
+commit 640058ba79300a7e75823b541042ed56a0be3242
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-06 01:08:58 +0200
+
+    TCustomRubberBandLayer.FrameStippleCounter is now automatically wrapped to stipple length
+
+commit 5fca531e136157ec1753d4e7effa99a450996c5e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-06 01:05:59 +0200
+
+    Added Perspective Correction example
+
+commit bb52dd9b66622d8995a4cf98d33c8ba9f5e8ed89
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-15 16:58:13 +0200
+
+    Curves example now uses a Hamming kernel instead of a Gaussian kernel.
+    
+    Avoid XE7 dynamic array construction where possible (for now...)
+
+commit 49402ed33d97808a35127cce0f9574c7cf724515
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-15 16:05:50 +0200
+
+    Added screenshots of all examples
+
+commit 8dca624383287d785014781bff136e3e7944b06f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-15 14:01:20 +0200
+
+    Added Layers\Bounce example
+    
+    Primarily demonstrates easing.
+
+commit 2ca618892fe916cf1737591b7c7f4f1901109072
+Merge: 2b37ba76 3e7f65a3
+Author: zed <starmen@tut.by>
+Date:   2024-05-12 12:41:22 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 3e7f65a33b6ea197768074e6d32769d46c203d18
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-10 11:09:39 +0200
+
+    Fix for paste from clipboard fails unless clipboard contains PNG
+
+commit 400aede2c79a4dac7761e100f41d9e2974b851b7
+Merge: f87840d1 9fe8f3be
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-10 10:48:24 +0200
+
+    Merge branch 'Stopwatch'
+
+commit 9fe8f3be07f73ef092505ad4d4c49bca1c4aff3e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-10 10:39:57 +0200
+
+    Replaced TPerfTimer with TStopWatch in examples
+
+commit 84e40367a244078953927b2e18162c320ed2062c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-08 12:06:18 +0200
+
+    TPerfTimer has been deprecated in favor of TStopWatch.
+    
+    Added TStopWatch type for use with FPC.
+
+commit f87840d1de325d5cb9cc613f6105871b19703547
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-08 12:36:42 +0200
+
+    Fix for PNG32 image format adapter FPC compilation error
+
+commit f197e4f44271b91f3b76cb9c6cdd6552b64c8fca
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-07 22:14:29 +0200
+
+    Removed obsolete GR32_PNG files
+
+commit 37922b930011ca5ecfd925662cc3a641c019e33b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-06 19:23:08 +0200
+
+    The super sampling functionality of the RenderText method has been removed.
+    
+    RenderText now takes a boolean AntiAlias parameter instead of the old AALevel parameter.
+
+commit c411ad7614b246f3de0983965e8f187b2dfe3107
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-06 18:51:20 +0200
+
+    Polygons example: Improved display of stroke width value and miter limit value
+
+commit 145ab0bfa7557b40853f143a2d8d56cc717ad885
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-06 18:28:39 +0200
+
+    LineStippling example: Changed to use resizable TPaintBox32 instead of fixed TImage32
+
+commit 8072921e3ebccc8c3ad74ed353fb1475ecea4a0e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-06 18:08:57 +0200
+
+    GradSampler example: Fix for division by zero and loss of ability to change radius if mouse passes over gradient center.
+
+commit 6d188c9b86d5a6c2ca9deb837c4f8990e137fcaf
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-06 18:06:07 +0200
+
+    Fix for division by zero i gradient samplers when Radius=0
+
+commit 753c1685a9b29054bdb8e6d751c37fb8d463f4d3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-05 23:27:21 +0200
+
+    Added TCustomLayer OnKeyDown and OnKeyUp events and corresponding KeyDown and KeyUp methods.
+    
+    - A key action while layer hittest is active will synthesize a MouseMove event on the layer.
+    Added TCustomRubberBandLayer.OnHandleMove event enabling layer to modify the position of a moved handle (e.g. snap).
+    Added TCustomRubberBandLayer.Vertex[] property for easier setting of individual vertices.
+
+commit 47b207947a2a072e2769903ffc36032212178359
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-29 14:05:37 +0200
+
+    Various rubberband changes for backward compatibility.
+
+commit 12fcc60db175ceda165f5150fbb7c71ce6f6c8b8
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-27 23:02:15 +0200
+
+    Changed TLayerCollection to use generic container.
+    
+    - Eliminated TLayerEnum and TLayerCollectionHelper.
+    - Eliminated access to private TLayerCollection members.
+    - Added generic overloads for TLayerCollection.Add and Insert.
+
+commit 0f7500e4e573e69c908750eef3511209928a0993
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-27 14:16:53 +0200
+
+    Refactored TRubberbandLayer into TCustomRubberBandLayer, TPolygonRubberbandLayer, and TRubberbandLayer
+    
+    TCustomRubberBandLayer/TPolygonRubberbandLayer supports a rubberband defined by a polygon with an arbitrary number of vertices/handles, which TRubberbandLayer specializes into a rectangle with four handles.
+
+commit 80ea90d2e434cbad8d1242dc716235a1cdd8bac8
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-27 15:06:33 +0200
+
+    Cleaned up Transforms bindings
+
+commit ed86fb2df67cabf47f00d55a6080df21737adaca
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-27 14:11:06 +0200
+
+    Added projective transformation between two convex quadrilaterals
+    
+    Implemented by TProjectiveTransformationEx
+
+commit e916ca2ce83fc4c5f738a2f19a85e8f12d61e71f
+Merge: b1ef1c16 1138e191
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-02 19:25:26 +0200
+
+    Merge branch 'GAMMA_ENCODING_TABLE-mayhem'
+
+commit 1138e1910d2f97bc513ec17e8dcac99cfe9fe0e8
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-02 13:37:21 +0200
+
+    Fix for GET_TS256 not sampling right/bottom boundary correct
+    
+    Partially reverts commit d67ca9bc62bb6f520691293f08232f2c2d85a92e
+    See also sourceforge issue 29: https://sourceforge.net/p/graphics32/bugs/29/
+
+commit 0d82a1c8b67abd144e9a585f7cfe82120559670b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-02 19:14:05 +0200
+
+    Eliminated use of GAMMA_ENCODING_TABLE to modulate Alpha in GR32
+    
+    Refs #313
+
+commit 5f641684e94cfba60c044d64a5e5a6ce3ecc5224
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-02 17:23:44 +0200
+
+    Eliminated GAMMA_ENCODING_TABLE from TLinearResampler
+    
+    - TLinearResampler.GetPixelTransparentEdge (pamTransparentEdge)
+    Refs #313
+
+commit fad80cc7559a60f4b31da05f850dfd2a5f49f0a5
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-02 17:20:52 +0200
+
+    Eliminated GAMMA_ENCODING_TABLE from pixel access functions:
+    
+    - GET_T256 & SET_T256 (pamUnsafe)
+    - GET_TS256 & SET_TS256 (pamSafe)
+    Refs #313
+
+commit b1ef1c16961bd0bdd0b58561e55881c1369118c7
+Merge: cc737604 488a7209
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-02 12:03:06 +0200
+
+    Merge branch 'GaussianKernel'
+
+commit 488a72096e672fed9590269c214dbdd2402e0c7e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-29 12:14:09 +0200
+
+    Cleaned up Resamplers example
+    
+    Improved plot of kernel curve
+
+commit 3ae5a2aeea71260381fabc8f30b226d6b6078edb
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-30 00:40:30 +0200
+
+    TGaussianKernel has been rewritten.
+    
+    - A new TWindowedKernel class has been introduced as the base class for TGaussianKernel and TWindowedSincKernel.
+    - The Filter function of TGaussianKernel has been completely rewritten.
+    - Attribution and references has been added to all kernels, where possible.
+    - All functions and types has been commented.
+    Fixes #312
+
+commit 2b37ba7694e57e7b4fcc3dd4d802bb3bd57ee29f
+Merge: fc762f46 cc737604
+Author: zed <starmen@tut.by>
+Date:   2024-04-26 10:29:48 +0300
+
+    Merge branch 'master' into sasgis-test
+
+commit cc737604a97e3d940ddb449cbcd86dc6cf1353ee
+Merge: 37395602 881eaf04
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-25 11:59:18 +0200
+
+    Merge branch 'clipboard_stuff'
+
+commit 881eaf04d1c7a23e526671f6ab9f7e63aebd45fd
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-20 11:39:06 +0200
+
+    Copying a TBitmap32 to clipboard will now also place a PNG copy of the bitmap onto the clipboard.
+    
+    CopyBitmap32ToClipboard no longer explicitly clears the clipboard as this is handled automatically by TClipboard (in VCL at least).
+    (cherry picked from commit fb77550e056a2772f8e580429edbc4892e14f41d)
+
+commit 373956028402f8a4b67b4e3ddf523a66ca386e73
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-24 23:22:01 +0200
+
+    Minor improvements of Resize and Rotate example
+
+commit 28ca28f1e748fe053aca50bff4daa9cb8b1c8754
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-24 22:22:40 +0200
+
+    Fix for TAlbrechtKernel.Terms not firing change event.
+    
+    Fix for TCustomKernel not firing change event via TKernelResampler.
+
+commit 6dd31acbbf3c497715f8b7fa96181daa8e39a2c8
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-24 22:20:24 +0200
+
+    Resampler example: Added StretchTransfer output.
+    
+    Fixed a bunch of UI logic bugs.
+
+commit dc5460ca970a683a1c503c600d02304e97aa76cf
+Merge: 01527576 32f9ae03
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-24 18:58:56 +0200
+
+    Merge branch 'Image32_scale_and_scrollbars'
+
+commit 015275769c0a198f1f787cd12d8fa21ae908ef68
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-24 18:57:38 +0200
+
+    Removed defective, and apparently unused, CatPolyPolygon functions.
+    
+    Spotted by @lamdalili
+
+commit 3c396ae34fa10d3c7a5b82f80bb77d3228a0df2f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-23 21:56:19 +0200
+
+    Removed reference to mythical GR32_ResamplersEx unit and the kernel samplers it supposedly contained.
+    
+    Loading of sample JPEG is now done via image format manager.
+
+commit 8a1f02cdd0418b269f1537f560bf1ca41ad91444
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-23 18:51:01 +0200
+
+    Improved Resamplers example UI and update logic.
+    
+    Fixed a few parameter selection issues.
+
+commit db0e418fb42a45872386f4c1a6328cac5c8edb9c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-23 18:49:19 +0200
+
+    Fix for exception in OnChanged event handler breaking batching.
+
+commit fc762f467447f651d3372dcb80cb65f571727366
+Merge: 92e0e6c3 fc1d1131
+Author: zed <starmen@tut.by>
+Date:   2024-04-22 12:25:27 +0300
+
+    Merge branch 'master' into sasgis-test
+
+commit fc1d11317abfbdc5d8d3f731bc8faf527027739f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-21 17:06:26 +0200
+
+    Fix for area covered by layer not being repainted when hiding layer
+    
+    Fixes #309
+
+commit 5a1372280431bc4c9fd0ce65a05ec03e5bd55c82
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-20 16:41:35 +0200
+
+    Fix for PNG CRC error with FPC x86
+    
+    Thanks to @lamdalili
+    Fixes #299
+
+commit 8210e7ada89655bdc64bdf81c46521f01df407f0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-20 11:02:22 +0200
+
+    Renamed D11+ package project group file to match the name of all other Delphi versions
+
+commit 2f23c131ef36d1d59b178b30b741479d640a0752
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-20 10:59:49 +0200
+
+    Tweaked the output paths of some examples projects to conform to the common pattern:
+    
+    DCU: .\Lib\$(Platform)\$(Config)
+    EXE: .\Bin\$(Platform)\$(Config)
+
+commit 92e0e6c3789ace558ab7e3173c45adad6440bd9e
+Merge: b209fb07 a6e0a2e1
+Author: zed <starmen@tut.by>
+Date:   2024-04-19 10:40:12 +0300
+
+    Merge branch 'master' into sasgis-test
+
+commit a6e0a2e1948d314c5f0c20e10af19b7da3907eeb
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-18 18:22:24 +0200
+
+    When resizing, use existing StretchTransfer function instead of calling resampler directly
+
+commit 770d6e486e81207e28d8995d1d08ba23ad4f6e17
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-18 18:20:10 +0200
+
+    Fix for incorrect area being updated in rmFull repaint mode
+
+commit 32f9ae0370f09d4d40e088c558c05d7a049d7070
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-18 10:03:53 +0200
+
+    Fix for TImage32 with layers but no bitmap doesn't paint anything.
+    
+    Revises change in commit 8abf116e39e1b01f57ae768538ffdf1dd1ece058
+    Fixes #308
+    
+    (cherry picked from commit 5d9e6899d1d8a03fe9fc947b370f7644d3c4a441)
+
+commit 5d9e6899d1d8a03fe9fc947b370f7644d3c4a441
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-18 10:03:53 +0200
+
+    Fix for TImage32 with layers but no bitmap doesn't paint anything.
+    
+    Revises change in commit 8abf116e39e1b01f57ae768538ffdf1dd1ece058
+    Fixes #308
+
+commit 674211e5a570a48fe3dd07ffe945a04ec9235a44
+Merge: 5d36f1c7 2b4857d9
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-18 09:07:33 +0200
+
+    Merge branch 'ResizeAndRotate'
+    
+    Refs #307
+
+commit 2b4857d95a10f0380c4bb112d13c8bcea5a10f98
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-18 09:07:14 +0200
+
+    Added Resize and Rotate example
+
+commit 4bddd1a6c44a7dd94968ac31af1aefdc83b4264b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-16 13:10:09 +0200
+
+    TImage32: Zoom with animation and pivot has now been surfaced in the API as two methods.
+
+commit 57e97d764a3d2979499413ec1fd60d45f7909e01
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-16 10:54:14 +0200
+
+    TImage32: Fix for flicker when scrollbars are hidden or shown during animated zoom
+
+commit d1412896ecbaa3d041b2ea9d71f6e91dada6956a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-16 09:17:49 +0200
+
+    TImage32: When zooming, constraint pivot point to bitmap rect
+
+commit 4ad3e00da300df05e0cc3a140874640bfac2a456
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 15:07:37 +0200
+
+    Major TImgView32 rewrite:
+    
+    - Replaced scroll bars in TImgView32 with standard TScrollBar controls.
+    - Scroll/pan/zoom logic largely rewritten.
+    - Updated Image32Background example. Added Lazarus project files.
+    - Added manifest to examples in which it was missing so we don't get the Windows 2000 look :-/
+    - Added check for too big bitmap size.
+    - Fix for TImage32 not taking bitmap position within viewport into account when invalidating.
+
+commit 905cb5ccb87fc6df0d7b908ab3ede9228a7f077a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 09:52:13 +0200
+
+    Cross platform cleanup: XPThemes
+
+commit 011d9f70cdf7d2e361e211cb1baf5a6d98552e6c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 09:51:38 +0200
+
+    Cross platform cleanup: Backends
+
+commit 294c96bd159f046509292bac7f71a1e118433b81
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 09:51:20 +0200
+
+    Cross platform cleanup: Clipboard
+
+commit ad9944c3f916e63aef826c2e7e22d905fc664a7e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 09:50:50 +0200
+
+    Cross platform cleanup: Layers
+
+commit 6b59f74ceadca2417d3083bb178ebd3753dc6a70
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 01:26:48 +0200
+
+    Cross platform cleanup: ImageFormats.TBitmap
+
+commit 3b4aff9211a28c89f61ea8fbd1fae104a2b8a8e7
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 01:26:27 +0200
+
+    Cross platform cleanup: GR32
+
+commit 8d57511f6daff2ae13184803b753e5cc31755a57
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 00:15:04 +0200
+
+    Cross platform cleanup: VectorMaps
+
+commit 00880945ea012ed94fc15cecc01621e9662b3496
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 00:14:58 +0200
+
+    Cross platform cleanup: VectorUtils
+
+commit 93f48e2413491574caa62225276551210371eddd
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 00:14:50 +0200
+
+    Cross platform cleanup: VPR
+
+commit 4a71621652737dd5d057c923ff958cf2b37a33ca
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 00:10:01 +0200
+
+    Cross platform cleanup: VectorUtils
+
+commit 81f0d4dc43bc2df3605c84070666ea1905422fa1
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 23:58:59 +0200
+
+    Cross platform cleanup: VectorMaps
+
+commit a2d598d5a7503c63f3933f0afa0245126ff28c4b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 23:54:03 +0200
+
+    Cross platform cleanup: Paths
+
+commit a3803d983ba2a78a1e665b1606c048b1a73d5a33
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 22:57:02 +0200
+
+    Cross platform cleanup: LowLevel
+
+commit c90739d242adeecb6dfb0ccdf9b91b8c54b3422d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 23:53:23 +0200
+
+    Cross platform cleanup: Containers
+
+commit 5a2f936f2ef50b9f9eae30d37f1774cb67f4c97e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 23:53:09 +0200
+
+    Cross platform cleanup: Transforms
+
+commit 3ec81472d18757f1212b76863004a17cebfcda6a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 23:44:47 +0200
+
+    Cross platform cleanup: System
+
+commit 2f13f7029ee4ae103aad6dae2706fc31419bc9e8
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 23:20:38 +0200
+
+    Cross platform cleanup: Resamplers
+
+commit b96efe7e2e5e1a57a34ac9eee7192fb45bea7a75
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 23:15:02 +0200
+
+    Cross platform cleanup: Rasterizers
+
+commit a3b2eeefcb1332a4573e3e60903747eee41ed42a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 23:03:39 +0200
+
+    Cross platform cleanup: OrdinalMaps
+
+commit c8b3352ca21ad6fab0809b1486213bd610869bfd
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 22:40:53 +0200
+
+    Cross platform cleanup: Blend
+
+commit effab32896913be31fd8926106225543db205c58
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 22:36:47 +0200
+
+    Cross platform cleanup: Containers
+
+commit d1301103618c5289aac06c3af982fe447bfb40f9
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 22:31:48 +0200
+
+    Cross platform cleanup: Backends_Generic
+
+commit 3e30ef527faefbb1f9b4b13b0d0fcccf551be3fb
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 21:47:24 +0200
+
+    Added FRAMEWORK_* symbols for FMX support
+
+commit 5d36f1c7221761f39a4ce9debc2c6e0f01a29e1f
+Merge: beeb9720 a16c54ec
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-13 12:51:42 +0200
+
+    Merge branch 'TImage32_Tiling'
+
+commit a16c54eca8544f5224b5461b5e9f5ab3ebcf412e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-13 12:40:10 +0200
+
+    Fix for stretch tiling causing out of memory.
+    
+    When drawing tiled, an intermediary stretched bitmap is now only created if it would be smaller than the target area (i.e. be tiled).
+
+commit 478e3bddcf591d0734ae33bc08c544ff7647ccc0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-13 12:49:50 +0200
+
+    TImage32: Fix for tiled, stretched drawing not alpha blending
+
+commit 8abf116e39e1b01f57ae768538ffdf1dd1ece058
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-13 12:47:34 +0200
+
+    TImage32: Fix for AV with tiled draw
+
+commit beeb972061ac43aaf6798ca5db47a859548b19ac
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-13 11:35:36 +0200
+
+    Fixes artifacts caused by use of BuildPolyPolyline to build hue band in TCustomColorPickerGTK.
+    
+    Refs #303
+
+commit 62caecbeaf73791ea7df72042f9af0fbd02de6ec
+Merge: 58abe379 1f4a0bf3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-12 13:04:43 +0200
+
+    Merge branch 'ColorPickerDesignTime'
+
+commit 1f4a0bf3e4d76657ab63db43476fa49d2896906f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-12 13:04:09 +0200
+
+    Fix for color pickers not repainting correctly at design-time.
+    
+    Added missing color picker TPersistent.Assign implementations.
+    Fixes #304
+
+commit 58abe37968a1ee31a63972d939ffa1b7960973e4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-12 11:09:26 +0200
+
+    Revert "Fix for BuildPolyLine producing concave curves with self-intersections."
+    
+    This reverts commit 7d41fc9d4cd786098f0e91c4eab51a2feb164f8f.
+    Fixes #303
+
+commit 89b9e10516f0237020b541fa3b0e5675d0889786
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-10 21:45:04 +0200
+
+    Fix for Control has no parent window. Seen with TSyntheticImage32 on Lazarus/Windows
+
+commit 7d41fc9d4cd786098f0e91c4eab51a2feb164f8f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-10 21:22:30 +0200
+
+    Fix for BuildPolyLine producing concave curves with self-intersections.
+    
+    Disabled change from commit 4652fe6ba391b8166afd1b46f2c0cf382750475e.
+    Fixes #303
+
+commit 062c53f0d7f689bbc50c777403a86f447aa94824
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-10 12:55:44 +0200
+
+    Disable auto-rebuild for Lazarus run-time package
+    
+    Updated component glyphs.
+    Fix for Lazarus design-time component glyphs not being included on Windows.
+    refs #297
+
+commit ee0d348e9a10caa436fe858503dba2664c97e135
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-10 12:53:17 +0200
+
+    FPC: Only enable StackAlloc on 32-bit
+    
+    Fixes #302
+
+commit 78279b925c6110000666af7b3b48e76090f36289
+Merge: ea411599 6035f507
+Author: Anders Melander <github@melander.dk>
+Date:   2024-04-08 16:43:26 +0200
+
+    Merge pull request #301 from zedxxx/master
+    
+    fix EOL for delphi project files #300
+
+commit 6035f5074ad39e6d20f8d60119326790a0f10579
+Author: zed <starmen@tut.by>
+Date:   2024-04-08 17:30:40 +0300
+
+    fix EOL for delphi project files #300
+
+commit ea4115996a68abb0585887e2794f2a144c31aa45
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-08 13:04:47 +0200
+
+    Missing changes from TCustomBrush-redesign branch
+    
+    Refs #185
+
+commit a7237fe9a74a49480a032e8c1e1a513a060aac7b
+Merge: 5ed1c773 4652fe6b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 15:46:50 +0200
+
+    Merge branch 'TCustomBrush-redesign'
+
+commit 4652fe6ba391b8166afd1b46f2c0cf382750475e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-06 23:28:09 +0200
+
+    Applied @lamdalili AddJoin fix from #106.
+    
+    Refs #185
+
+commit 5ed1c7733d0bd7e63a81fc9a1d1f24c3f6a4f986
+Merge: d194ef69 19e659db
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 06:56:06 +0200
+
+    Merge branch 'Lazarus-3.0'
+
+commit 19e659dbaaa711ca1ed4560cab0cf59eb702085d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-07 06:55:33 +0200
+
+    Workaround for Lazarus/FPC "checksum changed"
+    
+    Fixes #297
+    Started updating component glyphs.
+
+commit 9ea87d0718320c39789968aade70a5a692d0af66
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-06 23:00:35 +0200
+
+    Applied @lamdalili fix.
+    
+    Eliminated Closed parameter from RenderPolyPolygon and EndPolygon; The final polygons are always closed.
+    Added debug output. Will be disabled before merge.
+    Refs #185
+
+commit e2257f6c711e52ad82dda5624dacd2060ef306f9
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-06 21:50:02 +0200
+
+    Renamed and moved design-time units. Updated all packages with new names.
+    
+    Moved Lazarus packages to Packages\Lazarus folder.
+
+commit d194ef6994e87445c1df2cd3d2af5c7ccfc9b184
+Merge: 3fd4b61e e49a946e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-06 17:36:38 +0200
+
+    Merge branch 'TDashedBrush'
+
+commit a517ef063bb4063ca4b0b5b03baf55ddccb61c48
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-05 11:52:18 +0200
+
+    Curves example updated to use TCanvas32 and custom brushes.
+    
+    Fixes #185
+
+commit b5b5177e85547d72c460fbde236a286c3f1e23f9
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-06 02:15:24 +0200
+
+    TCustomBrush redesigned:
+    
+    - *PolygonFS methods renamed to avoid overloads.
+    - All brush handling (i.e. polygon building) moved to new ProcessPolyPolygon method.
+    - Rendering moved to new RenderPolyPolygon method.
+    - Polygon building is designed to be accumulative.
+    - Rendering is done once all polygons has been built.
+    - *PolygonFS methods eliminated from concrete brush classes.
+
+commit e49a946ef3c40824eddff73c58e75c4d2ce0a51b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-05 22:47:35 +0200
+
+    Fix for dashed stroke rendering individual polylines too soon.
+    
+    Fixes #185
+
+commit 3fd4b61e83c60ae419c68b091d3aa4ae7487ab0e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-05 11:53:12 +0200
+
+    Fix for TBrushCollection not setting Owner
+
+commit 44ac7d45cbbc6b86bec13ab2823b6d7b213b8e43
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-05 07:28:15 +0200
+
+    Fixed compilation error in TPortableNetworkGraphic.CalculateCRC.
+    
+    Refs #299
+
+commit 840bca5fd5f507a112abe5396c1e8c959a0dcfad
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-04 23:58:01 +0200
+
+    Removed duplicated big endian utility functions from PNG code.
+
+commit 030dea0f4475cb9dc8380f33c488ef8a8b29bb43
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-04 23:54:06 +0200
+
+    Temporarily disabled asm CRC calculation on 32-bit FPC
+    
+    refs #299
+
+commit cf791aa1ab50c213fdcac9c25ed6b9d97aff33bd
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-04 23:33:26 +0200
+
+    Updated FPC TPath in GR32.Examples for LCL 3.2 changes.
+    
+    Removed inline vars.
+
+commit 81b3b2b298b2375a75f280c4d42cedd5d35be40c
+Merge: a90e8d0a 5f8dc474
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-04 23:11:56 +0200
+
+    Merge branch 'FPC_GTK'
+
+commit a90e8d0a5fde98e7a5e52fd130308bf524d87913
+Merge: 48399e1a 20dea191
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-04 20:03:25 +0200
+
+    Merge branch 'SetPerformanceAffinityMask'
+
+commit 48399e1a7b87e66ab508cdae10b272b6768ddc7f
+Merge: dcd0ea5d 1f051ffa
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-04 20:01:08 +0200
+
+    Merge branch 'jsRoundEx-revival'
+
+commit 5f8dc474d5b84a4c0d68509d98cc37cd8bbe72d9
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-04 19:46:36 +0200
+
+    Adapted HannesBrockmann's FPC fixes
+    
+    refs #298
+
+commit dcd0ea5d9bd7b9ee32f49e8eb31df6740b37e2e3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-04 19:19:58 +0200
+
+    TCustomLayer.Click and DblClick has been made virtual.
+
+commit 983e8fd6fbdec54d2e07466c504fef181048d260
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-04 00:36:50 +0200
+
+    Speculative fixes for text output on FPC with GTK2
+    
+    Refs #298
+
+commit b001b6202bb500aef2aa09cafebb610728cb22ec
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-03 22:55:47 +0200
+
+    Change to get Lazarus design time package to install with Lazarus 3.2
+    
+    Refs #297
+
+commit 550d1e260484a5935d04e275d9bdf56a0bcf96f2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-03 22:53:56 +0200
+
+    Changes by HannesBrockmann
+    
+    Refs #270
+    Refs #297
+
+commit 1f051ffa467d075451ab38191841b5104206550e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-03 13:26:14 +0200
+
+    Polygons example: Replaced scrollbars with trackbars
+
+commit 65b9fe560c060058fa547f155371f66ccd4b4b5e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-03 13:00:21 +0200
+
+    Various minor jsRoundEx fixes while we're at it
+    
+    GR32_Polygons cleanup
+
+commit d8de01700c8e5f75179aa0da46704211d9dbf058
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-03 01:37:09 +0200
+
+    jsRoundEx reintroduced.
+    
+    Added SupportedJoinStyles and SupportedEndStyles TPolyLineBuilder methods.
+    Fixes #296
+
+commit 13a7d6ea583d6a3cb4cba6e75bc92b31e66cf76d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-04-01 01:26:50 +0200
+
+    Fixes for FPC
+
+commit b3044aa2ef110d5778f39fd040961369694292dc
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-31 01:56:52 +0100
+
+    Disabled dead jsRoundEx code.
+
+commit f660bdb9b73077d0603d886cb6528c2b890a692f
+Merge: 55c0e5c2 782355d0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-31 01:10:11 +0100
+
+    Merge branch 'repaint_fixes'
+
+commit 782355d02bd639114a275cbb7aa112769abde17f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-30 23:52:43 +0100
+
+    Fix for 1-pixel width/height rectangles being eliminated from repaint
+
+commit ede866df0811770ce77282e89cd699bf649d77a3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-30 23:44:08 +0100
+
+    Fix for vertical or horizontal line causing full repaint.
+
+commit 1bb8ff68f2a2530bfe19f78693401bf04cf77765
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-29 14:41:03 +0100
+
+    Added TCustomLayer.ControlToLayer and LayerToControl for coordinate system translation.
+    
+    TCustomLayer.Update(TRect) is now marked deprecated.
+
+commit 55c0e5c22569eb61b3dc35ec4a9609f964c6d1b5
+Merge: f8ae91b4 29ff83cd
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-29 04:36:00 +0100
+
+    Merge branch 'Update-and-repaint-handling'
+
+commit 29ff83cd3bbe67ef04fb4affacbce027e3dc7703
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-29 04:31:39 +0100
+
+    Layers now fully support optimized repaint.
+    
+    Merged the two TCustomImage32 area update handlers into one.
+    Added OptimizedRepaint example.
+
+commit b8eb027160849bce651371c76c97b1bf6e2f1963
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-29 01:08:34 +0100
+
+    Added TCustomImage32.BitmapToControl(TRect)
+
+commit 5298a5320287bedd36f8a984e8507cb4ab40de1d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-28 22:51:00 +0100
+
+    Merged the two TCustomPaintBox32 AreaUpdate handlers into one
+
+commit 0e31f195c316fcde858c216b1c051e35b5dd4175
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-28 22:07:37 +0100
+
+    Update batching during mouse events is now controlled with MOUSE_UPDATE_BATCHING define
+
+commit b3f1a29e5fa49059b2d9d1821aa28cc048175fbb
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-28 22:05:28 +0100
+
+    Moved partial repaint handling from TCustomImage32 to TCustomPaintBox32
+
+commit 691f65f8241c09440914ac16599b42339ea10165
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-28 05:45:23 +0100
+
+    Added TCustomPaintBox32 batching trace
+
+commit 78e384269e77a349af96f8c76ea697b3738c1d19
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-27 03:46:32 +0100
+
+    Fix for update mechanism not handling non-normalized update rects (e.g. line drawn from right to left)
+
+commit bfdabb7c15404c2f67750f65deb4b8e0e84c5b60
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-26 17:54:16 +0100
+
+    Fix for changing TPositionedLayer.Scaled not invalidating old position
+
+commit f8ae91b4638672f125702c132ef1f54ff1455ddb
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-25 16:24:25 +0100
+
+    Fix for LowLevel unit test not exercising CPU-dispatch bindings correctly
+
+commit 5e73183856b0222f63539f76a3f556f1175402e6
+Merge: ae75c8ea 82ddf2c1
+Author: J. Gareth "Kit" Moreton <gareth@moreton-family.com>
+Date:   2024-03-24 19:31:14 +0000
+
+    Merge pull request #293 from graphics32/GR32_Math-reorg
+    
+    GR32_Math refactoring
+
+commit 82ddf2c1b34df66bf19a4f7f0db9923d1f64bff8
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-24 16:56:48 +0100
+
+    FPC: Apply "nostackframe" to CombineMem_SSE41_Kadaif also on 32-bit.
+    
+    Moved Ceil and Floor from GR32_Math to GR32_Math_FPC.
+    Refs #293
+
+commit a687c02a8360cf1335cf28a529a325eb69675856
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-24 00:29:16 +0100
+
+    Refactoring of GR32_Math in preparation for non-Windows asm implementations.
+    
+    Fixed a bunch of "nostackframe" problems with FPC.
+
+commit ae75c8ea0625545122010e34b82416746865ffe1
+Merge: 496a19a9 bacfb307
+Author: Anders Melander <github@melander.dk>
+Date:   2024-03-23 23:32:43 +0100
+
+    Merge pull request #292 from CuriousKit/divmod-improvement
+    
+    [x86_64 / Bug Fix] Improvement and bug fixes to DivMod assembly
+
+commit bacfb30717faf82ed1c71ce97f864b829a1786f9
+Author: J. Gareth "Curious Kit" Moreton <gareth@moreton-family.com>
+Date:   2024-03-23 18:34:07 +0000
+
+    Improvement to DivMod x64 asssembly, with System V ABI version available
+
+commit 496a19a9cc9b0c3dbfdf5712aacecccc08d1d64f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-23 17:26:02 +0100
+
+    Blend unit test: Preparation for FPC support. Full support will require FPC Trunk.
+    
+    Fix for FPC LowLevel unit test changed broke Delphi support; Back and forth we go...
+
+commit 450e786fdc73f5bfc1a02d442b06c0a345fd775c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-23 16:44:50 +0100
+
+    Fixed IsPowerOf2($80000000)=False on FPC
+
+commit 1fd6efd8c5ea8e50c04da491760a5adb2226b2fd
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-23 16:14:47 +0100
+
+    LowLevel unit test updated for FPC
+
+commit c51fcf892dfb78ac35a243527e759b79d7a26bca
+Merge: d9c252f0 a04841f3
+Author: Anders Melander <github@melander.dk>
+Date:   2024-03-22 18:48:36 +0100
+
+    Merge pull request #290 from CuriousKit/fixed-sqrt-x64-upgrade
+    
+    [x86-64] FixedSqrtLP and FixedSqrtHP minor upgrade
+
+commit a04841f3a163faf25dcf0145230911399095c118
+Author: J. Gareth "Curious Kit" Moreton <gareth@moreton-family.com>
+Date:   2024-03-22 14:37:01 +0000
+
+    Fixed some minor inefficiencies in x86 assembly implementations of "FixedSqrtLP" and "FixedSqrtHP".
+
+commit d9c252f03186290cb1594a323c05816ec81e913f
+Merge: c7f42022 d2b606ce
+Author: Anders Melander <github@melander.dk>
+Date:   2024-03-22 09:56:14 +0100
+
+    Merge pull request #288 from CuriousKit/better-sign
+    
+    [x86-64] Slightly improved Sign function (and new conformance tests)
+
+commit d2b606ce3730434ba9ebd6e4c064ca91b7dcb5af
+Author: J. Gareth "Curious Kit" Moreton <gareth@moreton-family.com>
+Date:   2024-03-22 08:24:04 +0000
+
+    Sign under PUREPASCAL now defers to Math.Sign so output is correct for $80000000
+
+commit f103917d19056b45db770b787f3df66b3ccaf2a9
+Author: J. Gareth "Curious Kit" Moreton <gareth@moreton-family.com>
+Date:   2024-03-21 19:03:32 +0000
+
+    Additional tests for the Sign function that evaluate special values
+
+commit 2fb2e7e42c30fd6114abf501e0fc25f9b79895d4
+Author: J. Gareth "Curious Kit" Moreton <gareth@moreton-family.com>
+Date:   2024-03-21 18:54:59 +0000
+
+    Improved x64 implementation for Sign function
+
+commit c7f4202247ff19046a18d2ec547e64a5a0886e27
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-22 00:07:55 +0100
+
+    Moved ROUNDSS and MXCSR constants.
+
+commit 8265594faf795163da9ea32a0bcd559605876c35
+Merge: 24c18ca0 26a3500c
+Author: Anders Melander <github@melander.dk>
+Date:   2024-03-21 22:57:03 +0100
+
+    Merge pull request #289 from CuriousKit/fpc-nostackframe
+    
+    "assembler; nostackframe;" directives for some assembly routines under FPC
+
+commit 24c18ca0f77451969eef070504fe9e06ad3c7858
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-21 22:49:03 +0100
+
+    Updated LowLevel unit test to work with PUREPASCAL.
+
+commit 1acfdea228a33e0a80aa827da07c33af6b385067
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-21 22:22:17 +0100
+
+    FastPrevWeight binding should not be registered in PUREPASCAL
+
+commit 66259550fe368899da58c1213a203a1d0d7d7327
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-21 21:52:16 +0100
+
+    Eliminated a few superfluous "inline" in implementation section.
+
+commit 26a3500c966bb8dfde26035a847d9a3c2c40ae49
+Author: J. Gareth "Curious Kit" Moreton <gareth@moreton-family.com>
+Date:   2024-03-21 10:06:21 +0000
+
+    Added "assembler; nostackframe;" FPC directives for FastInvSqrt
+
+commit ad4183524d73939841cff2d7a15a241b5c0ec759
+Author: J. Gareth "Curious Kit" Moreton <gareth@moreton-family.com>
+Date:   2024-03-21 09:57:21 +0000
+
+    Added "assembler; nostackframe;" FPC directives for FastRound_SSE41, FastTrunc_SSE2 and FastTrunc_SSE41
+
+commit 23b253154a304ca75310ed20049a213b16c223d8
+Merge: c6714216 174ac55b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-21 03:03:56 +0100
+
+    Merge branch 'FMod'
+
+commit 174ac55b303b07a4d63faf5fb1051c6e531c821a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-20 23:33:57 +0100
+
+    Added FMod (pas, SSE2, SSE41)
+    
+    Refactor and reorg of GR32_Math
+
+commit c67142165aa3cc4bdb3ab0a1c331b71c0817a722
+Merge: c883d180 84e68404
+Author: Anders Melander <github@melander.dk>
+Date:   2024-03-21 02:13:44 +0100
+
+    Merge pull request #287 from CuriousKit/fastround-undef
+    
+    [Bug Fix] Do not define SSE2 and SSE4.1-specific procedures in PUREPASCAL mode
+
+commit 84e68404c7941a66088372fbf4c901fd5829fd27
+Author: J. Gareth "Curious Kit" Moreton <gareth@moreton-family.com>
+Date:   2024-03-21 00:26:08 +0000
+
+    FastTrunc and FastRound routines for SSE2 and SSE41 are no longer defined in PUREPASCAL mode
+
+commit 20dea191580514cb03e8b80909a7b6f1d676986e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-20 23:32:28 +0100
+
+    Fix for FPC
+
+commit 3c239b58b063892b20063e8735de5360ef9fb5be
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-20 17:10:01 +0100
+
+    Added SetPerformanceAffinityMask. Used to exclude Efficiency cores from the process CPU affinity mask.
+    
+    Minor refactoring and cleanup of GR32_System.
+
+commit c883d180576997039d75d56ee1ab8826202e8a28
+Merge: 48597dae e89a35e7
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-20 01:39:50 +0100
+
+    Merge branch 'FPC'
+
+commit 48597dae2ab539c1e988316951c70f0be79ffa67
+Merge: 403657fd 3a4682b5
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-20 01:39:41 +0100
+
+    Merge branch 'FastTrunc'
+
+commit e89a35e76ba92ec6730939cf18390c651a08722f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-20 01:39:11 +0100
+
+    Various fixes for FPC.
+    
+    Disabled CombineMem_SSE41_Kadaif on FPC as it appears to be broken there.
+
+commit 3a4682b5037740ab945558b213e7534fe215f1a6
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-20 01:25:17 +0100
+
+    Clean up and restructuring of GR32_LowLevel.
+    
+    Disabled FastTrunc_SSE41 based on micro-benchmarking as FastTrunc_SSE2 generally appears to be faster on x86 and x64.
+
+commit 403657fdcdd0355dc2d42a4ff3208096f1de903d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-19 03:07:28 +0100
+
+    Fix for FastSqrt(0) returning NAN
+
+commit 61b0034a917138e52352bda8244fe217f155844f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-19 03:06:26 +0100
+
+    Fixed inlining warnings.
+    
+    Fixed a bunch of ambiguities between point and rect types and functions in GR32 and RTL Types.
+
+commit dcc351da4ca6600892a5083337ded70effc5a9be
+Merge: d9734f44 723909e3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-18 21:50:23 +0100
+
+    Merge branch 'benchmarks'
+
+commit d9734f44730ccc708b044242b098c98550fa39e4
+Merge: 801b4765 5c41b0a4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-18 21:50:13 +0100
+
+    Merge branch 'SpritesBenchmark'
+
+commit 5c41b0a4c19ed3dd13cde2c02d524769ec674c83
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-10 23:03:28 +0100
+
+    Improvement of Sprites example benchmarking for use in profiling
+
+commit 723909e3059337299f2ae06699ff1205f42e6788
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-18 21:48:29 +0100
+
+    Added benchmarks based on Spring.Benchmark
+    
+    - Blend.CombineMem
+    - VectorUtils.BuildPoly*Line
+
+commit 801b47655ab8ba7f453d26c13be4794cc8241bcd
+Merge: 12fb4524 20d024d7
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-18 21:38:58 +0100
+
+    Merge branch 'GrowReplacement'
+
+commit 20d024d7fd43c07cb4604df39f7a4139f30f6d20
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-18 20:58:21 +0100
+
+    A bit more polygon unit testing
+    
+    Reference polyline builder: Fix for division by zero in Grow with zero delta.
+    Default polyline builder is now back to the reference implementation while the others stabilize and the remaining issues are being worked out.
+
+commit 12fb4524c13612f5f918fe6d56d1d019ec646232
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-18 18:17:57 +0100
+
+    Sprites example: Cycle alpha up and down instead of wrapping it around
+
+commit 07da6a68948d1e19ceb82286924efa7f878f4a9c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-17 02:51:42 +0100
+
+    Added unit regression test for RoundRect missing point
+
+commit 4dc008deb6b508efab07287c1cdd30076edae727
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-17 02:27:51 +0100
+
+    Grow example: Fix for AV if user resizes window smaller than margin
+
+commit afa8f3c7fdb68b919381f9eb0075b6e4ea5682c4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-17 02:02:14 +0100
+
+    Fix for last point of arc missing in rounded joins made by reference polyline builder.
+    
+    Cleanup.
+
+commit a428f4558a077b805a9609ab380b0a191b504ec6
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-17 01:44:25 +0100
+
+    Constrain RoundRect corner radius to half width or height.
+
+commit 8dd3b5d677da886ba85a02ae93b3428987139100
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-17 01:43:25 +0100
+
+    Fixed leftovers from compiler include file cleanup.
+    
+    Added mandatory stupid LEGACYIFEND handling.
+
+commit 11628818db0701485a4cea6641771cef7f8e1132
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-16 01:29:18 +0100
+
+    Updated GR32_VectorUtils.Angus with latest changes.
+    
+    Tweaked calculation of rounded joins and line ends.
+
+commit ebdbeacb303192c29e50b4ec06879c0330ac3144
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-15 18:56:27 +0100
+
+    Updated GR32_VectorUtils.Angus with latest changes. Contains bugs so this is Work in progress
+
+commit c357573a726413697235dc3314660c0092594588
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-15 18:54:47 +0100
+
+    Updated Grow example to showcase and exercise the different polyline builder backends.
+
+commit 395743c85c3db1c0127740d034a398cf9b8acbd6
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-15 18:52:14 +0100
+
+    Moved reference polyline builder to GR32_VectorUtils.Reference
+
+commit eb8cab1c12911e689f61f9dafffced1cd959bf9a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-15 18:08:58 +0100
+
+    Renamed TBuildPolyline->TPolyLineBuilder, BuildPolylineClass->PolylineBuilder
+
+commit c800adef84b59d6445bdc5862b6038831cee52ac
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-15 18:01:20 +0100
+
+    PolygonBounds and PolyPolygonBounds now returns an empty rect instead of throwing an assertion error on empty input.
+
+commit 8aa93acd0791baf92ef6034c18d1e9d25d607db2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-15 17:56:13 +0100
+
+    Moved Grow with normals to protected scope since it's for internal use.
+
+commit 991db65428b4d7acd1e986617cce0b5d808a7808
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-13 01:39:37 +0100
+
+    Removed handling of obsolete jsRoundEx.
+    
+    Now handles jsSquare as jsBevel in reference implementation.
+
+commit 6d9a77da44e3401626e1a1c23617b45d3defb233
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-13 01:06:08 +0100
+
+    Changed mapping of jsBevel to jsSquare.
+    
+    Minor update of Polygons example.
+
+commit 41abf9df7ac419d3b0273e7267b3ee8ca121552c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-12 23:09:36 +0100
+
+    Redesigned Grow/BuildPoly*Line dispatch mechanism.
+    
+    Fixes #286
+
+commit f7d1187932513b596f156deec13696acd948f06d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-12 13:37:06 +0100
+
+    Changed IntersectPoint to use the original implementation instead of using GR32_VectorUtils.Intersect as it turns out the function should not test for line segment intersection.
+    
+    Fixes #286
+
+commit b209fb070008ebb4bfcb22ca0bc06418b79b061b
+Merge: e52f20e7 4e473c18
+Author: zed <starmen@tut.by>
+Date:   2024-03-12 14:24:39 +0300
+
+    Merge branch 'master' into sasgis-test
+
+commit f8a5002416c1ca0aedeaaa254c08cec4f04d5512
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-12 10:58:41 +0100
+
+    Fixed attribution
+
+commit b07fbdce81c2af9fd53db59a45aba194e9a10a0a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-11 13:02:40 +0100
+
+    Moved Clipper Grow/Build*PolyLine implementations to GR32_VectorUtils.Clipper2.
+    
+    Added Grow/Build*PolyLine implementations from Angus in GR32_VectorUtils.Angus.
+    Fixes #284
+
+commit 4e473c183840ed5d1318e0fa38254196e2c3aa6a
+Merge: c4e43161 8e980a1f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-12 11:37:33 +0100
+
+    Merge branch 'SpringCleaning'
+
+commit 8e980a1f29bc2aacbbd8623c7036bb73c85a030a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-12 01:42:25 +0100
+
+    TFloatPoint and TFloatRect are now an alias for the standard TPointF and TRectF types.
+    
+    Cleaned up compiler include file. Removed references to old unsupported compilers. All old COMPILER* defines has been removed; Use CompilerVersion/FPC instead.
+    Assembler optimizations have now been enabled for the FPC x64 (x86, 64-bit) target. Fixed a few FPC related assembler bugs. There are still known problems.
+
+commit e52f20e785880aea5b58a424ec5ab212b037a03f
+Merge: c5a7bb9c 533dec82
+Author: zed <starmen@tut.by>
+Date:   2024-03-12 11:06:49 +0300
+
+    Merge branch 'master' into sasgis-test
+
+commit 533dec82b41235ba5cfe09d88d22ead839e1f047
+Merge: 87bb23df ecfa276e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-12 01:50:54 +0100
+
+    Merge branch 'SpringCleaning'
+
+commit ecfa276e218f42afc44a9e9302b07012a43eb4ba
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-12 01:42:25 +0100
+
+    TFloatPoint and TFloatRect are now an alias for the standard TPointF and TRectF types.
+    
+    Cleaned up compiler include file. Removed references to old unsupported compilers. All old COMPILER* defines has been removed; Use CompilerVersion/FPC instead.
+    Assembler optimizations have now been enabled for the FPC x64 (x86, 64-bit) target. Fixed a few FPC related assembler bugs. There are still known problems.
+
+commit 87bb23dfb8fc4b09cf80be36e924c37445faa775
+Merge: c4e43161 29b3dee4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-12 01:47:47 +0100
+
+    Merge branch 'GrowReplacement'
+
+commit 29b3dee4e90e2ce0263b9fddbfeb083576cca13d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-11 13:02:40 +0100
+
+    Moved Clipper Grow/Build*PolyLine implementations to GR32_VectorUtils.Clipper2.
+    
+    Added Grow/Build*PolyLine implementations from Angus in GR32_VectorUtils.Angus.
+    Fixes #284
+
+commit c4e4316172181e02509c715f95a54a323f7c9e3f
+Merge: 4143611a ee89546f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-11 00:17:18 +0100
+
+    Merge branch 'TImage32_optimizations'
+
+commit ee89546ff5552771dcd40f21b988f9c9d2707372
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-08-22 15:19:56 +0200
+
+    Avoid repeated StretchTransfer when tiling a stretched bitmap in TImage32.
+
+commit c5a7bb9ca6838b0b7b88fcb6e0289be960779302
+Merge: a1e60429 4143611a
+Author: zed <starmen@tut.by>
+Date:   2024-03-10 20:59:59 +0300
+
+    Merge branch 'master' into sasgis-test
+
+commit 4143611adab2aba8440ac42ff39c274eb877fd67
+Merge: c46ee50f 35c79906
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-10 02:19:23 +0100
+
+    Merge branch 'GDIBackend'
+
+commit 35c7990682c0b05f08ba5fdbd9ee7ddcfb3cb24e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 11:26:40 +0100
+
+    Minor optimization of TGDIBackend.DoPaint: Move call to TCanvas.Handle and TBitmap32.Handle property getters out of loop
+
+commit c46ee50f0b141b2dbdabc02bc38915a20dc2f925
+Merge: 0f9ead04 2892ccf4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-10 02:18:14 +0100
+
+    Merge branch 'FastPrevWeight'
+
+commit 2892ccf4014b1afa9b18b38a831321fb779581e3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 21:24:59 +0100
+
+    FastPrevWeight: SSE4.1 and PUREPASCAL implementations of Round($FF * (Value - PrevIndex)) for use in TCustomBitmap32.GetStippleColor
+    
+    Added FastPrevWeight binding.
+
+commit d5dff3cb5f91fda67ad6e227ab1fe6cb12562519
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 22:26:28 +0100
+
+    Added general GR32 binding registry. Primarily for internal use.
+
+commit 9538a955c4c2cc485d206afe274926c6d947fb36
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 22:23:24 +0100
+
+    Binding system can now either identify a bound function by an integer ID (as before) or by the function pointer.
+
+commit 0f9ead048613da521815a9d5d8195706e065083a
+Merge: 67431d18 627ad0e2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-10 02:12:35 +0100
+
+    Merge branch 'BlendCombineMem'
+
+commit 627ad0e2c591301f85268782601e1afc085e96a4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-10 00:40:06 +0100
+
+    Fixes for Lazarus/FPC.
+
+commit c07b8387f2958e2855b2ceab0a73cf5927c13575
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-10 00:02:54 +0100
+
+    Updated packages with new unit names.
+
+commit 19654a3f31918b0c46280b203e73aa2c2efe3bfd
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 21:27:21 +0100
+
+    Added new SSE2 and SSE4.1 implementations of CombineMem
+    
+    Disabled BlendMemEx.asm on x64 as the implementation is broken.
+    Removed CombineMem_Pas_Div255Round. Although it was precise it was simply too slow.
+
+commit 02ee8137ca8ffa3cd89299167c6e6fd4b11122f6
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 18:15:26 +0100
+
+    Minor PUREPASCAL blend optimizations.
+
+commit 84c43a8557065fdea9dd1721132480ce6e540f9f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 18:16:01 +0100
+
+    Updated blend unit tests limits.
+    
+    Fix for Asm tests using to PUREPASCAL implementations.
+    Fix for missing implementations not detected.
+    Fail on missing implementation is now optional.
+
+commit d5a2ad44c2a326c6c8ff99a1de4de2501bd47f6b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 17:20:57 +0100
+
+    Moved blend PUREPASCAL implementation to GR32.Blend.Pascal unit.
+    
+    Renamed other blend implementation units to GR32.Blend.XXX
+
+commit 96ead5c47e50342a7093bf86f571cb69ce4fb113
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 11:41:35 +0100
+
+    Blend unit test improvements:
+    
+    - Added test of alpha and division lookup tables.
+    - Added error count as a test criteria.
+    - Blend tests can now specify error limits via attributes per test.
+    - Added test of SSE4.1 implementations.
+    - Expanded CombineReg and CombineMem test cases.
+
+commit d2ef59cf5e782c7dcedbc44aac15624966851506
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 11:55:34 +0100
+
+    Lookup table improvements:
+    
+    - Documented content and usage.
+    - Changed pointer type of alpha_ptr and bias_ptr to reflect content.
+    - Fixed incorrect size of memory allocated for AlphaTable.
+
+commit 31aedf313c627b73476956ddc0e06e41cbbe9609
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-08 11:33:16 +0100
+
+    Minor improvements to CombineReg and CombineMem reference implementations.
+    
+    Added option to use Div255 and (W*(F-B)+B) instead of Round and (W*F+(1-W)*B)
+
+commit 67431d1817f0f0306a1ce3a66b585102d68c0f00
+Merge: 8dfb5973 55439f2b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-10 02:06:57 +0100
+
+    Merge branch 'low_level'
+
+commit a1e60429a3ffaba74e6fafa33ee28eb9e2532328
+Merge: 47e804fc 8dfb5973
+Author: zed <starmen@tut.by>
+Date:   2024-03-09 11:09:35 +0300
+
+    Merge branch 'master' into sasgis-test
+
+commit 55439f2bcc7d3c3dbedced9ab8d9d566d4c32b4d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-04 02:07:45 +0100
+
+    Added WrapMem (Pascal implementation).
+    
+    Added FastDiv255 and Div255Round (Pascal implementations).
+    Added FactTrunc and FastRound (Pascal, SSE2 and SSE4.1 implementations).
+
+commit 834bc7ac2ca1ca249f53b06ca679a7dd52edeaf1
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-23 16:09:30 +0100
+
+    LowLevel and Math optimizations.
+    
+    FloatMod has been reimplemented and optimized for SSE4.1. New implementation is twice as fast as the old one.
+    FloatRemainder function introduced. Also with SSE4.1 optimization.
+    ZERO_RECT has been deprecated since Default(TRect) produces faster code.
+    LowLevel and Math unit tests updated.
+
+commit 8dfb597327c34706433df8150590f0a54752eabe
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-02 17:01:07 +0100
+
+    Added GR32.CPUID to D11+ run time package
+
+commit a99bde4b31cc1b3531af1f1b306f3604145fdb8c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-02 16:54:12 +0100
+
+    Resolved Delphi 12 Point() ambiguity
+    
+    Fixes #285
+
+commit 9658b827bf80e6b02f131322e936634000ab1735
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-01 19:49:09 +0100
+
+    Do not mark old grow deprecated when USE_OLD_GROW is defined.
+    
+    Refs #284
+
+commit f3861185e70f522f6ac22fab2150fd95592f67db
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-01 19:26:46 +0100
+
+    Temporarily disable Clipper2 Grow and reanabled old Grow.
+    
+    Refs #284
+
+commit 47e804fc25b99eee9d7768b1e4933da3e8032a10
+Merge: 5a1c9164 772510c6
+Author: zed <starmen@tut.by>
+Date:   2024-02-25 14:09:10 +0300
+
+    Merge branch 'master' into sasgis-test
+
+commit 772510c6cf988b661571f448302e3db053e1ca02
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-24 15:24:10 +0100
+
+    Fixed debug drawing of TPaintBox32/TImage32 paint/update mechanism
+    
+    Refs #202
+
+commit dc4af7211cd4323413f40b2f2ee23f75724fb8a4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-23 16:10:28 +0100
+
+    Minor refactoring and reformat of VCL backend
+
+commit 9bbfeba5efb72fa889a44f782dfac586c428909b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-23 20:14:09 +0100
+
+    Best effort guess about how to implement IUpdateRectSupport in FPC GTK backend
+    
+    Refs #270
+
+commit d22791f40a6041c88aa435faa7759b4dbc46d381
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-23 15:19:36 +0100
+
+    Various fixes for PUREPASCAL and FPC/Lazarus
+    
+    Fixes #265
+
+commit 5a1c9164e958e7f000b4e415d3d5eb7572c2c114
+Merge: 99169c2c 254328dd
+Author: zed <starmen@tut.by>
+Date:   2024-02-21 20:47:26 +0300
+
+    Merge branch 'master' into sasgis-test
+
+commit 254328dd21d786c1c09226476a9e5ceec0032888
+Merge: 4a7279fe 8e519290
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-21 17:35:16 +0100
+
+    Merge branch 'CPUID'
+
+commit 8e51929064e887e302ec02763a5076a8cca23a0c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-11 16:48:07 +0100
+
+    CPU feature detection has been replaced with an implementation based on an updated version of FastcodeCPUID.
+    
+    The CPU feature detection now fully supports 64-bit and modern CPU features.
+
+commit 4a7279fe074f3238d8d0e544af89c5641376a3cd
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-18 12:30:34 +0100
+
+    Updated documentation source with files from AngusJ.
+    
+    Added missing DocProcessor files.
+    Refs #221
+
+commit 99169c2cda60ac7c521744544fa59659c579312c
+Merge: b74ad216 0d24f3b4
+Author: zed <starmen@tut.by>
+Date:   2024-02-18 11:32:45 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 0d24f3b4d61dfe61a9c000b43f1516a133ad137f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-18 02:05:38 +0100
+
+    Synchronized DelaunayTriangulation in GR32_VectorUtils and GR32_ColorGradients.
+    
+    Added missing attribution.
+    Fixes #85
+
+commit 0dac2eb62f84fa934349ce18d193076c93e3aa4e
+Merge: 31f2387b b443a43b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-17 22:21:11 +0100
+
+    Merge branch 'bugfix/TPolygonRenderer_ChangeNotification'
+    
+    Fixes #283
+
+commit b443a43bd1bc9c1a07ec92b69ac461cbe5020c3f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-17 21:53:56 +0100
+
+    TPolygonRenderer32VPR and TPolygonRenderer32LCD now take TBitmap32.MeasuringMode and LockUpdateCount into account.
+    
+    Proposed fix for #283
+
+commit b74ad21617a25bd1286e1392522df2dca65363ae
+Merge: 472cb4e0 d10ebec9
+Author: zed <starmen@tut.by>
+Date:   2024-02-17 19:19:48 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 31f2387b2000d039cc769a303eaecbd480350260
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-17 17:16:02 +0100
+
+    Fixed: Too much memory was allocated for AlphaTable
+    
+    Fixes #182
+
+commit bf72b43654acf8f7d8677fc3a334725369b7f583
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-17 17:09:19 +0100
+
+    Invalidate area covered by all layers when the layer collection is cleared.
+    
+    Fixes #282
+
+commit d10ebec9582dbca5cecf37a6125c798abe2cbe70
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-17 16:58:02 +0100
+
+    Minor refactoring of GR32_Layers: LayerOptions and LOB_* values.
+
+commit e32d1b0cbe5cb9c66c2cb8afa6f0fb1b82c14642
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-17 16:56:33 +0100
+
+    Invalidate area covered by layer when the layer is removed.
+    
+    Fixes #282
+
+commit b6621665229c404825172c9b5a54417e2ccf6c8f
+Merge: 481a3aff 4450b7ab
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-17 12:51:57 +0100
+
+    Merge branch 'SVG'
+
+commit 4450b7ab4ae56e0531d28bd7acc3feabcc4c290b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-16 17:30:46 +0100
+
+    Added SVG image format reader using the SVG features from the Image32 library
+    
+    Fixes #235
+
+commit 481a3aff8a54abf60a2b3cf0a84f2681464dc378
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-17 12:50:02 +0100
+
+    Updated DocProcessor utility with AngusJ's final changes.
+    
+    Fixes #221
+
+commit 2c66f6f7f2563a2d795bc017669606219951d2d2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-17 12:49:18 +0100
+
+    Replaced TOpenPictureDialog with TOpenDialog in ImgView_Layers example.
+
+commit 472cb4e073bf7c055021e3c7972cb5f110e0fd90
+Merge: b3cd7e0d 34fd9c35
+Author: zed <starmen@tut.by>
+Date:   2024-02-14 20:22:36 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 34fd9c359cd6ddb4fa6197badf21f49eb5039d9b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-14 09:12:46 +0100
+
+    Updated unit test output paths.
+    
+    Deleted obsolete and incomplete BuildLineBenchmark project.
+
+commit 23679371df89decb11d9d122e60a1f5a3725a56e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-14 09:09:59 +0100
+
+    Optimization and precision fix of PUREPASCAL FixedRound based on a solution by "kadaif".
+
+commit b351f40e5b541c711a631c58ffda0da87194470b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-13 15:21:26 +0100
+
+    Removed VPR_CACHE; It didn't provide sufficiently better performance and was not thread safe.
+    
+    Fixes #280
+
+commit bf847efdac8ae896cf1fbdc7cc754c3b9fcf8542
+Merge: 13c296e4 54f15e77
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-13 15:12:53 +0100
+
+    Merge branch 'PUREPASCAL-math'
+
+commit 54f15e7769714d86d8914b382bdc85cc98109479
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-12 19:35:30 +0100
+
+    Various GR32_Math fixes for PUREPASCAL:
+    
+    - IsPowerOf2(0) returned True.
+    - Rounding error in MulDiv.
+    - PrevPowerOf2 and NextPowerOf2 caused endless loop.
+    - Reimplemented PrevPowerOf2 and NextPowerOf2 without loops.
+    - Updated unit tests.
+
+commit 13c296e4ccf6aa10d322af1da0f9c294d3880691
+Author: zed <starmen@tut.by>
+Date:   2024-02-13 13:34:27 +0300
+
+    Remove inline variables
+
+commit b3cd7e0d202d08016c35797d9bd3461d6a567c6b
+Merge: 29191145 3190e870
+Author: zed <starmen@tut.by>
+Date:   2024-02-13 09:43:09 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 67b385cacffe47682c2a391a2e79ba783b181b35
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-12 17:50:19 +0100
+
+    Reimplemented 32-bit FastSqrt to use SSE2. Old approximation was simply too bad.
+    
+    Added SSE2 implementation of FastInvSqrt.
+    Updated LowLevel unit tests.
+
+commit 52804233289385934696ab9bf55e9bec8eb316c2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-11 21:03:50 +0100
+
+    GR32_Brushes refactoring.
+    
+    Eliminated access to private class members.
+
+commit ad9a9ab8dd90269a63aa56ea59d9dc1c5a7af5e9
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-11 21:01:47 +0100
+
+    Eliminated compiler warning in Clipboard unit.
+
+commit 8099b2fb78974263b764b9fe23527d11ac292b3b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-11 21:01:20 +0100
+
+    Minor update of Blend unit tests.
+
+commit 6eff1473a5ccefeb90b1a2f76525c239dff98e32
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-11 21:00:39 +0100
+
+    Fixed AV caused by incorrect register usage in 64-bit MoveWord function.
+    
+    Merged out-of-repo LowLevel unit test and renamed project.
+
+commit 3190e870870511e8aa923d8a2b4f514d0722b1c0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-10 10:02:04 +0100
+
+    ClipperFloatScale replaced with ClipperFloat.Scale since the former function wasn't being inlined.
+    
+    Refactoring and cleaned up styling in clipper units.
+    Replaced obsolete jsRoundEx join type with new jsSquare join type.
+
+commit f2bd19cee926e7f0181f0f19c532f87d84e2ae9c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-10 09:01:50 +0100
+
+    Fix for TCanvas32.Rectangle not producing a rectangular shape;
+    
+    TCustomPath.PolyLine added the first vertex twice to the output path.
+
+commit d1e16bffa8851043d188b2d6a28e1caa99e273c0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-09 22:47:23 +0100
+
+    Fix for incorrect DIB data saved in RGBA format
+
+commit ca7047ac59800ead12f0f38d96603c086fa0ea33
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-09 18:10:13 +0100
+
+    Fixed and updated BMP unit tests.
+    
+    Added generation of test bitmaps and RC script.
+
+commit 79714b7933772589243d4b2a9fa2ad09b188ceb2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-09 18:07:21 +0100
+
+    Yet another iteration of the BI_BITFIELDS merry-go-round: Both clipboard and BMPs now exclude the color table.
+    
+    Fixes #257
+
+commit dbef20a5959e9898d39b6a476e9c1c92aade13d5
+Merge: 5f2e2da5 c99ce749
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-07 10:39:08 +0100
+
+    Merge branch 'USE_CLIPPER_GROW'
+
+commit 5f2e2da5ee15b02b218701ad3a13305255c7c21b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-07 10:32:11 +0100
+
+    Fix for panning always producing OnClick event.
+    
+    Panning now uses drag detection to initiate pan so a normal mouse click is handled as a click while a click and drag is handled as a pan.
+
+commit a4d7b12a0831711c358f99d3d30e2b3d3b556304
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-06 18:06:12 +0100
+
+    Updated unit tests for BI_BITFIELDS fix.
+    
+    Added test of SaveToDIBStream and LoadFromDIBStream.
+    Refs #257
+    Note: There is a problem with the generated unit test bitmap files as some of them appear to be in a format different from the one indicated by their name. They should be regenerated at some point.
+
+commit 98d2fa6d6740bf152e3c85f73ede15cb37901f1f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-06 15:55:53 +0100
+
+    Fix for incorrect handling of BI_BITFIELDS DIBs.
+    
+    Fixes #257
+
+commit 4a4aeee34b3f6c984fdb81c4d4f98caacf0c2794
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-05 00:07:30 +0100
+
+    Revert a few old changes for backward compatibility.
+
+commit c99ce74956249aa598dfe92648ea9b03ecba3a72
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-04 13:58:35 +0100
+
+    Updated Clipper to version 1.3.0
+    
+    Commit 609d87385e8e62d9658e4b39521f57aa281bc75c
+    Benchmark of thick and thin lines measures a drop in performance of ~5-10% :-(
+
+commit fada0de1e229bcd3d38f037964af003d5c69d607
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-04 12:55:57 +0100
+
+    Refactored ArrowHead example and fixed a few minor bugs in it.
+
+commit 3b309411faf8c5aa0c87e1bc49d88e04d01ca1f3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-04 12:54:42 +0100
+
+    Changed Grow and BuildPoly*line functions to use Clipper.
+    
+    Fixes #276
+    Refs #47
+    Benchmark of thick and thin lines measures approximately same performance.
+
+commit a08921cc9cf985a4cbd9f3d2f681155e514aa59d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-03 18:20:15 +0100
+
+    Refactored, cleaned up and improved Grow example to allow End and Join styles to be specified.
+
+commit 1158e907517f5e1bc708a71359a8e6584a13129a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-01 09:19:47 +0100
+
+    Added Polygon unit test
+    
+    Initial test is just the issue #272 test case
+
+commit ede1d0112abc4e12e3c9469ee8defcd9344afa17
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-02-01 09:16:40 +0100
+
+    Eliminated some OutputDebugString
+
+commit 04b113e2ab3150f9f70d0318920aad73ead19338
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-31 23:24:05 +0100
+
+    Fixes failure to compile GR32_VPR for 64-bit
+
+commit 6d7c1821c54120dcd7d0bf13a92b10bd7f4cdd71
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-27 02:38:40 +0100
+
+    Minor update of Benchmark example to give more feedback
+
+commit 3aa6cb88465a9b189b059ac3e95ae5d78fb33a2b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-27 02:10:39 +0100
+
+    TPolygonRenderer32VPR2X has been disabled as is incomplete.
+
+commit 24d45629c0f589b8ea591aa9eb8d162dc4021542
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-27 02:06:40 +0100
+
+    Eliminated DEPRECATEDMODE symbol which was used for v1.7 compatibility.
+
+commit 223ba9cfcce6f02c866cd9584e521fdc3b14fb4a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-27 02:01:33 +0100
+
+    Eliminated remaining references to USEGR32GAMMA.
+    
+    Fixes #225
+
+commit c63646abff562889e3709c25a4db0a0aa3643ba1
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2024-01-26 11:50:16 +0200
+
+    Fixed compiler warning (Mismatch signed and unsigned int). Also that part compiles slightly older delphi
+
+commit 4a24a0377ed4442ffa36e75fa46e1fd7775f9842
+Merge: 66552053 01adc955
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-26 08:15:16 +0100
+
+    Merge branch 'VPR'
+
+commit 01adc9559ad6e5641047ac99e358c1dac3b43da6
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-26 06:32:33 +0100
+
+    Minor refactoring of VPR. Mostly comments.
+
+commit 665520534da794764392cc691675752fcfccf0a0
+Author: David Cornelius <dev@corneliusconcepts.com>
+Date:   2024-01-25 21:29:37 -0800
+
+    added support for Delphi 12
+
+commit 1d59a22542ae8bd446460e8c5453b52b286a6908
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-26 06:31:36 +0100
+
+    Fix for VPR rounding issue.
+    
+    Fixes #272
+
+commit d504dc84dd6f4007d2de72c20d681d04da4e6cae
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-26 06:25:00 +0100
+
+    Minor VPR optimization of Single zero test
+
+commit 6e66865b9c11e81694ff4462706b7a59a5d96008
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-20 05:31:29 +0100
+
+    VPR can now cache allocated memory for performance
+
+commit 4ed8a403c4f063af58e85cbd4e3653c0559e2db5
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-17 22:18:27 +0100
+
+    Renamed the folder "Packages/D110" to "Packages/D11 and later" to indicate that the package files in it are version independent.
+    
+    Refs #273
+
+commit d76305f1e337adf7fa9011b8210cb5ed901d0476
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-19 20:53:14 +0100
+
+    Minor refactoring of VPR for readability
+
+commit 9b01cd065d2a6a78a91ae85b9d2e891aa5a6bb8a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-14 01:01:46 +0100
+
+    Added work-around for #272 (polygon issue)
+
+commit ac8cbc85613ba38415700cb2be6ef2279f0b84d3
+Merge: 2b42c83c 39999cd7
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-08 09:52:19 +0100
+
+    Merge branch 'ConvolveDemo'
+
+commit 2b42c83cd7abbcf9a7d39572995f29fbd7d5c591
+Merge: 744df8aa d4870264
+Author: Anders Melander <github@melander.dk>
+Date:   2024-01-08 09:37:39 +0100
+
+    Merge pull request #271 from TommiPrami/master
+    
+    Fixed couple small typos
+
+commit d4870264c34688ffb215bd915f0994e4f8186482
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2024-01-08 10:01:03 +0200
+
+    Fixed couple small typos
+
+commit 39999cd7580fe06f96b18459642761e88ce82bca
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-10-13 14:18:06 +0200
+
+    Added kernel convolution example
+    Fixes #268
+
+commit 744df8aa07251e3457553abd3f039d2352d37aa8
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-10-13 14:07:28 +0200
+
+    Kernel sampler function failed to pass center coordinates on to sampler.
+    Fixes #269
+
+commit 603dbd80dc298936414109f878faace02c8de770
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-09-05 15:01:51 +0200
+
+    Revert "GR32_Text_XXX units: Minor change to InternalTextToPath."
+    
+    This reverts commit 162ce1613e0efafa5dcd40a02270535d882410d7.
+    
+    The change completely broke the MeasureTextDC function.
+
+commit 17fb4a695ba66d375ddbf56355456c5e845428c1
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-08-17 16:08:39 +0200
+
+    Fix for TPicture.Assign(TBitmap32) where TPicture.Graphic=nil
+    Fixes #261
+
+commit a4074a8456e1ffe3c322d8e3435caf36c22fdadc
+Merge: 80d84449 c1feed2c
+Author: Anders Melander <github@melander.dk>
+Date:   2023-08-08 18:15:09 +0200
+
+    Merge pull request #260 from TommiPrami/master
+    
+    Get rid of Comnpiler hint if Assertions are not used.
+
+commit c1feed2cecc6fc0bf4562247e4690a92300d18fe
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-08-08 11:49:06 +0300
+
+    Get rid of Compiler hint (if assertions are not used)
+    
+    If assertions are not used then compiler hint about value assigned into RegionSize not used. We have zero policy on Compiler hints and warnings so we saw this hint this on continuous integration.
+
+commit 61d8daf75afa787f159837e64767aee2b50923e0
+Merge: 0f7a53aa 80d84449
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-08-08 11:43:59 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 80d844497565450a80e23cbe637d8e9a7d4f4f4e
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-08-07 17:22:03 +0200
+
+    Fix premature deletion of temporary bitmap.
+    Fixes #259
+
+commit 7e21c104749ff35e926f0b04f6f390d85cbd9c7b
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-08-07 17:14:38 +0200
+
+    Pointer math was not 64-bit compatible.
+    Fixes #258
+
+commit 69284527e1cfb4a7fb6dc8cf56fe4a9168393fc4
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-06-15 19:04:23 +0200
+
+    Image formats now unregister themselves at finalization.
+    Removed {$WEAKPACKAGEUNIT} from image format units.
+    Added image format units to Delphi 10.x and 11.x run-time packages.
+    Fixes #256
+
+commit 0f7a53aa0916a321c2d236b284fbcd14f3fa3994
+Merge: 91f68261 359399aa
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-05-19 06:59:23 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 359399aa2fb990fb04c34296ebdb9257c6a1ac70
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-05-17 20:35:57 +0200
+
+    Fix for double PNG inflate loop, one with incorrect use of Z_FINISH, leading to endless loop in ZDecompress.
+    Added regression test for this issue.
+    Fixes #255
+
+commit 91f6826177e53496e0c4306028ba91f1e379343f
+Merge: b36ee745 9b1b2d7e
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-05-16 09:37:49 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 9b1b2d7edc5e5495f73746909f11036332b30b1e
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-05-09 00:52:37 +0200
+
+    Homogenized Delphi 10.x and 11 packages. Now they all use the same version naming scheme as Delphi.
+    Added missing units in run- and design-time packages that made Delphi complain about implicitly included units.
+    Added missing package project groups.
+    Refs #251
+
+commit b36ee7451d7b0fcb589160e3d60b65384f3ae5d7
+Merge: 0a68fba5 22b8eb86
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-05-02 07:00:27 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 6743868f51492c5df6691ad59138c2659108b9c3
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-27 13:44:40 +0200
+
+    Removed reference to obsolete experimental unit.
+    Fixes #252
+
+commit 22b8eb86e323b080b1cc40189dddb08eda4648ba
+Merge: cc22fca4 6d2975eb
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-26 12:48:37 +0200
+
+    Merge branch 'bugfix/repaint_optimizer_broken'
+
+commit cc22fca4bd7ebce52cbcfbf75aa72b29611a143a
+Merge: f815b367 20b7dcb3
+Author: Anders Melander <github@melander.dk>
+Date:   2023-04-26 10:42:42 +0200
+
+    Merge pull request #250 from TommiPrami/FixInsight
+    
+    Fix insight insights.
+
+commit 20b7dcb3fd96b36a3d325ebe397a9f8c3178a427
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-26 08:04:32 +0300
+
+    Changed boolean evaluation and addewd Assert message
+
+commit 22c6c1689463a412587fad3ea1cf7cc050f877ef
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-26 08:04:09 +0300
+
+    Added const to unmodified string parameter
+
+commit 7da8404d7717215537936591b62295fc7fc900f6
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-26 08:03:50 +0300
+
+    Added missing inherited call to Destroy
+
+commit b23e9fd21fa110fe3fb414cffe8b6672d36c751b
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-26 08:03:25 +0300
+
+    Added GUID to interfaces
+
+commit 0a68fba5c654a995fe46b897aa6991eae3944e1b
+Merge: 492d2fb5 f815b367
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-26 07:18:01 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit f815b3678a0a6579ef842dea4774cafd42ff0607
+Merge: 140630c4 1bbe7be0
+Author: Anders Melander <github@melander.dk>
+Date:   2023-04-26 01:43:46 +0200
+
+    Merge pull request #242 from graphics32/PSD
+    
+    PSD write support
+
+commit 1bbe7be02c3729d12594e15772765964ace707de
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-26 01:40:07 +0200
+
+    Calculate PSD size from layers in case Image has layers but no bitmap.
+    Refs #249
+
+commit 84697aed6ba68cbfe22c22f59a44465c74d87a7f
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-26 01:37:58 +0200
+
+    PSD Export example: Use Jpeg image as static background bitmap instead of layer
+    Refs #249
+
+commit c98eefc4462ccdb7ddf4507374510c46fe58fb9d
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-25 15:59:17 +0200
+
+    Eliminated some compiler hints related to inlining.
+    Added utility functions to locate and test for files in examples Media folder.
+
+commit 7a53431b5c48c683b42652f3ac522fca315f76f2
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-25 13:16:23 +0200
+
+    Export TCustomImage32.Bitmap as a layer if image has layers
+    Refs #240
+
+commit 492d2fb5bcc81406b4c3d13d6d78b6cc42b80976
+Merge: feb24a66 140630c4
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-25 13:37:51 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 342e369e52fafeceabc9215310e11b16bf9313fd
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-25 00:37:37 +0200
+
+    Eliminated a few compiler hints.
+
+commit 687cb4254ae0aae80d8fae0293c843c4bca70e3d
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-25 00:28:05 +0200
+
+    Fix for misaligned section.
+    Refs #239
+    Refs #242
+
+commit 140630c4a5c30790157c40097844af46021e3762
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-24 15:10:32 +0200
+
+    Fix for massive resource leak in screen color picker.
+    Internal TColor32Dialog eliminated.
+    Color picker form now automatically moves out of the way of cursor during screen color pick.
+
+commit bf28706e79912296c9dbebe498f85af65bf5cf07
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-24 11:32:15 +0200
+
+    Removed component registration of design-time control TColor32Dialog.
+    Eliminated pre-XE2 conditions.
+    Modernized Graphics32 color picker dialog. Eliminated 3D buttons; Sent them back to the 90s.
+    Refactoring.
+    Fixes #243
+
+commit fd717d5854ded09b1d551c195be69af405aeeed3
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-02 22:19:03 +0200
+
+    Fix for TScreenColorPickerForm not being transparent.
+    TScreenColorPickerForm default cursor set to crHandPoint.
+    Added TScreenColorPickerForm.Execute function.
+    Futile attempt at making TScreenColorPickerForm work with FPC.
+    
+    (cherry picked from commit c983b3b00039e2e0265fc7797ab0666b0522303d)
+
+commit feb24a6683928123d9c9510df437d99148ed5b91
+Merge: b8426ddc e60d63f6
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-24 07:05:14 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 12c9d070efa068ccdfe8b27a70ba191a45876bf7
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-24 01:49:33 +0200
+
+    Refactored "empty background" writer.
+    Fixed buffer overflow.
+    Refs #245
+
+commit 202ee5b08ac8340c1a36d6f82f9bff3142f02d54
+Merge: ec6e496f 8c4f8968
+Author: Anders Melander <github@melander.dk>
+Date:   2023-04-24 00:34:38 +0200
+
+    Merge pull request #245 from lamdalili/PSD
+    
+    Various little corrections & optimisations
+
+commit e60d63f6d674ea4ac6a28098f226d12beb0a9269
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-24 00:22:20 +0200
+
+    Fix for FPC/Linux
+    Refs #246
+
+commit ec6e496f7e29b83c30282d3589079561850563b8
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-23 22:20:56 +0200
+
+    The paint-stage flags DsgnTime and RunTime has been deprecated. Instead we now have a "mask set" that indicates what the paint stage should be used for: psmRunTime, psmDesignTime and psmExport.
+    psmRunTime replaces the DsgnTime flag, psmDesignTime replaces the DsgnTime flag and the new psmExport flag indicates if the paint stage should be drawn by the PaintTo method.
+    Only the PST_DRAW_BITMAP and PST_DRAW_LAYERS paint-stages have the psmExport mask flag set by default.
+    Fixes #247
+    Fixes #248
+
+commit a35ad730dcab92e3c514fb4d0d5f2adc4eaf5422
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-23 22:09:20 +0200
+
+    Fix for CreatePhotoshopDocument(TCustomImage32) not able to produce an alpha-transparent background.
+    Refs #240
+
+commit 8c4f89687d16451314c170c7f5671e63bbb6dbfb
+Author: lamdalili <lamda.55lii@gmail.com>
+Date:   2023-04-21 09:55:39 +0100
+
+    Various little corrections & optimisations & ajust comments
+
+commit 273e34cfda79f12e6df74bd546aa694d8eaaed2b
+Author: lamdalili <lamda.55lii@gmail.com>
+Date:   2023-04-21 09:25:09 +0100
+
+    Rename FILL_RLE to FillEmptyImage and adaptation for RAW mode
+
+commit 89b9c21f1c2e339838bfbee635f1978c4aea953b
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-19 17:52:42 +0200
+
+    Updated for FPC
+    Refs #240
+
+commit f005cc5c6c99800bb25ad9edef09011a1958f0c9
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-19 16:58:53 +0200
+
+    Moved endian Swap functions to GR32_Lowlevel.
+    Moved big endian I/O write functions to GR32.BigEndian, added corresponding read functions and wrapped them all in a record type for scope.
+    Wrapped PSD compression functions in a record type for scope.
+    Added tile rect view to psd_bitmap_export  example.
+    Refs #240
+    Refs #241
+
+commit b439161ac4054ed2cfc9356a66b070ebec2ae940
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-19 03:09:10 +0200
+
+    Updated Examples project group.
+    Refs #241
+
+commit 2f5d2401f3b7bf9c313866b7adee0c9aaf6d0405
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-19 03:07:07 +0200
+
+    TPhotoshopLayer32 can now specify the source rect (viewport) used for the layer image.
+    Cleaned up Bitmap32 to PSD example.
+    Refs #241
+
+commit 8d8ca96cf0cfc6319948895afd916fba9947bcd3
+Merge: babe3cac 65574e30
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-19 00:21:22 +0200
+
+    Merge branch 'PSD_SourceRect' into PSD
+
+commit 65574e30607284d518a942fac51332fb91bbe990
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-18 22:46:43 +0200
+
+    Moved from Examples\Layers to Examples\General since example isn't about Graphics32 layers
+    Renamed project so it doesn't conflict with existing example projects.
+    Minor UI changes.
+    Refs #241
+
+commit 9045dab2c456a6fb7d51afce28a04313968b6a2d
+Author: lamdalili <40634105+lamdalili@users.noreply.github.com>
+Date:   2023-04-18 21:41:10 +0100
+
+    Splitting Bitmap32 into multiple PSD layers (#241)
+    
+    Convert Bitmap32 to PSD layers example
+
+commit babe3cac1481f8f686b0a9b7a911f8108b0c35d2
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-18 18:14:57 +0200
+
+    Rewritten PackBits RLE encoder.
+    Refs #240
+
+commit b8426ddc78d059444eacda002c38a1c6b93f5a57
+Merge: b5817fde a1f0140b
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-18 06:16:52 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 2cbbff744d1affa4b95066a7959b2630f8140cdc
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-17 23:23:12 +0200
+
+    CreatePhotoshopDocument function now handles TCustomIndirectBitmapLayer (the TBitmapLayer base class)
+    Refs #240
+
+commit dc5529f6bdbe1360457b8407c817b1ba46a01863
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-17 23:14:57 +0200
+
+    Added PSD support to the ImgView_Layers example. No PSD layers yet though.
+    Added PSD Image Format Adapter. TPhotoshopDocument is now assignment compatible with TCustomBitmap32.
+    Refs #240
+
+commit 1a1b725f40f4aa86bf35906560adac5c18ca9533
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-17 10:23:28 +0200
+
+    Redesigned PSD export functionality and moved it into GR32.ImageFormats.PSD.*
+    TPsdBuilder and TCustomPsdLayer is now TPhotoshopDocument and TCustomPhotoshopLayer.
+    PSD read/write functionality has been decoupled from PSD model classes.
+    Refs #240
+
+commit a1f0140bebe10888ebbb08dea20c0b71fabab6c7
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-17 10:24:37 +0200
+
+    Added missing PSD_Export project settings file.
+    Refs #239
+
+commit 2aee1940ddab6f80db91aad882db38deedeadc8e
+Merge: 7ba33af2 711ab59d
+Author: Anders Melander <github@melander.dk>
+Date:   2023-04-17 02:04:17 +0200
+
+    Merge pull request #239 from graphics32/PSD
+    
+    Add PSD export example
+
+commit 711ab59d7468514d1d0b77269e915c618c3c9663
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-17 00:44:56 +0200
+
+    Added static bitmap layer with jpeg.
+    Refs #239
+
+commit ed9cc325d14df30b4f5b760d2ffeffc7808aa37d
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-17 00:11:54 +0200
+
+    Disabled "ZIP with prediction" compression.
+    Refs #239
+
+commit 7ba33af217fb005238997a58ce26b65b61d6bb05
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-16 23:53:41 +0200
+
+    Added license files for MPL 1.1 and LGPL 2.1 (closest I could get to "LGPL 2.1 with linking exception" - IANAL)
+
+commit 183a6bf3203e2dcd1c2192468082a10a1262f423
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-16 23:22:36 +0200
+
+    PSD padding function rewritten for readability and conformity.
+    Refs #239
+
+commit 45d7d4a1a23a26f744f73fe28d5e0de6a902f796
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-16 17:55:38 +0200
+
+    Various refactoring and cleanup.
+    More strict type declarations; Fixed remaining range check errors.
+    Added UI for selection of compression.
+    Refs #239
+
+commit a066eab5aa721a103efb790dd4f55f94b41c984a
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-16 02:45:27 +0200
+
+    Cleaned up PSD Export example.
+    Refs #239
+
+commit ce0deda81fb600c5404c18c9d9be662ae65244f8
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-16 01:05:28 +0200
+
+    Added PSD Export to Examples project group. Added missing .dproj file.
+    Fixed various range check and overflow errors.
+    Refs #239
+
+commit 906a7969d4d8e1663479bb217fc06fb12b35f135
+Merge: 310fc51d be016683
+Author: Anders Melander <github@melander.dk>
+Date:   2023-04-15 16:37:50 +0200
+
+    Merge pull request #238 from lamdalili/master
+    
+    layers to PSD file format
+
+commit 310fc51ddf58cc405dbd2f554fb1ab94e6b603a8
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-15 15:49:15 +0200
+
+    Workaround for spurious Delphi 11.2 compiler bug causing AV in TFlattenedPath.AddPoint
+
+commit be016683af24bdb0c0303069f15f04fae5477b80
+Author: lamdalili <lamda.55lii@gmail.com>
+Date:   2023-04-15 13:01:03 +0100
+
+    layers to PSD file format
+
+commit d0f253e4bb76ec45738f6576fd31acea9d466782
+Merge: bfa2cf29 315d00ee
+Author: Anders Melander <github@melander.dk>
+Date:   2023-04-14 18:09:53 +0200
+
+    Merge pull request #237 from lamdalili/patch-1
+    
+    Remove var from constants section in TImageFormatAdapterTGIFImage.SaveToStream
+
+commit 315d00eeb19eb4155c5f9518dd69be0b6cfdda7c
+Author: lamdalili <40634105+lamdalili@users.noreply.github.com>
+Date:   2023-04-14 16:32:57 +0100
+
+    Update GR32.ImageFormats.GIF.pas
+    
+    Remove var from constants section
+
+commit bfa2cf29e796f3941e2e987740c0b1afeea6edb7
+Merge: f20c81c9 cfce9d24
+Author: Anders Melander <github@melander.dk>
+Date:   2023-04-14 15:53:21 +0200
+
+    Merge pull request #236 from veftodii/patch-1
+    
+    Add "System.Win" to unit scopes under project settings
+
+commit cfce9d24ffbed985736d9285752ab7b181469567
+Author: Vasile Eftodii <veftodii@users.noreply.github.com>
+Date:   2023-04-14 12:28:20 +0100
+
+    Add "System.Win" to unit scopes under project settings
+    
+    This addition is to the run-time package only as the design-time already has this scope added. It will solve to find the "ComObj" unit.
+    
+    Co-Authored-By: Anders Melander <18141921+andersmelander@users.noreply.github.com>
+
+commit b5817fde407a065ebfc732728f35c015b79baa61
+Merge: 7335e813 f20c81c9
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-13 06:11:14 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit f20c81c977680b5929146df6aded9cdbf655a563
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-12 07:25:11 +0200
+
+    Eliminated use of inline var.
+    Fixes #232
+
+commit 7335e813952cc91966788eb3ec54a91307eb3be0
+Merge: 6e7aa750 5116c813
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-11 07:38:03 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 5116c813bd4528dae53c2d9fc575a52c205717b7
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-05 11:31:28 +0200
+
+    ImgView_Layers example extended with Save ability
+
+commit 82b8039b6dbd6c0e6999ca02c40036f8892630b6
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-05 06:02:54 +0200
+
+    Extended GIF image format adapter with write support for transparency and true color (more than 256 color) images
+
+commit 0ff96425d5eabf62276828768328109f4b727887
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-05 05:50:07 +0200
+
+    TCustomBitmap32.SaveToFile now uses IImageFormatWriter to save to arbitrary image formats.
+
+commit 9bbfe71ef71f15f79b6f3a9e2a1a27a741ba09a9
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-05 00:25:07 +0200
+
+    Extended workaround of Microsoft RC compiler bug with RT_BITMAP resources to also apply to BI_BITFIELDS bitmaps (i.e. 32-bit RGBA bitmaps).
+    
+    (cherry picked from commit 6d2975eb888c26c4e8f4783ade29a21bd14ea6e4)
+
+commit 6d2975eb888c26c4e8f4783ade29a21bd14ea6e4
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-05 00:25:07 +0200
+
+    Extended workaround of Microsoft RC compiler bug with RT_BITMAP resources to also apply to BI_BITFIELDS bitmaps (i.e. 32-bit RGBA bitmaps).
+
+commit 45a1bb4c2e1cbf66d3c5dfc560dd40024f35a54c
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-04 23:43:39 +0200
+
+    TImageFormatAdapterPNG32.LoadFromStream failed to test if the source stream had valid PNG data before committing to load a PNG from it.
+    
+    (cherry picked from commit 544f23856a50568a78990591047fdbc50400e51e)
+
+commit a76fa749db4224d28c509192fafde091fde5948a
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-04 23:42:14 +0200
+
+    TImageFormatManager.LoadFromResource now falls back to IImageFormatReader if IImageFormatResourceReader fails.
+    
+    (cherry picked from commit 6531ad849f7da9407e9791b625e9e674399178f2)
+
+commit 544f23856a50568a78990591047fdbc50400e51e
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-04 23:43:39 +0200
+
+    TImageFormatAdapterPNG32.LoadFromStream failed to test if the source stream had valid PNG data before committing to load a PNG from it.
+
+commit 6531ad849f7da9407e9791b625e9e674399178f2
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-04 23:42:14 +0200
+
+    TImageFormatManager.LoadFromResource now falls back to IImageFormatReader if IImageFormatResourceReader fails.
+
+commit 5c2746d5f093af14edef5081c71af2a3bcefe02b
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-04 23:41:01 +0200
+
+    Updated Sprites, Image32 and RotLayer examples to load PNG, JPG 32-bit RGBA resources directly from resource via image formats.
+    Updated sprite resources.
+
+commit a9c98e6000532043bb4a91e157bc55944717f21f
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-04 18:33:14 +0200
+
+    Fixes and refactoring for FPC.
+    Eliminated use of HAS_NATIVEINT since all supported compilers support NativeInt/NativeUInt.
+
+commit db8f8fb2dd7daecb57ac7ed67e3c6a1caf1b37a0
+Merge: c983b3b0 def97c0d
+Author: Anders Melander <github@melander.dk>
+Date:   2023-04-04 01:12:01 +0200
+
+    Merge pull request #230 from graphics32/bugfix/BeginUpdate_EndUpdate
+    
+    Fixes #228
+
+commit def97c0d78a425ff825b4df6b27182f9b6ce33e0
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-04 01:05:38 +0200
+
+    Added debug draw of internal update rect handling.
+
+commit f31778cabd661f66bc3713f84bf07eb9d594e0c8
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-04 01:04:35 +0200
+
+    The BeginUpdate/EndUpdate/Changed behavior of the following base classes have changed as described in issue #228:
+    - TNotifiablePersistent
+    - TCustomPaintBox32
+    - TLayerCollection
+    Refactoring related to the above.
+    Scope of a lot of class members has been made more restrictive (with "strict" keyword).
+    Fixes #228
+
+commit 3ee3c730f271fee497a30e9f5cba84afba66a83c
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-03 12:45:37 +0200
+
+    Added TPositionedLayer.OnGetUpdateRect event. The event can be used to modify a layer's update rect (the area covered by the layer).
+    Updated ImgView_Layers example to use OnGetUpdateRect.
+
+commit bece47aaffadbab0285f87cda02588d452fca7c3
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-03 11:44:08 +0200
+
+    Eliminated unnecessary TImage32.Changed from examples
+
+commit aa6764edf7c48dbe726526d072223b32e392d922
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-03 11:22:19 +0200
+
+    Eliminated most inlining related compiler hints in examples
+
+commit bef563276171bcb2e62347ca344ae65e20111830
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-03 11:22:58 +0200
+
+    Eliminated most inlining related compiler hints
+
+commit c6170014d84022bcd75e4b9a04b8023ac6af1f23
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-02 23:06:23 +0200
+
+    TCustomImage32.BeginUpdate, EndUpdate, Changed and OnChange has been moved to the base class TCustomPaintBox32.
+    Introduced BeginLockUpdate and EndLockUpdate which does the same as the old BeginUpdate/EndUpdate: Blocks changes from generating OnChange events.
+    Refs #228
+
+commit 6e7aa75090cf1570ed18eeaf3f929ed84646bc38
+Merge: 455ba46e 82991a5b
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-04-03 10:56:47 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit c983b3b00039e2e0265fc7797ab0666b0522303d
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-02 22:19:03 +0200
+
+    Fix for TScreenColorPickerForm not being transparent.
+    TScreenColorPickerForm default cursor set to crHandPoint.
+    Added TScreenColorPickerForm.Execute function.
+    Futile attempt at making TScreenColorPickerForm work with FPC.
+
+commit 1831bfd65421f41a7203fc7ac5d9340c753dcc21
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-02 18:15:43 +0200
+
+    Speculative fix for sporadic AV in TFlattenedPath.AddPoint
+
+commit 1581ab91f9bc30fbe608426c644b449c3540b342
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-02 17:52:40 +0200
+
+    Added marching ants animation to ImgView_Layers example
+
+commit 748961ca1b8cbf5dc9e8a49a6888d343c8081103
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-02 17:50:44 +0200
+
+    Fix for TRubberBandLayer not repainting automatically
+
+commit d440bf115f50328ff16797cd110254001da56df4
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-02 15:23:58 +0200
+
+    TPaintBox32 repaint mechanism now works with all update modes.
+    GradLines example updated to benchmark TPaintBox32.
+
+commit 9d84fc88a9ecd2da5500ee7b8b2d58f13e33ca8c
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-02 00:07:24 +0200
+
+    Fixed radio buttons in GammaBlur example
+
+commit 420458f1838c879020ad27da59c66e6cb8732fe2
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-02 00:54:34 +0200
+
+    Fix for AV in TMicroTilesRepaintOptimizer.UpdateOldInvalidTiles
+
+commit 49766dadc5b5105c2e5e91aa0cb9a6a9d453a08b
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-01 23:51:43 +0200
+
+    Fix for AV in TCustomRepaintOptimizer.Destroy
+
+commit 82991a5ba34815b7cf1487937ea455ae0ca49a95
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 21:49:26 +0200
+
+    Fix: Loading resource by name on 64-bit failed with AV.
+    Minor changes for FPC compatibility.
+    Fixes #229
+    (cherry picked from commit 60697af3374e5a041067a98576678a0a8507af0f)
+
+commit a82f3aad8d423b815aa165071855a2ead0fd9e0f
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-01 01:03:41 +0200
+
+    Batch change notification during mouse handling.
+
+commit d5fd865e46a4d9419d1b30916f0885b1be5f839c
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-04-01 01:02:49 +0200
+
+    Fix for TRubberBandLayer not updating outside layer rect even though it draws there.
+
+commit 60697af3374e5a041067a98576678a0a8507af0f
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 21:49:26 +0200
+
+    Fix: Loading resource by name on 64-bit failed with AV.
+    Minor changes for FPC compatibility.
+
+commit f52ba98d8e4cbb12b81424ffc58cea4c647638aa
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 17:04:51 +0200
+
+    ﻿When processing Changed state, do not do a full Invalidate if partial updates were queued.
+
+commit 890ef49502aef152644bacecba9ca4ef335d69d0
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 16:03:47 +0200
+
+    Moved some code in preparation for later changes.
+    Refs #228
+
+commit f7fcf65dd3327da8f156f7c74de564d559efe75d
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 16:00:16 +0200
+
+    Fix: Check for window handle allocated before invalidating control
+
+commit 467d8b926ac70ed894996bce3d617efe33905fe6
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-08-22 14:23:57 +0200
+
+    ﻿Moving a layer now invalidates the old and new areas covered by the layer so they can be repainted.
+
+commit 7c2849cac45303c5e64767f627b1eb34a31881ae
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-08-22 10:31:17 +0200
+
+    Fix: Shortcut logic to do a full update was comparing against wrong area in Windows backend.
+    Implemented InvalidateRect and GetUpdateRect for LCL/GTK backend.
+
+commit 3997acbfbd6858afb9a035d0902fdec837789a00
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-08-16 00:25:12 +0200
+
+    Microtile optimizer fix by "tom-jan". Avoids duplication of tiles.
+    Refs #202
+
+commit 3db813b6d9056d599da29e5016916e3a0ad5c537
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-08-16 00:15:20 +0200
+
+    ﻿Changed layer/layer collection change notification to use publish/subscribe instead of hijacking the TBitmap32 events. This also decouples the repaint optimizer from these classes.
+    Added InvalidateRect to IUpdateRectSupport backend interface.
+    Updated Sprites demo so it takes advantage of fixed invalidate/update behavior.
+    Refs #202
+
+commit b7d8bbbfb550a8a47882930303159d0e2b757b1c
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-15 14:48:50 +0200
+
+    Introduced IUpdateRectSupport backend interface and refactored its Windows implementation into the backends.
+    Added empty implementation stub for GTK backend.
+    Refs #202
+
+commit 46b096c06ff616da29b81d271cbfc24b55e46c37
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-15 12:34:52 +0200
+
+    Redesigned TCustomPaintBox32/TImage32 paint mechanism to handle both invalid rects and update rects.
+    Fixed TCustomPaintBox32 bugs where each update causes multiple repaints.
+    Refs #202
+
+commit 8ce9b8614218264b791a2d0516c9d075801bf825
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 20:55:50 +0200
+
+    Fix for RT_BITMAP resource load
+
+commit e6b19f1aeb30d18989394c6951933cca301458fb
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 20:34:55 +0200
+
+    FPC compatibility: Introduced TResourceType type alias
+
+commit c8e4c65e0767fe034cf771ce7dc0ffb554310c72
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 18:18:28 +0200
+
+    Added IImageFormatResourceReader to handle loading from resources.
+
+commit 33e9d657e2f27ff46c25015a2938b56c9a9604b9
+Merge: 90750840 cfcf38ff
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 05:04:48 +0200
+
+    Merge branch 'feature/ImageFormats'
+    Fixes #227
+
+commit 90750840f0ac8c8713b0b5f38757953144669c39
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 04:31:37 +0200
+
+    PNG Explorer example updated for recently disabled incomplete PNG chunks.
+
+commit fbfe5a7bc0c546ab4328cb6d9b15b8b87e7507e2
+Merge: 247b40bf 387d68c2
+Author: Anders Melander <github@melander.dk>
+Date:   2023-03-31 04:23:50 +0200
+
+    Merge pull request #224 from graphics32/image32_background
+    
+    TImage32/TImgView32 background, pan & zoom
+
+commit 387d68c2ceb502b06ef29a464b68a2a67880388d
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 04:20:48 +0200
+
+    Updated ImgView_Layers example with new Zoom & Pan and Background.
+    Updated ImgView_Layers example for FPC.
+
+commit dc6c7f81b2a22de16de7e47084df3ac6cf937daa
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 03:39:02 +0200
+
+    TImage32 zoom & pan changes for FPC.
+
+commit 4a6539f47f2ea6413a99d5b8a22fa3ff0ad71e01
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 03:14:21 +0200
+
+    Design time bitmap editor updated to use TImage32 zoom & pan and background.
+    Added pixel grid.
+
+commit 247b40bf8df22213ffe8bc58812586c6d3aa9f5d
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-31 00:16:01 +0200
+
+    Updated Delphi 11+ packages to use {$LIBSUFFIX AUTO}
+    Fixes #226
+
+commit cfcf38fff691a20128d9a94e47e27ef4022944f9
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-30 23:34:32 +0200
+
+    Design time bitmap editor updated for FPC.
+
+commit 2547f12f8b73561ddcfdff9d8fedb0c3894d91da
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-30 18:33:53 +0200
+
+    Clipboard handling changed to use image formats.
+    An image format can now declare explicit clipboard support by implementing the IImageFormatClipboardFormat interface.
+    Fixed existing FPC clipboard support and worked around a few FPC clipboard bugs.
+
+commit 4d2d624cea1dcfa561092ee6699a8e46314d4a42
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-29 18:16:00 +0200
+
+    Design time bitmap editor updated to use Image Formats.
+
+commit 7e9506e4a9a5ac26fba9ae6bba300e6c53a49739
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-29 17:48:43 +0200
+
+    Changes for image format FPC compatibility
+
+commit 307a8fdbbc52155b6cd3a1df5c5180ca71426cdf
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-31 13:53:01 +0200
+
+    Added ImageFormatManager for decoupled Assign/AssignTo and Read/Write support for additional image formats.
+    Moved all existing TCustomBitmap32 Assign/AssignTo and LoadFromStream/LoadFromFile functionality to image format adapters.
+    Added image format adapters for PNG, JPEG, GIF, TIF, TIcon, TBitmap, TMetaFile, TWICImage, TPicture and TClipboard (only BMP, TBitmap and TClipboard are enabled by default).
+
+commit ab69c3c6e8db74be94b9ffee089dcb05a70c51a4
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-25 22:00:35 +0100
+
+    Added some inline documentation of the VPR algorithm.
+
+commit e6d9f627fa84a4477d8832ab537477d2dcf7c9cd
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-25 21:56:33 +0100
+
+    Removed unused local var
+
+commit 0553cdcfef5bd44f74cdc828249983e5950445e2
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-25 19:46:43 +0100
+
+    PNG: Handle invalid zTXt compression type.
+    PNG: More robust handling of relative stream positions.
+    PNG: tEXt and zTXt chunk handling of valid empty text string and invalid empty keyword string.
+    PNG: tEXt and zTXt chunk handling of too long keyword string.
+    PNG: Fixed incorrect chunk size when writing zTXt chunk.
+
+commit 0532ace58bea8b0d48f12e55960e90d3f78343ae
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-25 18:39:12 +0100
+
+    TChunkPngUnknown.AssignTo always throws EConvertError exception
+
+commit ca7fd9c9fa924c268fc259ff6daaa1c2b66199b1
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-25 18:15:13 +0100
+
+    Disabled PNG iTXt and sPLT chunk handlers since they aren't fully implemented as thus break roundtrip support.
+    Enabled PNG roundtrip unit tests.
+    PNG classes containing abstract methods are now declared as abstract classes for completeness.
+
+commit 5d256afc3396f0c2600a7f20318af55a0278c2dc
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-24 15:48:47 +0100
+
+    Minor refactoring and cleanup of GR32_Polygons.
+
+commit 5122bfdcba5903c5726d32abe9f79a4d493b2268
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-24 15:33:00 +0100
+
+    Fixes #225
+    Gamma correction was incorrectly being applied to alpha channel.
+    All gamma handling has now been removed from GR32_Polygons.
+
+commit 0e850f888d8f7750d4ecc7f0aafad255af82b9aa
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-23 16:29:20 +0100
+
+    Fix for background (FillStyle=bfsCheckers) and (DrawMode=dmOpaque)
+
+commit aec3713e187d1300b111f0315380a38b50033fef
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-23 00:17:42 +0100
+
+    Introduced TCustomIndirectBitmapLayer as a base class for TCustomBitmapLayer.
+    TIndirectBitmapLayer mirrors the functionality of TBitmapLayer but does not own the layer bitmap.
+
+commit 183c4e6b07ffe6e493ef1f0990233602b021f64e
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-22 03:48:14 +0100
+
+    Renamed BackgroundExample to Image32Background
+
+commit ba6b34272b92e4ba88f9245a3ba7ec7b53076371
+Merge: 5e569283 307bf7d8
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-22 02:17:10 +0100
+
+    Merge branch 'ZoomAnimation' into image32_background
+
+commit 307bf7d84835747bdfd2f6e5844d190263744e93
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-22 01:17:35 +0100
+
+    Disabled animated zoom for FPC since it currently lacks the System.Diagnostic unit which we need for TStopwatch.
+
+commit 5e5692833a5f22c710a557b8cc8e6b62696a1ba3
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-22 01:07:47 +0100
+
+    Fix for zoom would not maintain pivot outside bitmap rect.
+
+commit 63c297e1d6a9f6e62d16426c8dc1f25d2965dd4d
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-22 00:40:11 +0100
+
+    MousePan conflicted with layer mouse events.
+    Regular MouseDown and MouseUp event handling is now done before MousePan processes the actions.
+
+commit 5c296918e5ac68228b0dcc06e9ce022f7bd17461
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-21 14:48:57 +0100
+
+    Fix for incorrect calculation of zoom factor multiplier
+
+commit 76da3d668c86f6408dc8805e8a8c8c9568bc532d
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-21 14:11:18 +0100
+
+    Added support for animated zoom. Relies on the amEasing library.
+
+commit 672084653832438c966802b9d2acad6d62a3af2e
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-21 13:14:36 +0100
+
+    Added ShiftState setting to TMousePanOptions.
+
+commit 455ba46e7719610311680b39771a2c9829022c4d
+Merge: 9fb45d89 a314f3c1
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-03-21 06:44:05 +0200
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 95ace73e9f9f4e57d296e0da497343874a8d89ad
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-21 03:02:26 +0100
+
+    TImgView32.Scroll methods moved to TCustomImage32 base class so now it's available in TImage32 too.
+    Added pan & zoom feature to TImage32 and TImgView32.
+    Added PanAndZoom example.
+
+commit 34564f9c3cc3a67a2ed3e919bcbb714ed353344a
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-19 22:06:40 +0100
+
+    BackgroundExample somehow got dropped from Examples project group.
+
+commit c326a4f371ad1bf9324dfce15536364b9efe2019
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-19 22:02:02 +0100
+
+    Added TImage.Background.FillStyle; Controls If the area outside the bitmap is cleared using a solid color, the checkers or a pattern.
+
+commit 24ba8b0d9f77edc728b339832354f119dc532acf
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-19 02:05:35 +0100
+
+    TImage32 and TImgView32 now has built in code-less support for customized image backgrounds:
+    - Background pattern
+    - Image border
+    - Drop shadow
+    - Checkerboard pattern
+
+commit a314f3c1a5f22fd7b48ed5c0397bfee087dce456
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-19 01:17:15 +0100
+
+    Fixed PNG demo compile error.
+    Moved demo PNG file to Media folder and renamed.
+
+commit 9fb45d8967fe2613174f9c8368f2f4e36f9c5625
+Merge: 224317da 279950a4
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-03-14 09:35:47 +0200
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 279950a4949f84e09c74549922dce8a7f1d97d7a
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-06 18:56:27 +0100
+
+    PNG refactoring:
+    Eliminated a lot of "with" statements, strange formatting and other unnecessary fluff.
+    Added save/load roundtrip unit tests. Disabled for now as they fail on a few PNGs.
+
+commit 923b3a3abff43d4ca10b972d39f6a6e50a8a6aa9
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-03-06 15:42:35 +0100
+
+    Fix: Unable to write PNG with cHRM (Primary Chromaticities) chunk. Copy/paste bug.
+
+commit 224317da693ebcab82b520920eceaf65088754c3
+Merge: c0f52254 94cb87c4
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-01-24 09:28:30 +0200
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 94cb87c48921b5151ad8270539f15a7a93d6c99d
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-01-19 09:42:01 +0100
+
+    More fixes for incorrect assembler in PNG units.
+    Fixes #219
+
+commit 3fc653775cc61b63105ab5c9afc167336a101070
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-01-17 21:06:36 +0100
+
+    Fixed incorrect assembler in PNG units. Fixes #219
+    Eliminated a few hints and warnings.
+
+commit c0f522547ef69ff0cf8f83a89e9c55fbc3c6b38b
+Merge: 1568c9f7 82b7c882
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2023-01-03 08:24:22 +0200
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 82b7c8829fcfd797957532b42f5f14d6222e3f57
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-01-02 02:16:39 +0100
+
+    Rewritten all PNG unit tests. Now uses Uwe Raabe's file iterator test classes.
+    Visual tests replaced with tests against reference BMP images.
+    Updated PNG Suite files with complete 19-jul-2017 image set. License file added.
+    Updated TPortableNetworkGraphic to fail on all PNG Suite error test cases.
+
+commit 5d3ee41d6fb627d0544a169550b3d2142a1aa100
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-01-02 00:35:53 +0100
+
+    TPortableNetworkGraphic32.AssignTo is now protected like in base class.
+
+commit 6428f6086b56e802b81a8ae171ffecaa603ee49e
+Author: Anders Melander <anders@melander.dk>
+Date:   2023-01-02 00:35:42 +0100
+
+    Fix for wrong scale applied to PNG cHRM (Primary chromaticities and white point) chunk values.
+
+commit 1568c9f7c5377e6199f62574a9c2edb1d89ef885
+Merge: 9e8e682c d61ed742
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2022-12-29 06:53:01 +0200
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit d61ed742313fc1996b866fe7f6401f4318197bf1
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-12-19 12:07:17 +0100
+
+    Fixed 64-bit compilation of GR32_PolygonsAggLite with Delphi 11
+    Fixes #218
+
+commit 9938b5ed62625510ce174c60c6f9a4cf394dbcb9
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-12-19 10:37:02 +0100
+
+    Updated Delphi 11 packages. Removed junk.
+
+commit 9e8e682c54d78863d370fdf51ef2d7f03d98ac6d
+Merge: 9d1a2312 df003249
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2022-12-13 07:42:04 +0200
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit df00324927c59b6c56875d04e2710ddef454123b
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-12-09 15:39:49 +0100
+
+    BlendTest changes:
+    * Updated Blend reference implementations' alpha handling to match what we're actually doing in the concrete implementations. This can be controlled via the BlendAlpha255 compiler define.
+    * Fixed incorrect implementation of merge algorithm in MergeReg_Reference which caused most of the merge tests to fail.
+    * Fixed various rounding errors.
+    * Refactor and reformat for readability.
+    Fixes #216
+
+commit 9d1a231229658aaa7e5d3c7750046cb748ef1e07
+Merge: 74f31153 5dafa22a
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2022-12-08 06:52:03 +0200
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 5dafa22a81b44455656d6a67c2b81918557975cd
+Author: Faludi Zoltán <89804084+faludiz@users.noreply.github.com>
+Date:   2022-12-04 20:42:53 +0000
+
+    Rename 'unit GR32_PNG;' to 'unit GR32_Png;' (#215)
+    
+    Fixed discrepancy between GR32_Png unit name and filename
+
+commit dda422f43ce13b7984b91cf9d5b435809c9933c7
+Author: Faludi Zoltán <89804084+faludiz@users.noreply.github.com>
+Date:   2022-11-12 23:31:22 +0000
+
+    Added GR32_Png to Lazarus package (#213)
+    
+    Added GR32_Png to Lazarus package
+
+commit 72cd681afb37665a51b9bad06efc0d69a4db8557
+Merge: d4cced28 665cbd57
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-11-11 23:35:51 +0100
+
+    Merge branch 'Clipper2'
+    Fixes #211
+
+commit 665cbd571b70b67fa2e7828832ad31e6fa5b0ad9
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-11-08 22:10:05 +0100
+
+    Refs #211
+    Migrated to Clipper2
+
+commit d4cced289ad59bf0ba5a04878d914e95b6fa1c19
+Author: Faludi Zoltán <89804084+faludiz@users.noreply.github.com>
+Date:   2022-11-07 09:10:03 +0000
+
+    Update GR32_VectorUtils.pas for Lazarus 2.2.4 (#212)
+    
+    * Lazarus 2.2.4 / Linux compatibility changes
+    * WriteData changed to Write with buffer size
+    * Rangebars: Updated color constants used
+    * Delphi and Fpc compatible struct comparison
+
+commit 74f311535208ffbfffec7ae44eeed872a4253e5d
+Merge: 138b356a c76dd797
+Author: mWaltari <tommi.prami@gmail.com>
+Date:   2022-10-19 05:57:18 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit c76dd7974ea234d5e6455916e79c31fff3ed9753
+Author: lamdalili <40634105+lamdalili@users.noreply.github.com>
+Date:   2022-10-06 16:59:39 +0100
+
+    Update GR32_VectorUtils.pas
+
+commit 9c48dfee41870bb2ccca50f883b8640347ed4b62
+Author: lamdalili <40634105+lamdalili@users.noreply.github.com>
+Date:   2022-09-26 13:33:28 +0100
+
+    Incorrect dashs merge
+    
+    A merge should occur only if first and last point are contributing on a dash
+
+commit e5835f0100f31084c8b3ad1f6afd48f3402e1c44
+Author: lamdalili <40634105+lamdalili@users.noreply.github.com>
+Date:   2022-09-26 13:07:57 +0100
+
+    Bounds check added for DashArray
+    
+    Infinite loop may occur  if BuildDashedLine called with null DashOffset or close to zero
+
+commit 138b356a41f9b4bec604f7240ff1e9e5aa094c6f
+Merge: a315472c f29efb8a
+Author: mWaltari <tommi.prami@gmail.com>
+Date:   2022-09-21 07:34:55 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit f29efb8a573e5d1ad64f4b2c29ad0f8ad5b69864
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-09-19 00:54:34 +0200
+
+    Refactoring and clean up in Resamplers example.
+
+commit 784e1dbe74398a6c3a99ff3788f50bc79ea79e69
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-09-19 00:44:00 +0200
+
+    Revert "TBoxKernel fix by Renate Schaaf: Width of kernel was incorrect."
+    
+    This reverts commit 70652d3e9f064a8f842205c440eeee0dae53b736.
+
+commit a871b2ce177abdb5c9a5a583abf73df4d2967eeb
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-09-19 00:36:45 +0200
+
+    Fix by @lamdalili for mitered join producing artifacts on short segment/small angle with large offset.
+    Fixes #106
+
+commit a315472cc97a9b7a2cfc610a1b462078049fc344
+Merge: 485f1a02 e0b48e82
+Author: mWaltari <tommi.prami@gmail.com>
+Date:   2022-09-05 06:17:44 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit e0b48e824ff9e8fde9ca7957f84ceea4ba768213
+Author: David Cornelius <dev@corneliusconcepts.com>
+Date:   2022-08-31 21:50:45 -0700
+
+    using $ifend for compatibility
+
+commit 1855827b4918c1ffd898f939e68301c714f30091
+Author: David Cornelius <dev@corneliusconcepts.com>
+Date:   2022-08-31 07:34:28 -0700
+
+    simplified conditional block
+
+commit 0fab200260be843f970669380c8addb09e12e01e
+Author: David Cornelius <dev@corneliusconcepts.com>
+Date:   2022-08-30 22:12:41 -0700
+
+    removed unneeded unit
+    
+    compiling in DXE4 broke until this unit was removed from the uses
+
+commit fbff70ff8156bf767e8153bac2fe7f4885d9c512
+Author: David Cornelius <dev@corneliusconcepts.com>
+Date:   2022-08-30 22:11:18 -0700
+
+    TBufferedFileStream requires 10.1 Berlin
+    
+    couldn't compile in DXE4; found TBufferedFileStream wasn't introduced in Delphi until 10.1 Berlin (compiler version 31.0)
+
+commit 485f1a02693dc717bde3fe0fe9ac5dad13901eef
+Merge: 6048ff02 93e9a7aa
+Author: mWaltari <tommi.prami@gmail.com>
+Date:   2022-08-26 07:15:59 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 93e9a7aa77b474231a4e7600e320adcd4ff83f08
+Author: mWaltari <tommi.prami@gmail.com>
+Date:   2022-08-25 07:12:36 +0300
+
+    Suppress hint: H2443 Inline function 'Circle' has not been expanded because unit 'GR32_Math' is not specified in USES list
+
+commit 6048ff021b9d3214efa74be3c4f1699cb34ff78d
+Author: mWaltari <tommi.prami@gmail.com>
+Date:   2022-08-25 07:12:36 +0300
+
+    Suppress hint: H2443 Inline function 'Circle' has not been expanded because unit 'GR32_Math' is not specified in USES list
+
+commit 954d3f64a0960140cbaa8f8c758be9f448200e12
+Merge: 051aae44 cbc22d70
+Author: mWaltari <tommi.prami@gmail.com>
+Date:   2022-08-25 07:11:10 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit cbc22d708fc2423bf16ec094cbe543c944b7159a
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-08-22 14:34:59 +0200
+
+    TBitmap32.LoadFromFile now uses a TBufferedFilestream (Delphi only).
+    This improves performance significantly when loading very large BMPs.
+
+commit 051aae44ca4929ba7ead9600ebcc126579e10fe8
+Merge: 7cb7602b 5a1edd0f
+Author: mWaltari <tommi.prami@gmail.com>
+Date:   2022-08-17 08:06:58 +0300
+
+    Merge remote-tracking branch 'upstream/master'
+
+commit 5a1edd0fe03aee2f345933847af03732d558b437
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-08-02 01:05:41 +0200
+
+    Fix for BMP file header size set incorrect for v2+ format versions.
+    Rewritten and simplified BMP writers handling of versions.
+    TBitmap32.SaveToFile, SaveToStream and SaveToDIBStream now has overloads that allows one to specify the BMP header version to use.
+    Added handling of invalid BMPs containing an extra color mask.
+    Updated BMP unit test and added test data for v1, 3, 4 & 5 BMPs.
+    Fixes #204
+
+commit 202b636586e8b07e742b2f4498273f3ec2fd18bf
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-08 16:11:17 +0200
+
+    Undo most of previous fix for #51
+    Added work around for FPC 64-bit compiler bug: Bad code is generated for negative array index.
+    Fixes #51.
+
+commit 83b10bd382732f77c08772d8af512dc3597cfd74
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-07 18:07:56 +0200
+
+    Limit precision when calculating the X coordinates of scanline segments in VPR in order to avoid propagation of floating point rounding errors causing negative coordinates.
+    Fix uninitialized dynamic array in Curves example.
+    Fixes #51.
+
+commit d610cab6f900cef9fc7673192c3a06fdf5f0e18d
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-07 00:27:41 +0200
+
+    Added RGBA<->BGRA color conversion functions. Primarily for use with RGBA_FORMAT.
+    Added a few missing PUREPASCAL color conversions.
+    Fix: Bitmap writer didn't take RGBA_FORMAT into account.
+    Refs #199
+
+commit 4d84a17f09c55b6e0508ca459c4559ca1adf5899
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-06 17:39:01 +0200
+
+    Removed duplicate definition of BITS_GETTER
+    Undo: RGBA_FORMAT is now defined for FPC regardless of platform.
+    Refs #199
+
+commit 865de00d198d3996539f33a10a7cf9c2db73339b
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-06 12:01:28 +0200
+
+    Updated PNG_GR32 example for FPC.
+    Refs #69
+
+commit f80d88d11e248fb96777d6f8ab419c79465c17c2
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-06 11:03:01 +0200
+
+    Moved PNG_GR32 example and added to project group.
+
+commit 3c1e18ed6fa2402b8fc4b4ed0e26631d993fe399
+Merge: 1ac9a6c2 d1ea130f
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-06 09:57:29 +0200
+
+    Merge branch 'LCL_GTK_Backend2'
+
+commit d1ea130fb405694b4af46421e4a4ae96f4bbb46c
+Author: Fathony Luthfillah <fathony@smart-leaders.net>
+Date:   2022-07-06 11:31:15 +0700
+
+    TextOut is rendering properly on LCL_GTK.
+    Fixes #187
+
+commit b2c920d512794343b4e8786f161d762fff84b0f7
+Author: Fathony Luthfillah <fathony@smart-leaders.net>
+Date:   2022-07-05 06:22:35 +0700
+
+    Fixed typos related to RGBA_FORMAT changes.
+    Reintroduced missing backend interface methods.
+    Refs #187
+    Refs #199
+
+commit b37cc81d51fe8d5910fa6c83704269e8e3735013
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-01 14:01:12 +0200
+
+    Proposed FPC/LCL GTK backend with seamless synchronization between pixmap and canvas.
+    Refs #187
+    Refs #199
+
+commit 71331859dbe60dc34244cba628c91bbd0141accc
+Author: Fathony Luthfillah <fathony@smart-leaders.net>
+Date:   2022-06-30 19:55:21 +0700
+
+    Can't renderRext with Backend_LCL_GTK
+    LCL-GTK TextOut allow reuse of current canvas content. Otherwise will clear canvas.
+    Refs #187
+    
+    (cherry picked from commit 5baed5cc2be80f545791a34f4ee019f6474d310a)
+    (cherry picked from commit 70fe8ca36f45e8e36ce4eabeff20d979fd5fe341)
+
+commit 1ac9a6c205f0c3aaee6f117662486111f4cea986
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-01 19:18:04 +0200
+
+    Added missing RGBA_FORMAT handling in RGBtoHSL.
+
+commit 39f22b3b4917abf8b0a219c101fa2be41fb14bcf
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-01 18:44:35 +0200
+
+    Fixed typo in Color32ToRGBA
+
+commit eb744f8518378e4dc2508aa52abfa80a8b8fe3f2
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-01 13:31:22 +0200
+
+    Updated remaining color functions to handle RGBA_FORMAT.
+    Modified declaration of predefined clXXX32 color constants to take RGBA_FORMAT define into account.
+
+commit 2535369e1b69a77a5fd3f86e46fe85e6d90a9f62
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-01 12:47:14 +0200
+
+    Expanded USENATIVECODE define and eliminated it.
+
+commit 47f765e827ebe00e5053f10fc06ba25a6fd0f404
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-07-01 12:34:35 +0200
+
+    Eliminated WIN_COLOR_FIX code since we don't know what it's doing or why.
+
+commit 4a809d91c2d337170bc1c50d0d3add8fee18bd5c
+Author: Fathony Luthfillah <fathony@smart-leaders.net>
+Date:   2022-06-30 19:55:21 +0700
+
+    Color32 function now takes RGBA_FORMAT into account
+    
+    (cherry picked from commit 70fe8ca36f45e8e36ce4eabeff20d979fd5fe341)
+
+commit d291303b1439be4d5e74001e754df6a7189f1faf
+Author: Fathony Luthfillah <fathony@smart-leaders.net>
+Date:   2022-06-30 19:59:24 +0700
+
+    Ignore Lazarus excess files.
+    
+    (cherry picked from commit fa9ea15c1a1e49d835ff3f9e3520694e8f79df88)
+
+commit bc911df1f9c44bda3db4ab545afe4a636a0f324e
+Author: Fathony Luthfillah <fathony@smart-leaders.net>
+Date:   2022-06-30 19:54:14 +0700
+
+    Can't' compile Circle & Ellipse with FPC due to inlining restrictions
+    
+    (cherry picked from commit e4c2039bda409e06af185cf632c64edbe35d9924)
+
+commit 6bfe36c9af11d3c13fa27e0a1c757cdbe7fc8ca9
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-06-24 16:38:17 +0200
+
+    Replaced explicit float cast with implicit for backward compatibility.
+    Fixes #196
+
+commit 6ff347ae3ae433bc3ca88d72455c11a1a4ab75ec
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-06-01 01:02:38 +0200
+
+    Minor optimization in BuildPolyPolyline: Calculate half-width outside loop.
+
+commit 14ec8fec75db15962e331a32c97ab2263a0f098b
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-06-01 01:00:30 +0200
+
+    Fix for TCanvas32 rendering mix of open and closed paths as individual unrelated polygons.
+    Refs #185
+
+commit a8c3083b116a650de59da1ad2a25bfc479169baa
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-31 14:30:41 +0200
+
+    Made TCustomBitmapLayer.SetBitmap virtual.
+    Fixes #189
+
+commit 295cc60f5e87df73f843c83f36d2bfb57cce2e4f
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-26 02:21:56 +0200
+
+    Tweaked compiler defines to better handle future unknown versions.
+    RGBA_FORMAT is now defined for FPC regardless of platform.
+    Updated version check to enforce Delphi XE2 or later.
+
+commit 7cb012f922ae60072b567cf6341cca511e951daf
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-21 23:22:50 +0200
+
+    Disabled platform warnings in clipboard unit.
+    Modified clipboard handling to take FPC into account; Copy/Paste now uses stream with bitmap in file format.
+
+commit 5cc51433bf190bedd1d1be375d661cd9ec382adf
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-21 23:24:31 +0200
+
+    Improved design time editor support for transparent bitmaps.
+    Tweaks for FPC.
+
+commit 94891a512e0e53faab3867808cee1238694a113d
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-21 23:29:25 +0200
+
+    Updated Delphi 10.3 packages
+
+commit bb3e0e63621c529874044c13d66fd86eb54eb930
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-21 02:14:44 +0200
+
+    Fix for SaveToStream/SaveToFile not saving in a BMP format that formally supports alpha.
+    SaveToDIBStream now support saving to different BMP versions. Default is TBitmapV4Header.
+    Minor fix in LoadFromDIBStream: RGB masks are now read for all versions when compression is BI_BITFIELDS.
+
+commit 233d58dff80a2ee5f079cf7e3883b6bce559a71c
+Merge: 035da8c2 a20c021f
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-30 17:43:49 +0200
+
+    Merged GR32PNG repository into Graphics32 repository.
+
+commit a20c021f2ecc6415a5a82e529a1a93338d06d3f1
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-28 23:41:42 +0200
+
+    Tweaked PBG projects
+
+commit 6618a4841909fd0186859f968a71d5a142635902
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-28 22:52:47 +0200
+
+    Minor adjustments of include files.
+    Minor reformat.
+
+commit ed0fca7a01f7382a724627be380d44d74793025a
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-28 22:47:28 +0200
+
+    GR32PNG/Graphics32 integration: Moved GR32PNG files into Graphics32 folders
+
+commit 7cb7602b045df1347de8a693d2dc9e8ce76bd603
+Merge: ebd016ea 07f50430
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2022-05-20 08:39:21 +0300
+
+    Merge pull request #2 from graphics32/master
+    
+    Get The latest ones
+
+commit 035da8c2297edcb4c70afbd27809364cf93009de
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-18 02:27:32 +0200
+
+    Added round-trip clipboard support for 32-bit RGBA using the standard CF_DIBV5 clipboard format.
+    Extended ImgView_Layers example with clipboard support.
+
+commit 07f50430ae2f322e6ae6f9d867d34f18ce8a27cf
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-17 16:31:57 +0200
+
+    Modernized and enhanced design-time TBitmap32 component editor.
+
+commit 71888aab52a854ce83948a3789be7a9b08c09b1c
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-05-17 11:04:48 +0200
+
+    Added conditionals for FPC compatibility.
+    Fixes #186
+
+commit ebd016ea598c7fd54653ea14911da83ae295165f
+Merge: f4afef44 5688c8a5
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2022-05-02 13:48:13 +0300
+
+    Merge pull request #1 from graphics32/master
+    
+    Send Pull Request
+
+commit 5688c8a518d8a6a7d3b96e92ce61a65e33460250
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-04-27 22:34:20 +0200
+
+    The TRubberbandLayer cursor logic has been moved into a virtual method in order to easily allow derived classes to enhance the logic in case they support rotation.
+    Fixes #90
+
+commit 3b1356e87a3247b5dce82063cc3967e41c8e2822
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-04-26 23:35:25 +0200
+
+    The type of the MasterAlpha & Weight parameter of the Blend/Merge/Combine functions has been changed from TColor32 to Cardinal to avoid confusion about its value.
+    Same for any related types such as TPixelCombineEvent.
+    The meaning, size and value of the parameter has not changed.
+    
+    **This is a breaking change**
+
+commit b1b52c5c168f8398ce687db22a36cf351363781e
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-04-26 22:55:40 +0200
+
+    Disabled use of nostackframe directive under FPC 64-bit for SSE2 blend functions with more than 3 parameters.
+    Fixes #168
+
+commit e21987eb1c8f6b1eb8c70617a944281356587bb1
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-04-26 22:24:26 +0200
+
+    Fix for incorrect handling of master alpha in BlendMemEx_Pas and BlendRegEx_pas
+    Fix for incorrect handling of master alpha in BlendMemEx_Reference and BlendRegEx_Reference with UseLookupTables defined.
+    Fixed compile errors in reference blend functions with UseLookupTables defined.
+    All BlendMemEx and BlendRegEx implementations now pass the unit tests.
+    Fixes #163
+    Fixes #53
+
+commit e5a9729fd696d004550bf10eb9e47adc72a4fad3
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-04-26 18:55:08 +0200
+
+    Fixes #184
+
+commit 41cc68ea598d98dc93169064713d074f5a1fc118
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-04-23 00:40:11 +0200
+
+    TKernelResampler is now alpha aware; Resampling is done on alpha premultiplied RGB.
+    Also Fixes #183
+
+commit fb31363671969594f374233fd2c1045c04f3365c
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-04-11 17:39:00 +0200
+
+    Minor optimization of low-level inline function codegen.
+
+commit 4eba9d6f7ce508299fa07b6e3f3c32d76126d20c
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-04-10 14:50:53 +0200
+
+    Resample() improvements by Renate Schaaf:
+    - Precision of mapping table fixed point values increased from [24:8] to [21:11].
+    - Mapping table weights now calculated using midpoint rule.
+    Refactored and commented for readability.
+
+commit 70652d3e9f064a8f842205c440eeee0dae53b736
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-04-10 14:52:10 +0200
+
+    TBoxKernel fix by Renate Schaaf: Width of kernel was incorrect.
+
+commit 53b18c30781f294f74b50a6a615eda2680313a98
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-04-08 18:01:55 +0200
+
+    Resample() optimization by Renate Schaaf:
+    - Iterate pixels in YX order instead of XY order to avoid trashing the cache.
+    Further Resample() optimizations:
+    - Access channels in BGRA order corresponding to the physical order on Windows.
+    - Removed old bit twiddling (on Win32 only) which turned out to be slightly slower on modern processors.
+    - Replaced for loops with while loops where possible.
+    Misc refactoring and reformat for readability.
+
+commit f4afef44811a47ece93b93de32aa7c4e83002c48
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-29 18:54:21 +0200
+
+    Eliminated most hints and warnings in examples.
+
+commit 2eb534d7495f014b264ef5c950056a0ee4ad860a
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-29 18:35:47 +0200
+
+    Fixes #181 fixed bad line ends in project files.
+    Updated example project options (basically just saved them with Delphi 10.3)
+
+commit f3185d626b3eb82a938eedac17096683c08a81cf
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-29 00:10:23 +0200
+
+    Updated ImgView_Layers example with mouse zoom and pan.
+    Refactoring.
+
+commit a26f0eede1fd6c75de3f6f8f3fa01120946be10f
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-28 00:07:47 +0200
+
+    Introduced TCustomBitmapLayer as base class for TBitmapLayer.
+    TCustomBitmapLayer requires derived classes to specify the TCustomBitmap32 class to use.
+    TBitmapLayer, like previously, uses a TBitmap32.
+
+commit df22e1bb382b903f145a62b75b9ca5e6a53d4893
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-23 00:24:17 +0100
+
+    Deprecated support for Delphi versions prior to XE
+
+commit b15be9a4475c33c2bd5d2d54a36c37f60a09e4c1
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-22 23:07:03 +0100
+
+    Fix for AggLite polygon renderer hijacking BlendRegistry.
+
+commit d44361fb5bf03c1024adf3324c0a30eb267a47f0
+Merge: 48c8d4b0 8e5852b0
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-22 22:28:32 +0100
+
+    Merge branch 'blend_merge'
+
+commit 8e5852b0382536128d967fe3aafc15ffd18bf5f8
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-29 23:26:58 +0100
+
+    Blend function registration is now explicitly prioritized in the following order (worse to better): PAS, ASM, MMX, SSE2
+
+commit bf7b7140de42f13e95e55d6b3c77ba9b8fb7d4ed
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-29 23:25:24 +0100
+
+    Added optional Priority parameter to TFunctionRegistry.Add so result of Rebind* doesn't depend on registration order .
+
+commit df7a0cb48ec5a66cb8aa95b3119faae14f8b3cf2
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-29 21:55:30 +0100
+
+    Refactoring.
+    Fix for possible overflow in RcTable calculation.
+
+commit 1efa6a4df8b954ddce17f21e42e681fec0fbd359
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-29 21:46:56 +0100
+
+    Blend unit test restructured and refactored.
+
+commit dc2b2ff7a536afd3b0a74ced1d308c6e7c26b3ba
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-29 21:35:24 +0100
+
+    BlendRegistry is now created on-demand so it can be called from the initialization section of other units.
+    BlendRegistry function registration of ASM, MMX and SSE2 functions has been moved to the corresponding units.
+
+commit 8fcb84ae8aa51bbfa20cfb7cd8bea15918f9d4e9
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-29 21:20:10 +0100
+
+    FID_* BlendRegistry constants has been made public.
+
+commit 9a80f6c298812d572c6b94e0226f47c3409e4493
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-29 21:17:29 +0100
+
+    Added TFunctionRegistry.FNeedRebind flag so RebindAll can exit early if registry is already up to date.
+    TFunctionRegistry.Rebind now returns a boolean indicating if the function was resolved.
+
+commit cd57c36446293d7684869bfb9dac905af13d227d
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-28 21:22:10 +0100
+
+    Reimplemented unit test color check.
+    Added unit test of Pascal implementations (now referred to as "Native").
+    Renamed unit test of x86/x64 assembler implementations (now referred to as "ASM").
+
+commit 77cb0c12bdcc77c3e6a064f019efc318155dbbc6
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-11-28 19:10:18 +0100
+
+    ﻿Refs  #168
+    Removed bias in order to align BlendMemEx_ASM with all other BlendMemEx_* implementations.
+    Required in order to pass BlendMemEx and BlendLineEx unit tests for the ASM implementations.
+
+commit 88f466037e2336bd47b00f127203282a9b8c9561
+Author: Anders Melander <anders@melander.dk>
+Date:   2021-06-30 16:11:36 +0200
+
+    Added a few missing EMMS.
+    Minor optimization, refactoring and reformat.
+
+commit 48c8d4b095b86703d472ebb6893b1c09732a55c3
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-22 22:06:06 +0100
+
+    Refactoring for readability and debugging
+
+commit e10b52ea2487558f9ddc4ff387922b696b81861a
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-22 21:25:56 +0100
+
+    Scroll using scrollbars is now done via the Scroll method in order to consolidate scroll/pan handling.
+
+commit d89dd832d1d16cf3b9f3a18bd01424a0fb4d662d
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-18 18:41:03 +0100
+
+    Deprecated WideString methods.
+    We now assume string=unicodestring for all platforms and compilers.
+
+commit 95e65e5c8f418466b5b6988a2d760637f3ae4e22
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-18 18:13:08 +0100
+
+    Modified RenderText example to use TStopWatch.
+
+commit f48c766cf9d7275ee4c436cc25d103017fde5fd8
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-18 18:11:20 +0100
+
+    Minor performance optimization of TextBlueToAlpha (used by TBitmap32.RenderText).
+
+commit abc5c5cf0b046fbba80a34d47ac2d877dc22bb21
+Author: Anders Melander <anders@melander.dk>
+Date:   2022-03-18 16:50:17 +0100
+
+    Fixes #179: Merged TBitmap32.RenderText and TBitmap32.RenderTextW into TBitmap32.RenderText and removed TBitmap32.RenderTextW.
+    Minor refactoring.
+    Resolved a compiler hint caused by implicit shortstring to string conversion.
+
 commit 29191145fe457ae8809995530d89c75218d7a1fd
 Merge: a4a58b47 080a1377
 Author: zed <starmen@tut.by>
@@ -298,6 +4524,12 @@ Date:   2021-07-02 11:35:41 +0200
 
     streamlined linux GTK backend implementation
 
+commit 8fb3a881f0480ab09f30c5ea38f078eca22b63f7
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-07-02 10:54:02 +0200
+
+    Added Lazarus package and another shortcut to check whether the file is valid
+
 commit 50dba43de454386ea154a37b29c4302228cc102c
 Merge: 11ccc095 e27b5a39
 Author: Christian-W. Budde <Christian@pcjv.de>
@@ -431,6 +4663,12 @@ Date:   2021-06-29 00:57:21 +0200
 
     Some more Lazarus adaptions. The native x64 code is still not fully working, but at least it compiles...
 
+commit cac65bd77eb0096bdc3860e874e811c75a01efde
+Author: Christian-W. Budde <Christian@pcjv.de>
+Date:   2021-06-28 23:30:15 +0200
+
+    Lazarus fix for x64
+
 commit 31123ed1cdc3287792f47b1d07606500fa0c4f5a
 Author: Christian-W. Budde <Christian@pcjv.de>
 Date:   2021-06-28 18:58:27 +0200
@@ -496,6 +4734,18 @@ Author: Christian <Christian@savioursofsoul.de>
 Date:   2021-06-05 02:14:51 +0200
 
     Added a few fixes in regards of Lazarus compatibility
+
+commit 433137f8ecbe1c62ee137c29c09175dd3c279c5b
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2021-04-14 11:36:03 +0200
+
+    Fixed issue #7 as reported by davidimagitech
+
+commit 3648be82c6028f9cf974b5cb9bbf00a93e2ff92e
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2021-04-14 11:34:39 +0200
+
+    Fixed issue #6 as reported by davidimagitech
 
 commit c1116d938ad896b67d2c145ab0b1b7700611c7d6
 Author: Anders Melander <anders@melander.dk>
@@ -1096,6 +5346,12 @@ Date:   2019-08-01 10:47:36 +1000
 
     Fixed long standing memory leaks (and other minor tweaks)
 
+commit 4724b41ab48d2cc29295aa930f08ae35edc48eed
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-07-20 10:51:09 +0200
+
+    Fixed issue #5 reported by Matt Ors
+
 commit 9be634c9511e7e5d7fb3691567862d2e7e65f1f0
 Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
 Date:   2019-07-09 11:43:32 +1000
@@ -1220,6 +5476,12 @@ Date:   2019-05-31 12:29:14 +0200
     Fix for issue #80
     
     BuildDashedLine() with empty DashArray caused division by zero in local AddDash function.
+
+commit b556e23ba04c3163f3b5428c09d309a60d47c1d3
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2019-05-14 01:33:01 +0200
+
+    Added function to detect pre-multiplied alpha values (usually not the case for PNG files)
 
 commit c67ee5bdda74da5c4851679735f1a9ad49ab7a8f
 Author: Christian <Christian@savioursofsoul.de>
@@ -1934,6 +6196,24 @@ Date:   2018-12-01 18:09:52 +0100
 
     Delphi Rio 10.3 packages
 
+commit c1a93f0c9b0024a310596fac7f3a586ab9587746
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2018-11-21 11:34:41 +0100
+
+    Updated core integration diff file (thanks to Vismato, closes issue #3)
+
+commit afdf78016078476d5adfeeabaa5f6d31c8204d40
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2018-11-21 11:03:01 +0100
+
+    Fixed PNG signature issue #1 (reported and fixed by stzdzyhs)
+
+commit 7bc3e68d264604b49410cc10e9b107d4760d6838
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2018-11-21 10:57:51 +0100
+
+    Improved decompression (thanks to Vismanto)
+
 commit cf3dfc00a8ef9cdf66b84d25b8a5dbfc0e94f318
 Author: Eugene Kryukov <3995808+eugenekryukov@users.noreply.github.com>
 Date:   2018-01-29 17:42:45 +0800
@@ -2130,6 +6410,18 @@ Date:   2017-10-10 12:58:29 +0200
 
     Docs: Fix typos
 
+commit de1f039a20178761442ec08ac92cdd8d26cf4efc
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-10-05 11:18:27 +0200
+
+    Fixed a problem with Delphi 7
+
+commit 089ac90a418e964380607e641c23921223acc845
+Author: Christian <Christian@savioursofsoul.de>
+Date:   2017-10-05 11:08:49 +0200
+
+    Minor performance improvement
+
 commit 3798a687b0de6d023596dc33d39e41a9e73a397d
 Author: Eugene Kryukov <3995808+eugenekryukov@users.noreply.github.com>
 Date:   2017-09-19 15:01:00 +0800
@@ -2183,6 +6475,18 @@ Author: Christian <Christian@savioursofsoul.de>
 Date:   2017-09-08 18:04:50 +0200
 
     Added new color swatch unit
+
+commit f4932d665ca07ca02a834f625545a8d548f0dee5
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-09-08 13:33:47 +0200
+
+    Update README.md
+
+commit 3317ccac563de1037541330e76e1ee5beba895d5
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2017-09-08 11:55:49 +0200
+
+    Create README.md
 
 commit b6940d858626c9adc42761d34cc3d50e96dd50f9
 Author: Christian <Christian@savioursofsoul.de>
@@ -2636,6 +6940,12 @@ Date:   2015-01-02 20:09:02 +0000
 
     Changed Circle/Ellipse implementation and added Pie function (returns a circle pie)
 
+commit 92eb8b78d00fb3a89edbb2593da0482a91ef699e
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2014-11-29 00:19:58 +0000
+
+    * Minor refactorings
+
 commit b45df88db428c0498843d95b961e78a9e45dbe3e
 Author: Christian Budde <Christian@savioursofsoul.de>
 Date:   2014-10-01 23:13:41 +0000
@@ -2762,6 +7072,18 @@ Date:   2014-02-18 23:34:06 +0000
 
     Added HSVtoRGB conversion and simplified HSLtoRGB
 
+commit faa1ddefb1cfdfe3332b6dc057d027565943d9a6
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2014-01-10 10:34:30 +0000
+
+    + Added 'common case' optimization for the implicit conversion from RGB32 (with gamma) to GR32. This is now twice as fast leading to an overall performance increase of about 5% (measured over a certain pool of transparent PNG images, mostly in this format).
+
+commit 0d6c4f8341a4db95af81dc9d8e6927ccc05372b7
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2013-12-17 18:33:43 +0000
+
+    ! fixed issue with invalid transparency access
+
 commit 42e9abc6388f20b5675af39c9fb9c100aa1ebeab
 Author: micha137 <bunk@iat.uni-leipzig.de>
 Date:   2013-12-11 14:20:52 +0000
@@ -2773,6 +7095,30 @@ Author: micha137 <bunk@iat.uni-leipzig.de>
 Date:   2013-12-11 14:19:36 +0000
 
     Fix Typo
+
+commit 11aa75d3d6b304d2e998178b276c27f3b1588a68
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2013-12-05 23:40:21 +0000
+
+    * Fixed some warnings
+
+commit 612357f84ec3234eb8b4cb80469aa51dd3bd3bef
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2013-12-05 19:16:22 +0000
+
+    ! Fixed error for tRNS chunk (was not used previously)
+
+commit db5bb12dd0aacd561d99da6007d2a1f9e66213cc
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2013-12-05 13:12:56 +0000
+
+    * Display information about tRNS, bKGD & pHYs chunks
+
+commit 2069fab77b5dfeaf74903d097786fe9787febdf9
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2013-12-05 13:12:03 +0000
+
+    + Added check for validity of PNG file
 
 commit 741a86dd6d2efb9483ea80ea0030c45c89292ad0
 Author: Christian Budde <Christian@savioursofsoul.de>
@@ -2869,6 +7215,12 @@ Author: angusj <AngusJohnson@users.noreply.github.com>
 Date:   2013-05-06 23:34:46 +0000
 
     Bugfixes, code tidy, performance improvements etc to Clipper.pas
+
+commit 3b780e98e9519da01d262b7c328fc3a87d775de6
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2013-04-24 14:08:27 +0000
+
+    * Some minor code beautifications
 
 commit 49b05647e706af664d0250b155c1514d0bd5446d
 Author: Christian Budde <Christian@savioursofsoul.de>
@@ -3874,6 +8226,12 @@ Date:   2012-10-07 03:20:45 +0000
     Better resources management.
     Removed PNG stuff
 
+commit 35ff2e6207c27ffb741f5992ae606575bbb05d75
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2012-10-07 00:18:36 +0000
+
+    * minor changes
+
 commit b27ed54753314d9d1e5435552648c5ec402d37d7
 Author: Christian Budde <Christian@savioursofsoul.de>
 Date:   2012-10-07 00:15:41 +0000
@@ -4266,6 +8624,12 @@ Author: Christian Budde <Christian@savioursofsoul.de>
 Date:   2012-09-27 01:12:01 +0000
 
     * updated to latest names (thanks to kusana)
+
+commit 4fa196f7281bf2616a15171d1760b719becb3114
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2012-09-27 00:53:50 +0000
+
+    * fixed issue with TCustomBitmap32 (thanks to Garry Prefontaine)
 
 commit aeb3881d1f6090fe954248dc54443c0a424e728c
 Author: Christian Budde <Christian@savioursofsoul.de>
@@ -5794,6 +10158,12 @@ Date:   2012-08-13 20:13:52 +0000
 
     * changed version string and fixed issue SF #3555137
 
+commit 14e6f01ad33a279539659616757a7f0bf9b54073
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2012-08-13 14:25:15 +0000
+
+    * fixed issue with x86 code in Delphi 7
+
 commit 0e94e0e62ee98e2e1b63521c7527a357ad38bba2
 Author: Christian Budde <Christian@savioursofsoul.de>
 Date:   2012-08-09 23:11:56 +0000
@@ -6624,6 +10994,12 @@ Date:   2012-03-24 16:29:44 +0000
 
     * added missing brace
 
+commit 40065c4c927d7d34b405cd47f0adbebb8eed6423
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2012-03-24 16:24:32 +0000
+
+    * minor changes related to recent GR32 changes
+
 commit 5eb87d46faabbde32ca23760ad21bbfd06370d01
 Author: Christian Budde <Christian@savioursofsoul.de>
 Date:   2012-03-24 15:18:23 +0000
@@ -6888,11 +11264,24 @@ Date:   2012-02-02 20:22:55 +0000
 
     * improved FillLongword_SSE2 implementation. It has been tested with some basic tests, but this doesn't guarantee, that it will work stable in any case. Also it is just slightly faster than the original version, but by far more complicated.
 
+commit 93e96f84fec8ad2656d012fa12b5445bd6082f77
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-11-25 11:06:51 +0000
+
+    + added basic tRNS chunk handling for palette images (not yet used for storage)
+    + added basic support for background color chunk
+
 commit 233959cbc90d193e2a2b2f9b41e6682f35e6ec41
 Author: Christian Budde <Christian@savioursofsoul.de>
 Date:   2011-11-08 11:14:40 +0000
 
     added GR32_Math. before the Hypot call for clarification (it might be an issue with Delphi XE2)
+
+commit 6c424aa1494c63e01c184c52b06842243f23b99b
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-10-28 11:06:28 +0000
+
+    * some fixes related to the latest changes
 
 commit a744094d881fc69108f2a8ba3a47c65074965245
 Author: angusj <AngusJohnson@users.noreply.github.com>
@@ -6918,6 +11307,12 @@ Date:   2011-09-27 20:48:29 +0000
 
     Added reporting of broken links.
 
+commit 26dcd2c201f7310467738b66691e750d819d15f5
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-09-26 23:01:13 +0000
+
+    * further improved PNG Explorer
+
 commit 37bcda39785f67c9cebf64c3dc1caa1701d63c18
 Author: angusj <AngusJohnson@users.noreply.github.com>
 Date:   2011-09-26 22:27:09 +0000
@@ -6935,6 +11330,32 @@ Author: angusj <AngusJohnson@users.noreply.github.com>
 Date:   2011-09-26 21:28:56 +0000
 
     Improved GUI layout
+
+commit c8b3dab7f3ce5e0bcde92b0bd33f774fe003f8a9
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-09-26 10:05:51 +0000
+
+    * further improved reading
+
+commit 3781fb5f0921a6c6b20f300c3583b5ae7153c844
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-09-26 08:39:14 +0000
+
+    * fixed writing with the new chunk system
+
+commit 37740118a66e84a2280bc91377441be74b0a68cb
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-09-26 08:00:22 +0000
+
+    * improved new chunk system
+    * removed old chunk system (no inscrutable IFDEFs anymore)
+    + added PNG explorer
+
+commit bb2bb153bc728150bbbb01ebd9c4a83c1e23cde6
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-09-24 12:46:19 +0000
+
+    * introduced new chunk system
 
 commit 0442334d79e9188ad97395770d3beccaaf806089
 Author: Christian Budde <Christian@savioursofsoul.de>
@@ -7055,6 +11476,13 @@ Date:   2011-09-06 21:50:08 +0000
 
     * updated x64 assembler
 
+commit 409aeede86a1c0aed79f1e2c7ae23d1b9204a5d5
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-09-06 19:40:33 +0000
+
+    + added Delphi XE2 support
+    * improved x64 compatibility
+
 commit 5d0b025e3e0fbaeb1c013457a0e4a968558c232d
 Author: mandersson <meanderix@gmail.com>
 Date:   2011-09-06 15:25:55 +0000
@@ -7102,6 +11530,13 @@ Date:   2011-08-20 19:34:18 +0000
 
     * updated GR32.inc to support latest Delphi XE2 compiler
 
+commit 51b3c19bf2f03a23dc3972d1dd3e7b2fe672a8bc
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-08-07 16:54:08 +0000
+
+    * improved Lazarus port
+    + added x64 native code
+
 commit ed0067d744241ff555efdef06359bf5ef9a1dfaa
 Author: Christian Budde <Christian@savioursofsoul.de>
 Date:   2011-08-06 23:10:22 +0000
@@ -7114,6 +11549,12 @@ Author: Christian Budde <Christian@savioursofsoul.de>
 Date:   2011-08-06 20:34:07 +0000
 
     * updated Resample example to work better with Lazarus
+
+commit c8800c567f8682e5872d0c180a79aa03c92be141
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-08-06 17:00:37 +0000
+
+    * ported unit test to Lazarus
 
 commit 7e05791634ec1f6e5d6c2e26d34a4bb12301ee99
 Author: Christian Budde <Christian@savioursofsoul.de>
@@ -7383,6 +11824,13 @@ Date:   2011-04-25 21:23:52 +0000
 
     + added function FloadMod(x, y: Double): Double; which calculates the "x mod y" for x, y : Double (instead of integer)
 
+commit 0190621fb5e51b6dfc0c00af0a9e23f9d571d395
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2011-03-01 00:07:45 +0000
+
+    * removed unused code, but introduced another unused code just to get rid of some warnings
+    * fixed a bug with a limited best filter decision
+
 commit 2fd198001a92d1b4c477afd3c44ea65d2868b850
 Author: micha137 <bunk@iat.uni-leipzig.de>
 Date:   2011-01-19 19:01:50 +0000
@@ -7428,6 +11876,71 @@ Date:   2010-12-09 14:24:58 +0000
 
     * changes to ensure compatibility with FPC 2.5.1
     * added missing spaces
+
+commit 5cf452e98b383985cc87464494d7bc43b93dc7e8
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-12-09 10:23:49 +0000
+
+    * fixed stupid typo
+    * renamed PNG.png to Demo.png
+    * check whether the Demo.png is present
+    * slight compiler setting changes for Lazarus
+
+commit 8c4f829ad1d065fc7223fc08a437c8015eea2525
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-12-08 20:03:53 +0000
+
+    + added a batch file to simplify file releases in the future
+
+commit 6e537dba6ca2d9dc416a93aceafb5d4aa49f7476
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-12-08 19:25:43 +0000
+
+    * small bug fix for Lazarus
+
+commit 3cd6bf4193f416d8550abe17bc8b206c84ef5f54
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-12-08 19:23:38 +0000
+
+    * converted demo for Lazarus
+
+commit 89fcedb16410f5ff23caeaae5162d73da50e34db
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-12-08 17:56:03 +0000
+
+    * fixed a transcoding bug
+
+commit bb5b139e64891aa119357045386692ab57207619
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-12-08 14:26:13 +0000
+
+    * fixed a memory bug reported by Dirk Carstensen (part 2)
+    * allowed choosing the available filter methods used by the encoder
+
+commit a95d17384153e5f9f2bdc815952206de16865829
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-12-08 13:34:47 +0000
+
+    * fixed a memory bug reported by Dirk Carstensen (part 1)
+
+commit 373cd86c4ec70561b88e407e0efd8e69d2b3099c
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-12-07 10:25:48 +0000
+
+    * some minor changes
+
+commit ca7323ddea9406d717aa7c45dd9050075ed7f195
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-12-06 23:51:09 +0000
+
+    * fixed a problem with encoding
+
+commit d5bf6dd751d530a0b0b27d904fceb41f41b06bd3
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-12-06 23:22:38 +0000
+
+    * completed transcoding of interlaced / non-interlaced
+    * tiny performance improvements for interlaced encoded images by skipping code that only performs checks which turn out to be all false.
 
 commit f9729c6769cb6a6be76b8f941b7d23a4261964f3
 Author: micha137 <bunk@iat.uni-leipzig.de>
@@ -7494,6 +12007,18 @@ Date:   2010-11-23 16:34:36 +0000
     
     These calls prevented updating the on screen image.  The other rasterizes also don't prevent updates!
 
+commit ec47d5c161785deb76b3f3b950c0b7c6f946ef67
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-11-21 15:32:40 +0000
+
+    * fixed two problems that favored the first filter to be selected more often than the others
+
+commit bfc52734a1d02c19735b4087ab66727e83310c93
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-11-21 04:22:18 +0000
+
+    * improved pre-filter (better encoding)
+
 commit 60958d6b337550eea8afe67ce9281d518ed18f81
 Author: micha137 <bunk@iat.uni-leipzig.de>
 Date:   2010-11-16 09:33:45 +0000
@@ -7511,6 +12036,65 @@ Date:   2010-11-16 07:37:56 +0000
     Update support forum link to point to webinterface of corresponding news group
     
     My editor also removed trailing spaces, so there are some more changes
+
+commit 0993371cd0c013909bfe7f34041ee61036f1d1be
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-10-15 02:30:23 +0000
+
+    * transcoding the interlace method from Adam7 to non interlaced is working now.
+
+commit 24d6cf397179530ccaeab08886061cdbe4e9d40c
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-10-15 01:44:10 +0000
+
+    + started interlaced transcoding
+
+commit a6c0c91b38e3cb4b0fdc8877ae87518d51bf6283
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-10-14 22:15:14 +0000
+
+    * minor performance optimizations (PaethPredictor written in assembler)
+
+commit a0aefe031f8de3c52091618ad3dc4cee10334189
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-10-14 19:32:40 +0000
+
+    * improved compiler switch comments
+    * fixed a bug with the ZLibEx library
+
+commit ac2771b6cb077afabdd56b5a12ad5d8ce793a3fd
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-10-14 19:01:53 +0000
+
+    + added PNG demonstration image
+    * fixed zlib support
+
+commit eed2a69d1a896ae87dd4bce5dc3778de9ec21fe0
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-10-14 18:23:44 +0000
+
+    * removed unused test files
+    * added ability to choose the compression factor (which is in fact some sort of search depth for the zlib library)
+
+commit a9f7ad183ab70072518c52c349eec6fbd80eeb41
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-10-14 16:24:19 +0000
+
+    * some smaller performance optimizations
+
+commit 85f4390c91bf3a845602863f918c7dcbab77d8e7
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-10-13 19:51:17 +0000
+
+    * added assign test
+    * improved zlib compatibility. Now the compression/decompression is faster and should work with any zlib translation (zlib is included since Delphi 6 and FPC)
+
+commit 140bf6d28751e3dfe3459f2926a3a59f72b884f1
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-10-07 08:53:33 +0000
+
+    + added compiler switches
+    * improved assigning of TPortableNetworkGraphic objects
 
 commit 0394eaddd0630d0dd3fbd9d52667fe6a30c12f01
 Author: Christian Budde <Christian@savioursofsoul.de>
@@ -7579,12 +12163,78 @@ Date:   2010-09-01 10:21:52 +0000
 
     added TMemoryGDIBackend as a backend that keeps the backing buffer entirely in memory and offers IPaintSupport without allocating a GDI handle
 
+commit e8f263d378c2b7a68899b24e4d0d5f999d75d5ad
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-08-02 14:24:06 +0000
+
+    * added a missing 'of object' to the event procedure definition.
+
+commit d5a26c934a46bc6e393569fd5d106631208a89e9
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-07-20 14:38:30 +0000
+
+    * minor change
+
 commit 8cd12ac8e558da01ad8bda4f92554a93b3b5fc31
 Author: Andre H. Beckedorf <evilJazz@users.noreply.github.com>
 Date:   2010-07-20 10:39:52 +0000
 
      * Implemented alternative routine to create temporary file names using GUIDs in TMMFBackend;
      * Implemented a fall-back in TMMFBackend.CreateFileMapping for when the temporary file could not be created.
+
+commit ce27ad29ddcb7096255bcaac025955202788055c
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-07-19 21:55:38 +0000
+
+    * improved new coder objects
+
+commit 6da3d8742eef152e872e1a130c5b0cd072b3c473
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-07-19 15:32:51 +0000
+
+    + introduced TCustomPngCoder class (and descendants). These allow future extensions to other image formats other than the GR32 TBitmap32. Also a more common mapping (containing gamma and palette entries) is provided. Last but not least this approach allows to insert code (like a progress event) for every (scan)line processed.
+
+commit 12194c4f66d620caa9a6f5dceae32dc1ffd54f96
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-07-18 23:54:45 +0000
+
+    * slight modifications
+
+commit f7791030a9a633b006f0e0f36e4e5d04124ad868
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-07-18 15:27:55 +0000
+
+    + added a patch for the Graphic32 library to integrate the GR32_PNG library at a core level
+
+commit ed15b6087c63888f0a7098bcfa92831bf1a69598
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-07-15 20:59:05 +0000
+
+    * speed improvements for CalculateCRC (still high level code, assembler can still improve the speed by a factor of 2). Thanks to Dirk Carstensen for profiling of the code!
+
+commit 59c5b28e71002ea78b4c1ed7d729f3be8b4b0391
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-07-15 20:41:53 +0000
+
+    * minor changes
+
+commit 15110eb140e23fa1aa7a1a8d4b7adefc034af0ce
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-07-15 07:59:29 +0000
+
+    * minor code clean up
+
+commit cadf90e182ba215dfda9d0d8978e6182194194b9
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-07-15 07:50:29 +0000
+
+    + added PNG suite images and modified test
+
+commit 35c5ffecc5e8f49849aaa12e1b2487d7d0082f59
+Author: Christian Budde <Christian@savioursofsoul.de>
+Date:   2010-07-15 01:19:09 +0000
+
+    + first commit of version 1.0 (beta)
 
 commit f0309f396423c04773ff611dc98efab9675fc250
 Author: sekelsenmat <felipemonteiro.carvalho@gmail.com>

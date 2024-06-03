@@ -38,8 +38,15 @@ interface
 {$I GR32.inc}
 
 uses
-  SysUtils, Classes, Windows, Graphics, GR32, GR32_Backends, GR32_Containers,
-  GR32_Image, GR32_Backends_Generic, GR32_Paths;
+  System.SysUtils, System.Classes,
+  WinAPI.Windows,
+  VCL.Graphics, VCL.Controls,
+  GR32,
+  GR32_Backends,
+  GR32_Containers,
+  GR32_Image,
+  GR32_Backends_Generic,
+  GR32_Paths;
 
 type
   { TGDIBackend }
@@ -47,9 +54,16 @@ type
     It uses the GDI to manage and provide the buffer and additional
     graphics sub system features. The backing buffer is kept in memory. }
 
-  TGDIBackend = class(TCustomBackend, IPaintSupport,
-    IBitmapContextSupport, IDeviceContextSupport,
-    ITextSupport, IFontSupport, ICanvasSupport, ITextToPathSupport)
+  TGDIBackend = class(TCustomBackend,
+      IPaintSupport,
+      IBitmapContextSupport,
+      IDeviceContextSupport,
+      ITextSupport,
+      IFontSupport,
+      ICanvasSupport,
+      ITextToPathSupport,
+      IUpdateRectSupport
+    )
   private
     procedure FontChangedHandler(Sender: TObject);
     procedure CanvasChangedHandler(Sender: TObject);
@@ -106,11 +120,6 @@ type
     procedure Textout(var DstRect: TRect; const Flags: Cardinal; const Text: string); overload;
     function  TextExtent(const Text: string): TSize;
 
-    procedure TextoutW(X, Y: Integer; const Text: Widestring); overload;
-    procedure TextoutW(X, Y: Integer; const ClipRect: TRect; const Text: Widestring); overload;
-    procedure TextoutW(var DstRect: TRect; const Flags: Cardinal; const Text: Widestring); overload;
-    function  TextExtentW(const Text: Widestring): TSize;
-
     { IFontSupport }
     function GetOnFontChange: TNotifyEvent;
     procedure SetOnFontChange(Handler: TNotifyEvent);
@@ -122,9 +131,9 @@ type
     property OnFontChange: TNotifyEvent read FOnFontChange write FOnFontChange;
 
     { ITextToPathSupport }
-    procedure TextToPath(Path: TCustomPath; const X, Y: TFloat; const Text: WideString); overload;
-    procedure TextToPath(Path: TCustomPath; const DstRect: TFloatRect; const Text: WideString; Flags: Cardinal); overload;
-    function MeasureText(const DstRect: TFloatRect; const Text: WideString; Flags: Cardinal): TFloatRect;
+    procedure TextToPath(Path: TCustomPath; const X, Y: TFloat; const Text: string); overload;
+    procedure TextToPath(Path: TCustomPath; const DstRect: TFloatRect; const Text: string; Flags: Cardinal); overload;
+    function MeasureText(const DstRect: TFloatRect; const Text: string; Flags: Cardinal): TFloatRect;
 
     { ICanvasSupport }
     function GetCanvasChange: TNotifyEvent;
@@ -136,6 +145,10 @@ type
 
     property Canvas: TCanvas read GetCanvas;
     property OnCanvasChange: TNotifyEvent read GetCanvasChange write SetCanvasChange;
+
+    { IUpdateRectSupport }
+    procedure InvalidateRect(AControl: TWinControl; const ARect: TRect);
+    procedure GetUpdateRects(AControl: TWinControl; AUpdateRects: TRectList; AReservedCapacity: integer; var AFullUpdate: boolean);
   end;
 
   { TGDIMMFBackend }
@@ -185,6 +198,8 @@ type
 implementation
 
 uses
+  System.Math,
+  System.Types,
   GR32_Text_VCL;
 
 var
@@ -196,14 +211,11 @@ constructor TGDIBackend.Create;
 begin
   inherited;
 
-  FillChar(FBitmapInfo, SizeOf(TBitmapInfo), 0);
-  with FBitmapInfo.bmiHeader do
-  begin
-    biSize := SizeOf(TBitmapInfoHeader);
-    biPlanes := 1;
-    biBitCount := 32;
-    biCompression := BI_RGB;
-  end;
+  FBitmapInfo := Default(TBitmapInfo);
+  FBitmapInfo.bmiHeader.biSize := SizeOf(TBitmapInfoHeader);
+  FBitmapInfo.bmiHeader.biPlanes := 1;
+  FBitmapInfo.bmiHeader.biBitCount := 32;
+  FBitmapInfo.bmiHeader.biCompression := BI_RGB;
 
   FMapHandle := 0;
 
@@ -222,12 +234,9 @@ end;
 
 procedure TGDIBackend.InitializeSurface(NewWidth, NewHeight: Integer; ClearBuffer: Boolean);
 begin
-  with FBitmapInfo.bmiHeader do
-  begin
-    biWidth := NewWidth;
-    biHeight := -NewHeight;
-    biSizeImage := NewWidth * NewHeight * 4;
-  end;
+  FBitmapInfo.bmiHeader.biWidth := NewWidth;
+  FBitmapInfo.bmiHeader.biHeight := -NewHeight; // Bottom-up DIB
+  FBitmapInfo.bmiHeader.biSizeImage := NewWidth * NewHeight * SizeOf(SizeOf(TRGBQuad));
 
   PrepareFileMapping(NewWidth, NewHeight);
 
@@ -256,8 +265,8 @@ begin
   end;
 end;
 
-function TGDIBackend.MeasureText(const DstRect: TFloatRect;
-  const Text: WideString; Flags: Cardinal): TFloatRect;
+function TGDIBackend.MeasureText(const DstRect: TFloatRect; const Text: string;
+  Flags: Cardinal): TFloatRect;
 begin
   Result := GR32_Text_VCL.MeasureText(Font.Handle, DstRect, Text, Flags);
 end;
@@ -314,39 +323,14 @@ begin
   Result.cX := 0;
   Result.cY := 0;
   if Handle <> 0 then
-    Windows.GetTextExtentPoint32(Handle, PChar(Text), Length(Text), Result)
+    WinAPI.Windows.GetTextExtentPoint32(Handle, PChar(Text), Length(Text), Result)
   else
   begin
     StockBitmap.Canvas.Lock;
     try
       DC := StockBitmap.Canvas.Handle;
       OldFont := SelectObject(DC, Font.Handle);
-      Windows.GetTextExtentPoint32(DC, PChar(Text), Length(Text), Result);
-      SelectObject(DC, OldFont);
-    finally
-      StockBitmap.Canvas.Unlock;
-    end;
-  end;
-end;
-
-function TGDIBackend.TextExtentW(const Text: Widestring): TSize;
-var
-  DC: HDC;
-  OldFont: HGDIOBJ;
-begin
-  UpdateFont;
-  Result.cX := 0;
-  Result.cY := 0;
-
-  if Handle <> 0 then
-    Windows.GetTextExtentPoint32W(Handle, PWideChar(Text), Length(Text), Result)
-  else
-  begin
-    StockBitmap.Canvas.Lock;
-    try
-      DC := StockBitmap.Canvas.Handle;
-      OldFont := SelectObject(DC, Font.Handle);
-      Windows.GetTextExtentPoint32W(DC, PWideChar(Text), Length(Text), Result);
+      WinAPI.Windows.GetTextExtentPoint32(DC, PChar(Text), Length(Text), Result);
       SelectObject(DC, OldFont);
     finally
       StockBitmap.Canvas.Unlock;
@@ -372,37 +356,6 @@ begin
   FOwner.Changed(MakeRect(X, Y, X + Extent.cx + 1, Y + Extent.cy + 1));
 end;
 
-procedure TGDIBackend.TextoutW(X, Y: Integer; const Text: Widestring);
-var
-  Extent: TSize;
-begin
-  UpdateFont;
-
-  if not FOwner.MeasuringMode then
-  begin
-    if FOwner.Clipping then
-      ExtTextoutW(Handle, X, Y, ETO_CLIPPED, @FOwner.ClipRect, PWideChar(Text), Length(Text), nil)
-    else
-      ExtTextoutW(Handle, X, Y, 0, nil, PWideChar(Text), Length(Text), nil);
-  end;
-
-  Extent := TextExtentW(Text);
-  FOwner.Changed(MakeRect(X, Y, X + Extent.cx + 1, Y + Extent.cy + 1));
-end;
-
-procedure TGDIBackend.TextoutW(X, Y: Integer; const ClipRect: TRect; const Text: Widestring);
-var
-  Extent: TSize;
-begin
-  UpdateFont;
-
-  if not FOwner.MeasuringMode then
-    ExtTextoutW(Handle, X, Y, ETO_CLIPPED, @ClipRect, PWideChar(Text), Length(Text), nil);
-
-  Extent := TextExtentW(Text);
-  FOwner.Changed(MakeRect(X, Y, X + Extent.cx + 1, Y + Extent.cy + 1));
-end;
-
 procedure TGDIBackend.Textout(X, Y: Integer; const ClipRect: TRect; const Text: string);
 var
   Extent: TSize;
@@ -416,18 +369,7 @@ begin
   FOwner.Changed(MakeRect(X, Y, X + Extent.cx + 1, Y + Extent.cy + 1));
 end;
 
-procedure TGDIBackend.TextoutW(var DstRect: TRect; const Flags: Cardinal; const Text: Widestring);
-begin
-  UpdateFont;
-
-  if not FOwner.MeasuringMode then
-    DrawTextW(Handle, PWideChar(Text), Length(Text), DstRect, Flags);
-
-  FOwner.Changed(DstRect);
-end;
-
-procedure TGDIBackend.TextToPath(Path: TCustomPath; const X, Y: TFloat;
-  const Text: WideString);
+procedure TGDIBackend.TextToPath(Path: TCustomPath; const X, Y: TFloat; const Text: string);
 var
   R: TFloatRect;
 begin
@@ -436,7 +378,7 @@ begin
 end;
 
 procedure TGDIBackend.TextToPath(Path: TCustomPath; const DstRect: TFloatRect;
-  const Text: WideString; Flags: Cardinal);
+  const Text: string; Flags: Cardinal);
 begin
   GR32_Text_VCL.TextToPath(Font.Handle, Path, DstRect, Text, Flags);
 end;
@@ -447,14 +389,14 @@ begin
   begin
     SelectObject(Handle, Font.Handle);
     SetTextColor(Handle, ColorToRGB(Font.Color));
-    SetBkMode(Handle, Windows.TRANSPARENT);
+    SetBkMode(Handle, WinAPI.Windows.TRANSPARENT);
     FFontHandle := Font.Handle;
   end
   else
   begin
     SelectObject(Handle, FFontHandle);
     SetTextColor(Handle, ColorToRGB(Font.Color));
-    SetBkMode(Handle, Windows.TRANSPARENT);
+    SetBkMode(Handle, WinAPI.Windows.TRANSPARENT);
   end;
 end;
 
@@ -522,6 +464,76 @@ end;
 function TGDIBackend.GetOnFontChange: TNotifyEvent;
 begin
   Result := FOnFontChange;
+end;
+
+procedure TGDIBackend.InvalidateRect(AControl: TWinControl; const ARect: TRect);
+begin
+  if (AControl.HandleAllocated) then
+    WinAPI.Windows.InvalidateRect(AControl.Handle, @ARect, False);
+end;
+
+procedure TGDIBackend.GetUpdateRects(AControl: TWinControl; AUpdateRects: TRectList; AReservedCapacity: integer; var AFullUpdate: boolean);
+var
+  RegionType: integer;
+  UpdateRegion: HRGN;
+  RegionSize: integer;
+  RegionData: PRgnData;
+  r: TRect;
+  i: integer;
+begin
+  UpdateRegion := CreateRectRgn(0,0,0,0);
+  try
+    RegionType := GetUpdateRgn(AControl.Handle, UpdateRegion, False);
+
+    case RegionType of
+
+      COMPLEXREGION:
+        begin
+          RegionSize := GetRegionData(UpdateRegion, 0, nil);
+
+          if (RegionSize > 0) then
+          begin
+            GetMem(RegionData, RegionSize);
+            try
+              {$IFOPT C+} // ST: IF ASSERTIONS ON
+              RegionSize :=
+              {$ENDIF}
+              GetRegionData(UpdateRegion, RegionSize, RegionData);
+              Assert(RegionSize <> 0);
+
+              // Final count is known so set capacity to avoid reallocation
+              AUpdateRects.Capacity := Max(AUpdateRects.Capacity, AUpdateRects.Count + AReservedCapacity + integer(RegionData.rdh.nCount));
+
+              for i := 0 to RegionData.rdh.nCount-1 do
+                AUpdateRects.Add(PPolyRects(@RegionData.Buffer)[i]);
+            finally
+              FreeMem(RegionData);
+            end;
+          end;
+        end;
+
+      NULLREGION:
+        AFullUpdate := True;
+
+      SIMPLEREGION:
+        begin
+          GetUpdateRect(AControl.Handle, r, False);
+          if (GR32.EqualRect(r, AControl.ClientRect)) then
+            AFullUpdate := True
+          else
+          begin
+            AUpdateRects.Capacity := Max(AUpdateRects.Capacity, AUpdateRects.Count + AReservedCapacity + 1);
+            AUpdateRects.Add(r);
+          end;
+        end
+
+    else
+      // Error - Ignore it
+      AFullUpdate := True
+    end;
+  finally
+    DeleteObject(UpdateRegion);
+  end;
 end;
 
 procedure TGDIBackend.SetCanvasChange(Handler: TNotifyEvent);
@@ -594,14 +606,21 @@ procedure TGDIBackend.DoPaint(ABuffer: TBitmap32; AInvalidRects: TRectList;
   ACanvas: TCanvas; APaintBox: TCustomPaintBox32);
 var
   i: Integer;
+  CanvasHandle: HDC;
+  BufferHandle: HDC;
 begin
+  CanvasHandle := ACanvas.Handle;
+  BufferHandle := ABuffer.Handle;
   if AInvalidRects.Count > 0 then
+  begin
     for i := 0 to AInvalidRects.Count - 1 do
       with AInvalidRects[i]^ do
-        BitBlt(ACanvas.Handle, Left, Top, Right - Left, Bottom - Top, ABuffer.Handle, Left, Top, SRCCOPY)
-  else
+        BitBlt(CanvasHandle, Left, Top, Right - Left, Bottom - Top, BufferHandle, Left, Top, SRCCOPY);
+  end else
+  begin
     with APaintBox.GetViewportRect do
-      BitBlt(ACanvas.Handle, Left, Top, Right - Left, Bottom - Top, ABuffer.Handle, Left, Top, SRCCOPY);
+      BitBlt(CanvasHandle, Left, Top, Right - Left, Bottom - Top, BufferHandle, Left, Top, SRCCOPY);
+  end;
 end;
 
 
@@ -632,28 +651,24 @@ end;
 constructor TGDIMemoryBackend.Create;
 begin
   inherited;
-  FillChar(FBitmapInfo, SizeOf(TBitmapInfo), 0);
-  with FBitmapInfo.bmiHeader do 
-  begin
-    biSize := SizeOf(TBitmapInfoHeader);
-    biPlanes := 1;
-    biBitCount := 32;
-    biCompression := BI_RGB;
-    biXPelsPerMeter := 96;
-    biYPelsPerMeter := 96;
-    biClrUsed := 0;
-  end;
+
+  FBitmapInfo := Default(TBitmapInfo);
+
+  FBitmapInfo.bmiHeader.biSize := SizeOf(TBitmapInfoHeader);
+  FBitmapInfo.bmiHeader.biPlanes := 1;
+  FBitmapInfo.bmiHeader.biBitCount := 32;
+  FBitmapInfo.bmiHeader.biCompression := BI_RGB;
+  FBitmapInfo.bmiHeader.biXPelsPerMeter := 96;
+  FBitmapInfo.bmiHeader.biYPelsPerMeter := 96;
 end;
 
 procedure TGDIMemoryBackend.InitializeSurface(NewWidth, NewHeight: Integer;
   ClearBuffer: Boolean);
 begin
   inherited;
-  with FBitmapInfo.bmiHeader do 
-  begin
-    biWidth := NewWidth;
-    biHeight := -NewHeight;
-  end;
+
+  FBitmapInfo.bmiHeader.biWidth := NewWidth;
+  FBitmapInfo.bmiHeader.biHeight := -NewHeight; // Bottom-up DIB
 end;
 
 procedure TGDIMemoryBackend.ImageNeeded;
@@ -676,33 +691,35 @@ var
 begin
   if SetDIBitsToDevice(ACanvas.Handle, ARect.Left, ARect.Top, ARect.Right -
     ARect.Left, ARect.Bottom - ARect.Top, ARect.Left, ARect.Top, 0,
-    ARect.Bottom - ARect.Top, ABuffer.Bits, FBitmapInfo, DIB_RGB_COLORS) = 0 then
-  begin
-    // create compatible device context
-    DeviceContext := CreateCompatibleDC(ACanvas.Handle);
-    if DeviceContext <> 0 then
-    try
-      Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo, DIB_RGB_COLORS,
-        Buffer, 0, 0);
+    ARect.Bottom - ARect.Top, ABuffer.Bits, FBitmapInfo, DIB_RGB_COLORS) <> 0 then
+    exit;
 
-      if Bitmap <> 0 then 
-      begin
-        OldObject := SelectObject(DeviceContext, Bitmap);
-        try
-          Move(ABuffer.Bits^, Buffer^, FBitmapInfo.bmiHeader.biWidth *
-            FBitmapInfo.bmiHeader.biHeight * SizeOf(Cardinal));
-          BitBlt(ACanvas.Handle, ARect.Left, ARect.Top, ARect.Right -
-            ARect.Left, ARect.Bottom - ARect.Top, DeviceContext, 0, 0, SRCCOPY);
-        finally
-          if OldObject <> 0 then
-            SelectObject(DeviceContext, OldObject);
-          DeleteObject(Bitmap);
-        end;
-      end else
-        raise EBackend.Create(RCStrCannotCreateCompatibleDC);
+  // create compatible device context
+  DeviceContext := CreateCompatibleDC(ACanvas.Handle);
+
+  if DeviceContext = 0 then
+    exit;
+  try
+
+    Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo, DIB_RGB_COLORS, Buffer, 0, 0);
+
+    if Bitmap = 0 then
+      raise EBackend.Create(RCStrCannotCreateCompatibleDC);
+
+    OldObject := SelectObject(DeviceContext, Bitmap);
+    try
+
+      Move(ABuffer.Bits^, Buffer^, FBitmapInfo.bmiHeader.biWidth * FBitmapInfo.bmiHeader.biHeight * SizeOf(SizeOf(TRGBQuad)));
+      BitBlt(ACanvas.Handle, ARect.Left, ARect.Top, ARect.Right - ARect.Left, ARect.Bottom - ARect.Top, DeviceContext, 0, 0, SRCCOPY);
+
     finally
-      DeleteDC(DeviceContext);
+      if OldObject <> 0 then
+        SelectObject(DeviceContext, OldObject);
+      DeleteObject(Bitmap);
     end;
+
+  finally
+    DeleteDC(DeviceContext);
   end;
 end;
 
@@ -724,37 +741,38 @@ var
   OldObject     : HGDIOBJ;
 begin
   if SetDIBitsToDevice(hDst, DstX, DstY, FOwner.Width, FOwner.Height, 0, 0, 0,
-    FOwner.Height, FBits, FBitmapInfo, DIB_RGB_COLORS) = 0 then
-  begin
-    // create compatible device context
-    DeviceContext := CreateCompatibleDC(hDst);
-    if DeviceContext <> 0 then
-    try
-      Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo, DIB_RGB_COLORS,
-        Buffer, 0, 0);
+    FOwner.Height, FBits, FBitmapInfo, DIB_RGB_COLORS) <> 0 then
+    exit;
 
-      if Bitmap <> 0 then
-      begin
-        OldObject := SelectObject(DeviceContext, Bitmap);
-        try
-          Move(FBits^, Buffer^, FBitmapInfo.bmiHeader.biWidth *
-            FBitmapInfo.bmiHeader.biHeight * SizeOf(Cardinal));
-          BitBlt(hDst, DstX, DstY, FOwner.Width, FOwner.Height, DeviceContext,
-            0, 0, SRCCOPY);
-        finally
-          if OldObject <> 0 then
-            SelectObject(DeviceContext, OldObject);
-          DeleteObject(Bitmap);
-        end;
-      end else
-        raise EBackend.Create(RCStrCannotCreateCompatibleDC);
+  // create compatible device context
+  DeviceContext := CreateCompatibleDC(hDst);
+  if DeviceContext = 0 then
+    exit;
+  try
+    Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo, DIB_RGB_COLORS,
+      Buffer, 0, 0);
+
+    if Bitmap = 0 then
+      raise EBackend.Create(RCStrCannotCreateCompatibleDC);
+
+    OldObject := SelectObject(DeviceContext, Bitmap);
+    try
+
+      Move(FBits^, Buffer^, FBitmapInfo.bmiHeader.biWidth * FBitmapInfo.bmiHeader.biHeight * SizeOf(TRGBQuad));
+      BitBlt(hDst, DstX, DstY, FOwner.Width, FOwner.Height, DeviceContext, 0, 0, SRCCOPY);
+
     finally
-      DeleteDC(DeviceContext);
+      if OldObject <> 0 then
+        SelectObject(DeviceContext, OldObject);
+      DeleteObject(Bitmap);
     end;
+
+  finally
+    DeleteDC(DeviceContext);
   end;
 end;
 
-procedure TGDIMemoryBackend.DrawTo(hDst: HDC; 
+procedure TGDIMemoryBackend.DrawTo(hDst: HDC;
   const DstRect, SrcRect: TRect);
 var
   Bitmap        : HBITMAP;
@@ -765,33 +783,33 @@ begin
   if SetDIBitsToDevice(hDst, DstRect.Left, DstRect.Top,
     DstRect.Right - DstRect.Left, DstRect.Bottom - DstRect.Top, SrcRect.Left,
     SrcRect.Top, 0, SrcRect.Bottom - SrcRect.Top, FBits, FBitmapInfo,
-    DIB_RGB_COLORS) = 0 then
-  begin
-    // create compatible device context
-    DeviceContext := CreateCompatibleDC(hDst);
-    if DeviceContext <> 0 then
-    try
-      Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo, DIB_RGB_COLORS,
-        Buffer, 0, 0);
+    DIB_RGB_COLORS) <> 0 then
+    exit;
 
-      if Bitmap <> 0 then
-      begin
-        OldObject := SelectObject(DeviceContext, Bitmap);
-        try
-          Move(FBits^, Buffer^, FBitmapInfo.bmiHeader.biWidth *
-            FBitmapInfo.bmiHeader.biHeight * SizeOf(Cardinal));
-          BitBlt(hDst, DstRect.Left, DstRect.Top, DstRect.Right -
-            DstRect.Left, DstRect.Bottom - DstRect.Top, DeviceContext, 0, 0, SRCCOPY);
-        finally
-          if OldObject <> 0 then
-            SelectObject(DeviceContext, OldObject);
-          DeleteObject(Bitmap);
-        end;
-      end else
-        raise EBackend.Create(RCStrCannotCreateCompatibleDC);
+  // create compatible device context
+  DeviceContext := CreateCompatibleDC(hDst);
+  if DeviceContext = 0 then
+    raise EBackend.Create(RCStrCannotCreateCompatibleDC);
+  try
+    Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo, DIB_RGB_COLORS, Buffer, 0, 0);
+
+    if Bitmap = 0 then
+      exit;
+
+    OldObject := SelectObject(DeviceContext, Bitmap);
+    try
+
+      Move(FBits^, Buffer^, FBitmapInfo.bmiHeader.biWidth * FBitmapInfo.bmiHeader.biHeight * SizeOf(TRGBQuad));
+      BitBlt(hDst, DstRect.Left, DstRect.Top, DstRect.Right - DstRect.Left, DstRect.Bottom - DstRect.Top, DeviceContext, 0, 0, SRCCOPY);
+
     finally
-      DeleteDC(DeviceContext);
+      if OldObject <> 0 then
+        SelectObject(DeviceContext, OldObject);
+      DeleteObject(Bitmap);
     end;
+
+  finally
+    DeleteDC(DeviceContext);
   end;
 end;
 

@@ -39,7 +39,7 @@ interface
 
 uses
   {$IFNDEF FPC} Windows, {$ELSE} LCLIntf, LResources, LCLType, Buttons, {$ENDIF}
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, Vcl.ComCtrls,
   GR32, GR32_Image, GR32_Layers, GR32_Polygons, GR32_Paths, GR32_Brushes;
 
 type
@@ -48,17 +48,16 @@ type
     BtnNewLine: TButton;
     CbxPattern: TCheckBox;
     CbxThickOutline: TCheckBox;
-    FillAlpha: TScrollBar;
+    FillAlpha: TTrackBar;
     Image: TImage32;
     LblFillOpacity: TLabel;
     LblLineOpacity: TLabel;
-    LblMiterLimit: TLabel;
-    LblOutlineThickness: TLabel;
-    LblOutlineThicknessValue: TLabel;
-    LineAlpha: TScrollBar;
-    LineThickness: TScrollBar;
+    LabelMiterLimit: TLabel;
+    LabelOutlineThickness: TLabel;
+    LineAlpha: TTrackBar;
+    LineThickness: TTrackBar;
     MemoHint: TMemo;
-    MiterLimit: TScrollBar;
+    MiterLimit: TTrackBar;
     PanelControl: TPanel;
     RgpFillMode: TRadioGroup;
     RgpJointMode: TRadioGroup;
@@ -99,6 +98,7 @@ implementation
 
 uses
   Math,
+  Types,
 {$IFDEF Darwin}
   MacOSAll,
 {$ENDIF}
@@ -229,7 +229,8 @@ end;
 
 procedure TFormPolygons.MiterLimitChange(Sender: TObject);
 begin
-  FStroke.MiterLimit := 0.1 * MiterLimit.Position;
+  FStroke.MiterLimit := MiterLimit.Position * 0.01;
+  LabelMiterLimit.Caption := Format(LabelMiterLimit.Hint, [FStroke.MiterLimit]);
   Draw;
 end;
 
@@ -276,7 +277,7 @@ procedure TFormPolygons.JointModeChange(Sender: TObject);
 begin
   FStroke.JoinStyle := TJoinStyle(RgpJointMode.ItemIndex);
   MiterLimit.Enabled := CbxThickOutline.Checked and
-    (FStroke.JoinStyle = jsMiter);
+    (FStroke.JoinStyle in [jsMiter, jsRoundEx]);
   Draw;
 end;
 
@@ -288,7 +289,7 @@ end;
 procedure TFormPolygons.ThicknessChanged(Sender: TObject);
 begin
   FStroke.StrokeWidth := LineThickness.Position * 0.1;
-  LblOutlineThicknessValue.Caption := Format('(%2.1f)', [FStroke.StrokeWidth]);
+  LabelOutlineThickness.Caption := Format(LabelOutlineThickness.Hint, [FStroke.StrokeWidth]);
   Draw;
 end;
 
@@ -297,8 +298,7 @@ begin
   FStroke.Visible := CbxThickOutline.Checked;
   LineThickness.Enabled := CbxThickOutline.Checked;
   RgpJointMode.Enabled := CbxThickOutline.Checked;
-  MiterLimit.Enabled := CbxThickOutline.Checked and
-    (FStroke.JoinStyle = jsMiter);
+  MiterLimit.Enabled := CbxThickOutline.Checked and (FStroke.JoinStyle = jsMiter);
   Draw;
 end;
 

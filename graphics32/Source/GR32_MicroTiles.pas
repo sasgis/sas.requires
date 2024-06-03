@@ -36,6 +36,7 @@ unit GR32_MicroTiles;
 interface
 
 {$I GR32.inc}
+
 {-$DEFINE CODESITE}
 {-$DEFINE CODESITE_HIGH}
 {-$DEFINE PROFILINGDRYRUN}
@@ -46,20 +47,13 @@ interface
   {-$DEFINE MICROTILES_NO_ADAPTION_FORCE_WHOLETILES}
 
 uses
-{$IFDEF FPC}
-  Types,
-  {$IFDEF Windows}
-    Windows,
-  {$ENDIF}
-{$ELSE}
+{$IFDEF Windows}
   Windows,
 {$ENDIF}
 {$IFDEF CODESITE}
   CSIntf, CSAux,
 {$ENDIF}
-{$IFDEF COMPILER2005_UP}
   Types,
-{$ENDIF}
   SysUtils, Classes,
   GR32, GR32_System, GR32_Containers, GR32_Layers, GR32_RepaintOpt;
 
@@ -138,7 +132,11 @@ type
 type
   { TMicroTilesRepaintOptimizer }
   { Repaint manager that optimizes the repaint process using MicroTiles }
-  TMicroTilesRepaintOptimizer = class(TCustomRepaintOptimizer)
+  TMicroTilesRepaintOptimizer = class(TCustomRepaintOptimizer,
+    ILayerUpdateNotification,
+    IUpdateRectNotification,
+    ILayerListNotification
+  )
   private
     // working tiles
     FBufferBounds: TRect;
@@ -160,7 +158,7 @@ type
     // adaptive stuff...
     FAdaptiveMode: Boolean;
 
-    FPerfTimer: TPerfTimer;
+    FPerfTimer: TStopWatch;
     FPerformanceLevel: Integer;
     FElapsedTimeForLastRepaint: Int64;
     FElapsedTimeForFullSceneRepaint: Int64;
@@ -195,15 +193,15 @@ type
   protected
     procedure SetEnabled(const Value: Boolean); override;
 
-    // LayerCollection handler
-    procedure LayerCollectionNotifyHandler(Sender: TLayerCollection;
-      Action: TLayerListNotification; Layer: TCustomLayer; Index: Integer); override;
+    // ILayerUpdateNotification
+    procedure LayerUpdated(ALayer: TCustomLayer);
+    // IUpdateRectNotification
+    procedure AreaUpdated(const AArea: TRect; const AInfo: Cardinal);
+    // ILayerListNotification
+    procedure LayerListNotify(ALayer: TCustomLayer; AAction: TLayerListNotification; AIndex: Integer);
   public
     constructor Create(Buffer: TBitmap32; InvalidRects: TRectList); override;
     destructor Destroy; override;
-
-    procedure RegisterLayerCollection(Layers: TLayerCollection); override;
-    procedure UnregisterLayerCollection(Layers: TLayerCollection); override;
 
     procedure Reset; override;
 
@@ -214,8 +212,6 @@ type
     procedure EndPaintBuffer; override;
 
     // handlers
-    procedure AreaUpdateHandler(Sender: TObject; const Area: TRect; const Info: Cardinal); override;
-    procedure LayerUpdateHandler(Sender: TObject; Layer: TCustomLayer); override;
     procedure BufferResizedHandler(const NewWidth, NewHeight: Integer); override;
 
     // custom settings:
@@ -224,6 +220,11 @@ type
 
 {$IFDEF CODESITE}
   TDebugMicroTilesRepaintOptimizer = class(TMicroTilesRepaintOptimizer)
+  protected
+    // ILayerNotification
+    procedure LayerUpdated(ALayer: TCustomLayer); override;
+    procedure LayerAreaUpdated(ALayer: TCustomLayer; const AArea: TRect; const AInfo: Cardinal); override;
+    procedure LayerListNotify(ALayer: TCustomLayer; AAction: TLayerListNotification; AIndex: Integer); override;
   public
     procedure Reset; override;
     function  UpdatesAvailable: Boolean; override;
@@ -232,8 +233,6 @@ type
     procedure BeginPaintBuffer; override;
     procedure EndPaintBuffer; override;
 
-    procedure AreaUpdateHandler(Sender: TObject; const Area: TRect; const Info: Cardinal); override;
-    procedure LayerUpdateHandler(Sender: TObject; Layer: TCustomLayer); override;
     procedure BufferResizedHandler(const NewWidth, NewHeight: Integer); override;
   end;
 {$ENDIF}
@@ -648,10 +647,14 @@ begin
 
   with MicroTiles.BoundsUsedTiles do
   begin
-    if LeftTile < Left then Left := LeftTile;
-    if TopTile < Top then Top := TopTile;
-    if RightTile > Right then Right := RightTile;
-    if BottomTile > Bottom then Bottom := BottomTile;
+    if LeftTile < Left then
+      Left := LeftTile;
+    if TopTile < Top then
+      Top := TopTile;
+    if RightTile > Right then
+      Right := RightTile;
+    if BottomTile > Bottom then
+      Bottom := BottomTile;
   end;
 end;
 
@@ -837,8 +840,8 @@ begin
   Result := 0;
 
   if (MicroTiles.Count = 0) or
-     (MicroTiles.BoundsUsedTiles.Right - MicroTiles.BoundsUsedTiles.Left < 0) or
-     (MicroTiles.BoundsUsedTiles.Bottom - MicroTiles.BoundsUsedTiles.Top < 0) then Exit;
+     (MicroTiles.BoundsUsedTiles.Right < MicroTiles.BoundsUsedTiles.Left) or
+     (MicroTiles.BoundsUsedTiles.Bottom < MicroTiles.BoundsUsedTiles.Top) then Exit;
 
   SetLength(Rects, MicroTiles.Columns * MicroTiles.Rows);
   SetLength(CombLUT, MicroTiles.Columns * MicroTiles.Rows);
@@ -1124,7 +1127,6 @@ begin
   inherited;
   FOldInvalidTilesMap := TMicroTilesMap.Create;
   FInvalidLayers := TList.Create;
-  FPerfTimer := TPerfTimer.Create;
 {$IFNDEF MICROTILES_DEBUGDRAW}
   {$IFNDEF MICROTILES_NO_ADAPTION}
   FAdaptiveMode := True;
@@ -1147,7 +1149,6 @@ begin
   MicroTilesDestroy(FTempTiles);
   MicroTilesDestroy(FInvalidTiles);
 
-  FPerfTimer.Free;
   FInvalidLayers.Free;
   FOldInvalidTilesMap.Free;
 
@@ -1157,14 +1158,6 @@ begin
 {$ENDIF}
 
   inherited;
-end;
-
-procedure TMicroTilesRepaintOptimizer.AreaUpdateHandler(Sender: TObject; const Area: TRect;
-  const Info: Cardinal);
-begin
-  ValidateWorkingTiles;
-  AddArea(FForcedInvalidTiles, Area, Info);
-  FUseInvalidTiles := True;
 end;
 
 procedure TMicroTilesRepaintOptimizer.AddArea(var Tiles: TMicroTiles; const Area: TRect;
@@ -1182,25 +1175,52 @@ begin
     MicroTilesAddRect(Tiles, Area, FPerformanceLevel > PL_MICROTILES);
 end;
 
-procedure TMicroTilesRepaintOptimizer.LayerUpdateHandler(Sender: TObject; Layer: TCustomLayer);
+procedure TMicroTilesRepaintOptimizer.LayerUpdated(ALayer: TCustomLayer);
 begin
-  if FOldInvalidTilesValid and not TCustomLayerAccess(Layer).Invalid then
+  if not Enabled then
+    exit;
+
+{$IFDEF CODESITE}
+  DumpCallStack('TMicroTilesRepaintOptimizer.LayerUpdated');
+{$ENDIF}
+
+  if (FOldInvalidTilesValid) and (not TCustomLayerAccess(ALayer).Invalid) then
   begin
-    FInvalidLayers.Add(Layer);
-    TCustomLayerAccess(Layer).Invalid := True;
+    FInvalidLayers.Add(ALayer);
+    TCustomLayerAccess(ALayer).Invalid := True;
     FUseInvalidTiles := True;
   end;
 end;
 
-procedure TMicroTilesRepaintOptimizer.LayerCollectionNotifyHandler(Sender: TLayerCollection;
-  Action: TLayerListNotification; Layer: TCustomLayer; Index: Integer);
+procedure TMicroTilesRepaintOptimizer.AreaUpdated(const AArea: TRect; const AInfo: Cardinal);
+begin
+  if not Enabled then
+    exit;
+
+{$IFDEF CODESITE}
+  DumpCallStack('TMicroTilesRepaintOptimizer.AreaUpdated');
+{$ENDIF}
+
+  ValidateWorkingTiles;
+  AddArea(FForcedInvalidTiles, AArea, AInfo);
+  FUseInvalidTiles := True;
+end;
+
+procedure TMicroTilesRepaintOptimizer.LayerListNotify(ALayer: TCustomLayer; AAction: TLayerListNotification; AIndex: Integer);
 var
   TilesPtr: PMicroTiles;
 begin
-  case Action of
+  if not Enabled then
+    exit;
+
+{$IFDEF CODESITE}
+  DumpCallStack('TMicroTilesRepaintOptimizer.LayerListNotify');
+{$ENDIF}
+
+  case AAction of
     lnLayerAdded, lnLayerInserted:
       begin
-        TilesPtr := FOldInvalidTilesMap.Add(Layer)^;
+        TilesPtr := FOldInvalidTilesMap.Add(ALayer)^;
         MicroTilesSetSize(TilesPtr^, Buffer.BoundsRect);
         FOldInvalidTilesValid := True;
       end;
@@ -1210,11 +1230,11 @@ begin
         if FOldInvalidTilesValid then
         begin
           // force repaint of tiles that the layer did previously allocate
-          MicroTilesUnion(FInvalidTiles, FOldInvalidTilesMap[Layer]^);
+          MicroTilesUnion(FInvalidTiles, FOldInvalidTilesMap[ALayer]^);
           FUseInvalidTiles := True;
         end;
-        FInvalidLayers.Remove(Layer);
-        FOldInvalidTilesMap.Remove(Layer);
+        FInvalidLayers.Remove(ALayer);
+        FOldInvalidTilesMap.Remove(ALayer);
       end;
 
     lnCleared:
@@ -1278,96 +1298,58 @@ var
   I, J: Integer;
   TilesPtr: PMicroTiles;
   Layer: TCustomLayer;
+  LayerCollection: TLayerCollection;
 begin
-  if not FOldInvalidTilesValid then  // check if old Invalid tiles need resize and rerendering...
-  begin
-    ValidateWorkingTiles;
+  if FOldInvalidTilesValid then  // check if old Invalid tiles need resize and rerendering...
+    exit;
 
+  ValidateWorkingTiles;
+
+  if (LayerCollections <> nil) then
     for I := 0 to LayerCollections.Count - 1 do
-    with TLayerCollection(LayerCollections[I]) do
-      for J := 0 to Count - 1 do
-      begin
-        Layer := Items[J];
-        TilesPtr := FOldInvalidTilesMap.Add(Layer)^;
+    begin
+      LayerCollection := LayerCollections[I];
 
+      for J := 0 to LayerCollection.Count - 1 do
+      begin
+        Layer := LayerCollection[J];
+
+        TilesPtr := FOldInvalidTilesMap.Add(Layer)^;
         MicroTilesSetSize(TilesPtr^, FBufferBounds);
-        DrawLayerToMicroTiles(TilesPtr^, Layer);
+
+        if (Layer.Visible) then
+          DrawLayerToMicroTiles(TilesPtr^, Layer);
+
         TCustomLayerAccess(Layer).Invalid := False;
       end;
-
-    FInvalidLayers.Clear;
-
-    FOldInvalidTilesValid := True;
-    FUseInvalidTiles := False;
-  end;
-end;
-
-procedure TMicroTilesRepaintOptimizer.RegisterLayerCollection(Layers: TLayerCollection);
-begin
-  inherited;
-
-  if Enabled then
-    with TLayerCollectionAccess(Layers) do
-    begin
-      OnLayerUpdated := LayerUpdateHandler;
-      OnAreaUpdated := AreaUpdateHandler;
-      OnListNotify := LayerCollectionNotifyHandler;
     end;
-end;
 
-procedure TMicroTilesRepaintOptimizer.UnregisterLayerCollection(Layers: TLayerCollection);
-begin
-  with TLayerCollectionAccess(Layers) do
-  begin
-    OnLayerUpdated := nil;
-    OnAreaUpdated := nil;
-    OnListNotify := nil;
-  end;
+  FInvalidLayers.Clear;
 
-  inherited;
+  FOldInvalidTilesValid := True;
+  FUseInvalidTiles := False;
 end;
 
 procedure TMicroTilesRepaintOptimizer.SetEnabled(const Value: Boolean);
-var
-  I: Integer;
 begin
-  if Value <> Enabled then
+  if (Value = Enabled) then
+    exit;
+
+  if Value then
+    BufferResizedHandler(Buffer.Width, Buffer.Height)
+  else
   begin
-    if Value then
-    begin
-      // initialize:
-      for I := 0 to LayerCollections.Count - 1 do
-      with TLayerCollectionAccess(LayerCollections[I]) do
-      begin
-        OnLayerUpdated := LayerUpdateHandler;
-        OnAreaUpdated := AreaUpdateHandler;
-        OnListNotify := LayerCollectionNotifyHandler;
-      end;
+    MicroTilesDestroy(FInvalidTiles);
+    MicroTilesDestroy(FTempTiles);
+    MicroTilesDestroy(FForcedInvalidTiles);
 
-      BufferResizedHandler(Buffer.Width, Buffer.Height);
-    end
-    else
-    begin
-      // clean up:
-      for I := 0 to LayerCollections.Count - 1 do
-      with TLayerCollectionAccess(LayerCollections[I]) do
-      begin
-        OnLayerUpdated := nil;
-        OnAreaUpdated := nil;
-        OnListNotify := nil;
-      end;
-
-      MicroTilesDestroy(FInvalidTiles);
-      MicroTilesDestroy(FTempTiles);
-      MicroTilesDestroy(FForcedInvalidTiles);
-
-      FUseInvalidTiles := False;
-      FOldInvalidTilesValid := False;
-      FOldInvalidTilesMap.Clear;
-      FInvalidLayers.Clear;
-    end;
-    inherited;
+    FUseInvalidTiles := False;
+    FOldInvalidTilesValid := False;
+    FOldInvalidTilesMap.Clear;
+    FInvalidLayers.Clear;
   end;
+
+  inherited;
 end;
 
 procedure TMicroTilesRepaintOptimizer.SetAdaptiveMode(const Value: Boolean);
@@ -1388,7 +1370,8 @@ end;
 
 procedure TMicroTilesRepaintOptimizer.BeginPaintBuffer;
 begin
-  if AdaptiveMode then FPerfTimer.Start;
+  if AdaptiveMode then
+    FPerfTimer := TStopWatch.StartNew;
 end;
 
 procedure TMicroTilesRepaintOptimizer.EndPaintBuffer;
@@ -1450,6 +1433,9 @@ begin
       begin
         Layer := FInvalidLayers[I];
 
+        if (not Layer.Visible) then
+          continue;
+
         // Clear temporary tiles
         MicroTilesClearUsed(FTempTiles);
         // Draw layer to temporary tiles
@@ -1473,17 +1459,14 @@ begin
       FInvalidLayers.Clear;
     end;
 
+    // Create union of global invalid tiles and forced invalid tiles
+    MicroTilesUnion(FInvalidTiles, FForcedInvalidTiles);
+    // Calculate optimized rectangles from combined tiles
+    MicroTilesCalcRects(FInvalidTiles, InvalidRects, False, UseWholeTiles);
+
 {$IFDEF MICROTILES_DEBUGDRAW}
-    MicroTilesCalcRects(FInvalidTiles, InvalidRects, False, UseWholeTiles);
-    MicroTilesCalcRects(FForcedInvalidTiles, InvalidRects, False, UseWholeTiles);
     MicroTilesCopy(FDebugMicroTiles, FInvalidTiles);
-    MicroTilesUnion(FDebugMicroTiles, FForcedInvalidTiles);
     FDebugWholeTiles := UseWholeTiles;
-{$ELSE}
-    // Calculate optimized rectangles from global invalid tiles
-    MicroTilesCalcRects(FInvalidTiles, InvalidRects, False, UseWholeTiles);
-    // Calculate optimized rectangles from forced invalid tiles
-    MicroTilesCalcRects(FForcedInvalidTiles, InvalidRects, False, UseWholeTiles);
 {$ENDIF}
   end;
 
@@ -1536,7 +1519,7 @@ var
   Level: Integer;
 begin
   // our KISS(TM) repaint mode balancing starts here...
-  TimeElapsed := FPerfTimer.ReadValue;
+  TimeElapsed := FPerfTimer.ElapsedTicks;
 
 {$IFDEF MICROTILES_DEBUGDRAW}
   if FDebugInvalidRects.Count = 0 then
@@ -1637,13 +1620,6 @@ end;
 
 { TDebugMicroTilesRepaintOptimizer }
 
-procedure TDebugMicroTilesRepaintOptimizer.AreaUpdateHandler(Sender: TObject;
-  const Area: TRect; const Info: Cardinal);
-begin
-  DumpCallStack('TDebugMicroTilesRepaintOptimizer.AreaUpdateHandler');
-  inherited;
-end;
-
 procedure TDebugMicroTilesRepaintOptimizer.BeginPaintBuffer;
 begin
   DumpCallStack('TDebugMicroTilesRepaintOptimizer.BeginPaintBuffer');
@@ -1661,14 +1637,7 @@ procedure TDebugMicroTilesRepaintOptimizer.EndPaintBuffer;
 begin
   DumpCallStack('TDebugMicroTilesRepaintOptimizer.EndPaintBuffer');
   inherited;
-  CodeSite.AddSeparator;  
-end;
-
-procedure TDebugMicroTilesRepaintOptimizer.LayerUpdateHandler(Sender: TObject;
-  Layer: TCustomLayer);
-begin
-  DumpCallStack('TDebugMicroTilesRepaintOptimizer.LayerUpdateHandler');
-  inherited;
+  CodeSite.AddSeparator;
 end;
 
 procedure TDebugMicroTilesRepaintOptimizer.PerformOptimization;
@@ -1709,8 +1678,8 @@ begin
 
 {$IFNDEF PUREPASCAL}
 {$IFDEF TARGET_x86}
-  Registry.Add(FID_MICROTILEUNION, @MicroTileUnion_EMMX, [ciEMMX]);
-  Registry.Add(FID_MICROTILESUNION, @MicroTilesUnion_EMMX, [ciEMMX]);
+  Registry.Add(FID_MICROTILEUNION, @MicroTileUnion_EMMX, [isExMMX]);
+  Registry.Add(FID_MICROTILESUNION, @MicroTilesUnion_EMMX, [isExMMX]);
 {$ENDIF}
 {$ENDIF}
   Registry.RebindAll;

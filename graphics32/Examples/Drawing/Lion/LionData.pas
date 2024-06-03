@@ -20,6 +20,9 @@ var
 
 implementation
 
+uses
+  Types;
+
 const
   GLionData: AnsiString = 'F2CC99'#13 +
     'M 69,18 L 82,8 L 99,3 L 118,5 L 135,12 L 149,21 L 156,13 L 165,9 L 177,13 '
@@ -456,6 +459,9 @@ begin
       end
       else
       begin
+        X := GLion.Bounds.Left; // Eliminates compiler warning
+        Y := GLion.Bounds.Top;
+
         while (Ptr^ <> #0) and (Ptr^ <> #13) do
         begin
           Cmd := Ptr^;

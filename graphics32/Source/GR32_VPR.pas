@@ -28,8 +28,6 @@ unit GR32_VPR;
  * Portions created by the Initial Developer are Copyright (C) 2008-2012
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
- *
  * ***** END LICENSE BLOCK ***** *)
 
 interface
@@ -61,8 +59,59 @@ procedure RenderPolygon(const Points: TArrayOfFloatPoint;
 
 implementation
 
+{$if Defined(FPC) and Defined(CPUx86_64) }
+// Must apply work around for negative array index on FPC 64-bit.
+// See:
+//   - https://github.com/graphics32/graphics32/issues/51
+//   - https://forum.lazarus.freepascal.org/index.php/topic,44655.0.html
+  {$define NEGATIVE_INDEX_64}
+{$ifend}
+
 uses
-  Math, GR32_Math, GR32_LowLevel, GR32_VectorUtils;
+  Math,
+  GR32_Math,
+  GR32_LowLevel,
+  GR32_VectorUtils;
+
+(* Mattias Andersson (from glmhlg$rf3$1@news.graphics32.org):
+
+> Which algorithm are you using for coverage calculation?
+
+I don't have any references, since it's entirely my own design. Here is
+a basic outline of how I compute the coverage values:
+
+1. split each line segment into smaller segments in a vertical buffer,
+   such that y-values are between 0 and 1;
+
+2. poly-polygons involves a merge step for vertical buffers;
+
+3. Extract spans of coverage values for each scanline:
+    (a) set the length of the span to the horizontal range of that row;
+    (b) if a line segment goes from row Y to row Y + 1 then we need to add
+        or subtract 1 from the (X, X + 1) indexes at the crossing (depending on
+        line orientation);
+    (c) compute cumulative sum of span values (expensive!);
+    (d) integrate each line segment and accumulate span buffer.
+
+The rendering step takes the coverage values and transforms that into an
+alpha buffer that is blended onto the target bitmap (here we use the
+non-zero and even-odd fill rules).
+
+Initially I was sorting the crossing points of each scanline, but I
+realized that by performing a cumulative sum, this would be completely
+redundant.
+
+Currently I only compute a single span of coverage values for each
+scanline, but I think I should also implement a case where I compute
+multiple RLE encoded spans (which I think could be faster in some cases).
+
+There is a tricky case that might not always yield an accurate coverage
+value (when we have positively and negatively oriented lines of two
+different polygons/faces in the same pixel). The only way to overcome
+this would be by preprocessing the polygons and remove intersections. I
+believe this very problem exists in AGG and FreeType too.
+
+*)
 
 type
   PLineSegment = ^TLineSegment;
@@ -83,7 +132,12 @@ type
 
 procedure IntegrateSegment(var P1, P2: TFloatPoint; Values: PSingleArray);
 var
-  X1, X2, I: Integer;
+{$if Defined(NEGATIVE_INDEX_64) }
+  X1, X2: Int64;
+{$else}
+  X1, X2: Integer;
+{$ifend}
+  I: Integer;
   Dx, Dy, DyDx, Sx, Y, fracX1, fracX2: TFloat;
 begin
   X1 := Round(P1.X);
@@ -134,7 +188,12 @@ end;
 procedure ExtractSingleSpan(const ScanLine: TScanLine; out Span: TValueSpan;
   SpanData: PSingleArray);
 var
-  I, X: Integer;
+  I: Integer;
+{$if Defined(NEGATIVE_INDEX_64) }
+  X: Int64;
+{$else}
+  X: Integer;
+{$ifend}
   P: PFloatPoint;
   S: PLineSegment;
   fracX: TFloat;
@@ -149,8 +208,14 @@ begin
   P := @Points[0];
   for I := 0 to N - 1 do
   begin
+    // Since we know X >= 0 we could have used Trunc here but unfortunately
+    // Delphi's Trunc is much slower than Round because it modifies the FPU
+    // control word.
     X := Round(P.X);
-    if X < Span.X1 then Span.X1 := X;
+
+    if X < Span.X1 then
+      Span.X1 := X;
+
     if P.Y = 1 then
     begin
       fracX := P.X - X;
@@ -165,31 +230,38 @@ begin
         SpanData[X] := SpanData[X] - fracX;
       end;
     end;
-    if X > Span.X2 then Span.X2 := X;
+
+    if X > Span.X2 then
+      Span.X2 := X;
+
     inc(P);
   end;
 
-  CumSum(@SpanData[Span.X1], Span.X2 - Span.X1 + 1);
+  X := Span.X1; // Use X so NEGATIVE_INDEX_64 is handled
+  Span.Values := @SpanData[X];
+
+  CumSum(Span.Values, Span.X2 - Span.X1 + 1);
 
   for I := 0 to ScanLine.Count - 1 do
   begin
     S := @ScanLine.Segments[I];
     IntegrateSegment(S[0], S[1], SpanData);
   end;
-
-  Span.Values := @SpanData[Span.X1];
 end;
 
 procedure AddSegment(const X1, Y1, X2, Y2: TFloat; var ScanLine: TScanLine); {$IFDEF USEINLINING} inline; {$ENDIF}
 var
   S: PLineSegment;
+  Y1bin: Cardinal absolute Y1;
+  Y2bin: Cardinal absolute Y2;
 begin
-  if (Y1 = 0) and (Y2 = 0) then Exit;  {** needed for proper clipping }
-  with ScanLine do
-  begin
-    S := @Segments[Count];
-    Inc(Count);
-  end;
+  // Fast way of checking a Single = 0.
+  if (Y1bin shl 1 = 0) and (Y2bin shl 1 = 0) then
+  // if (Y1 = 0) and (Y2 = 0) then
+    Exit;  { needed for proper clipping }
+
+  S := @ScanLine.Segments[ScanLine.Count];
+  Inc(ScanLine.Count);
 
   S[0].X := X1;
   S[0].Y := Y1;
@@ -200,38 +272,64 @@ end;
 procedure DivideSegment(var P1, P2: TFloatPoint; const ScanLines: PScanLineArray);
 var
   Y, Y1, Y2: Integer;
-  k, X: TFloat;
+  X, X2: TFloat;
+  k: TFloat;
 begin
+  (*
+  ** Split each line segment into smaller segments in a vertical buffer,
+  ** such that y-values are between 0 and 1.
+  *)
+
   Y1 := Round(P1.Y);
   Y2 := Round(P2.Y);
 
+  // Special case for horizontal line; It just produces a single segment.
   if Y1 = Y2 then
   begin
     AddSegment(P1.X, P1.Y - Y1, P2.X, P2.Y - Y1, ScanLines[Y1]);
   end
   else
   begin
+    // k: Inverse slope; For each change in Y, how much does X change
+    // k is expanded below to limit rounding errors.
     k := (P2.X - P1.X) / (P2.Y - P1.Y);
-    if Y1 < Y2 then
+
+    if Y1 < Y2 then // Y is increasing
     begin
-      X := P1.X + (Y1 + 1 - P1.Y) * k;
+      X := P1.X + (Y1 + 1 - P1.Y) * { k } (P2.X - P1.X) / (P2.Y - P1.Y);
       AddSegment(P1.X, P1.Y - Y1, X, 1, ScanLines[Y1]);
+
       for Y := Y1 + 1 to Y2 - 1 do
       begin
-        AddSegment(X, 0, X + k, 1, ScanLines[Y]);
-        X := X + k;
+        // Note: Iteratively calculating the next X value based on the previous value and an
+        // increment accumulates the rounding error.
+        // Ideally we would repeat the calculation of X from Y for each Y to avoid this but
+        // that is too expensive.
+        // Because of the rounding error we can end up with a tiny negative X value (when X
+        // almost equals k) and, because we've set the rounding mode to rmDown, this negative
+        // X value will later be rounded down to -1 in ExtractSingleSpan.
+        // This is the cause of issue #272.
+        // The Max(0, ...) below works around this problem.
+
+        X2 := Max(0, X + k);
+        AddSegment(X, 0, X2, 1, ScanLines[Y]);
+        X := X2;
       end;
+
       AddSegment(X, 0, P2.X, P2.Y - Y2, ScanLines[Y2]);
     end
     else
     begin
-      X := P1.X + (Y1 - P1.Y) * k;
+      X := P1.X + (Y1 - P1.Y) * { k } (P2.X - P1.X) / (P2.Y - P1.Y);
       AddSegment(P1.X, P1.Y - Y1, X, 0, ScanLines[Y1]);
+
       for Y := Y1 - 1 downto Y2 + 1 do
       begin
-        AddSegment(X, 1, X - k, 0, ScanLines[Y]);
-        X := X - k
+        X2 := Max(0, X - k);
+        AddSegment(X, 1, X2, 0, ScanLines[Y]);
+        X := X2;
       end;
+
       AddSegment(X, 1, P2.X, P2.Y - Y2, ScanLines[Y2]);
     end;
   end;
@@ -246,32 +344,49 @@ var
   PScanLines: PScanLineArray;
 begin
 
+  (*
+  ** Determine range of Y values (i.e. scanlines)
+  *)
   YMin := MaxInt;
   YMax := -MaxInt;
   M := High(Points);
   for K := 0 to M do
   begin
     N := High(Points[K]);
-    if N < 2 then Continue;
+    if N < 2 then
+      Continue;
+
     PY := @Points[K][0].Y;
     for I := 0 to N do
     begin
       Y := Round(PY^);
-      if YMin > Y then YMin := Y;
-      if YMax < Y then YMax := Y;
+
+      if YMin > Y then
+        YMin := Y;
+      if YMax < Y then
+        YMax := Y;
+
       inc(PY, 2); // skips X value
     end;
   end;
 
-  if YMin > YMax then Exit;
+  if YMin > YMax then
+    Exit;
+
   SetLength(ScanLines, YMax - YMin + 2);
+
+  // Offset scanline pointer so we don't have to offset the Y coordinate
   PScanLines := @ScanLines[-YMin];
 
-  {** compute array sizes for each scanline }
+  (*
+  ** Compute array sizes for each scanline
+  *)
   for K := 0 to M do
   begin
     N := High(Points[K]);
-    if N < 2 then Continue;
+    if N < 2 then
+      Continue;
+
     Y0 := Round(Points[K][N].Y);
     PY := @Points[K][0].Y;
     for I := 0 to N do
@@ -292,25 +407,37 @@ begin
     end;
   end;
 
-  {** allocate memory }
+  (*
+  ** Allocate memory
+  *)
   J := 0;
   for I := 0 to High(ScanLines) do
   begin
     Inc(J, ScanLines[I].Count);
     GetMem(ScanLines[I].Segments, J * SizeOf(TLineSegment));
+
     ScanLines[I].Count := 0;
     ScanLines[I].Y := YMin + I;
   end;
 
+  (*
+  ** Divide all segments of the polygon into scanline fragments
+  *)
   for K := 0 to M do
   begin
     N := High(Points[K]);
-    if N < 2 then Continue;
+    if N < 2 then
+      Continue;
+
+    // Start with the segment going from the last vertex to the first
     PPt1 := @Points[K][N];
     PPt2 := @Points[K][0];
+
     for I := 0 to N do
     begin
       DivideSegment(PPt1^, PPt2^, PScanLines);
+
+      // Move on to the next segment
       PPt1 := PPt2;
       Inc(PPt2);
     end;
@@ -318,26 +445,37 @@ begin
 end;
 
 procedure RenderScanline(var ScanLine: TScanLine;
-  RenderProc: TRenderSpanProc; Data: Pointer; SpanData: PSingleArray; X1, X2: Integer);
+  RenderProc: TRenderSpanProc; Data: Pointer; SpanData: PSingleArray; ClipX1, ClipX2: Integer);
 var
   Span: TValueSpan;
+{$if Defined(NEGATIVE_INDEX_64) }
+  X: Int64;
+{$else}
+  X: Integer;
+{$ifend}
 begin
   if ScanLine.Count > 0 then
   begin
     ExtractSingleSpan(ScanLine, Span, SpanData);
-    if Span.X1 < X1 then Span.X1 := X1;
-    if Span.X2 > X2 then Span.X2 := X2;
-    if Span.X2 < Span.X1 then Exit;
+
+    if Span.X1 < ClipX1 then
+      Span.X1 := ClipX1;
+    if Span.X2 > ClipX2 then
+      Span.X2 := ClipX2;
+    if Span.X2 < Span.X1 then
+      Exit;
 
     RenderProc(Data, Span, ScanLine.Y);
-    FillLongWord(SpanData[Span.X1], Span.X2 - Span.X1 + 1, 0);
+
+    X := Span.X1;
+    FillLongWord(SpanData[X], Span.X2 - Span.X1 + 1, 0);
   end;
 end;
 
-{$ifndef COMPILERXE2_UP}
+{$ifdef FPC}
 type
   TRoundingMode = Math.TFPURoundingMode;
-{$endif COMPILERXE2_UP}
+{$endif}
 
 procedure RenderPolyPolygon(const Points: TArrayOfArrayOfFloatPoint;
   const ClipRect: TFloatRect; const RenderProc: TRenderSpanProc; Data: Pointer);
@@ -350,27 +488,36 @@ var
   SpanData: PSingleArray;
 begin
   Len := Length(Points);
-  if Len = 0 then Exit;
-  SavedRoundMode := SetRoundMode(rmDown);
+  if Len = 0 then
+    Exit;
+
+  SavedRoundMode := SetRoundMode(rmDown); // TODO : Not thread safe. Another thread can modify the mode
   try
     SetLength(Poly, Len);
     for i := 0 to Len -1 do
       Poly[i] := ClipPolygon(Points[i], ClipRect);
+
     BuildScanLines(Poly, ScanLines);
 
-    CX1 := Round(ClipRect.Left);
-    CX2 := -Round(-ClipRect.Right) - 1;
-
-    I := CX2 - CX1 + 4;
-    GetMem(SpanData, I * SizeOf(Single));
-    FillLongWord(SpanData^, I, 0);
-
-    for I := 0 to High(ScanLines) do
+    if (Length(ScanLines) > 0) then
     begin
-      RenderScanline(ScanLines[I], RenderProc, Data, @SpanData[-CX1 + 1], CX1, CX2);
-      FreeMem(ScanLines[I].Segments);
+      CX1 := Round(ClipRect.Left); // Round down = Floor
+      CX2 := -Round(-ClipRect.Right) - 1; // Round up = Ceil
+
+      I := CX2 - CX1 + 4;
+
+      GetMem(SpanData, I * SizeOf(Single));
+
+      FillLongWord(SpanData^, I, 0);
+
+      for I := 0 to High(ScanLines) do
+      begin
+        RenderScanline(ScanLines[I], RenderProc, Data, @SpanData[-CX1 + 1], CX1, CX2);
+        FreeMem(ScanLines[I].Segments);
+      end;
+
+      FreeMem(SpanData);
     end;
-    FreeMem(SpanData);
   finally
     SetRoundMode(SavedRoundMode);
   end;
@@ -385,15 +532,13 @@ end;
 procedure RenderPolyPolygon(const Points: TArrayOfArrayOfFloatPoint;
   const ClipRect: TFloatRect; const RenderProc: TRenderSpanEvent);
 begin
-  with TMethod(RenderProc) do
-    RenderPolyPolygon(Points, ClipRect, TRenderSpanProc(Code), Data);
+  RenderPolyPolygon(Points, ClipRect, TRenderSpanProc(TMethod(RenderProc).Code), TMethod(RenderProc).Data);
 end;
 
 procedure RenderPolygon(const Points: TArrayOfFloatPoint;
   const ClipRect: TFloatRect; const RenderProc: TRenderSpanEvent);
 begin
-  with TMethod(RenderProc) do
-    RenderPolygon(Points, ClipRect, TRenderSpanProc(Code), Data);
+  RenderPolygon(Points, ClipRect, TRenderSpanProc(TMethod(RenderProc).Code), TMethod(RenderProc).Data);
 end;
 
 end.

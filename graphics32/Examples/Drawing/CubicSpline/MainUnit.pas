@@ -73,7 +73,11 @@ implementation
 {$ENDIF}
 
 uses
-  Math, GR32_LowLevel, GR32_VectorUtils;
+  Math,
+  Types,
+  GR32_Math,
+  GR32_LowLevel,
+  GR32_VectorUtils;
 
 { TFormBezier }
 

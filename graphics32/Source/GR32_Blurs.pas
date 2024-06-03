@@ -296,7 +296,6 @@ var
   GaussLUT: array of array of Cardinal;
   PreMulArray: array of TColor32Entry;
 
-  Alpha: Cardinal;
   Mask: TBitmap32;
   Clr, MaskClr: TColor32Entry;
   Pts: TArrayOfFloatPoint;
@@ -569,7 +568,6 @@ var
   GaussLUT: array of array of Cardinal;
   PreMulArray: array of TColor32Entry;
 
-  Alpha: Cardinal;
   Mask: TBitmap32;
   Clr, MaskClr: TColor32Entry;
   Pts: TArrayOfFloatPoint;
@@ -1611,7 +1609,6 @@ procedure MotionBlur(Bitmap32: TBitmap32; Dist, AngleDeg: TFloat;
 var
   LL, RR, XX, I, X, Y, RadiusI, Passes: Integer;
   ImagePixel, ImagePixel2, ImagePixel3: PColor32Entry;
-  ImagePixels, ImagePixels2: PColor32EntryArray;
   SumRec: TSumRecord;
   Pixels: array of TSumRecord;
   Mask: TBitmap32;
@@ -1622,7 +1619,7 @@ var
   Affine: TAffineTransformation;
   BmpCutout: TBitmap32;
   BmpRotated: TBitmap32;
-  PrevIsBlank, ThisIsBlank: boolean;
+  FloatBounds: TFloatRect;
 begin
   if Dist < 1 then
     Exit
@@ -1638,12 +1635,8 @@ begin
     Passes := 3;
 
 
-  with PolygonBounds(BlurRegion) do
-    Bounds := Rect(Floor(Left), Floor(Top), Ceil(Right), Ceil(Bottom));
-  Bounds.Left := Max(Bounds.Left, 0);
-  Bounds.Top := Max(Bounds.Top, 0);
-  Bounds.Right := Min(Bounds.Right, Bitmap32.Width - 1);
-  Bounds.Bottom := Min(Bounds.Bottom, Bitmap32.Height - 1);
+  Bounds := MakeRect(PolygonBounds(BlurRegion), rrOutside);
+  Bounds.Intersect(Rect(0, 0, Bitmap32.Width-1, Bitmap32.Height-1));
 
   Affine := TAffineTransformation.Create;
   BmpCutout := TBitmap32.Create;
@@ -1676,13 +1669,11 @@ begin
     // Rotate BmpCutout into BmpRotated ...
     Affine.SrcRect := FloatRect(BmpCutout.BoundsRect);
     Affine.Rotate(180 - AngleDeg);
-    with Affine.GetTransformedBounds do
-    begin
-      Mask.SetSize(Round(Right - Left) + 1, Round(Bottom - Top) + 1);
-      BmpRotated.SetSize(Mask.Width, Mask.Height);
-      Dx := Left; Dy := Top;
-      Affine.Translate(-Dx, -Dy);
-    end;
+    FloatBounds := Affine.GetTransformedBounds;
+    Mask.SetSize(Round(FloatBounds.Width) + 1, Round(FloatBounds.Height) + 1);
+    BmpRotated.SetSize(Mask.Width, Mask.Height);
+    Dx := FloatBounds.Left; Dy := FloatBounds.Top;
+    Affine.Translate(-Dx, -Dy);
     Transform(BmpRotated, BmpCutout, Affine);
 
     // Create a rotated mask ...
@@ -1726,7 +1717,8 @@ begin
 
         LL := 0;
         RR := RadiusI;
-        if RR >= BmpRotated.Width then RR := BmpRotated.Width - 1;
+        if RR >= BmpRotated.Width then
+          RR := BmpRotated.Width - 1;
         ResetSumRecord(SumRec);
 
         // update first in row ...
@@ -1763,6 +1755,7 @@ begin
               Dec(SumRec.B, B);
               Dec(SumRec.Sum, Sum);
             end;
+
           if RR < BmpRotated.Width then
             with Pixels[RR] do
             begin
@@ -1777,12 +1770,13 @@ begin
 
           if (SumRec.Sum = 0) or (MaskClr.A = 0) then
             Continue
-          else if (I = Passes) then
+          else
+          if (I = Passes) then
           begin
             Clr := DivideToColor32(SumRec);
             BlendMemEx(Clr.ARGB, ImagePixel^.ARGB, MaskClr.A);
-          end
-          else if (MaskClr.A = 255) then
+          end else
+          if (MaskClr.A = 255) then
             ImagePixel^ := DivideToColor32(SumRec);
         end;
         EMMS;
@@ -1842,14 +1836,7 @@ procedure MotionBlurGamma(Bitmap32: TBitmap32;
 var
   Pts: TArrayOfFloatPoint;
 begin
-  SetLength(Pts, 4);
-  with Bitmap32.BoundsRect do
-  begin
-    Pts[0] := FloatPoint(Left, Top);
-    Pts[1] := FloatPoint(Right, Top);
-    Pts[2] := FloatPoint(Right, Bottom);
-    Pts[3] := FloatPoint(Left, Bottom);
-  end;
+  Pts := Rectangle(Bitmap32.BoundsRect);
   MotionBlurGamma(Bitmap32, Dist, AngleDeg, Pts, Bidirectional);
 end;
 
@@ -1858,14 +1845,7 @@ procedure MotionBlurGamma(Bitmap32: TBitmap32; Dist, AngleDeg: TFloat;
 var
   Pts: TArrayOfFloatPoint;
 begin
-  SetLength(Pts, 4);
-  with Bounds do
-  begin
-    Pts[0] := FloatPoint(Left, Top);
-    Pts[1] := FloatPoint(Right, Top);
-    Pts[2] := FloatPoint(Right, Bottom);
-    Pts[3] := FloatPoint(Left, Bottom);
-  end;
+  Pts := Rectangle(Bitmap32.BoundsRect);
   MotionBlurGamma(Bitmap32, Dist, AngleDeg, Pts, Bidirectional);
 end;
 
@@ -1874,7 +1854,6 @@ procedure MotionBlurGamma(Bitmap32: TBitmap32; Dist, AngleDeg: TFloat;
 var
   LL, RR, XX, I, X, Y, RadiusI, Passes: Integer;
   ImagePixel, ImagePixel2, ImagePixel3: PColor32Entry;
-  ImagePixels, ImagePixels2: PColor32EntryArray;
   SumRec: TSumRecord;
   Pixels: array of TSumRecord;
   Mask: TBitmap32;
@@ -1885,7 +1864,7 @@ var
   Affine: TAffineTransformation;
   BmpCutout: TBitmap32;
   BmpRotated: TBitmap32;
-  PrevIsBlank, ThisIsBlank: boolean;
+  FloatBounds: TFloatRect;
 begin
   if Dist < 1 then
     Exit
@@ -1901,12 +1880,8 @@ begin
     Passes := 3;
 
 
-  with PolygonBounds(BlurRegion) do
-    Bounds := Rect(Floor(Left), Floor(Top), Ceil(Right), Ceil(Bottom));
-  Bounds.Left := Max(Bounds.Left, 0);
-  Bounds.Top := Max(Bounds.Top, 0);
-  Bounds.Right := Min(Bounds.Right, Bitmap32.Width - 1);
-  Bounds.Bottom := Min(Bounds.Bottom, Bitmap32.Height - 1);
+  Bounds := MakeRect(PolygonBounds(BlurRegion), rrOutside);
+  Bounds.Intersect(Rect(0, 0, Bitmap32.Width-1, Bitmap32.Height-1));
 
   Affine := TAffineTransformation.Create;
   BmpCutout := TBitmap32.Create;
@@ -1939,13 +1914,12 @@ begin
     // Rotate BmpCutout into BmpRotated ...
     Affine.SrcRect := FloatRect(BmpCutout.BoundsRect);
     Affine.Rotate(180 - AngleDeg);
-    with Affine.GetTransformedBounds do
-    begin
-      Mask.SetSize(Round(Right - Left) + 1, Round(Bottom - Top) + 1);
-      BmpRotated.SetSize(Mask.Width, Mask.Height);
-      Dx := Left; Dy := Top;
-      Affine.Translate(-Dx, -Dy);
-    end;
+
+    FloatBounds := Affine.GetTransformedBounds;
+    Mask.SetSize(Round(FloatBounds.Width) + 1, Round(FloatBounds.Height) + 1);
+    BmpRotated.SetSize(Mask.Width, Mask.Height);
+    Dx := FloatBounds.Left; Dy := FloatBounds.Top;
+    Affine.Translate(-Dx, -Dy);
     Transform(BmpRotated, BmpCutout, Affine);
 
     // Create a rotated mask ...
@@ -2026,6 +2000,7 @@ begin
               Dec(SumRec.B, B);
               Dec(SumRec.Sum, Sum);
             end;
+
           if RR < BmpRotated.Width then
             with Pixels[RR] do
             begin
@@ -2040,12 +2015,13 @@ begin
 
           if (SumRec.Sum = 0) or (MaskClr.A = 0) then
             Continue
-          else if (I = Passes) then
+          else
+          if (I = Passes) then
           begin
             Clr := DivideToColor32(SumRec);
             BlendMemEx(Clr.ARGB, ImagePixel^.ARGB, MaskClr.A);
-          end
-          else if (MaskClr.A = 255) then
+          end else
+          if (MaskClr.A = 255) then
             ImagePixel^ := DivideToColor32(SumRec);
         end;
         EMMS;

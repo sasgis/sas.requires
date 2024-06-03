@@ -47,6 +47,10 @@ uses
 const
   MAX_RUNS = 3;
 
+// Note: The tiled background is scaled on purpose in order to make
+// it expensive to draw. This exacerbate the penalty of drawing too
+// much and thus better demonstrate the gains offered by the redraw
+// optimizations.
 type
   TMainForm = class(TForm)
     BtnAdd: TButton;
@@ -79,6 +83,7 @@ type
     PriorityClass, Priority: Integer;
 
     BenchmarkMode: Boolean;
+    TerminateOnCompletion: boolean;
     BenchmarkRun: Cardinal;
     BenchmarkList: TStringList;
 
@@ -98,15 +103,14 @@ implementation
 {$ENDIF}
 
 uses
+  Types,
+  System.UITypes,
 {$IFDEF Darwin}
   MacOSAll,
 {$ENDIF}
-{$IFNDEF FPC}
-  JPEG,
-{$ELSE}
-  LazJPG,
-{$ENDIF}
-  GR32_Filters, GR32_System;
+  GR32_Filters,
+  GR32_System,
+  GR32.ImageFormats.PNG32;
 
 { TMainForm }
 
@@ -116,16 +120,11 @@ var
 begin
   TempBitmap := TBitmap32.Create;
   try
-    Image32.Bitmap.LoadFromResourceName(Hinstance, 'SpriteTexture');
+    Image32.Bitmap.LoadFromResourceName(Hinstance, 'SpriteTexture', 'PNG');
+
     BitmapList.Bitmap[0].LoadFromResourceName(Hinstance, 'Sprite1');
-    TempBitmap.LoadFromResourceName(Hinstance, 'Sprite1a');
-    IntensityToAlpha(BitmapList.Bitmap[0], TempBitmap);
     BitmapList.Bitmap[1].LoadFromResourceName(Hinstance, 'Sprite2');
-    TempBitmap.LoadFromResourceName(Hinstance, 'Sprite2a');
-    IntensityToAlpha(BitmapList.Bitmap[1], TempBitmap);
     BitmapList.Bitmap[2].LoadFromResourceName(Hinstance, 'Sprite3');
-    TempBitmap.LoadFromResourceName(Hinstance, 'Sprite3a');
-    IntensityToAlpha(BitmapList.Bitmap[2], TempBitmap);
   finally
     TempBitmap.Free;
   end;
@@ -133,14 +132,19 @@ begin
   LastSeed := 0;
   BenchmarkList := TStringList.Create;
   Application.OnIdle := IdleHandler;
+
+  if (FindCmdLineSwitch('benchmark')) then
+  begin
+    TerminateOnCompletion := True;
+    BtnBenchmark.Click;
+  end;
 end;
 
 procedure TMainForm.AddLayers(Count: Integer);
 var
-  X: Integer;
-  ALayer: TBitmapLayer;
+  Layer: TBitmapLayer;
   L: TFloatRect;
-  I: Integer;
+  i: Integer;
 begin
   TimerFPS.Enabled := False;
 
@@ -148,30 +152,27 @@ begin
   RandSeed := LastSeed;
 
   Image32.BeginUpdate;
-  for X := 1 to Count do
+  for i := 1 to Count do
   begin
     // create a new layer...
-    ALayer := TBitmapLayer.Create(Image32.Layers);
-    with ALayer do
-    begin
-      Bitmap := BitmapList.Bitmaps[System.Random(BitmapList.Bitmaps.Count)].Bitmap;
-      Bitmap.DrawMode := dmBlend;
-      Bitmap.MasterAlpha := System.Random(255);
+    Layer := TBitmapLayer.Create(Image32.Layers);
 
-      // put it somethere
-      L.Left := System.Random(Image32.Width);
-      L.Top := System.Random(Image32.Height);
-      L.Right := L.Left + Bitmap.Width;
-      L.Bottom := L.Top + Bitmap.Height;
-      ALayer.Location := L;
+    Layer.Bitmap := BitmapList.Bitmaps[System.Random(BitmapList.Bitmaps.Count)].Bitmap;
+    Layer.Bitmap.DrawMode := dmBlend;
+    Layer.Bitmap.MasterAlpha := System.Random(255);
 
-      I := Length(Velocities);
-      SetLength(Velocities, I + 1);
-      Velocities[I] := FloatPoint(Random - 0.5, Random - 0.5);
-    end;
+    // put it somethere
+    L.Left := System.Random(Image32.Width);
+    L.Top := System.Random(Image32.Height);
+    L.Right := L.Left + Layer.Bitmap.Width;
+    L.Bottom := L.Top + Layer.Bitmap.Height;
+    Layer.Location := L;
+
+    SetLength(Velocities, Length(Velocities) + 1);
+    Velocities[High(Velocities)] := FloatPoint(Random - 0.5, Random - 0.5);
   end;
   Image32.EndUpdate;
-  Image32.Changed;
+
   EdtLayerCount.Text := IntToStr(Image32.Layers.Count) + ' layers';
 
   // save current seed, so we can continue at this seed later...
@@ -183,35 +184,53 @@ end;
 
 procedure TMainForm.IdleHandler(Sender: TObject; var Done: Boolean);
 var
-  I: Integer;
+  i: Integer;
   R: TFloatRect;
+  Layer: TBitmapLayer;
+  Alpha: Cardinal;
 begin
-  if Image32.Layers.Count = 0 then Exit;
+  if Image32.Layers.Count = 0 then
+    Exit;
+
   Image32.BeginUpdate;
-  for I := 0 to Image32.Layers.Count - 1 do
+  for i := 0 to Image32.Layers.Count - 1 do
   begin
-    with TBitmapLayer(Image32.Layers[I]) do
+    Layer := TBitmapLayer(Image32.Layers[i]);
+
+    Alpha := Layer.Bitmap.MasterAlpha;
+
+    if (Alpha = 0) then
+      Layer.Tag := 0
+    else
+    if (Alpha >= 255) then
+      Layer.Tag := 1;
+
+    if (Layer.Tag = 0) then
+      Inc(Alpha)
+    else
+      Dec(Alpha);
+
+    Layer.Bitmap.MasterAlpha := Alpha;
+
+    R := Layer.Location;
+    with Velocities[i] do
     begin
-      Bitmap.MasterAlpha := (Bitmap.MasterAlpha + 1) mod 256;
-      R := Location;
-      with Velocities[I] do
-      begin
-        GR32.OffsetRect(R, X, Y);
-        X := X + (Random - 0.5) * 0.9;
-        Y := Y + (Random - 0.5) * 0.9;
-        if (R.Left < 0) and (X < 0) then X := 1;
-        if (R.Top < 0) and (Y < 0) then Y := 1;
-        if (R.Right > Image32.Width) and (X > 0) then X := -1;
-        if (R.Bottom > Image32.Height) and (Y > 0) then Y := -1;
-      end;
-      Location := R;
+      GR32.OffsetRect(R, X, Y);
+      X := X + (Random - 0.5) * 0.9;
+      Y := Y + (Random - 0.5) * 0.9;
+      if (R.Left < 0) and (X < 0) then X := 1;
+      if (R.Top < 0) and (Y < 0) then Y := 1;
+      if (R.Right > Image32.Width) and (X > 0) then X := -1;
+      if (R.Bottom > Image32.Height) and (Y > 0) then Y := -1;
     end;
+    Layer.Location := R;
   end;
   Image32.EndUpdate;
-  Image32.Invalidate;
+
   // because we're doing Invalidate in the IdleHandler and Invalidate has
   // higher priority, we can count the frames here, because we can be sure that
   // the deferred repaint is triggered once this method is exited.
+
   Inc(FramesDrawn);
 end;
 
@@ -244,16 +263,20 @@ var
   TimeElapsed: Cardinal;
   Diff: Integer;
   FPS: Single;
+  LocalFormatSettings: TFormatSettings;
 begin
   TimerFPS.Enabled := False;
   TimeElapsed := GetTickCount - LastCheck;
 
+  LocalFormatSettings := FormatSettings;
+  LocalFormatSettings.DecimalSeparator := '.';
+
   FPS := FramesDrawn / (TimeElapsed / 1000);
-  LblFPS.Caption := Format('%.2f fps', [FPS]);
+  LblFPS.Caption := Format('%.2f fps', [FPS], LocalFormatSettings);
 
   if BenchmarkMode then
   begin
-    BenchmarkList.Add(Format('%d ' + #9 + '%.2f', [Image32.Layers.Count, FPS]));
+    BenchmarkList.Add(Format('%d ' + #9 + '%.2f', [Image32.Layers.Count, FPS], LocalFormatSettings));
 
     Diff := 0;  // stop complaining, ye my evil compiler!
 
@@ -274,6 +297,7 @@ begin
     else if Image32.Layers.Count >= 2000 then
     begin
       BtnBenchmarkClick(nil);
+
       Exit;
     end;
 
@@ -282,7 +306,7 @@ begin
 
   FramesDrawn := 0;
   LastCheck := GetTickCount;
-  TimerFPS.Enabled := True;  
+  TimerFPS.Enabled := True;
 end;
 
 procedure TMainForm.Image32Resize(Sender: TObject);
@@ -297,8 +321,9 @@ end;
 
 procedure TMainForm.BtnBenchmarkClick(Sender: TObject);
 begin
-  if BenchmarkMode then
+  if (BenchmarkMode) then
   begin
+
     SetThreadPriority(GetCurrentThread, Priority);
     SetPriorityClass(GetCurrentProcess, PriorityClass);
 
@@ -312,44 +337,50 @@ begin
     BenchmarkMode := False;
     TimerFPS.Interval := 5000;
     BenchmarkList.SaveToFile('Results.txt');
-  end
-  else if (MessageDlg('Do you really want to start benchmarking? ' +
-    'This will take a considerable amount of time.' + #13#10 +
-    'Benchmarking runs with a higher task priority. Your system might become unresponsive for several seconds.',
-    mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
-  begin
-    PriorityClass := GetPriorityClass(GetCurrentProcess);
-    Priority := GetThreadPriority(GetCurrentThread);
 
-    SetPriorityClass(GetCurrentProcess, HIGH_PRIORITY_CLASS);
-    SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_TIME_CRITICAL);
+    if (TerminateOnCompletion) then
+      Application.Terminate; // Queue termination
 
-    BtnBenchmark.Caption := 'Stop';
-
-    CbxUseRepaintOpt.Enabled := False;
-    BtnAdd.Enabled := False;
-    BtnRemove.Enabled := False;
-    BtnClearAll.Enabled := False;
-
-    BenchmarkMode := True;
-    BenchmarkList.Clear;
-    BtnClearAllClick(nil);
-    AddLayers(10);
-    LastCheck := GetTickCount;    
-    TimerFPS.Interval := MAX_RUNS * 5000;
+    TerminateOnCompletion := False;
+    exit;
   end;
+
+  if (not TerminateOnCompletion) then
+  begin
+
+    if (MessageDlg('Do you really want to start benchmarking? ' +
+      'This will take a considerable amount of time.' + #13#13 +
+      'Benchmarking runs with a higher task priority. Your system might become unresponsive for several seconds.'+#13#13+
+      'The applicartion will terminate after the benchmark completes.',
+      mtConfirmation, [mbYes, mbNo], 0) <> mrYes) then
+      exit;
+
+  end;
+
+  PriorityClass := GetPriorityClass(GetCurrentProcess);
+  Priority := GetThreadPriority(GetCurrentThread);
+
+  SetPriorityClass(GetCurrentProcess, HIGH_PRIORITY_CLASS);
+  SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_TIME_CRITICAL);
+
+  BtnBenchmark.Caption := 'Stop';
+
+  CbxUseRepaintOpt.Enabled := False;
+  BtnAdd.Enabled := False;
+  BtnRemove.Enabled := False;
+  BtnClearAll.Enabled := False;
+
+  BenchmarkMode := True;
+  BenchmarkList.Clear;
+  BtnClearAllClick(nil);
+  AddLayers(10);
+  LastCheck := GetTickCount;
+  TimerFPS.Interval := MAX_RUNS * 5000;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   BenchmarkList.Free;
 end;
-
-initialization
-{$IFDEF COMPILERXE2_UP}
-  FormatSettings.DecimalSeparator := '.';
-{$ELSE}
-  DecimalSeparator := '.';
-{$ENDIF}
 
 end.

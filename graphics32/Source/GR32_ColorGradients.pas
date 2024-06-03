@@ -36,8 +36,12 @@ interface
 {$I GR32.inc}
 
 uses
-  Types, Classes, SysUtils, Math, GR32, GR32_Polygons,
-  GR32_VectorUtils, GR32_Bindings;
+  Types, Classes, SysUtils, Math,
+  GR32,
+  GR32_Polygons,
+  GR32_VectorUtils,
+  GR32_Blend, // Needed in interface for inlining
+  GR32_Bindings;
 
 type
   TColor32GradientStop = record
@@ -703,7 +707,10 @@ var
 implementation
 
 uses
-  GR32_LowLevel, GR32_System, GR32_Math, GR32_Geometry, GR32_Blend;
+  GR32_LowLevel,
+  GR32_System,
+  GR32_Math,
+  GR32_Geometry;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -2348,6 +2355,7 @@ begin
   Recurse(0, High(Values));
 end;
 
+// Note: GR32_VectorUtils contains a generic version of this function. Keep both in sync.
 function DelaunayTriangulation(Points: TArrayOfColor32FloatPoint): TArrayOfTriangleVertexIndices;
 var
   Complete: array of Byte;
@@ -2869,7 +2877,7 @@ end;
 procedure TCustomCenterRadiusLutGradientSampler.SetRadius(
   const Value: TFloat);
 begin
-  if FRadius <> Value then
+  if (FRadius <> Value) and (Value > 0) then
   begin
     FRadius := Value;
     RadiusChanged;
@@ -4292,8 +4300,8 @@ begin
   with FEllipseBounds do
   begin
     FCenter := FloatPoint((Left + Right) * 0.5, (Top + Bottom) * 0.5);
-    FRadius.X := Round((Right - Left) * 0.5);
-    FRadius.Y := Round((Bottom - Top) * 0.5);
+    FRadius.X := System.Round((Right - Left) * 0.5);
+    FRadius.Y := System.Round((Bottom - Top) * 0.5);
   end;
 
   UpdateRadiusScale;
@@ -4704,8 +4712,8 @@ begin
 
 {$IFNDEF PUREPASCAL}
 {$IFNDEF OMIT_SSE2}
-  GradientRegistry.Add(FID_LINEAR3, @Linear3PointInterpolation_SSE2, [ciSSE2]);
-  GradientRegistry.Add(FID_LINEAR4, @Linear4PointInterpolation_SSE2, [ciSSE2]);
+  GradientRegistry.Add(FID_LINEAR3, @Linear3PointInterpolation_SSE2, [isSSE2]);
+  GradientRegistry.Add(FID_LINEAR4, @Linear4PointInterpolation_SSE2, [isSSE2]);
 {$ENDIF}
 {$ENDIF}
 

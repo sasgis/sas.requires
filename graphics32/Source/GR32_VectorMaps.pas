@@ -28,24 +28,15 @@ unit GR32_VectorMaps;
  * Portions created by the Initial Developer are Copyright (C) 2000-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
- * Mattias Andersson <mattias@centaurix.com>
- *
  * ***** END LICENSE BLOCK ***** *)
 
 interface
-     
+
 {$I GR32.inc}
 
 uses
-{$IFDEF FPC}
-  {$IFDEF Windows}
-    Windows,
-  {$ENDIF}
-{$ELSE}
-  Windows,
-{$ENDIF}
-  Classes, GR32;
+  Types, // inlining
+  GR32;
 
 type
   TFixedVector = TFixedPoint;
@@ -117,7 +108,9 @@ type
 implementation
 
 uses
-  GR32_Lowlevel, GR32_Math, SysUtils;
+  SysUtils,
+  GR32_Lowlevel,
+  GR32_Math;
 
 resourcestring
   RCStrCantAllocateVectorMap = 'Can''t allocate VectorMap!';
@@ -142,7 +135,7 @@ end;
 
 function TVectorMap.BoundsRect: TRect;
 begin
-  Result := Rect(0, 0, Width, Height);
+  Result := MakeRect(0, 0, Width, Height);
 end;
 
 procedure TVectorMap.ChangeSize(var Width, Height: Integer;
@@ -155,7 +148,8 @@ begin
   SetLength(FVectors, NewWidth * NewHeight);
   if (NewWidth > 0) and (NewHeight > 0) then
   begin
-    if FVectors = nil then raise Exception.Create(RCStrCantAllocateVectorMap);
+    if FVectors = nil then
+      raise Exception.Create(RCStrCantAllocateVectorMap);
     FillLongword(FVectors[0], NewWidth * NewHeight * 2, 0);
   end;
   Width := NewWidth;
@@ -242,21 +236,20 @@ begin
   if (WX >= 0) and (WX <= W - 1) and (WY >= 0) and (WY <= H - 1) then
   begin
     P := @FVectors[WX + WY * W];
-    if (WY = H - 1) then W := 0 else W := W * Next;
-    if (WX = W - 1) then H := 0 else H := Next;
+    if (WY = H - 1) then
+      W := 0
+    else
+      W := W * Next;
+    if (WX = W - 1) then
+      H := 0
+    else
+      H := Next;
     WX := TFixedRec(X).Frac;
     WY := TFixedRec(Y).Frac;
-    {$IFDEF HAS_NATIVEINT}
     Result := CombineVectorsReg(CombineVectorsReg(PFixedPoint(P)^,
       PFixedPoint(NativeUInt(P) + NativeUInt(H))^, WX), CombineVectorsReg(
       PFixedPoint(NativeUInt(P) + NativeUInt(W))^,
       PFixedPoint(NativeUInt(P) + NativeUInt(W + H))^, WX), WY);
-    {$ELSE}
-    Result := CombineVectorsReg(CombineVectorsReg(PFixedPoint(P)^,
-      PFixedPoint(Cardinal(P) + Cardinal(H))^, WX), CombineVectorsReg(
-      PFixedPoint(Cardinal(P) + Cardinal(W))^,
-      PFixedPoint(Cardinal(P) + Cardinal(W) + Cardinal(H))^, WX), WY);
-    {$ENDIF}
   end else
   begin
     Result.X := 0;
@@ -290,11 +283,11 @@ const
 type
   {TVectorMap supports the photoshop liquify mesh fileformat .msh}
   TPSLiquifyMeshHeader = record
-    Pad0  : dword;
+    Pad0  : cardinal;
     Ident : array [0..7] of Char;
-    Pad1  : dword;
-    Width : dword;
-    Height: dword;
+    Pad1  : cardinal;
+    Width : cardinal;
+    Height: cardinal;
   end;
 
 procedure TVectorMap.LoadFromFile(const FileName: string);
@@ -347,15 +340,15 @@ var
 begin
   if Src.Empty then Exception.Create(RCStrSrcIsEmpty);
   if Empty then Exception.Create(RCStrBaseIsEmpty);
-  IntersectRect( SrcRect, Src.BoundsRect, SrcRect);
+  GR32.IntersectRect(SrcRect, Src.BoundsRect, SrcRect);
 
   DstRect.Left := DstLeft;
   DstRect.Top := DstTop;
   DstRect.Right := DstLeft + (SrcRect.Right - SrcRect.Left);
   DstRect.Bottom := DstTop + (SrcRect.Bottom - SrcRect.Top);
 
-  IntersectRect(DstRect, BoundsRect, DstRect);
-  if IsRectEmpty(DstRect) then Exit;
+  GR32.IntersectRect(DstRect, BoundsRect, DstRect);
+  if GR32.IsRectEmpty(DstRect) then Exit;
 
   P := SrcRect.Top * Src.Width;
   Progression.Y := - FixedOne;
@@ -432,25 +425,25 @@ procedure TVectorMap.SaveToFile(const FileName: string);
   procedure ConvertVerticesF;
   var
     I: Integer;
-{$IFDEF COMPILERRX1}
+{$if (defined(CompilerVersion)) and (CompilerVersion = 31)}
     f: single;
-{$ENDIF}
+{$ifend}
   begin
     for I := 0 to Length(FVectors) - 1 do
     begin
       //Not a mistake! Converting physical mem. directly to avoid temporary floating point buffer
       //Do no change to PFloat.. the type is relative to the msh format.
 
-//Workaround for Delphi 10.1 Internal Error C6949 ...
-{$IFDEF COMPILERRX1}
+// Workaround for Delphi 10.1 Internal Error C6949 ...
+{$if (defined(CompilerVersion)) and (CompilerVersion = 31)}
       f := FVectors[I].X * FixedToFloat;
       FVectors[I].X := PInteger(@f)^;
       f := FVectors[I].Y * FixedToFloat;
       FVectors[I].Y := PInteger(@f)^;
-{$ELSE}
+{$else}
       PSingle(@FVectors[I].X)^ := FVectors[I].X * FixedToFloat;
       PSingle(@FVectors[I].Y)^ := FVectors[I].Y * FixedToFloat;
-{$ENDIF}
+{$ifend}
     end;
   end;
 
@@ -641,8 +634,8 @@ begin
 
   end;
   RightDone:
-  if IsRectEmpty(Result) then
-    Result := Rect(0, 0, 0, 0);
+  if GR32.IsRectEmpty(Result) then
+    Result := MakeRect(0, 0, 0, 0);
 end;
 
 end.

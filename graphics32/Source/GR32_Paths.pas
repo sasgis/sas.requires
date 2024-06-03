@@ -39,6 +39,7 @@ interface
 uses
   Classes, SysUtils,
   GR32,
+  GR32_Math,
   GR32_Polygons,
   GR32_Transforms,
   GR32_Brushes,
@@ -57,18 +58,13 @@ type
     FCurrentPoint: TFloatPoint;
     FLastControlPoint: TFloatPoint;
     FControlPointOrigin: TControlPointOrigin;
-    FChanged: boolean;
   protected
     procedure AddPoint(const Point: TFloatPoint); virtual;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure DoChanged; virtual;
   public
     constructor Create; override;
-    procedure Clear; virtual;
 
-    procedure BeginUpdate; override;
-    procedure EndUpdate; override;
-    procedure Changed; override;
+    procedure Clear; virtual;
 
     procedure BeginPath; deprecated 'No longer necessary. Path is started automatically';
     procedure EndPath(Close: boolean = False); virtual;
@@ -89,6 +85,7 @@ type
     procedure HorizontalLineToRelative(const X: TFloat); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
     procedure VerticalLineTo(const Y: TFloat); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
     procedure VerticalLineToRelative(const Y: TFloat); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+    // Cubic beziers
     procedure CurveTo(const X1, Y1, X2, Y2, X, Y: TFloat); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
     procedure CurveTo(const X2, Y2, X, Y: TFloat); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
     procedure CurveTo(const C1, C2, P: TFloatPoint); overload; virtual;
@@ -97,6 +94,7 @@ type
     procedure CurveToRelative(const X2, Y2, X, Y: TFloat); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
     procedure CurveToRelative(const C1, C2, P: TFloatPoint); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
     procedure CurveToRelative(const C2, P: TFloatPoint); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+    // Quadratic bezier
     procedure ConicTo(const X1, Y1, X, Y: TFloat); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
     procedure ConicTo(const P1, P: TFloatPoint); overload; virtual;
     procedure ConicTo(const X, Y: TFloat); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
@@ -108,7 +106,7 @@ type
 
     // Polylines
     procedure Arc(const P: TFloatPoint; StartAngle, EndAngle, Radius: TFloat);
-    procedure PolyLine(const APoints: TArrayOfFloatPoint); virtual;
+    procedure PolyLine(const APoints: TArrayOfFloatPoint; AOffset: integer = 0); virtual;
     procedure PolyPolyLine(const APoints: TArrayOfArrayOfFloatPoint); virtual;
 
     // Closed Polygons
@@ -125,8 +123,6 @@ type
   end;
 
   { TFlattenedPath }
-  TBooleanArray = array of boolean;
-
   TFlattenedPath = class(TCustomPath)
   private
     FPath: TArrayOfArrayOfFloatPoint;
@@ -197,9 +193,9 @@ type
     constructor Create(ABitmap: TBitmap32); reintroduce; virtual;
     destructor Destroy; override;
 
-    procedure RenderText(X, Y: TFloat; const Text: WideString); overload;
-    procedure RenderText(const DstRect: TFloatRect; const Text: WideString; Flags: Cardinal); overload;
-    function MeasureText(const DstRect: TFloatRect; const Text: WideString; Flags: Cardinal): TFloatRect;
+    procedure RenderText(X, Y: TFloat; const Text: string); overload;
+    procedure RenderText(const DstRect: TFloatRect; const Text: string; Flags: Cardinal); overload;
+    function MeasureText(const DstRect: TFloatRect; const Text: string; Flags: Cardinal): TFloatRect;
 
     property Bitmap: TBitmap32 read FBitmap;
     property Renderer: TPolygonRenderer32 read FRenderer write SetRenderer;
@@ -217,7 +213,7 @@ type
 implementation
 
 uses
-  Math, {$IFDEF FPC}Types, {$ENDIF} {$IFDEF COMPILERXE2_UP}Types, {$ENDIF}
+  Types,
   GR32_Backends,
   GR32_VectorUtils;
 
@@ -298,35 +294,6 @@ begin
   FControlPointOrigin := cpNone;
 end;
 
-procedure TCustomPath.BeginUpdate;
-begin
-  inherited BeginUpdate;
-end;
-
-procedure TCustomPath.EndUpdate;
-begin
-  inherited EndUpdate;
-
-  if (UpdateCount = 0) and (FChanged) then
-  begin
-    FChanged := False;
-    DoChanged;
-  end;
-end;
-
-procedure TCustomPath.Changed;
-begin
-  BeginUpdate;
-  FChanged := True;
-  EndUpdate;
-end;
-
-procedure TCustomPath.DoChanged;
-begin
-  // Execute OnChange event
-  inherited Changed;
-end;
-
 procedure TCustomPath.AddPoint(const Point: TFloatPoint);
 begin
 end;
@@ -365,7 +332,6 @@ end;
 procedure TCustomPath.Clear;
 begin
   FControlPointOrigin := cpNone;
-  FChanged := False;
 end;
 
 procedure TCustomPath.ClosePath;
@@ -570,7 +536,9 @@ begin
   BeginUpdate;
 
   MoveTo(APoints[0]); // Implicitly ends any current path
-  PolyLine(APoints);
+
+  // Offset=1 because we've already added the first vertex
+  PolyLine(APoints, 1);
   EndPath(True);
 
   EndUpdate;
@@ -591,16 +559,16 @@ begin
   EndUpdate;
 end;
 
-procedure TCustomPath.PolyLine(const APoints: TArrayOfFloatPoint);
+procedure TCustomPath.PolyLine(const APoints: TArrayOfFloatPoint; AOffset: integer);
 var
   i: Integer;
 begin
-  if Length(APoints) = 0 then
+  if (AOffset > High(APoints)) then
     Exit;
 
   BeginUpdate;
 
-  for i := 0 to High(APoints) do
+  for i := AOffset to High(APoints) do
     LineTo(APoints[i]);
 
   EndUpdate;
@@ -711,18 +679,21 @@ end;
 
 procedure TFlattenedPath.AddPoint(const Point: TFloatPoint);
 var
-  n: Integer;
+  p: TFloatPoint;
 begin
   if (FPointIndex = 0) then
     DoBeginPath;
 
+  // Work around for Delphi compiler bug.
+  // We'll get an AV on the assignment below without it.
+  p := Point;
+
   // Grow buffer if required
-  n := Length(FPoints);
-  if (FPointIndex >= n) then
-    SetLength(FPoints, n + VertexBufferSizeGrow);
+  if (FPointIndex > High(FPoints)) then
+    SetLength(FPoints, Length(FPoints) + VertexBufferSizeGrow);
 
   // Add vertex to buffer
-  FPoints[FPointIndex] := Point;
+  FPoints[FPointIndex] := p;
   Inc(FPointIndex);
 end;
 
@@ -806,7 +777,10 @@ begin
   begin
     TCanvas32(Dest).BeginUpdate;
     inherited;
-    TCanvas32(Dest).FBitmap := FBitmap; // TODO : Shouldn't this be .FBitmap.Assign(FBitmap)?
+    // DONE : Shouldn't this be .FBitmap.Assign(FBitmap)?
+    // No, because TCanvas32 doesn't own the bitmap; It just references it.
+    TCanvas32(Dest).FBitmap := FBitmap;
+
     TCanvas32(Dest).FRenderer.Assign(FRenderer);
     TCanvas32(Dest).FBrushes.Assign(FBrushes);
     TCanvas32(Dest).Changed;
@@ -845,8 +819,7 @@ end;
 procedure TCanvas32.DrawPath(const Path: TFlattenedPath);
 var
   ClipRect: TFloatRect;
-  i, j, k: Integer;
-  Buffer: TArrayOfArrayOfFloatPoint;
+  i: Integer;
   Closed: boolean;
 begin
   if (Length(Path.Path) = 0) then
@@ -858,37 +831,16 @@ begin
   // Simple case: All paths are closed or all paths are open
   if (Path.ClosedCount = 0) or (Path.ClosedCount = Length(Path.Path)) then
   begin
+    Closed := (Path.ClosedCount > 0);
     for i := 0 to FBrushes.Count-1 do
       if FBrushes[i].Visible then
-        FBrushes[i].PolyPolygonFS(Renderer, Path.Path, ClipRect, Transformation, (Path.ClosedCount = Length(Path.Path)));
+        FBrushes[i].PolyPolygonFS(Renderer, Path.Path, ClipRect, Transformation, Closed);
   end else
   // Not so simple case: Some paths are closed, some are open
   begin
-    j := 0;
-    // Find contiguous chunks of path with same "closedness"
-    while (j < Length(Path.Path)) do
-    begin
-      Closed := Path.PathClosed[j];
-      // Find a run of same "closedness"
-      k := j+1;
-      while (k < Length(Path.Path)) and (Path.PathClosed[k] = Closed) do
-        Inc(k);
-
-      // Run goes from j to k-1
-      SetLength(Buffer, k-j);
-      i := 0;
-      while (j < k) do
-      begin
-        Buffer[i] := Path.Path[j];
-        Inc(j);
-        Inc(i);
-      end;
-
-      // Render this run
-      for i := 0 to FBrushes.Count-1 do
-        if FBrushes[i].Visible then
-          FBrushes[i].PolyPolygonFS(Renderer, Buffer, ClipRect, Transformation, Closed);
-    end;
+    for i := 0 to FBrushes.Count-1 do
+      if FBrushes[i].Visible then
+        FBrushes[i].PolyPolygonMixedFS(Renderer, Path.Path, ClipRect, Transformation, Path.PathClosed);
   end;
 end;
 
@@ -903,7 +855,7 @@ begin
   Result := FRenderer.ClassName;
 end;
 
-function TCanvas32.MeasureText(const DstRect: TFloatRect; const Text: WideString; Flags: Cardinal): TFloatRect;
+function TCanvas32.MeasureText(const DstRect: TFloatRect; const Text: string; Flags: Cardinal): TFloatRect;
 var
   TextToPath: ITextToPathSupport;
 begin
@@ -913,7 +865,7 @@ begin
   Result := TextToPath.MeasureText(DstRect, Text, Flags);
 end;
 
-procedure TCanvas32.RenderText(const DstRect: TFloatRect; const Text: WideString; Flags: Cardinal);
+procedure TCanvas32.RenderText(const DstRect: TFloatRect; const Text: string; Flags: Cardinal);
 var
   TextToPath: ITextToPathSupport;
 begin
@@ -923,7 +875,7 @@ begin
   TextToPath.TextToPath(Self, DstRect, Text, Flags);
 end;
 
-procedure TCanvas32.RenderText(X, Y: TFloat; const Text: WideString);
+procedure TCanvas32.RenderText(X, Y: TFloat; const Text: string);
 var
   TextToPath: ITextToPathSupport;
 begin

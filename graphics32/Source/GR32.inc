@@ -26,11 +26,6 @@
  * Portions created by the Initial Developer are Copyright (C) 2000-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
- *   Andre Beckedorf <Andre@metaException.de>
- *   Michael Hansen <dyster_tid@hotmail.com>
- *   Christian Budde <Christian@aixcoustic.com>
- *
  * ***** END LICENSE BLOCK ***** *)
 
  {$I GR32_Compiler.inc}
@@ -39,26 +34,20 @@
 (* Symbol PUREPASCAL:
    ------------------
 
-      Forces GR32 into pure pascal mode. Should be used only for testing and
-      debugging purposes.
+      Forces GR32 into pure pascal mode. Should generally only be used for
+      testing and debugging purposes.
+      The library makes use of x86 assembler optimizations. While this
+      results in a performance boost it also makes the library platform
+      dependent.
+      By enabling the PUREPASCAL switch, only pascal code is used, avoiding
+      any assmbler code. The code is slower, but probably more platform
+      independent.
 
-      (Defined by default for FPC and DARWIN targets in GR32_Compilers.INC.)
+      (Defined by default for some targets in GR32_Compilers.INC.)
 
 *)
 
   {-$DEFINE PUREPASCAL}
-
-
-
-(* Symbol DEPRECATEDMODE :
-   -----------------------
-
-      Defines if GR32 should behave like version 1.7.x and down.
-
-   NOTE: Support for this will be dropped at some time and is only provided
-   for transition *)
-
-  {-$DEFINE DEPRECATEDMODE}
 
 
 
@@ -87,6 +76,9 @@
     {$DEFINE USEINLINING}
   {$ENDIF}
 
+  {$IF DEFINED(INLININGSUPPORTED) AND DEFINED(SUPPORT_ENHANCED_RECORDS) }
+    {$DEFINE INLINING_ENHANCED_RECORDS}
+  {$IFEND}
 
 
 (* Symbol USE_GUIDS_IN_MMF :
@@ -181,19 +173,6 @@
 *)
 
   {-$DEFINE OMIT_SSE2}
-
-
-(*
-  Symbol: USEGR32GAMMA
-  --------------------
-
-    If defined the polygon rasterizer will use the GR32 gamma correction LUT.
-
-  Disable for a slight performance increase.
-*)
-
-{$DEFINE USEGR32GAMMA}
-
 
 
 (*
