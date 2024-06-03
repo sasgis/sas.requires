@@ -36,7 +36,7 @@ for /f "usebackq tokens=1-3 delims=," %%a in ("update.csv") do (
     git clean -d -x --force    
     git reset --hard %%c
     
-    git log > ..\%log%\%%a.txt
+    git log --date=iso > ..\%log%\%%a.txt
     
     attrib -s -h ".git"
     rename ".git" %hidden%    
