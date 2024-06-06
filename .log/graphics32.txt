@@ -1,3 +1,9 @@
+commit 163cc5dd704abc1472ddeb8525e432248d82717b
+Author: zed <starmen@tut.by>
+Date:   2024-06-06 23:35:39 +0300
+
+    Rename extended functions
+
 commit ae749e51d3f538b33a1b3d37c72c05fc5336fb57
 Merge: 2ca61889 d398e2c3
 Author: zed <starmen@tut.by>

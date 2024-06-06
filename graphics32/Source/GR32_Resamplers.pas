@@ -77,7 +77,7 @@ procedure BlockTransferX(
   Src: TCustomBitmap32; SrcRect: TRect;
   CombineOp: TDrawMode; CombineCallBack: TPixelCombineEvent = nil);
 
-procedure BlockTransferZ(
+procedure BlockTransferExt(
   Dst: TCustomBitmap32; DstX: Integer; DstY: Integer; DstClip: TRect;
   SrcBits: PColor32Array; SrcWidth, SrcHeight: Integer; SrcRect: TRect;
   CombineOp: TDrawMode = dmOpaque;
@@ -100,7 +100,7 @@ procedure StretchTransfer(
   CombineOp: TDrawMode; CombineCallBack: TPixelCombineEvent = nil);
   {$IFDEF USEINLINING} inline; {$ENDIF}
 
-procedure StretchTransferZ(
+procedure StretchTransferExt(
   Dst: TCustomBitmap32; DstRect: TRect; DstClip: TRect;
   SrcBits: PColor32Array; SrcWidth, SrcHeight: Integer; SrcRect: TRect;
   Resampler: TCustomResampler;
@@ -1354,11 +1354,11 @@ procedure BlockTransfer(
   CombineOp: TDrawMode; CombineCallBack: TPixelCombineEvent);
 begin
   CheckBitmaps(Dst, Src);
-  BlockTransferZ(Dst, DstX, DstY, DstClip, Src.Bits, Src.Width, Src.Height,
+  BlockTransferExt(Dst, DstX, DstY, DstClip, Src.Bits, Src.Width, Src.Height,
     SrcRect, CombineOp, Src.CombineMode, Src.MasterAlpha, Src.OuterColor, CombineCallBack);
 end;
 
-procedure BlockTransferZ(
+procedure BlockTransferExt(
   Dst: TCustomBitmap32; DstX: Integer; DstY: Integer; DstClip: TRect;
   SrcBits: PColor32Array; SrcWidth, SrcHeight: Integer; SrcRect: TRect;
   CombineOp: TDrawMode;
@@ -3289,12 +3289,12 @@ procedure StretchTransfer(
   CombineOp: TDrawMode; CombineCallBack: TPixelCombineEvent);
 begin
   CheckBitmaps(Dst, Src);
-  StretchTransferZ(Dst, DstRect, DstClip, Src.Bits, Src.Width, Src.Height,
+  StretchTransferExt(Dst, DstRect, DstClip, Src.Bits, Src.Width, Src.Height,
     SrcRect, Resampler, CombineOp, Src.CombineMode, Src.MasterAlpha, Src.OuterColor,
     CombineCallBack);
 end;
 
-procedure StretchTransferZ(
+procedure StretchTransferExt(
   Dst: TCustomBitmap32; DstRect: TRect; DstClip: TRect;
   SrcBits: PColor32Array; SrcWidth, SrcHeight: Integer; SrcRect: TRect;
   Resampler: TCustomResampler;
