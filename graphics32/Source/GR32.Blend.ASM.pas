@@ -58,7 +58,6 @@ function BlendRegEx_ASM(F, B: TColor32; M: Cardinal): TColor32;
 procedure BlendMemEx_ASM(F: TColor32; var B:TColor32; M: Cardinal);
 
 procedure BlendLine_ASM(Src, Dst: PColor32; Count: Integer);
-procedure BlendLine1_ASM(Src: TColor32; Dst: PColor32; Count: Integer);
 
 
 //------------------------------------------------------------------------------
@@ -99,6 +98,7 @@ implementation
 
 uses
   GR32_Blend,
+  GR32_Bindings,
   GR32_LowLevel,
   GR32_System;
 
@@ -373,166 +373,6 @@ end;
 
 
 //------------------------------------------------------------------------------
-// BlendMems
-//------------------------------------------------------------------------------
-procedure BlendMems_ASM(F: TColor32; B: PColor32; Count: Integer); {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
-asm
-{$IFDEF TARGET_x86}
-        TEST    ECX,ECX
-        JZ      @4
-
-        PUSH    EBX
-        PUSH    ESI
-        PUSH    EDI
-
-        MOV     ESI,EAX
-        MOV     EDI,EDX
-
-@1:
-  // Test Fa = 0 ?
-        MOV     EAX,[ESI]
-        TEST    EAX,$FF000000
-        JZ      @3
-
-        PUSH    ECX
-
-  // Get weight W = Fa
-        MOV     ECX,EAX         // ECX  <-  Fa Fr Fg Fb
-        SHR     ECX,24          // ECX  <-  00 00 00 Fa
-
-  // Test Fa = 255 ?
-        CMP     ECX,$FF
-        JZ      @2
-
-  // P = W * F
-        MOV     EBX,EAX         // EBX  <-  Fa Fr Fg Fb
-        AND     EAX,$00FF00FF   // EAX  <-  00 Fr 00 Fb
-        AND     EBX,$FF00FF00   // EBX  <-  Fa 00 Fg 00
-        IMUL    EAX,ECX         // EAX  <-  Pr ** Pb **
-        SHR     EBX,8           // EBX  <-  00 Fa 00 Fg
-        IMUL    EBX,ECX         // EBX  <-  Pa ** Pg **
-        ADD     EAX,bias        // add bias
-        AND     EAX,$FF00FF00   // EAX  <-  Pr 00 Pb 00
-        SHR     EAX,8           // EAX  <-  00 Pr 00 Pb
-        ADD     EBX,bias        // add bias
-        AND     EBX,$FF00FF00   // EBX  <-  Pa 00 Pg 00
-        OR      EAX,EBX         // EAX  <-  Pa Pr Pg Pb
-
-        MOV     EDX,[EDI]
-
-  // W = 1 - W
-        XOR     ECX,$000000FF   // ECX  <-  1 - ECX
-
-  // Q = W * B
-        MOV     EBX,EDX         // EBX  <-  Ba Br Bg Bb
-        AND     EDX,$00FF00FF   // ESI  <-  00 Br 00 Bb
-        AND     EBX,$FF00FF00   // EBX  <-  Ba 00 Bg 00
-        IMUL    EDX,ECX         // ESI  <-  Qr ** Qb **
-        SHR     EBX,8           // EBX  <-  00 Ba 00 Bg
-        IMUL    EBX,ECX         // EBX  <-  Qa ** Qg **
-        ADD     EDX,bias        // add bias
-        AND     EDX,$FF00FF00   // ESI  <-  Qr 00 Qb 00
-        SHR     EDX,8           // ESI  <-  00 Qr 00 Qb
-        ADD     EBX,bias        // add bias
-        AND     EBX,$FF00FF00   // EBX  <-  Qa 00 Qg 00
-        OR      EBX,ESI         // EBX  <-  Qa Qr Qg Qb
-
-  // Z = P + Q (assuming no overflow at each byte)
-        ADD     EAX,EBX         // EAX  <-  Za Zr Zg Zb
-        OR      EAX,$FF000000   // EAX  <-  FF Zr Zg Zb
-
-@2:
-        OR      EAX,$FF000000
-        MOV     [EDI],EAX
-        POP     ECX
-
-@3:
-        ADD     ESI,4
-        ADD     EDI,4
-
-        DEC     ECX
-        JNZ     @1
-
-        POP     EDI
-        POP     ESI
-        POP     EBX
-
-@4:
-        RET
-{$ENDIF}
-
-{$IFDEF TARGET_x64}
-        TEST    R8D,R8D
-        JZ      @4
-
-        PUSH    RDI
-
-        MOV     R9,RCX
-        MOV     RDI,RDX
-
-@1:
-        MOV     ECX,[RSI]
-        TEST    ECX,$FF000000
-        JZ      @3
-
-        PUSH    R8
-
-        MOV     R8D,ECX
-        SHR     R8D,24
-
-        CMP     R8D,$FF
-        JZ      @2
-
-        MOV     EAX,ECX
-        AND     ECX,$00FF00FF
-        AND     EAX,$FF00FF00
-        IMUL    ECX,R8D
-        SHR     EAX,8
-        IMUL    EAX,R8D
-        ADD     ECX,bias
-        AND     ECX,$FF00FF00
-        SHR     ECX,8
-        ADD     EAX,bias
-        AND     EAX,$FF00FF00
-        OR      ECX,EAX
-
-        MOV     EDX,[RDI]
-        XOR     R8D,$000000FF
-        MOV     EAX,EDX
-        AND     EDX,$00FF00FF
-        AND     EAX,$FF00FF00
-        IMUL    EDX, R8D
-        SHR     EAX,8
-        IMUL    EAX,R8D
-        ADD     EDX,bias
-        AND     EDX,$FF00FF00
-        SHR     EDX,8
-        ADD     EAX,bias
-        AND     EAX,$FF00FF00
-        OR      EAX,EDX
-
-        ADD     ECX,EAX
-@2:
-        OR      ECX,$FF000000
-        MOV     [RDI],ECX
-        POP     R8
-
-@3:
-        ADD     R9,4
-        ADD     RDI,4
-
-        DEC     R8D
-        JNZ     @1
-
-        POP     RDI
-
-@4:
-        RET
-{$ENDIF}
-end;
-
-
-//------------------------------------------------------------------------------
 // BlendRegEx
 //------------------------------------------------------------------------------
 function BlendRegEx_ASM(F, B: TColor32; M: Cardinal): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
@@ -801,7 +641,7 @@ asm
 
   // test the counter for zero or negativity
         TEST    ECX,ECX
-        JS      @4
+        JLE     @4
 
         PUSH    EBX
         PUSH    ESI
@@ -886,7 +726,7 @@ asm
 
   // test the counter for zero or negativity
         TEST    R8D,R8D
-        JS      @4
+        JLE     @4
 
         MOV     R10,RCX         // R10 <- Src
         MOV     R11,RDX         // R11 <- Dst
@@ -957,9 +797,9 @@ end;
 
 
 //------------------------------------------------------------------------------
-// BlendLine1
+// BlendMems
 //------------------------------------------------------------------------------
-procedure BlendLine1_ASM(Src: TColor32; Dst: PColor32; Count: Integer); {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
+procedure BlendMems_ASM(F: TColor32; B: PColor32; Count: Integer); {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
 {$IFDEF TARGET_x86}
   // EAX <- Src
@@ -968,11 +808,11 @@ asm
 
   // test the counter for zero or negativity
         TEST    ECX,ECX
-        JS      @4
+        JLE     @Done
 
   // test if source if fully transparent
         TEST    EAX,$FF000000
-        JZ      @4
+        JZ      @Done
 
         PUSH    EBX
         PUSH    ESI
@@ -986,7 +826,7 @@ asm
 
   // test if source is fully opaque
         CMP     ESI,$FF
-        JZ      @4
+        JZ      @CopySource
 
   // P = W * F
         MOV     EBX,EAX         // EBX  <-  Fa Fr Fg Fb
@@ -1004,8 +844,9 @@ asm
         XOR     ESI,$000000FF   // ESI  <-  1 - Fa
 
   // loop start
-@1:
-        MOV     EDX,[EDI]
+@BlendPixelLoop:
+        MOV     EDX,[EDI]       // EDX  <-  Dest^
+
         MOV     EBX,EDX         // EBX  <-  Ba Br Bg Bb
         AND     EDX,$00FF00FF   // EDX  <-  00 Br 00 Bb
         AND     EBX,$FF00FF00   // EBX  <-  Ba 00 Bg 00
@@ -1020,30 +861,29 @@ asm
         OR      EBX,EDX         // EBX  <-  Qa Qr Qg Qb
 
   // Z = P + Q (assuming no overflow at each byte)
-        ADD     EBX,EAX         // EAX  <-  Za Zr Zg Zb
-        OR      EAX,$FF000000   // EAX  <-  FF Zr Zg Zb
+        ADD     EBX,EAX         // EBX  <-  Za Zr Zg Zb
+        OR      EBX,$FF000000   // EBX  <-  FF Zr Zg Zb
 
-        OR      EBX,$FF000000
-        MOV     [EDI],EBX
+        MOV     [EDI],EBX       // Dest^<-  EBX
 
-        ADD     EDI,4
+        ADD     EDI,4           // Inc(Dest)
 
-        DEC     ECX
-        JNZ     @1
+        DEC     ECX             // Dec(Count)
+        JNZ     @BlendPixelLoop
 
         POP     EDI
         POP     ESI
         POP     EBX
 
-@3:
+@Done:
         RET
 
-@4:
-        MOV     [EDI],EAX
-        ADD     EDI,4
+@CopySource:
+        MOV     [EDI],EAX       // Dest^<- Src
+        ADD     EDI,4           // Inc(Dest)
 
-        DEC     ECX
-        JNZ     @4
+        DEC     ECX             // Dec(Count)
+        JNZ     @CopySource
 
         POP     EDI
         POP     ESI
@@ -1058,11 +898,11 @@ asm
 
   // test the counter for zero or negativity
         TEST    R8D,R8D          // R8D <- Count
-        JZ      @2
+        JLE     @Done
 
   // test if source if fully transparent
         TEST    ECX,$FF000000
-        JZ      @2
+        JZ      @Done
 
         PUSH    RDI
 
@@ -1074,7 +914,7 @@ asm
 
   // Test Fa = 255 ?
         CMP     R9D,$FF
-        JZ      @3                // complete opaque,copy source
+        JZ      @CopySource       // complete opaque,copy source
 
   // P = W * F
         MOV     EAX,ECX           // EAX  <-  Fa Fr Fg Fb
@@ -1092,8 +932,9 @@ asm
         XOR     R9D,$000000FF     // R9D  <-  1 - Fa
 
   // loop start
-@1:
+@BlendPixelLoop:
         MOV     EDX,[RDI]
+
         MOV     EAX,EDX           // EAX  <-  Ba Br Bg Bb
         AND     EDX,$00FF00FF     // EDX  <-  00 Br 00 Bb
         AND     EAX,$FF00FF00     // EAX  <-  Ba 00 Bg 00
@@ -1111,27 +952,26 @@ asm
         ADD     EAX,ECX           // EAX  <-  Za Zr Zg Zb
         OR      EAX,$FF000000     // EAX  <-  FF Zr Zg Zb
 
-        OR      EAX,$FF000000
         MOV     [RDI],EAX
 
         ADD     RDI,4
 
   // loop end
         DEC     R8D
-        JNZ     @1
+        JNZ     @BlendPixelLoop
 
         POP     RDI
 
-@2:
+@Done:
         RET
 
-@3:
+@CopySource:
   // just copy source
         MOV     [RDI],ECX
         ADD     RDI,4
 
         DEC     R8D
-        JNZ     @3
+        JNZ     @CopySource
 
         POP     RDI
 {$ENDIF}
@@ -1599,20 +1439,19 @@ end;
 {$IFNDEF PUREPASCAL}
 procedure RegisterBindingFunctions;
 begin
-  BlendRegistry.Add(FID_EMMS,           @EMMS_ASM,              0, BlendRegistryPriorityASM);
-  BlendRegistry.Add(FID_COMBINEREG,     @CombineReg_ASM,        0, BlendRegistryPriorityASM);
-  BlendRegistry.Add(FID_COMBINEMEM,     @CombineMem_ASM,        0, BlendRegistryPriorityASM);
-  BlendRegistry.Add(FID_BLENDREG,       @BlendReg_ASM,          0, BlendRegistryPriorityASM);
-  BlendRegistry.Add(FID_BLENDMEM,       @BlendMem_ASM,          0, BlendRegistryPriorityASM);
-  BlendRegistry.Add(FID_BLENDMEMS,      @BlendMems_ASM,         0, BlendRegistryPriorityASM);
-  BlendRegistry.Add(FID_BLENDREGEX,     @BlendRegEx_ASM,        0, BlendRegistryPriorityASM);
+  BlendRegistry.Add(FID_EMMS,           @EMMS_ASM,              [isAssembler]);
+  BlendRegistry.Add(FID_COMBINEREG,     @CombineReg_ASM,        [isAssembler]);
+  BlendRegistry.Add(FID_COMBINEMEM,     @CombineMem_ASM,        [isAssembler]);
+  BlendRegistry.Add(FID_BLENDREG,       @BlendReg_ASM,          [isAssembler]);
+  BlendRegistry.Add(FID_BLENDMEM,       @BlendMem_ASM,          [isAssembler]);
+  BlendRegistry.Add(FID_BLENDMEMS,      @BlendMems_ASM,         [isAssembler]);
+  BlendRegistry.Add(FID_BLENDREGEX,     @BlendRegEx_ASM,        [isAssembler]);
 {$IFDEF TARGET_X86}
-  BlendRegistry.Add(FID_BLENDMEMEX,     @BlendMemEx_ASM,        0, BlendRegistryPriorityASM); // Implemented on x64 but broken
+  BlendRegistry.Add(FID_BLENDMEMEX,     @BlendMemEx_ASM,        [isAssembler]); // Implemented on x64 but broken
 {$ENDIF}
-  BlendRegistry.Add(FID_BLENDLINE,      @BlendLine_ASM,         0, BlendRegistryPriorityASM);
-  BlendRegistry.Add(FID_BLENDLINE1,     @BlendLine1_ASM,        0, BlendRegistryPriorityASM);
+  BlendRegistry.Add(FID_BLENDLINE,      @BlendLine_ASM,         [isAssembler]);
 {$IFNDEF TARGET_x64}
-  BlendRegistry.Add(FID_MERGEREG,       @MergeReg_ASM,          0, BlendRegistryPriorityASM);
+  BlendRegistry.Add(FID_MERGEREG,       @MergeReg_ASM,          [isAssembler]);
 {$ENDIF}
 end;
 {$ENDIF}

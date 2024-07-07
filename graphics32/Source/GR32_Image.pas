@@ -545,7 +545,7 @@ type
     procedure RepaintModeChanged; override;
     procedure DoBitmapResized; virtual;
     procedure BitmapResized; virtual;
-    procedure BitmapChanged(const Area: TRect); reintroduce; virtual;
+    procedure BitmapChanged(const Area: TRect); virtual;
     function CanMousePan: boolean; virtual;
     function CanMouseZoom: boolean; virtual;
     function CanAutoSize(var NewWidth, NewHeight: Integer): Boolean; override;
@@ -2244,7 +2244,7 @@ end;
 procedure TCustomImage32.BitmapChangeHandler(Sender: TObject);
 begin
   RepaintOptimizer.Reset;
-  BitmapChanged(CachedBitmapRect);
+  BitmapChanged(Bitmap.BoundsRect);
 end;
 
 procedure TCustomImage32.BitmapAreaChangeHandler(Sender: TObject; const Area: TRect; const Info: Cardinal);
@@ -4580,11 +4580,11 @@ begin
 
     if ([ocScale, ocBitmapSize, ocControlSize] * FOffsetChanges <> []) then
     begin
-      // If Visibility=svAuto then the ranges of the scrollbars may just have
-      // changed, thus we need to update the visibility of the scrollbars.
-      // Also, if the control is resize we need to reposition the scrollbars.
-      if (CanShowScrollBars) and (FScrollBars.Visibility in [svAlways, svAuto]) then
-        UpdateScrollbarVisibility;
+      // - If Visibility=svAuto then the ranges of the scrollbars may just have
+      //   changed, thus we need to update the visibility of the scrollbars.
+      // - If the control is resize we need to reposition the scrollbars.
+      // - If the scollbars has been hidden/shown we need to update them.
+      UpdateScrollbarVisibility;
 
       UpdateScrollBar(FHorScroll, FBitmapSize.cx, Min(FBitmapSize.cx, FViewportSize.cx));
       UpdateScrollBar(FVerScroll, FBitmapSize.cy, Min(FBitmapSize.cy, FViewportSize.cy));

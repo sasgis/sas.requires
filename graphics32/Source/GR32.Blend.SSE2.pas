@@ -104,16 +104,6 @@ function LightenReg_SSE2(C: TColor32; Amount: Integer): TColor32; {$IFDEF FPC} a
 procedure EMMS_SSE2; {$IFDEF FPC} assembler; {$ENDIF}
 
 
-//------------------------------------------------------------------------------
-//
-//      Bindings
-//
-//------------------------------------------------------------------------------
-const
-  BlendRegistryPrioritySSE2 = -768;
-  BlendRegistryPrioritySSE41 = -1024;
-  BlendRegistryPrioritySSE42 = -1280;
-
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -258,125 +248,6 @@ asm
 
 @1:     RET
 @2:     MOV       [RDX], ECX
-{$ENDIF}
-end;
-
-
-//------------------------------------------------------------------------------
-// BlendMems
-//------------------------------------------------------------------------------
-procedure BlendMems_SSE2(F: TColor32; B: PColor32; Count: Integer); {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
-asm
-{$IFDEF TARGET_x86}
-        TEST      ECX,ECX
-        JZ        @2
-
-        TEST      EAX,$FF000000
-        JZ        @2
-
-        PUSH      EBX
-
-        MOV       EBX,EAX
-        SHR       EBX,24
-
-        CMP       EBX,$FF
-        JZ        @3
-
-        MOVD      XMM4,EAX
-        PXOR      XMM3,XMM3
-        PUNPCKLBW XMM4,XMM3
-        MOV       EBX,bias_ptr
-
-@1:
-        MOVD      XMM2,[EDX]
-        PUNPCKLBW XMM2,XMM3
-        MOVQ      XMM1,XMM4
-        PUNPCKLBW XMM1,XMM3
-        PUNPCKHWD XMM1,XMM1
-        MOVQ      XMM0,XMM4
-        PSUBW     XMM0,XMM2
-        PUNPCKHDQ XMM1,XMM1
-        PSLLW     XMM2,8
-        PMULLW    XMM0,XMM1
-        PADDW     XMM2,[EBX]
-        PADDW     XMM2,XMM0
-        PSRLW     XMM2,8
-        PACKUSWB  XMM2,XMM3
-        MOVD      [EDX],XMM2
-
-        ADD       EDX,4
-
-        DEC       ECX
-        JNZ       @1
-
-        POP       EBX
-
-@2:
-        RET
-
-@3:
-        MOV       [EDX],EAX
-        ADD       EDX,4
-
-        DEC       ECX
-        JNZ       @3
-
-        POP       EBX
-{$ENDIF}
-
-{$IFDEF TARGET_x64}
-        TEST      R8D,R8D
-        JZ        @2
-
-        TEST      ECX,$FF000000
-        JZ        @2
-
-        MOV       RAX,RCX
-        SHR       EAX,24
-
-        CMP       EAX,$FF
-        JZ        @3
-
-        MOVD      XMM4,ECX
-        PXOR      XMM3,XMM3
-        PUNPCKLBW XMM4,XMM3
-{$IFNDEF FPC}
-        MOV       RAX,bias_ptr       // RAX   <-  Pointer to Bias
-{$ELSE}
-        MOV       RAX,[RIP+bias_ptr] // XXX : Enabling PIC by relative offsetting for x64
-{$ENDIF}
-
-@1:
-        MOVD      XMM2,[RDX]
-        PUNPCKLBW XMM2,XMM3
-        MOVQ      XMM1,XMM4
-        PUNPCKLBW XMM1,XMM3
-        PUNPCKHWD XMM1,XMM1
-        MOVQ      XMM0,XMM4
-        PSUBW     XMM0,XMM2
-        PUNPCKHDQ XMM1,XMM1
-        PSLLW     XMM2,8
-        PMULLW    XMM0,XMM1
-        PADDW     XMM2,[RAX]
-        PADDW     XMM2,XMM0
-        PSRLW     XMM2,8
-        PACKUSWB  XMM2,XMM3
-        MOVD      [RDX], XMM2
-
-        ADD       RDX,4
-
-        DEC       R8D
-        JNZ       @1
-
-@2:
-        RET
-
-@3:
-        MOV       [RDX],ECX
-        ADD       RDX,4
-
-        DEC       R8D
-        JNZ       @3
 {$ENDIF}
 end;
 
@@ -947,6 +818,237 @@ end;
 
 
 //------------------------------------------------------------------------------
+// BlendMems
+// Like BlendLine except the Src parameter is static.
+//------------------------------------------------------------------------------
+procedure BlendMems_SSE2(F: TColor32; B: PColor32; Count: Integer); {$IFDEF FPC} assembler; {$ENDIF}
+asm
+{$IFDEF TARGET_X86}
+  // EAX <- Src: TColor32
+  // EDX <- Dst: PColor32
+  // ECX <- Count
+
+  // Test the counter for zero or negativity
+        TEST      ECX, ECX
+        JLE       @Done
+
+  // Test if source if fully transparent
+        TEST      EAX, $FF000000
+        JZ        @Done
+
+  // Setup division by 255 bias
+        PUSH      EBX
+        PXOR      XMM4, XMM4
+        MOV       EBX, [bias_ptr]
+        MOVDQA    XMM5, [EBX]
+        POP       EBX
+
+  // Load source
+        MOVD      XMM0, EAX                     // XMM0 <- 00 00 00 00 Fa Fr Fg Fb
+
+  // Get source alpha and test if fully opaque
+        SHR       EAX, 24
+        CMP       EAX, $FF
+        JZ        @FillWithSource
+
+        PSHUFD    XMM0, XMM0, 0                 // XMM0[0..3] <- XMM0[0][0..3]
+        PUNPCKLBW XMM0, XMM4                    // XMM0 <- 00 Fa 00 Fr 00 Fg 00 Fb
+        PSHUFLW   XMM1, XMM0, $FF               // XMM1 <- 00 Fa 00 Fa 00 Fa 00 Fa
+        PSHUFHW   XMM1, XMM1, $FF
+
+  // Premultiply source pixel by its alpha
+        MOVDQA    XMM3, XMM1                    // XMM3 <- 2*QWord(XMM1)
+        PSRLQ     XMM3, 16                      // XMM3 <- 00 00 00 Fa 00 Fa 00 Fa
+        PMULLW    XMM0, XMM3                    // XMM0 <- Frgb * Fa
+        PADDW     XMM0, XMM5                    // XMM0 <- Frgb * Fa + Bias
+        PSRLW     XMM0, 8                       // XMM0 <- (Frgb * Fa + Bias) shr 8
+        PSLLQ     XMM3, 48                      // XMM3 <- 00 Fa 00 00 00 00 00 00
+        POR       XMM0, XMM3                    // XMM0 <- 00 Fa 00 FR 00 FG 00 FB
+
+  // Save alpha multiplier
+        MOVDQA    XMM3, XMM1
+
+  // Test for odd/even count
+        TEST      ECX, 1
+        JZ        @Even
+
+  // We have an odd number of pixels.
+  // Blend a single pixel so the remaining count is even.
+
+  // Load dest
+        MOVD      XMM2, DWORD PTR [EDX]         // XMM2 <- 00 00 00 00 Ba Br Bg Bb
+        PUNPCKLBW XMM2, XMM4                    // XMM2 <- 00 Ba 00 Br 00 Bg 00 Bb
+
+  // C' = A'  B' - aB'
+        PMULLW    XMM1, XMM2
+        PADDW     XMM1, XMM5
+        PSRLW     XMM1, 8
+        PADDW     XMM2, XMM0
+        PSUBW     XMM2, XMM1
+
+        PACKUSWB  XMM2, XMM4
+        MOVD      [EDX], XMM2
+
+@Even:
+        LEA       EDX, [EDX + ECX * 4]          // Get address of last pixel
+
+        SHR       ECX,1                         // Number of QWORDS
+        JZ        @Done
+        NEG       ECX                           // Negate count so we can use it as an offset to move forward
+
+@Loop:
+  // Blend two pixels at a time
+
+  // Restore alpha multiplier
+        MOVDQA    XMM1, XMM3
+
+  // Load dest
+        MOVQ      XMM2, [EDX + ECX * 8].QWORD   // XMM2 <- Ba Br Bg Bb Ba Br Bg Bb
+        PUNPCKLBW XMM2, XMM4                    // XMM2 <- 00 Ba 00 Br 00 Bg 00 Bb
+
+  // Blend: C' = A' + B' - aB'
+        PMULLW    XMM1, XMM2
+        PADDW     XMM1, XMM5
+        PSRLW     XMM1, 8
+        PADDW     XMM2, XMM0
+        PSUBW     XMM2, XMM1
+
+        PACKUSWB  XMM2, XMM4
+        MOVQ      [EDX + ECX * 8].QWORD, XMM2
+
+        ADD       ECX, 1
+        JS        @Loop
+
+@Done:
+        RET
+
+@FillWithSource:
+  // Shuffle registers for FillLongword
+        MOV       EAX, EDX
+        MOV       EDX, ECX
+        MOVD      ECX, XMM0
+
+        CALL      FillLongword // EAX:Dest, EDX:Count, ECX:Value
+
+{$ENDIF}
+
+{$IFDEF TARGET_X64}
+  // ECX <- Src: TColor32
+  // RDX <- Dst: PColor32
+  // R8D <- Count
+
+  // Test the counter for zero or negativity
+        TEST      R8D, R8D
+        JLE       @Done
+
+  // Test if source if fully transparent
+        TEST      ECX, $FF000000
+        JZ        @Done
+
+  // Get source alpha
+        MOV       EAX, ECX
+        SHR       EAX, 24
+
+  // Test if source is fully opaque
+        CMP       EAX, $FF
+        JZ        @FillWithSource
+
+  // Setup division by 255 bias
+        PXOR      XMM4, XMM4
+{$IFNDEF FPC}
+        MOV       RAX, bias_ptr
+{$ELSE}
+        MOV       RAX, [RIP+bias_ptr]
+{$ENDIF}
+        MOVDQA    XMM5, [RAX]
+
+  // Load source
+        MOVQ      XMM0, RCX                     // XMM0 <- 00 00 00 00 Fa Fr Fg Fb
+        PSHUFD    XMM0, XMM0, 0                 // XMM0[0..3] <- XMM0[0][0..3]
+        PUNPCKLBW XMM0, XMM4                    // XMM0 <- 00 Fa 00 Fr 00 Fg 00 Fb
+        PSHUFLW   XMM1, XMM0, $FF               // XMM1 <- 00 Fa 00 Fa 00 Fa 00 Fa
+        PSHUFHW   XMM1, XMM1, $FF
+
+  // Premultiply source pixel by its alpha
+        MOVDQA    XMM3, XMM1                    // XMM3 <- 2*QWord(XMM1)
+        PSRLQ     XMM3, 16                      // XMM3 <- 00 00 00 Fa 00 Fa 00 Fa
+        PMULLW    XMM0, XMM3                    // XMM0 <- Frgb * Fa
+        PADDW     XMM0, XMM5                    // XMM0 <- Frgb * Fa + Bias
+        PSRLW     XMM0, 8                       // XMM0 <- (Frgb * Fa + Bias) shr 8
+        PSLLQ     XMM3, 48                      // XMM3 <- 00 Fa 00 00 00 00 00 00
+        POR       XMM0, XMM3                    // XMM0 <- 00 Fa 00 FR 00 FG 00 FB
+
+  // Save alpha multiplier
+        MOVDQA    XMM3, XMM1
+
+  // Test for odd/even count
+        MOV       R9D, R8D
+        SHR       R9D, 1                        // Get number of double pixels
+        TEST      R9D, R9D
+        JZ        @SinglePixel                  // None; We only have a single pixel
+
+@Loop:
+  // Blend two pixels at a time
+
+  // Load dest
+        MOVQ      XMM2, [RDX].QWORD
+        PUNPCKLBW XMM2, XMM4
+
+  // Blend: C' = A' + B' - aB'
+        PMULLW    XMM1, XMM2
+        PADDW     XMM1, XMM5
+        PSRLW     XMM1, 8
+        PADDW     XMM2, XMM0
+        PSUBW     XMM2, XMM1
+
+  // Restore alpha multiplier
+        MOVDQA    XMM1, XMM3
+
+  // Store dest
+        PACKUSWB  XMM2, XMM4
+        MOVQ      [RDX].QWORD, XMM2
+
+        ADD       RDX, 8
+        SUB       R9D, 1
+        JNZ       @Loop
+
+@SinglePixel:
+        AND       R8D, 1
+        JZ        @Done
+
+  // Blend a single pixel
+
+  // Load dest
+        MOVD      XMM2, [RDX]
+        PUNPCKLBW XMM2, XMM4
+
+  // Blend: C' = A'  B' - aB'
+        PMULLW    XMM1, XMM2
+        PADDW     XMM1, XMM5
+        PSRLW     XMM1, 8
+        PADDW     XMM0, XMM2
+        PSUBW     XMM0, XMM1
+
+  // Store dest
+        PACKUSWB  XMM0, XMM4
+        MOVD      [RDX], XMM0
+
+@Done:
+        RET
+
+@FillWithSource:
+  // Shuffle registers for FillLongword
+        MOV       EAX, ECX
+        MOV       RCX, RDX
+        MOV       EDX, R8D
+        MOV       R8D, EAX
+
+        CALL      FillLongword // RCX:Dest, EDX:Count, R8D:Value
+{$ENDIF}
+end;
+
+
+//------------------------------------------------------------------------------
 // BlendLineEx
 //------------------------------------------------------------------------------
 procedure BlendLineEx_SSE2(Src, Dst: PColor32; Count: Integer; M: Cardinal); {$IFDEF FPC} assembler; {$IFDEF TARGET_X64}nostackframe;{$ENDIF} {$ENDIF}
@@ -958,7 +1060,7 @@ asm
 
   // test the counter for zero or negativity
         TEST      ECX,ECX
-        JS        @4
+        JLE       @4
 
         PUSH      ESI
         PUSH      EDI
@@ -1020,7 +1122,7 @@ asm
 
   // test the counter for zero or negativity
         TEST      R8D,R8D
-        JS        @4
+        JLE        @4
         TEST      R9D,R9D
         JZ        @4
 
@@ -2162,36 +2264,36 @@ procedure RegisterBindingFunctions;
 begin
 {$IFNDEF OMIT_SSE2}
 
-  BlendRegistry.Add(FID_EMMS,           @EMMS_SSE2, [isSSE2, isSSE41],  0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_MERGEREG,       @MergeReg_SSE2, [isSSE2],       0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_COMBINEREG,     @CombineReg_SSE2, [isSSE2],     0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_COMBINEMEM,     @CombineMem_SSE2_128, [isSSE2], 0, BlendRegistryPrioritySSE2);
+  BlendRegistry.Add(FID_EMMS,           @EMMS_SSE2,             [isSSE2, isSSE41]);
+  BlendRegistry.Add(FID_MERGEREG,       @MergeReg_SSE2,         [isSSE2]);
+  BlendRegistry.Add(FID_COMBINEREG,     @CombineReg_SSE2,       [isSSE2]);
+  BlendRegistry.Add(FID_COMBINEMEM,     @CombineMem_SSE2_128,   [isSSE2]);
 {$ifndef FPC} // CombineMem_SSE41_Kadaif is currently broken on FPC
-  BlendRegistry.Add(FID_COMBINEMEM,     @CombineMem_SSE41_Kadaif, [isSSE41], 0, BlendRegistryPrioritySSE41);
+  BlendRegistry.Add(FID_COMBINEMEM,     @CombineMem_SSE41_Kadaif, [isSSE41]);
 {$else}
-  BlendRegistry.Add(FID_COMBINEMEM,     @CombineMem_SSE41_8081, [isSSE41], 0, BlendRegistryPrioritySSE41);
+  BlendRegistry.Add(FID_COMBINEMEM,     @CombineMem_SSE41_8081, [isSSE41]);
 {$endif}
-  BlendRegistry.Add(FID_COMBINELINE,    @CombineLine_SSE2, [isSSE2],    0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_BLENDREG,       @BlendReg_SSE2, [isSSE2],       0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_BLENDMEM,       @BlendMem_SSE2, [isSSE2],       0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_BLENDMEMS,      @BlendMems_SSE2, [isSSE2],      0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_BLENDMEMEX,     @BlendMemEx_SSE2, [isSSE2],     0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_BLENDLINE,      @BlendLine_SSE2, [isSSE2],      0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_BLENDLINEEX,    @BlendLineEx_SSE2, [isSSE2],    0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_BLENDREGEX,     @BlendRegEx_SSE2, [isSSE2],     0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_COLORMAX,       @ColorMax_SSE2, [isSSE2],       0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_COLORMIN,       @ColorMin_SSE2, [isSSE2],       0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_COLORADD,       @ColorAdd_SSE2, [isSSE2],       0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_COLORSUB,       @ColorSub_SSE2, [isSSE2],       0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_COLORMODULATE,  @ColorModulate_SSE2, [isSSE2],  0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_COLORDIFFERENCE,@ColorDifference_SSE2, [isSSE2],0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_COLOREXCLUSION, @ColorExclusion_SSE2, [isSSE2], 0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_COLORSCALE,     @ColorScale_SSE2, [isSSE2],     0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_LIGHTEN,        @LightenReg_SSE2, [isSSE],      0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_BLENDREGRGB,    @BlendRegRGB_SSE2, [isSSE2],    0, BlendRegistryPrioritySSE2);
-  BlendRegistry.Add(FID_BLENDMEMRGB,    @BlendMemRGB_SSE2, [isSSE2],    0, BlendRegistryPrioritySSE2);
+  BlendRegistry.Add(FID_COMBINELINE,    @CombineLine_SSE2,      [isSSE2]);
+  BlendRegistry.Add(FID_BLENDREG,       @BlendReg_SSE2,         [isSSE2]);
+  BlendRegistry.Add(FID_BLENDMEM,       @BlendMem_SSE2,         [isSSE2]);
+  BlendRegistry.Add(FID_BLENDMEMS,      @BlendMems_SSE2,        [isSSE2]);
+  BlendRegistry.Add(FID_BLENDMEMEX,     @BlendMemEx_SSE2,       [isSSE2]);
+  BlendRegistry.Add(FID_BLENDLINE,      @BlendLine_SSE2,        [isSSE2]);
+  BlendRegistry.Add(FID_BLENDLINEEX,    @BlendLineEx_SSE2,      [isSSE2]);
+  BlendRegistry.Add(FID_BLENDREGEX,     @BlendRegEx_SSE2,       [isSSE2]);
+  BlendRegistry.Add(FID_COLORMAX,       @ColorMax_SSE2,         [isSSE2]);
+  BlendRegistry.Add(FID_COLORMIN,       @ColorMin_SSE2,         [isSSE2]);
+  BlendRegistry.Add(FID_COLORADD,       @ColorAdd_SSE2,         [isSSE2]);
+  BlendRegistry.Add(FID_COLORSUB,       @ColorSub_SSE2,         [isSSE2]);
+  BlendRegistry.Add(FID_COLORMODULATE,  @ColorModulate_SSE2,    [isSSE2]);
+  BlendRegistry.Add(FID_COLORDIFFERENCE,@ColorDifference_SSE2,  [isSSE2]);
+  BlendRegistry.Add(FID_COLOREXCLUSION, @ColorExclusion_SSE2,   [isSSE2]);
+  BlendRegistry.Add(FID_COLORSCALE,     @ColorScale_SSE2,       [isSSE2]);
+  BlendRegistry.Add(FID_LIGHTEN,        @LightenReg_SSE2,       [isSSE]);
+  BlendRegistry.Add(FID_BLENDREGRGB,    @BlendRegRGB_SSE2,      [isSSE2]);
+  BlendRegistry.Add(FID_BLENDMEMRGB,    @BlendMemRGB_SSE2,      [isSSE2]);
 {$IFDEF TEST_BLENDMEMRGB128SSE4}
-  BlendRegistry.Add(FID_BLENDMEMRGB128, @BlendMemRGB128_SSE4, [isSSE2], 0, BlendRegistryPrioritySSE2);
+  BlendRegistry.Add(FID_BLENDMEMRGB128, @BlendMemRGB128_SSE4,   [isSSE2]);
 {$ENDIF}
 
 {$ENDIF}

@@ -1,3 +1,219 @@
+commit 8a26d69b662157f532da4e70eeca9dcd954eb9ed
+Merge: 163cc5dd 8a030782
+Author: zed <starmen@tut.by>
+Date:   2024-07-07 14:00:33 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 8a0307821ec45982d48ae447e00d36c4f3191cf1
+Merge: 94b1c3cf 3b58e7bf
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-05 13:14:02 +0200
+
+    Merge branch 'BlendLine1_to_BlendMems'
+
+commit 3b58e7bf70d7d6e9db00e339837ca1ff26a94b77
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-05 13:10:15 +0200
+
+    PixelF example: Fixed 64-bit ambiguity
+    
+    Various minor UI improvements.
+
+commit c99ed79bbf8d3a945d769911c5b330f28af2446c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-05 11:50:30 +0200
+
+    GradLines example: Using BlendMems instead of per pixel BlendMem to fade -> 25% better FPS
+
+commit ab22a7debd23966fbaac3800176c5b108819fc89
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-05 11:21:19 +0200
+
+    BlendMems optimization:
+    
+    - Process the static source color outside the blend loop.
+    - Defer to FillLongword if source is opaque.
+    - Skip if source is transparent.
+    - Improved parameter validation.
+
+commit d73bfc897004c2c11f9d93b72dfe58d91c9ce20d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-04 13:32:46 +0200
+
+    BlendLine1 and MergeLine1 has been deprecated in favor of BlendMems and MergeMems.
+    
+    - The API and functionality was identical to BlendMems and MergeMems so there really was no reason to have both.
+    - The MergeLine1 binding wasn't registered so the function must have been unused. - The MergeMems function is new.
+    - The new BlendMems_SSE2 implementation is approximately 35% faster than the old implementations of BlendMems_SSE2 and BlendLine1_SSE2.
+
+commit 94b1c3cfae078e6e4f78dc68adb9a45d2f5b2fb3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-02 21:45:28 +0200
+
+    Added FastFloor with SSE4.1 implementation and overloads for Single and Double
+    
+    Removed Experimental directives
+
+commit ca48d62ebd2dca3f002741482735221435a88bb4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-02 18:01:34 +0200
+
+    Particle Swarm example: Fixed update batching; ~270% better performance
+
+commit 2ad1cf8824fa164260f9b913961ec6f6e8431b22
+Merge: f75e234b 734a2167
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-01 21:51:55 +0200
+
+    Merge branch 'SimplexNoise'
+
+commit f75e234b89b6db81be50e951da89ccde54fdbee7
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-01 21:51:11 +0200
+
+    Fixes for FPC
+    
+    - FPC's TRectF type is too basic; Use our own instead.
+    - FPC's TList does not have a List property; Use a access cracker to get to the internal list.
+    - FPC's TList can't extract by index; Extract by item instead.
+    - FPC does not support unicode identifiers and apparently never will (at least with the current compiler devs); TProjectiveTransformationEx has been disabled since it uses math symbols.
+
+commit 734a21672c4ed088bb9dbac5fa55e8e2a2e55cf7
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-01 21:42:56 +0200
+
+    Added GR32.Noise.Simplex unit containing 2D, 3D & 4D Simplex Noise generators.
+    
+    Added Particle Swarm example demonstrating use of Simplex Noise.
+
+commit 74eec26be7911c9e2297ab81531177eb796e4202
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-25 21:48:29 +0200
+
+    Added SSE2 implementation of BlendLine1 for both x86 and x64.
+    
+    Fix AV with Count=0 in ASM, MMX and SSE2 implementations of BlendLine and BlendLine1
+
+commit f18ff93faba4bf375df3069de9dd41baf461ba34
+Merge: b8323962 c1c1c3d7
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-20 15:15:48 +0200
+
+    Merge branch 'Bindings'
+
+commit c1c1c3d7a0d734036c8adc1b4b1a4380f9a3983a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-20 15:01:46 +0200
+
+    Breaking change: The order of the Flags and Priority parameters of has been swapped since the Flags parameters now is very seldom used.
+    
+    In order to make it easier to detect, at compile time, where the parameter was used the type has also been changed from Integer to Cardinal. This at least will catch the cases where a negative priority has been specified (which was the most common case).
+    Additionally, use of the Priority parameter has been eliminated from all the internal bindings since the binding system, by default, automatically will resolve bindings to use the best CPU technology when all priorities are equal.
+
+commit 5f7139942f85f4576d38d376a6c9695a31286dba
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-20 13:27:43 +0200
+
+    The deprecated TFunctionRegistry.Add(TCPUFeatures) has been deleted.
+    
+    Internally the binding system now uses generic lists.
+
+commit b61f5630a988e60f2d6a1aa587c652863e4eba41
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-15 22:04:37 +0200
+
+    Breaking change: The InstructionSupport parameter of the binding system is now required.
+    
+    This change incorporates the Pascal, Assembler, and Reference binding flags into the TCPUInstructionSet enumeration. These flag values were previously most commonly implemented using the Flag parameter but since there was no standard way of doing this each binding registry had to implement them independently.
+    Additionally, the binding system now uses the InstructionSupport values to break a priority tie when selecting binding entries.
+
+commit b8323962729d18c42eb99f815e7f3514ed7b96c0
+Merge: 220c3ad5 e8c51696
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-20 15:11:42 +0200
+
+    Merge branch 'transpose'
+
+commit 220c3ad599d0b5f0de6d577dd80b1fb819f7c8bf
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-13 23:57:51 +0200
+
+    Added Bindings unit tests
+
+commit e8c51696a1d3c3451b61944603ad5a553a435354
+Merge: da653caa 6a725c86
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-13 22:32:09 +0200
+
+    Merge branch 'transpose_x64' into transpose
+
+commit 6a725c86001717a1090d2c54f753b1bab69123e5
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-10 23:48:52 +0200
+
+    Fix: Binding system ignored specified CPU feature mask
+
+commit 5e2814ab1d898f702797a8754454262ff7db902f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-10 23:47:13 +0200
+
+    Updated transpose unit test to explicitly test SuperDuperTranspose32 so we don't get fooled by the binding system again :-/
+
+commit 0bb34a515b35bea70d3d3cf3c489b6a7e0172131
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-09 01:21:49 +0200
+
+    x64 port of x86 SuperDuperTranspose32
+
+commit 71d16847757aa2a39a7c27924b20aeba834f2c99
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-10 23:48:52 +0200
+
+    Fix: Binding system ignored specified CPU feature mask
+
+commit da653caab1e5a3763dcb7b961b1aa49c6746096f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-10 16:43:55 +0200
+
+    Added cache oblivious transpose with block buffer.
+
+commit 6b0c24806569ab06cd5368dedf4721beb121d3c1
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-10 11:32:06 +0200
+
+    Fix for TImgView32 scrollbars visibility and position not being updated in some situations.
+
+commit f6805653901fcccd0ac03d5fa0dc89dd0e6ae01e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-10 10:27:27 +0200
+
+    Fix for TImage32/TImgView32 not repainting correct area when image is zoomed out
+
+commit e56fcdae177db1b5fe26339e1706761ae388f6c8
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-09 14:11:27 +0200
+
+    Added Transpose benchmark
+
+commit 7590e8d6b89036773162ee60ba7fd86b9d662cbb
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-09 14:12:17 +0200
+
+    Updated spring4d.benchmark
+
+commit 25a18cb370fe1b00dba7cc7c2308abf747ea1452
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-08 19:01:06 +0200
+
+    Added Transpose unit tests
+
+commit af54f3702c20b7b6d1c3ffc71b0780c8c31e77f1
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-08 00:41:46 +0200
+
+    Added Transpose32 function.
+
 commit 163cc5dd704abc1472ddeb8525e432248d82717b
 Author: zed <starmen@tut.by>
 Date:   2024-06-06 23:35:39 +0300

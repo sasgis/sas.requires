@@ -541,7 +541,7 @@ type
 // Identical to the RTL Types.TRectF type.
 //------------------------------------------------------------------------------
 type
-{$if defined(HAS_TPOINTF)}
+{$if defined(HAS_TRECTF)}
 
   TFloatRect = {$ifndef FPC}System.{$endif}Types.TRectF;
 
@@ -574,6 +574,16 @@ type
     class operator NotEqual(const Lhs, Rhs: TFloatRect): Boolean; {$IFDEF USEINLINING} inline; {$ENDIF}
     class operator Implicit(const Source: TRect): TFloatRect; {$IFDEF USEINLINING} inline; {$ENDIF}
     class operator Explicit(const Source: TFloatRect): TRect; {$IFDEF USEINLINING} inline; {$ENDIF}
+
+    procedure Offset(const DX, DY: Single); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+    procedure Offset(const Point: TPointF); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+    procedure Offset(const Point: TPoint); overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+
+    function Contains(const Pt: TPointF): Boolean; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+    function Contains(const Pt: TPoint): Boolean; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+    function Contains(const R: TRectF): Boolean; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+
+    procedure Inflate(const DX, DY: Single); {$IFDEF USEINLINING} inline; {$ENDIF}
 
     property Width: TFloat read GetWidth write SetWidth;
     property Height: TFloat read GetHeight write SetHeight;
@@ -2580,7 +2590,7 @@ end;
 //------------------------------------------------------------------------------
 // TFloatRect
 //------------------------------------------------------------------------------
-{$if not defined(HAS_TPOINTF)}
+{$if not defined(HAS_TRECTF)}
 class operator TFloatRect.Equal(const Lhs, Rhs: TFloatRect): Boolean;
 begin
   // Compare as two 64-bit values
@@ -2600,6 +2610,43 @@ end;
 class operator TFloatRect.NotEqual(const Lhs, Rhs: TFloatRect): Boolean;
 begin
   Result := not(Lhs = Rhs);
+end;
+
+procedure TFloatRect.Offset(const Point: TPointF);
+begin
+  OffsetRect(Self, Point.X, Point.Y);
+end;
+
+procedure TFloatRect.Offset(const Point: TPoint);
+begin
+  OffsetRect(Self, Point.X, Point.Y);
+end;
+
+procedure TFloatRect.Offset(const DX, DY: Single);
+begin
+  OffsetRect(Self, DX, DY);
+end;
+
+function TFloatRect.Contains(const R: TRectF): Boolean;
+begin
+  Result :=
+    (Self.Left <= R.Left) and (Self.Right >= R.Right) and
+    (Self.Top <= R.Top) and (Self.Bottom >= R.Bottom);
+end;
+
+function TFloatRect.Contains(const Pt: TPointF): Boolean;
+begin
+  Result := PtInRect(Self, Pt);
+end;
+
+function TFloatRect.Contains(const Pt: TPoint): Boolean;
+begin
+  Result := PtInRect(Self, Pt);
+end;
+
+procedure TFloatRect.Inflate(const DX, DY: Single);
+begin
+  InflateRect(Self, DX, DY);
 end;
 
 function TFloatRect.GetHeight: TFloat;
@@ -3827,7 +3874,7 @@ begin
   Result := Round($FF * (Value - PrevIndex));
 end;
 
-function FastPrevWeight_SSE41(Value: TFloat; PrevIndex: Cardinal): Cardinal; experimental; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
+function FastPrevWeight_SSE41(Value: TFloat; PrevIndex: Cardinal): Cardinal; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 // Note: roundss is a SSE4.1 instruction
 const
   ROUND_MODE = $08 + $00; // $00=Round, $01=Floor, $02=Ceil, $03=Trunc
@@ -7876,7 +7923,8 @@ end;
 procedure RegisterBindingFunctions;
 begin
 {$if (not defined(PUREPASCAL)) and (not defined(OMIT_SSE2))}
-  GeneralRegistry.Add(@@FastPrevWeight, @FastPrevWeight_Pas,    BlendBindingFlagPascal);
+  // For PUREPASCAL FastPrevWeight is inlined and thus doesn't use the binding system
+  GeneralRegistry.Add(@@FastPrevWeight, @FastPrevWeight_Pas,    [isPascal]);
   GeneralRegistry.Add(@@FastPrevWeight, @FastPrevWeight_SSE41,  [isSSE41]);
 {$ifend}
 end;

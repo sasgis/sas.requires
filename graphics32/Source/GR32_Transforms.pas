@@ -254,6 +254,7 @@ type
 //   https://geometrictools.com/Documentation/PerspectiveMappings.pdf
 //
 //------------------------------------------------------------------------------
+{$ifndef FPC} // FPC considers unicode identifiers a bug, so f*ck them and their silly toy compiler.
 type
   TQuadrilateral = array[0..3] of TPoint;
   TFloatQuadrilateral = array[0..3] of TFloatPoint;
@@ -319,6 +320,7 @@ type
     property SourceY2: TFloat index 2 read GetSourceY write SetSourceY;
     property SourceY3: TFloat index 3 read GetSourceY write SetSourceY;
   end;
+{$endif FPC}
 
 
 //------------------------------------------------------------------------------
@@ -572,7 +574,7 @@ type
     // Transform Longitude and Lattitude coordinates (X,Y) into their screen projection.
     // Returns False if this point is on visible face.
     function ScreenCoordinate(var X, Y: TFloat):boolean;
-  published
+
     // Center of the Sphere in the Destination Bitmap
     property Center: TFloatPoint read FCenter write SetCenter;
     // Radius of the Sphere in the Destination Bitmap
@@ -627,6 +629,7 @@ uses
   GR32_LowLevel,
   GR32_Math,
   GR32_Bindings,
+  GR32_System,
   GR32_Resamplers,
   GR32_Geometry;
 
@@ -1692,10 +1695,11 @@ end;
 //------------------------------------------------------------------------------
 // Based on amBitmapEditorToolForwardProjectiveTransform by Anders Melander
 //------------------------------------------------------------------------------
-
+{$ifndef FPC}
 function TProjectiveTransformationEx.GetTransformedBounds(const ASrcRect: TFloatRect): TFloatRect;
 var
   i: integer;
+  Bounds: TFloatQuadrilateral;
 begin
   if (FExtrapolate) then
     Exit(ASrcRect);
@@ -1703,7 +1707,6 @@ begin
   // Transform the coords of the source rect to find the coords of
   // the corresponding target quad. Then return the boinding box of
   // this quad.
-  var Bounds: TFloatQuadrilateral;
   for i := 0 to High(Bounds) do
     ReverseTransformFloat(FSourceQuad[i].X, FSourceQuad[i].Y, Bounds[i].X, Bounds[i].Y);
 
@@ -2187,6 +2190,7 @@ begin
     DstY := DstY * Z;
   end;
 end;
+{$endif FPC}
 
 
 //------------------------------------------------------------------------------
@@ -3255,21 +3259,21 @@ begin
   TransformsRegistry.RegisterBinding(@@DET_2x2_64);
 
   // DET_2x2_32
-  TransformsRegistry.Add(@@DET_2x2_32, @DET_2x2_32_Pas);
+  TransformsRegistry.Add(@@DET_2x2_32, @DET_2x2_32_Pas, [isPascal]);
 {$IFNDEF PUREPASCAL}
-  TransformsRegistry.Add(@@DET_2x2_32, @DET_2x2_32_ASM);
+  TransformsRegistry.Add(@@DET_2x2_32, @DET_2x2_32_ASM, [isAssembler]);
 //  TransformsRegistry.Add(@@DET_2x2_32, @DET_2x2_32_SSE2, [isSSE2]);
 {$ENDIF}
 
   // DET_2x2_64
-  TransformsRegistry.Add(@@DET_2x2_64, @DET_2x2_64_Pas);
+  TransformsRegistry.Add(@@DET_2x2_64, @DET_2x2_64_Pas, [isPascal]);
 {$IFNDEF PUREPASCAL}
-  TransformsRegistry.Add(@@DET_2x2_64, @DET_2x2_64_ASM);
+  TransformsRegistry.Add(@@DET_2x2_64, @DET_2x2_64_ASM, [isAssembler]);
 //  TransformsRegistry.Add(@@DET_2x2_64, @DET_2x2_64_SSE2, [isSSE2]);
 {$ENDIF}
 
   // DET_3x3_32
-  TransformsRegistry.Add(@@DET_3x3_32, @DET_3x3_32_Pas);
+  TransformsRegistry.Add(@@DET_3x3_32, @DET_3x3_32_Pas, [isPascal]);
 
   TransformsRegistry.RebindAll;
 end;
