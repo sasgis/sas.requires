@@ -1,8 +1,8 @@
 /*******************************************************************************
 * Author    :  Angus Johnson                                                   *
-* Date      :  1 December 2023                                                *
+* Date      :  14 May 2024                                                     *
 * Website   :  http://www.angusj.com                                           *
-* Copyright :  Angus Johnson 2010-2023                                         *
+* Copyright :  Angus Johnson 2010-2024                                         *
 * Purpose   :  This module exports the Clipper2 Library (ie DLL/so)            *
 * License   :  http://www.boost.org/LICENSE_1_0.txt                            *
 *******************************************************************************/
@@ -19,9 +19,9 @@
 
 The path structures used extensively in other parts of this library are all
 based on std::vector classes. Since C++ classes can't be accessed by other
-languages, these paths must be converted into simple C data structures that
-can be understood by just about any programming language. And these C style
-path structures are simple arrays of int64_t (CPath64) and double (CPathD).
+languages, these paths are converted into very simple array data structures 
+(of either int64_t for CPath64 or double for CPathD) that can be parsed by 
+just about any programming language.
 
 CPath64 and CPathD:
 These are arrays of consecutive x and y path coordinates preceeded by
@@ -34,8 +34,9 @@ __________________________________
 CPaths64 and CPathsD:
 These are also arrays containing any number of consecutive CPath64 or
 CPathD  structures. But preceeding these consecutive paths, there is pair of
-values that contain the total length of the array (A) structure and
-the number (C) of CPath64 or CPathD it contains.
+values that contain the total length of the array structure (A) and the 
+number of CPath64 or CPathD it contains (C). The space these structures will
+occupy in memory = A * sizeof(int64_t) or  A * sizeof(double) respectively. 
 _______________________________
 |counter|path1|path2|...|pathC|
 |A  , C |                     |
@@ -44,7 +45,7 @@ _______________________________
 CPolytree64 and CPolytreeD:
 These are also arrays consisting of CPolyPath structures that represent
 individual paths in a tree structure. However, the very first (ie top)
-CPolyPath is just the tree container that won't have a path. And because
+CPolyPath is just the tree container that doesn't have a path. And because
 of that, its structure will be very slightly different from the remaining
 CPolyPath. This difference will be discussed below.
 
@@ -60,17 +61,18 @@ ____________________________________________________________
 As mentioned above, the very first CPolyPath structure is just a container
 that owns (both directly and indirectly) every other CPolyPath in the tree.
 Since this first CPolyPath has no path, instead of a path length, its very
-first value will contain the total length of the CPolytree array structure.
+first value will contain the total length of the CPolytree array (not its
+total bytes length).
 
-All theses exported structures (CPaths64, CPathsD, CPolyTree64 & CPolyTreeD)
-are arrays of type int64_t or double. And the first value in these arrays
-will always contain the length of that array.
+Again, all theses exported structures (CPaths64, CPathsD, CPolyTree64 & 
+CPolyTreeD) are arrays of either type int64_t or double, and the first 
+value in these arrays will always be the length of that array.
 
 These array structures are allocated in heap memory which will eventually
-need to be released. But since applications dynamically linking to these
-functions may use different memory managers, the only safe way to free up
-this memory is to use the exported DisposeArray64 and  DisposeArrayD
-functions below.
+need to be released. However, since applications dynamically linking to 
+these functions may use different memory managers, the only safe way to 
+free up this memory is to use the exported DisposeArray64 and 
+DisposeArrayD functions (see below).
 */
 
 
@@ -267,6 +269,23 @@ CPathsD CreateCPathsDFromPaths64(const Paths64& paths, double scale)
       *v++ = pt.x * scale;
       *v++ = pt.y * scale;
     }
+  }
+  return result;
+}
+
+template <typename T>
+static Path<T> ConvertCPath(T* path)
+{
+  Path<T> result;
+  if (!path) return result;
+  T* v = path;
+  size_t cnt = static_cast<size_t>(*v);
+  v += 2; // skip 0 value
+  result.reserve(cnt);
+  for (size_t j = 0; j < cnt; ++j)
+  {
+    T x = *v++, y = *v++;
+    result.push_back(Point<T>(x, y));
   }
   return result;
 }
@@ -558,6 +577,22 @@ EXTERN_DLL_EXPORT CPathsD RectClipLinesD(const CRectD& rect,
   Paths64 pp = ConvertCPathsDToPaths64(paths, scale);
   Paths64 result = rcl.Execute(pp);
   return CreateCPathsDFromPaths64(result, 1 / scale);
+}
+
+EXTERN_DLL_EXPORT CPaths64 MinkowskiSum64(const CPath64& cpattern, const CPath64& cpath, bool is_closed)
+{
+  Path64 path = ConvertCPath(cpath);
+  Path64 pattern = ConvertCPath(cpattern);
+  Paths64 solution = MinkowskiSum(pattern, path, is_closed);
+  return CreateCPaths(solution);
+}
+
+EXTERN_DLL_EXPORT CPaths64 MinkowskiDiff64(const CPath64& cpattern, const CPath64& cpath, bool is_closed)
+{
+  Path64 path = ConvertCPath(cpath);
+  Path64 pattern = ConvertCPath(cpattern);
+  Paths64 solution = MinkowskiDiff(pattern, path, is_closed);
+  return CreateCPaths(solution);
 }
 
 }  // end Clipper2Lib namespace

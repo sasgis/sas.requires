@@ -1,3 +1,380 @@
+commit 7f41c18ba8011307c87ec862998053775695f123
+Author: Richard Barnes <rbarnes@umn.edu>
+Date:   2024-07-16 17:38:19 -0400
+
+    throw() -> noexcept (#869)
+    
+    `throw()` was deprecated in C++11 and removed in C++17. `noexcept` is the appropriate fix.
+
+commit 736ddb0b53d97fd5f65dd3d9bbf8a0993eaf387c
+Author: angusj <angus@angusj.com>
+Date:   2024-07-13 13:08:09 +1000
+
+    Release version to 1.4.0
+
+commit 68b3a2c99ee7370d38931a3f29cc4e58315eae5e
+Author: angusj <angus@angusj.com>
+Date:   2024-07-13 13:01:34 +1000
+
+    Fixed an integer overflow error in ClipperOffset (#867)
+
+commit 4240912f997bb3f11ca0aa1f02a8cba4a9dd507e
+Author: angusj <angus@angusj.com>
+Date:   2024-07-05 21:24:57 +1000
+
+    Fixed a minor bug in Clipper.RectClip (#864)
+
+commit 623f0a298dbd8d3442327240adc7548dc44b4d56
+Author: masbug <masbug@users.noreply.github.com>
+Date:   2024-06-23 14:33:23 +0200
+
+    Compile warnings cleanup, fixes for sign-conversion issues (#858)
+    
+    * CPP: BencMark compile fix
+    
+    * CPP: Fixed sing-conversion compile warnings, unsigned path indices
+
+commit ff378668baae3570e9d8070aa9eb339bdd5a6aba
+Author: angusj <angus@angusj.com>
+Date:   2024-05-14 22:01:51 +1000
+
+    clipper.export.h - fixed bug in previous commit (#836)
+
+commit efde1c9b1f2dbc2ec2aa533361795aeab2c039fc
+Author: angusj <angus@angusj.com>
+Date:   2024-05-14 21:53:51 +1000
+
+    Added MinkowskiSum64 & MinkowskiDiff64 to clipper.export.h. (#836)
+
+commit f95f4b357d492bf90e305b17aab372290da1d873
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2024-05-14 14:21:44 +0300
+
+    Use compiler-provided int128 type on clang and gcc (but only when the target architecture is at least 64-bit) (#837)
+
+commit 07cabaddd8541be322ecc555f186c1d867b506d3
+Author: angusj <angus@angusj.com>
+Date:   2024-05-13 15:23:21 +1000
+
+    Updated C# and Delphi code with bugfixed IsCollinear function (#835)
+
+commit 82cd8870c74f62b96405d4e2d9e5b390ab67737e
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2024-05-12 16:40:08 +0300
+
+    More carry calculation fixing (#835)
+    
+    * Add carry calculation tests
+    
+    * Fix carry calculation
+    
+    * Minor simplification
+    
+    * Test both ways, now that we are here
+    
+    * Add helpful remark
+    
+    * Avoid a single multiplication instruction per product (=one for `a*b`, and another for `c*d`)
+
+commit 235879be5704632c3464d39355e900151c810047
+Author: angusj <angus@angusj.com>
+Date:   2024-05-12 10:01:00 +1000
+
+    Updated IsCollinear functions in C# and Delphi (#834)
+    Otherwise a minor code tidy and updated code comments
+
+commit fdf3700f4211d5fe9637a6c53d10af1647e3fe8c
+Author: angusj <angus@angusj.com>
+Date:   2024-05-12 07:12:15 +1000
+
+    clipper.core.h - fixed CalcOverflowCarry function
+
+commit 2b9b7ce73aa9a8eae67380848119e9730e555008
+Author: angusj <angus@angusj.com>
+Date:   2024-05-11 21:33:37 +1000
+
+    Minor code tidies
+
+commit 6e4feb8eea514ad06fb7c9636ebb8f3efb31d88e
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2024-05-11 13:28:47 +0300
+
+    `IsCollinear`: detect and handle integer multiplication wrapping (version 2) (#834)
+    
+    * Add test case that fails
+    
+    * IsCollinear: detect and handle integer multiplication wrapping
+
+commit 3b60aeac0507a1e9ca3779766c6cc7fa9d7c90a8
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2024-05-10 00:28:16 -0500
+
+    Restore default constructors (#833)
+    
+    Required for hash functions to work
+
+commit 75cfda6fe7b6d604c1605f88adb84205ef1c3ea4
+Author: angusj <angus@angusj.com>
+Date:   2024-05-07 15:55:59 +1000
+
+    clipper.core.h - fixed GetBounds compiler warning (#830)
+
+commit bf561697d555867794ca2d9c15507e1d429d5251
+Author: angusj <angus@angusj.com>
+Date:   2024-05-07 08:28:18 +1000
+
+    Clipper.RectClip.cs - fixed a bug in C# RectClipLines (#828)
+    Clipper.Core.pas - added overflow management for IsCollinear function.
+
+commit 3963baeb70b64aaec299dedc0bb3611d9e7ab66e
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2024-05-01 23:49:20 +0300
+
+    Remove typecasting in `IsCollinear` (#825)
+    
+    * Remove typecasting in `IsCollinear`
+    
+    * Update the C# and Delphi versions as well
+    
+    * In the C++ version, multiply unsigned numbers (so that the result just wraps, and there is no undefined behavior)
+    
+    * Add test case for `IsCollinear`
+
+commit 33ec483d38197f7c461282ef0aed96fc51c39ad6
+Author: angusj <angus@angusj.com>
+Date:   2024-04-27 22:04:21 +1000
+
+    clipper.rectclip.cpp - fixed bug in previous commit
+
+commit cf841d74732a12b32e63dcf9c4dd415996074ede
+Author: angusj <angus@angusj.com>
+Date:   2024-04-27 21:53:53 +1000
+
+    Improved IsCollinear function (#777)
+
+commit 99a9706701c4a9a073a66ee73aeaa0ede9e40bec
+Author: angusj <angus@angusj.com>
+Date:   2024-04-27 19:22:23 +1000
+
+    Additional minor code tidy (#823)
+
+commit cef6a1071d8e03db393f32cd5b4bd286c95ccc00
+Author: angusj <angus@angusj.com>
+Date:   2024-04-27 17:21:36 +1000
+
+    another attempt to fix collinearity testing on MacOS (C++) (#777)
+
+commit e9fe6b0166b29c640033d90801a26faa1ac59681
+Author: angusj <angus@angusj.com>
+Date:   2024-04-27 17:13:13 +1000
+
+    Another attempt to fix run error in MacOS (C++ only)
+
+commit ea67db3d2f87531778c4678e076e66afc8e9a2c2
+Author: angusj <angus@angusj.com>
+Date:   2024-04-27 17:09:18 +1000
+
+    Attempt to fix run error on MacOS
+
+commit b4ee03378751247961a4bd40601ffc6ed9b46c2d
+Author: angusj <angus@angusj.com>
+Date:   2024-04-27 14:00:57 +1000
+
+    clipper.core.h - fixed ambiguous 'round' (#824)
+                     also fixed a compiler warning (#823)
+
+commit adc000af981545feed8c58a3687bd9177259536a
+Author: angusj <angus@angusj.com>
+Date:   2024-04-17 22:45:20 +1000
+
+    Clipper.Offset.cs - minor tweak to aid compiler (#800)
+
+commit 718e714a643aee69826441b042bb729bfc310923
+Author: angusj <angus@angusj.com>
+Date:   2024-04-17 22:31:26 +1000
+
+    clipper.engine.cpp - Fixed compile bug introduced in previous commit
+
+commit 7714d940ca86eb7cc8cf5f9eda2b1486daf32cb1
+Author: angusj <angus@angusj.com>
+Date:   2024-04-17 22:16:02 +1000
+
+    Clipper.Engine - minor tweak to IntersectEdges function (#798)
+
+commit fdd312b2ec2abfc925d00e54bd406bd352204e61
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2024-04-13 15:28:52 +0300
+
+    Clone googletest only if it does not exist (#814)
+
+commit 29b6bdd51b0c7ef84df43661233ead5a21d660e9
+Author: Juha Reunanen <juha.reunanen@tomaattinen.com>
+Date:   2024-04-13 14:54:45 +0300
+
+    Let CMake automatically clone the googletest repo, so that users do not need to do it separately (#813)
+    
+    * Do not explicitly clone googletest in the Github Actions script
+    
+    * Automatically clone googletest in the CMake script
+
+commit 0135062a1fe7570a1ebafee3ef688fae0793886d
+Author: Manuel Massing <m.massing@virtualities.de>
+Date:   2024-04-06 19:01:41 +0200
+
+    Generate and install a cmake configuration file, which can be  (#447)
+    
+    * Generate and install a cmake configuration file, which can be automatically
+    picked up by downstream cmake projects.
+    
+    Downstream projects can link to Clipper2 or Clipper2Z by adding
+    'Clipper2::Clipper2' or 'Clipper2::Clipper2Z' as target dependency, and
+    don't need to implement a FindPackage module.
+    
+    * Fix package config for Clipper2Z
+    
+    * Be a little less lenient when version-checking the configuration file.
+
+commit ce4c338ba6a064e28198ed9f03442a1dc7cb638b
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2024-04-02 16:09:46 -0500
+
+    Minor tweaks (#801)
+    
+    * Floating point comparison
+    
+    * Clean-up
+    
+    The variables are initialized in the constructor, and this using line seems to be unused.
+    
+    * Update Clipper.RectClip.cs
+    
+    Variable initialized in constructor.
+    
+    * This looked to be unnecessary
+    
+    * group is not used, remove unused using statement.
+    
+    min_area also not used.
+    _solutionTree initialized in constructor.
+    
+    * Null check corrections
+    
+    Assuming that the user can supply nulls as input. This addresses parts of https://github.com/AngusJohnson/Clipper2/issues/802
+    
+    One remaining issue is that there is a null check against a value returned from PathFromStr(), but that method always returns a non-null value, so the check would appear to be meaningless.
+    
+    * Clean up null checks
+    
+    These seem to be redundant due to outer checks.
+    
+    * More redundant null checks
+    
+    Also remove one unused variable (result)
+    
+    * Remove redundant base constructors
+    
+    Remove redundant .ToString()
+    
+    * Readability change
+    
+    The long while statement made this confusing to understand. Use braces to make the end of the statement and the action more apparent.
+
+commit 7c91a187ecc061a354a828e3cdcdd893d1fd1b98
+Author: angusj <angus@angusj.com>
+Date:   2024-03-25 11:37:08 +1000
+
+    Added Collinearity test // #777
+
+commit 7daac7db4d40b98fdec0c03eb9f77b14a9837987
+Author: angusj <angus@angusj.com>
+Date:   2024-03-25 11:20:16 +1000
+
+    Clipper.Engine: fixed collinearity test error in macOS (#777)
+
+commit 3bc5e49a11d6ad0dd6fd4fd5ebe9aea3a1062e80
+Author: angusj <angus@angusj.com>
+Date:   2024-03-25 08:59:09 +1000
+
+    Clipper.Offset: Fixed another compile issue in previous revision
+
+commit e0a8f10e2fd1519f62a3552de7d5daddef145d5d
+Author: angusj <angus@angusj.com>
+Date:   2024-03-25 08:56:20 +1000
+
+    Clipper.Offset: Fixed another compile issue in previous revision
+
+commit 3c3c2b0fca66ae7dc5d43a7583a810b9432cf4e3
+Author: angusj <angus@angusj.com>
+Date:   2024-03-25 08:52:12 +1000
+
+    Clipper.Offset: Fixed compile issue in previous revision.
+
+commit ddf4416113e4807cb361ce39dfe66508701a258b
+Author: angusj <angus@angusj.com>
+Date:   2024-03-25 08:43:31 +1000
+
+    Clipper.Offset: fixed assigning Z values when USINGZ enabled (#772)
+
+commit dde8d96cba119e8ab7a9aa541fec99d60b931b53
+Author: angusj <angus@angusj.com>
+Date:   2024-03-21 08:25:57 +1000
+
+    Fixed a bug in Clipper.Engine affecting Delphi only (#792)
+
+commit 0e27e1601d13370672b372568b85c4530c25f90b
+Author: angusj <angus@angusj.com>
+Date:   2024-03-17 08:05:05 +1000
+
+    Fixed a bug in Clipper.Offset
+    (was too agressive in removing 'over-shrunk' paths)
+
+commit b3eabaee8ff973d7499ac1c0927ffefad0ba702e
+Author: angusj <angus@angusj.com>
+Date:   2024-03-14 18:33:32 +1000
+
+    Fixed a minor bug in open path offsetting
+    (see https://github.com/graphics32/graphics32/issues/277)
+
+commit 5c42a990e54e4e1628d40913485a128c7e60fa2b
+Author: angusj <angus@angusj.com>
+Date:   2024-03-08 08:08:22 +1000
+
+    Minor tweak to Clipper.Offset (#780)
+    Improved Free Pascal compatibility (#787)
+
+commit f7c126460ea45d4541961c01a4db6f64c9008384
+Author: angusj <angus@angusj.com>
+Date:   2024-03-03 20:17:15 +1000
+
+    Fixed C# code crashing when compiling in iOS. (#773)
+
+commit 1df29405b9c2176293db9783c61f7b09c2fe66d8
+Author: Seth Hillbrand <seth.hillbrand@gmail.com>
+Date:   2024-02-24 20:34:13 -0800
+
+    Update CMakeLists.txt (#781)
+    
+    Add  -Wno-c++20-compat to compile flags.
+    Without this, g++ will turn on compatibility testing.
+    In C++20, template IDs are not allowed in constructors (clipper.core.h).
+    The combination of `-Wall`, which turns on the warning, and `-Werror`,
+    which makes the warning an error prevented builds using newer g++ versions
+
+commit a4ae9e4871245e396aaccfad7f760e2fc1d4cbf4
+Author: angusj <angus@angusj.com>
+Date:   2024-02-14 20:31:45 +1000
+
+    Fixed compile bug in previous commit
+
+commit e2fbc32dbb7ab613e8c488bdd5eb6e833d92c433
+Author: angusj <angus@angusj.com>
+Date:   2024-02-14 20:20:21 +1000
+
+    Fixed a rare bug affecting open path clipping (#771)
+    Renamed GetIntersectPoint to GetSegmentIntersectPt (clipper.core)
+    Renamed DistanceFromLineSqrd to PerpendicDistFromLineSqrd (clipper.core)
+    Other minor tweaks.
+
 commit 609d87385e8e62d9658e4b39521f57aa281bc75c
 Author: angusj <angus@angusj.com>
 Date:   2024-01-13 10:56:43 +1000
