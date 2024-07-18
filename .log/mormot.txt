@@ -1,3 +1,37 @@
+commit 1d7845ee649545b45a08ee8cadd2433c9931c16c
+Merge: ce229fa6 1febefc9
+Author: ab <webcontact01@synopse.info>
+Date:   2024-07-09 12:06:22 +0200
+
+    Merge pull request #455 from ysair/websocket-params
+    
+    WebSocket Add URL Parameter Support
+
+commit 1febefc9140c0bbc02484b3c21a5e1917b9e79e3
+Author: yangsai <yangsair@gmail.com>
+Date:   2024-07-09 11:03:30 +0800
+
+    WebSocket Add URL Parameter Support
+
+commit ce229fa63626c0315f262a88a582953d15f28372
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-07-08 15:41:11 +0200
+
+    fixed TPdfFontTrueType.GetAndMarkGlyphAsUsed
+    - when the glyph is not in the font CMAP
+
+commit 74f45244d229b8197fe300e19207626ac51127d8
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-05-29 09:24:25 +0200
+
+    sync the mORMot commit number with the git commits count
+
+commit eca249f4ab64a409b08c1817e4b3938aaf413147
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-05-29 08:34:18 +0200
+
+    merge latest Pull Request
+
 commit 214a6fa1d9cd3a1d5208f4e8b11b2530707694bf
 Merge: 9cc2e4c6 a24cd54a
 Author: ab <webcontact01@synopse.info>
