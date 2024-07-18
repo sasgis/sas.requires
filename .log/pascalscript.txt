@@ -1,3 +1,15 @@
+commit 2f8fa960b0939789dfeb2e7b14a8ab28e90fe26f
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-06-28 10:20:38 +0200
+
+    Cherry pick into: Fix 7e96130b.
+
+commit ecdc495151507f14ce57fed0aba260387ccf1d6d
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-06-06 08:46:14 +0200
+
+    Cherry pick into stable: Fix 1cabc173.
+
 commit fa5fcb67e77eeca980eeb944a66c7d5e4ceff165
 Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
 Date:   2024-05-15 19:25:31 +0200
