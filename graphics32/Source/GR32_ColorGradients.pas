@@ -22,12 +22,13 @@ unit GR32_ColorGradients;
 *                                                                              *
 * The Original Code is Color Gradients for Graphics32                          *
 *                                                                              *
-* The Initial Developer of the Original Code is Angus Johnson                  *
+* The Initial Developer of the Original Code is                                *
+*   Angus Johnson                                                              *
+*   Christian Budde                                                            *
+*   Anders Melander                                                            *
 *                                                                              *
-* Portions created by the Initial Developer are Copyright (C) 2008-2012        *
+* Portions created by the Initial Developer are Copyright (C) 2008-2024        *
 * the Initial Developer. All Rights Reserved.                                  *
-*                                                                              *
-* Contributor(s): Christian Budde <Christian@aixcoustic.com>                   *
 *                                                                              *
 * ***** END LICENSE BLOCK *****************************************************)
 
@@ -43,19 +44,12 @@ uses
   GR32_Blend, // Needed in interface for inlining
   GR32_Bindings;
 
+//------------------------------------------------------------------------------
+//
+//      TColor32LookupTable
+//
+//------------------------------------------------------------------------------
 type
-  TColor32GradientStop = record
-    Offset: TFloat; //expected range between 0.0 and 1.0
-    Color32: TColor32;
-  end;
-  TArrayOfColor32GradientStop = array of TColor32GradientStop;
-
-  TColor32FloatPoint = record
-    Point: TFloatPoint;
-    Color32: TColor32;
-  end;
-  TArrayOfColor32FloatPoint = array of TColor32FloatPoint;
-
   TColor32LookupTable = class(TPersistent)
   private
     FGradientLUT: PColor32Array;
@@ -81,6 +75,25 @@ type
 
     property OnOrderChanged: TNotifyEvent read FOnOrderChanged write FOnOrderChanged;
   end;
+
+
+//------------------------------------------------------------------------------
+//
+//      TColor32Gradient
+//
+//------------------------------------------------------------------------------
+type
+  TColor32GradientStop = record
+    Offset: TFloat; //expected range between 0.0 and 1.0
+    Color32: TColor32;
+  end;
+  TArrayOfColor32GradientStop = array of TColor32GradientStop;
+
+  TColor32FloatPoint = record
+    Point: TFloatPoint;
+    Color32: TColor32;
+  end;
+  TArrayOfColor32FloatPoint = array of TColor32FloatPoint;
 
   TColor32Gradient = class(TInterfacedPersistent, IStreamPersist)
   private
@@ -116,14 +129,21 @@ type
     procedure FillColorLookUpTable(var ColorLUT: array of TColor32); overload;
     procedure FillColorLookUpTable(ColorLUT: PColor32Array; Count: Integer); overload;
     procedure FillColorLookUpTable(ColorLUT: TColor32LookupTable); overload;
+
     property GradientEntry[Index: Integer]: TColor32GradientStop read GetGradientEntry;
     property GradientCount: Integer read GetGradientCount;
     property StartColor: TColor32 read GetStartColor write SetStartColor;
     property EndColor: TColor32 read GetEndColor write SetEndColor;
-    property OnGradientColorsChanged: TNotifyEvent
-      read FOnGradientColorsChanged write FOnGradientColorsChanged;
+    property OnGradientColorsChanged: TNotifyEvent read FOnGradientColorsChanged write FOnGradientColorsChanged;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomSparsePointGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TCustomSparsePointGradientSampler = class(TCustomSampler)
   protected
     function GetCount: Integer; virtual; abstract;
@@ -147,6 +167,13 @@ type
     property Count: Integer read GetCount;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TBarycentricGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TBarycentricGradientSampler = class(TCustomSparsePointGradientSampler)
   protected
     FColorPoints: array [0 .. 2] of TColor32FloatPoint;
@@ -174,6 +201,13 @@ type
     function GetSampleFloatInTriangle(X, Y: TFloat): TColor32;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TBilinearGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TBilinearGradientSampler = class(TCustomSparsePointGradientSampler)
   protected
     FColorPoints: array [0 .. 3] of TColor32FloatPoint;
@@ -200,6 +234,13 @@ type
     function GetSampleFloat(X, Y: TFloat): TColor32; override;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomArbitrarySparsePointGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TCustomArbitrarySparsePointGradientSampler = class(TCustomSparsePointGradientSampler)
   private
     FColorPoints: TArrayOfColor32FloatPoint;
@@ -221,6 +262,13 @@ type
     procedure Clear; virtual;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TInvertedDistanceWeightingSampler
+//
+//------------------------------------------------------------------------------
+type
   TInvertedDistanceWeightingSampler = class(TCustomArbitrarySparsePointGradientSampler)
   private
     FDists: TArrayOfFloat;
@@ -236,6 +284,13 @@ type
     property Power: TFloat read FPower write FPower;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TVoronoiSampler
+//
+//------------------------------------------------------------------------------
+type
   TVoronoiMetric = (vmEuclidean, vmManhattan, vmCustom);
 
   TVoronoiMetricFunc = function (X, Y: TFloat; Point: TFloatPoint): TFloat;
@@ -255,6 +310,13 @@ type
     property MetricFunc: TVoronoiMetricFunc read FMetricFunc write SetMetricFunc;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TGourandShadedDelaunayTrianglesSampler
+//
+//------------------------------------------------------------------------------
+type
   TGourandShadedDelaunayTrianglesSampler = class(TCustomArbitrarySparsePointGradientSampler)
   private
     FTriangles: TArrayOfTriangleVertexIndices;
@@ -265,6 +327,13 @@ type
     function GetSampleFloat(X, Y: TFloat): TColor32; override;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TCustomGradientSampler = class(TCustomSampler)
   private
     FGradient: TColor32Gradient;
@@ -293,6 +362,13 @@ type
     property WrapMode: TWrapMode read FWrapMode write SetWrapMode;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomGradientLookUpTableSampler
+//
+//------------------------------------------------------------------------------
+type
   TCustomGradientLookUpTableSampler = class(TCustomGradientSampler)
   private
     FGradientLUT: TColor32LookupTable;
@@ -312,6 +388,13 @@ type
     destructor Destroy; override;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomCenterLutGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TCustomCenterLutGradientSampler = class(TCustomGradientLookUpTableSampler)
   private
     FCenter: TFloatPoint;
@@ -324,6 +407,13 @@ type
     property Center: TFloatPoint read FCenter write FCenter;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TConicGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TConicGradientSampler = class(TCustomCenterLutGradientSampler)
   private
     FScale: TFloat;
@@ -337,6 +427,13 @@ type
     property Angle: TFloat read FAngle write FAngle;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomCenterRadiusLutGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TCustomCenterRadiusLutGradientSampler = class(TCustomCenterLutGradientSampler)
   private
     FRadius: TFloat;
@@ -350,6 +447,13 @@ type
     property Radius: TFloat read FRadius write SetRadius;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TRadialGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TRadialGradientSampler = class(TCustomCenterRadiusLutGradientSampler)
   private
     FScale: TFloat;
@@ -359,6 +463,68 @@ type
     function GetSampleFloat(X, Y: TFloat): TColor32; override;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TRadialExGradientSampler
+//
+//------------------------------------------------------------------------------
+// HTML5 radial gradient.
+// Provides gradation of colors along a cylinder defined by two circles.
+// Also knows as "two point conical gradient"
+//------------------------------------------------------------------------------
+//
+// References:
+// - HTML Canvas Radial Gradients, The createRadialGradient() Method
+//   https://www.w3schools.com/graphics/canvas_radial_gradients.asp
+//
+// - Microsoft Typography, COLR — Color Table, Graphic compositions, Gradients, Radial gradients
+//   https://learn.microsoft.com/en-us/typography/opentype/spec/colr#radial-gradients
+//
+//------------------------------------------------------------------------------
+type
+  TRadialExGradientSampler = class(TCustomGradientLookUpTableSampler)
+  private
+    FCenter1: TFloatPoint;
+    FRadius1: TFloat;
+    FCenter2: TFloatPoint;
+    FRadius2: TFloat;
+
+    FDeltaCenter: TFloatPoint;
+    FDeltaRadius: TFloat;
+    FPolynomA: TFloat;
+    FPolynomAInv: TFLoat;
+    FRadius12: TFloat;
+    FRadius1Sqr: TFloat;
+
+    procedure SetRadius1(const Value: TFloat);
+    procedure SetRadius2(const Value: TFloat);
+    procedure SetCenter1(const Value: TFloatPoint);
+    procedure SetCenter2(const Value: TFloatPoint);
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure UpdateInternals; override;
+    procedure Transform(var X, Y: TFloat); virtual;
+  public
+    constructor Create(WrapMode: TWrapMode = wmMirror); override;
+
+    function GetSampleFloat(X, Y: TFloat): TColor32; override;
+
+    // Center and radius of start circle
+    property Center1: TFloatPoint read FCenter1 write SetCenter1;
+    property Radius1: TFloat read FRadius1 write SetRadius1;
+    // Center and radius of end circle
+    property Center2: TFloatPoint read FCenter2 write SetCenter2;
+    property Radius2: TFloat read FRadius2 write SetRadius2;
+  end;
+
+
+//------------------------------------------------------------------------------
+//
+//      TCustomCenterRadiusAngleLutGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TCustomCenterRadiusAngleLutGradientSampler = class(TCustomCenterRadiusLutGradientSampler)
   private
     FAngle: TFloat;
@@ -375,6 +541,13 @@ type
     property Angle: TFloat read FAngle write SetAngle;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TDiamondGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TDiamondGradientSampler = class(TCustomCenterRadiusAngleLutGradientSampler)
   private
     FScale: TFloat;
@@ -384,6 +557,14 @@ type
     function GetSampleFloat(X, Y: TFloat): TColor32; override;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TXGradientSampler
+//      TLinearGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TXGradientSampler = class(TCustomCenterRadiusAngleLutGradientSampler)
   private
     FScale: TFloat;
@@ -404,8 +585,16 @@ type
     property EndPoint: TFloatPoint read GetEndPoint write SetEndPoint;
   end;
 
+type
   TLinearGradientSampler = class(TXGradientSampler);
 
+
+//------------------------------------------------------------------------------
+//
+//      TXYGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TXYGradientSampler = class(TCustomCenterRadiusAngleLutGradientSampler)
   private
     FScale: TFloat;
@@ -415,6 +604,13 @@ type
     function GetSampleFloat(X, Y: TFloat): TColor32; override;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TXYSqrtGradientSampler
+//
+//------------------------------------------------------------------------------
+type
   TXYSqrtGradientSampler = class(TCustomCenterRadiusAngleLutGradientSampler)
   private
     FScale: TFloat;
@@ -424,6 +620,13 @@ type
     function GetSampleFloat(X, Y: TFloat): TColor32; override;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomSparsePointGradientPolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TCustomSparsePointGradientPolygonFiller = class(TCustomPolygonFiller)
   protected
     function GetCount: Integer; virtual; abstract;
@@ -444,6 +647,13 @@ type
     property Count: Integer read GetCount;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TBarycentricGradientPolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TBarycentricGradientPolygonFiller = class(TCustomSparsePointGradientPolygonFiller)
   protected
     FColorPoints: array [0 .. 2] of TColor32FloatPoint;
@@ -468,6 +678,13 @@ type
     procedure SetColorPoints(Points: TArrayOfFloatPoint; Colors: TArrayOfColor32); overload; override;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomArbitrarySparsePointGradientPolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TCustomArbitrarySparsePointGradientPolygonFiller = class(TCustomSparsePointGradientPolygonFiller)
   private
     FColorPoints: TArrayOfColor32FloatPoint;
@@ -488,6 +705,13 @@ type
     procedure Clear; virtual;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TGourandShadedDelaunayTrianglesPolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TGourandShadedDelaunayTrianglesPolygonFiller = class(TCustomArbitrarySparsePointGradientPolygonFiller)
   private
     FTriangles: TArrayOfTriangleVertexIndices;
@@ -502,6 +726,13 @@ type
     procedure BeginRendering; override;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomGradientPolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TCustomGradientPolygonFiller = class(TCustomPolygonFiller)
   private
     FGradient: TColor32Gradient;
@@ -526,6 +757,13 @@ type
     property WrapMode: TWrapMode read FWrapMode write SetWrapMode;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomGradientLookupTablePolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TCustomGradientLookupTablePolygonFiller = class(TCustomGradientPolygonFiller)
   private
     FLUTNeedsUpdate: Boolean;
@@ -550,6 +788,13 @@ type
     property UseLookUpTable: Boolean read FUseLookUpTable write SetUseLookUpTable;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomLinearGradientPolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TCustomLinearGradientPolygonFiller = class(TCustomGradientLookupTablePolygonFiller)
   private
     FIncline: TFloat;
@@ -575,6 +820,13 @@ type
     property EndPoint: TFloatPoint read FEndPoint write SetEndPoint;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TLinearGradientPolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TLinearGradientPolygonFiller = class(TCustomLinearGradientPolygonFiller)
   private
     function ColorStopToScanLine(Index: Integer; Y: Integer): TFloat;
@@ -625,6 +877,13 @@ type
     procedure BeginRendering; override; //flags initialized
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TCustomRadialGradientPolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TCustomRadialGradientPolygonFiller = class(TCustomGradientLookupTablePolygonFiller)
   private
     FEllipseBounds: TFloatRect;
@@ -635,6 +894,13 @@ type
     property EllipseBounds: TFloatRect read FEllipseBounds write SetEllipseBounds;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TRadialGradientPolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TRadialGradientPolygonFiller = class(TCustomRadialGradientPolygonFiller)
   private
     FCenter: TFloatPoint;
@@ -649,12 +915,10 @@ type
   protected
     function GetFillLine: TFillLineEvent; override;
     procedure EllipseBoundsChanged; override;
-    procedure FillLinePad(Dst: PColor32; DstX, DstY, Length: Integer;
-      AlphaValues: PColor32; CombineMode: TCombineMode);
-    procedure FillLineRepeat(Dst: PColor32; DstX, DstY, Length: Integer;
-      AlphaValues: PColor32; CombineMode: TCombineMode);
-    procedure FillLineReflect(Dst: PColor32; DstX, DstY, Length: Integer;
-      AlphaValues: PColor32; CombineMode: TCombineMode);
+    procedure FillLineClamp(Dst: PColor32; DstX, DstY, Length: Integer; AlphaValues: PColor32; CombineMode: TCombineMode);
+    procedure FillLineRepeat(Dst: PColor32; DstX, DstY, Length: Integer; AlphaValues: PColor32; CombineMode: TCombineMode);
+    procedure FillLineMirror(Dst: PColor32; DstX, DstY, Length: Integer; AlphaValues: PColor32; CombineMode: TCombineMode);
+    procedure FillLineReflect(Dst: PColor32; DstX, DstY, Length: Integer; AlphaValues: PColor32; CombineMode: TCombineMode);
   public
     constructor Create(Radius: TFloatPoint); overload;
     constructor Create(BoundingBox: TFloatRect); overload;
@@ -665,6 +929,13 @@ type
     property Center: TFloatPoint read FCenter write SetCenter;
   end;
 
+
+//------------------------------------------------------------------------------
+//
+//      TSVGRadialGradientPolygonFiller
+//
+//------------------------------------------------------------------------------
+type
   TSVGRadialGradientPolygonFiller = class(TCustomRadialGradientPolygonFiller)
   private
     FOffset: TFloatPoint;
@@ -693,10 +964,22 @@ type
     property FocalPoint: TFloatPoint read FFocalPointNative write SetFocalPoint;
   end;
 
-  function Color32FloatPoint(Color: TColor32; Point: TFloatPoint): TColor32FloatPoint; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
-  function Color32FloatPoint(Color: TColor32; X, Y: TFloat): TColor32FloatPoint; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
-  function Color32GradientStop(Offset: TFloat; Color: TColor32): TColor32GradientStop; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
 
+//------------------------------------------------------------------------------
+//
+//      Utilities
+//
+//------------------------------------------------------------------------------
+function Color32FloatPoint(Color: TColor32; Point: TFloatPoint): TColor32FloatPoint; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+function Color32FloatPoint(Color: TColor32; X, Y: TFloat): TColor32FloatPoint; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+function Color32GradientStop(Offset: TFloat; Color: TColor32): TColor32GradientStop; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+
+
+//------------------------------------------------------------------------------
+//
+//      Bindings
+//
+//------------------------------------------------------------------------------
 const
   FID_LINEAR3 = 0;
   FID_LINEAR4 = 1;
@@ -704,11 +987,15 @@ const
 var
   GradientRegistry: TFunctionRegistry;
 
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 implementation
 
 uses
   GR32_LowLevel,
-  GR32_System,
   GR32_Math,
   GR32_Geometry;
 
@@ -1152,7 +1439,7 @@ end;
 
 procedure TColor32Gradient.ClearColorStops(Color: TColor32);
 begin
-  SetLength(FGradientColors, 0);
+  SetLength(FGradientColors, 1);
   FGradientColors[0].Offset := 0;
   FGradientColors[0].Color32 := Color;
   GradientColorsChanged;
@@ -1169,20 +1456,20 @@ var
   Index: Integer;
   Scale: TFloat;
 begin
-  if High(GradientColors) < 0 then
+  if Length(GradientColors) = 0 then
   begin
     // no colors specified
     if Length(FGradientColors) > 0 then
       ClearColorStops;
   end else
   begin
-    SetLength(FGradientColors, High(GradientColors) + 1);
+    SetLength(FGradientColors, Length(GradientColors));
 
-    if High(GradientColors) >= 1 then
+    if Length(GradientColors) > 1 then
     begin
       // several colors (at least 2)
-      Scale := 1 / (Length(GradientColors) - 1);
-      for Index := 0 to Length(GradientColors) - 1 do
+      Scale := 1 / High(GradientColors);
+      for Index := 0 to High(GradientColors) do
       begin
         Assert(GradientColors[Index].VType = vtInteger);
         FGradientColors[Index].Color32 := GradientColors[Index].VInteger;
@@ -1212,7 +1499,7 @@ begin
   end else
   begin
     SetLength(FGradientColors, Length(GradientColors));
-    for Index := 0 to Length(GradientColors) - 1 do
+    for Index := 0 to High(GradientColors) do
       FGradientColors[Index] := GradientColors[Index];
     GradientColorsChanged;
   end;
@@ -1235,8 +1522,8 @@ begin
     if Length(GradientColors) > 1 then
     begin
       // several colors (at least 2)
-      Scale := 1 / (Length(GradientColors) - 1);
-      for Index := 0 to Length(GradientColors) - 1 do
+      Scale := 1 / High(GradientColors);
+      for Index := 0 to High(GradientColors) do
       begin
         FGradientColors[Index].Color32 := GradientColors[Index];
         FGradientColors[Index].Offset := Index * Scale;
@@ -1261,8 +1548,8 @@ begin
   // TPalette32 contains 256 colors
   SetLength(FGradientColors, Length(Palette));
 
-  Scale := 1 / (Length(Palette) - 1);
-  for Index := 0 to Length(Palette) - 1 do
+  Scale := 1 / High(Palette);
+  for Index := 0 to High(Palette) do
   begin
     FGradientColors[Index].Color32 := Palette[Index];
     FGradientColors[Index].Offset := Index * Scale;
@@ -1276,21 +1563,25 @@ var
   HasChanged: Boolean;
 begin
   HasChanged := False;
+
   if Length(FGradientColors) = 0 then
   begin
     SetLength(FGradientColors, 1);
     HasChanged := True;
   end;
+
   if FGradientColors[0].Offset <> 0 then
   begin
     FGradientColors[0].Offset := 0;
     HasChanged := True;
   end;
+
   if FGradientColors[0].Color32 <> Value then
   begin
     FGradientColors[0].Color32 := Value;
     HasChanged := True;
   end;
+
   if HasChanged then
     GradientColorsChanged;
 end;
@@ -1300,21 +1591,25 @@ var
   HasChanged: Boolean;
 begin
   HasChanged := False;
+
   if Length(FGradientColors) = 1 then
   begin
     SetLength(FGradientColors, 2);
     HasChanged := True;
   end;
+
   if FGradientColors[High(FGradientColors)].Offset <> 1 then
   begin
     FGradientColors[High(FGradientColors)].Offset := 1;
     HasChanged := True;
   end;
+
   if FGradientColors[High(FGradientColors)].Color32 <> Value then
   begin
     FGradientColors[High(FGradientColors)].Color32 := Value;
     HasChanged := True;
   end;
+
   if HasChanged then
     GradientColorsChanged;
 end;
@@ -1327,9 +1622,8 @@ end;
 function TColor32Gradient.GetGradientEntry(Index: Integer): TColor32GradientStop;
 begin
   if Index > Length(FGradientColors) then
-    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index])
-  else
-    Result := FGradientColors[Index];
+    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+  Result := FGradientColors[Index];
 end;
 
 function TColor32Gradient.GetStartColor: TColor32;
@@ -1358,7 +1652,8 @@ begin
   Count := GradientCount;
   if (Count = 0) or (Offset <= FGradientColors[0].Offset) then
     Result := StartColor
-  else if (Offset >= FGradientColors[Count - 1].Offset) then
+  else
+  if (Offset >= FGradientColors[Count - 1].Offset) then
     Result := EndColor
   else
   begin
@@ -1369,19 +1664,18 @@ begin
       Inc(Index);
 
     // calculate new offset (between two colors before and at 'Index')
-    Offset := (Offset - FGradientColors[Index - 1].Offset) /
-      (FGradientColors[Index].Offset - FGradientColors[Index - 1].Offset);
+    Offset := (Offset - FGradientColors[Index - 1].Offset) / (FGradientColors[Index].Offset - FGradientColors[Index - 1].Offset);
 
     // check if offset is out of bounds
     if Offset <= 0 then
       Result := FGradientColors[Index - 1].Color32
-    else if Offset >= 1 then
+    else
+    if Offset >= 1 then
       Result := FGradientColors[Index].Color32
     else
     begin
       // interpolate color
-      Result := CombineReg(FGradientColors[Index].Color32,
-        FGradientColors[Index - 1].Color32, Round($FF * Offset));
+      Result := CombineReg(FGradientColors[Index].Color32, FGradientColors[Index - 1].Color32, Round($FF * Offset));
       EMMS;
     end;
   end;
@@ -1454,19 +1748,18 @@ begin
 
     // eventually recalculate scale
     if RecalculateScale then
-      Scale := 1 / (FGradientColors[StopIndex].Offset -
-        FGradientColors[StopIndex - 1].Offset);
+      Scale := 1 / (FGradientColors[StopIndex].Offset - FGradientColors[StopIndex - 1].Offset);
 
     // calculate current color
     LocalFraction := (Fraction - FGradientColors[StopIndex - 1].Offset) * Scale;
     if LocalFraction <= 0 then
       ColorLUT^[LutIndex] := FGradientColors[StopIndex - 1].Color32
-    else if LocalFraction >= 1 then
+    else
+    if LocalFraction >= 1 then
       ColorLUT^[LutIndex] := FGradientColors[StopIndex].Color32
     else
     begin
-      ColorLUT^[LutIndex] := CombineReg(FGradientColors[StopIndex].Color32,
-        FGradientColors[StopIndex - 1].Color32, Round($FF * LocalFraction));
+      ColorLUT^[LutIndex] := CombineReg(FGradientColors[StopIndex].Color32, FGradientColors[StopIndex - 1].Color32, Round($FF * LocalFraction));
       EMMS;
     end;
     Fraction := Fraction + Delta;
@@ -2901,6 +3194,122 @@ begin
 end;
 
 
+{ TRadialExGradientSampler }
+
+constructor TRadialExGradientSampler.Create(WrapMode: TWrapMode);
+begin
+  inherited Create(WrapMode);
+
+  FRadius1 := 1;
+  FRadius2 := 1;
+end;
+
+procedure TRadialExGradientSampler.AssignTo(Dest: TPersistent);
+begin
+  inherited;
+
+  if Dest is TRadialExGradientSampler then
+  begin
+    TRadialExGradientSampler(Dest).FCenter1 := Self.FCenter1;
+    TRadialExGradientSampler(Dest).FCenter2 := Self.FCenter2;
+    TRadialExGradientSampler(Dest).FRadius1 := Self.FRadius1;
+    TRadialExGradientSampler(Dest).FRadius2 := Self.FRadius2;
+  end;
+end;
+
+procedure TRadialExGradientSampler.SetCenter1(const Value: TFloatPoint);
+begin
+  FCenter1 := Value;
+  FInitialized := False;
+end;
+
+procedure TRadialExGradientSampler.SetCenter2(const Value: TFloatPoint);
+begin
+  FCenter2 := Value;
+  FInitialized := False;
+end;
+
+procedure TRadialExGradientSampler.SetRadius1(const Value: TFloat);
+begin
+  if (FRadius1 <> Value) and (Value > 0) then
+  begin
+    FRadius1 := Value;
+    FInitialized := False;
+  end;
+end;
+
+procedure TRadialExGradientSampler.SetRadius2(const Value: TFloat);
+begin
+  if (FRadius2 <> Value) and (Value > 0) then
+  begin
+    FRadius2 := Value;
+    FInitialized := False;
+  end;
+end;
+
+procedure TRadialExGradientSampler.Transform(var X, Y: TFloat);
+begin
+  X := X - FCenter1.X;
+  Y := Y - FCenter1.Y;
+  inherited;
+end;
+
+procedure TRadialExGradientSampler.UpdateInternals;
+begin
+  inherited;
+
+  // Calculate difference between the two circles
+  FDeltaCenter := FCenter2 - FCenter1;
+  FDeltaRadius := FRadius2 - FRadius1;
+
+  FPolynomA := Sqr(FDeltaCenter.x) + Sqr(FDeltaCenter.y) - Sqr(FDeltaRadius);
+  FPolynomAInv := 1 / FPolynomA;
+  FRadius12 := FRadius1 * FDeltaRadius;
+  FRadius1Sqr := Sqr(FRadius1);
+end;
+
+function TRadialExGradientSampler.GetSampleFloat(X, Y: TFloat): TColor32;
+var
+  p: TFloatPoint;
+  B, C, D: TFloat;
+  Omega: TFloat;
+  SqrtD: TFloat;
+  Index: integer;
+begin
+  Transform(X, Y);
+
+  p := FloatPoint(X, Y);
+  B := Dot(p, FDeltaCenter) + FRadius12;
+  C := Dot(p, p) - FRadius1Sqr;
+
+  if (Abs(FPolynomA) > 0.0000001) then
+  begin
+    // Discriminant
+    D := Sqr(B) - (FPolynomA * C);
+
+    if (D < 0) then
+      Exit(FGradientLUT.Color32Ptr^[FLutMask]);
+
+    SqrtD := Sqrt(D);
+
+    // First root
+    Omega := (B + SqrtD) * FPolynomAInv;
+
+    if (Omega < 0) or (Omega > 1) then
+      // Second root
+      Omega := (B - SqrtD) * FPolynomAInv;
+  end else
+  begin
+    Omega := 0.5 * C / B;
+    if (Omega < 0) or (Omega > 1) then
+      Exit(0);
+  end;
+
+  Index := Round(Omega * FLutMask);
+
+  Result := FGradientLUT.Color32Ptr^[FWrapProc(Index, FLutMask)];
+end;
+
 { TCustomCenterRadiusAngleLutGradientSampler }
 
 constructor TCustomCenterRadiusAngleLutGradientSampler.Create(WrapMode: TWrapMode = wmMirror);
@@ -3713,14 +4122,12 @@ end;
 
 { TLinearGradientPolygonFiller }
 
-constructor TLinearGradientPolygonFiller.Create(
-  ColorGradient: TColor32Gradient);
+constructor TLinearGradientPolygonFiller.Create(ColorGradient: TColor32Gradient);
 begin
   Create(ColorGradient, True);
 end;
 
-constructor TLinearGradientPolygonFiller.Create(
-  ColorGradient: TColor32Gradient; UseLookupTable: Boolean);
+constructor TLinearGradientPolygonFiller.Create(ColorGradient: TColor32Gradient; UseLookupTable: Boolean);
 begin
   // create lookup table (and set 'own' & 'use' flags)
   FGradientLUT := TColor32LookupTable.Create;
@@ -3733,23 +4140,27 @@ begin
   FGradient.OnGradientColorsChanged := GradientColorsChangedHandler;
 end;
 
-function TLinearGradientPolygonFiller.ColorStopToScanLine(Index,
-  Y: Integer): TFloat;
+function TLinearGradientPolygonFiller.ColorStopToScanLine(Index, Y: Integer): TFloat;
 var
   Offset: array [0 .. 1] of TFloat;
 begin
   Offset[0] := FGradient.FGradientColors[Index].Offset;
   Offset[1] := 1.0 - Offset[0];
-  Result := Offset[1] * FStartPoint.X + Offset[0] * FEndPoint.X + FIncline *
-    (Offset[1] * (FStartPoint.Y - Y) + Offset[0] * (FEndPoint.Y - Y));
+  Result :=
+    Offset[1] * FStartPoint.X +
+    Offset[0] * FEndPoint.X +
+    FIncline * (
+      Offset[1] * (FStartPoint.Y - Y) +
+      Offset[0] * (FEndPoint.Y - Y)
+    );
 end;
 
 procedure TLinearGradientPolygonFiller.UseLookUpTableChanged;
 begin
   inherited;
 
-  // perfect gradients are only implementd for WrapMode = wmClamp
-  if (not FUseLookUpTable) and (WrapMode in [wmRepeat, wmMirror]) then
+  // Perfect gradients are only implemented for WrapMode = wmClamp
+  if (not FUseLookUpTable) and (WrapMode <> wmClamp) then
     WrapMode := wmClamp;
 end;
 
@@ -3757,8 +4168,8 @@ procedure TLinearGradientPolygonFiller.WrapModeChanged;
 begin
   inherited;
 
-  // perfect gradients are only implementd for WrapMode = wmClamp
-  if (not FUseLookUpTable) and (WrapMode in [wmRepeat, wmMirror]) then
+  // Perfect gradients are only implemented for WrapMode = wmClamp
+  if (not FUseLookUpTable) and (WrapMode <> wmClamp) then
     UseLookUpTable := True;
 end;
 
@@ -3766,7 +4177,7 @@ function TLinearGradientPolygonFiller.GetFillLine: TFillLineEvent;
 var
   GradientCount: Integer;
 begin
-  if Assigned(FGradient) then
+  if (FGradient <> nil) then
     GradientCount := FGradient.GradientCount
   else
     GradientCount := FGradientLUT.Size;
@@ -3774,42 +4185,49 @@ begin
   case GradientCount of
     0:
       Result := FillLineNone;
+
     1:
       Result := FillLineSolid;
-    else
-      if FUseLookUpTable then
-        case FWrapMode of
-          wmClamp:
-            if FStartPoint.X = FEndPoint.X then
-              if FStartPoint.Y = FEndPoint.Y then
-                Result := FillLineVerticalPadExtreme
-              else
-                Result := FillLineVerticalPad
-            else
-            if FStartPoint.X < FEndPoint.X then
-              Result := FillLineHorizontalPadPos
-            else
-              Result := FillLineHorizontalPadNeg;
-          wmMirror, wmRepeat:
-            if FStartPoint.X = FEndPoint.X then
-              Result := FillLineVerticalWrap
-            else
-            if FStartPoint.X < FEndPoint.X then
-              Result := FillLineHorizontalWrapPos
-            else
-              Result := FillLineHorizontalWrapNeg;
-        end
-      else
-      if FStartPoint.X = FEndPoint.X then
-        if FStartPoint.Y = FEndPoint.Y then
-          Result := FillLineVerticalExtreme
+
+  else
+
+    if FUseLookUpTable then
+    begin
+      if (FWrapMode = wmClamp) then
+      begin
+        if FStartPoint.X = FEndPoint.X then
+          if FStartPoint.Y = FEndPoint.Y then
+            Result := FillLineVerticalPadExtreme
+          else
+            Result := FillLineVerticalPad
         else
-          Result := FillLineVertical
+        if FStartPoint.X < FEndPoint.X then
+          Result := FillLineHorizontalPadPos
+        else
+          Result := FillLineHorizontalPadNeg;
+      end else
+      // wmMirror, wmRepeat, wmReflect
+      begin
+        if FStartPoint.X = FEndPoint.X then
+          Result := FillLineVerticalWrap
+        else
+        if FStartPoint.X < FEndPoint.X then
+          Result := FillLineHorizontalWrapPos
+        else
+          Result := FillLineHorizontalWrapNeg;
+      end;
+    end else
+    if FStartPoint.X = FEndPoint.X then
+    begin
+      if FStartPoint.Y = FEndPoint.Y then
+        Result := FillLineVerticalExtreme
       else
-      if FStartPoint.X < FEndPoint.X then
-        Result := FillLinePositive
-      else
-        Result := FillLineNegative;
+        Result := FillLineVertical;
+    end else
+    if FStartPoint.X < FEndPoint.X then
+      Result := FillLinePositive
+    else
+      Result := FillLineNegative;
   end;
 end;
 
@@ -4366,15 +4784,22 @@ function TRadialGradientPolygonFiller.GetFillLine: TFillLineEvent;
 begin
   case FWrapMode of
     wmClamp:
-      Result := FillLinePad;
+      Result := FillLineClamp;
+
     wmMirror:
-      Result := FillLineReflect;
+      Result := FillLineMirror;
+
     wmRepeat:
       Result := FillLineRepeat;
+
+{$ifdef GR32_WRAPMODE_REFLECT}
+    wmReflect:
+      Result := FillLineReflect;
+{$endif}
   end;
 end;
 
-procedure TRadialGradientPolygonFiller.FillLinePad(Dst: PColor32; DstX,
+procedure TRadialGradientPolygonFiller.FillLineClamp(Dst: PColor32; DstX,
   DstY, Length: Integer; AlphaValues: PColor32; CombineMode: TCombineMode);
 var
   X, Index, Count, Mask: Integer;
@@ -4414,6 +4839,7 @@ begin
   for X := DstX to DstX + Length - 1 do
   begin
     SqrRelRad := (Sqr(X - FCenter.X) + YDist) * SqrInvRadius;
+    // Clamp
     if SqrRelRad > RadMax then
       Index := Mask
     else
@@ -4431,7 +4857,45 @@ procedure TRadialGradientPolygonFiller.FillLineReflect(Dst: PColor32;
   DstX, DstY, Length: Integer; AlphaValues: PColor32;
   CombineMode: TCombineMode);
 var
-  X, Index, Mask, DivResult: Integer;
+  X, Index, Mask: Integer;
+  SqrInvRadius: TFloat;
+  YDist: TFloat;
+  ColorLUT: PColor32Array;
+  ReflectProc: TWrapProc;
+  Color32: TColor32;
+  BlendMemEx: TBlendMemEx;
+begin
+  BlendMemEx := BLEND_MEM_EX[CombineMode]^;
+  SqrInvRadius := Sqr(FRadXInv);
+  YDist := Sqr((DstY - FCenter.Y) * FRadScale);
+  Mask := Integer(FGradientLUT.Mask);
+  ColorLUT := FGradientLUT.Color32Ptr;
+  ReflectProc := GetOptimalReflect(FGradientLUT.Size-1);
+
+  for X := DstX to DstX + Length - 1 do
+  begin
+    Index := Round(Mask * FastSqrt((Sqr(X - FCenter.X) + YDist) * SqrInvRadius));
+    // Reflect
+    Index := ReflectProc(Index, FGradientLUT.Size-1);
+    (*
+    DivResult := DivMod(Index, FGradientLUT.Size, Index);
+    if Odd(DivResult) then
+      Index := Mask - Index;
+    *)
+
+    Color32 := ColorLUT^[Index];
+    BlendMemEx(Color32, Dst^, AlphaValues^);
+    EMMS;
+    Inc(Dst);
+    Inc(AlphaValues);
+  end;
+end;
+
+procedure TRadialGradientPolygonFiller.FillLineMirror(Dst: PColor32;
+  DstX, DstY, Length: Integer; AlphaValues: PColor32;
+  CombineMode: TCombineMode);
+var
+  X, Index, Mask: Integer;
   SqrInvRadius: TFloat;
   YDist: TFloat;
   ColorLUT: PColor32Array;
@@ -4446,11 +4910,10 @@ begin
 
   for X := DstX to DstX + Length - 1 do
   begin
-    Index := Round(Mask * FastSqrt((Sqr(X - FCenter.X) + YDist)
-      * SqrInvRadius));
-    DivResult := DivMod(Index, FGradientLUT.Size, Index);
-    if Odd(DivResult) then
-      Index := Mask - Index;
+    Index := Round(Mask * FastSqrt((Sqr(X - FCenter.X) + YDist) * SqrInvRadius));
+    // Mirror
+    Index := Mirror(Index, FGradientLUT.Size-1);
+
     Color32 := ColorLUT^[Index];
     BlendMemEx(Color32, Dst^, AlphaValues^);
     EMMS;
@@ -4463,8 +4926,10 @@ procedure TRadialGradientPolygonFiller.FillLineRepeat(Dst: PColor32;
   DstX, DstY, Length: Integer; AlphaValues: PColor32; CombineMode: TCombineMode);
 var
   X, Mask: Integer;
+  Index: Integer;
   YDist, SqrInvRadius: TFloat;
   ColorLUT: PColor32Array;
+  WrapProc: TWrapProc;
   Color32: TColor32;
   BlendMemEx: TBlendMemEx;
 begin
@@ -4473,10 +4938,15 @@ begin
   YDist := Sqr((DstY - FCenter.Y) * FRadScale);
   Mask := Integer(FGradientLUT.Mask);
   ColorLUT := FGradientLUT.Color32Ptr;
+  WrapProc := GetOptimalWrap(FGradientLUT.Size-1);
+
   for X := DstX to DstX + Length - 1 do
   begin
-    Color32 := ColorLUT^[Round(Mask * FastSqrt((Sqr(X - FCenter.X) + YDist) *
-      SqrInvRadius)) mod FGradientLUT.Size];
+    // Wrap
+    Index := WrapProc(Round(Mask * FastSqrt((Sqr(X - FCenter.X) + YDist) * SqrInvRadius)), FGradientLUT.Size-1);
+    // Index := Round(Mask * FastSqrt((Sqr(X - FCenter.X) + YDist) * SqrInvRadius)) mod FGradientLUT.Size;
+
+    Color32 := ColorLUT^[Index];
     BlendMemEx(Color32, Dst^, AlphaValues^);
     EMMS;
     Inc(Dst);

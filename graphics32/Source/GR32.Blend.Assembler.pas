@@ -1,4 +1,4 @@
-unit GR32.Blend.&ASM;
+unit GR32.Blend.Assembler;
 
 (* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1 or LGPL 2.1 with linking exception
@@ -99,8 +99,7 @@ implementation
 uses
   GR32_Blend,
   GR32_Bindings,
-  GR32_LowLevel,
-  GR32_System;
+  GR32_LowLevel;
 
 
 const

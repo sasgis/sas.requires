@@ -40,16 +40,47 @@ interface
 uses
   Generics.Collections,
   Classes,
-{$IFNDEF PUREPASCAL}
-  GR32.CPUID,
-{$ENDIF}
-  GR32_System;
+  GR32.CPUID;
 
+//------------------------------------------------------------------------------
+//
+//      CPU feature convenience aliases
+//
+//------------------------------------------------------------------------------
+// For use in CPU dispatch bindings
+// For the most common usage, these alioases avoids the need to reference the
+// GR32.CPUID unit directly.
+//------------------------------------------------------------------------------
 type
-  TFunctionName = type string;
-  TFunctionID = type Integer;
+  TCPU = GR32.CPUID.TCPU;
+  TInstructionSupport = GR32.CPUID.TInstructionSupport;
+  TCPUInstructionSet = GR32.CPUID.TCPUInstructionSet;
 
-  PFunctionInfo = ^TFunctionInfo;
+const
+  isPascal = GR32.CPUID.TCPUInstructionSet.isPascal;
+  isAssembler = GR32.CPUID.TCPUInstructionSet.isAssembler;
+  isReference = GR32.CPUID.TCPUInstructionSet.isReference;
+  isMMX = GR32.CPUID.TCPUInstructionSet.isMMX;
+  isExMMX = GR32.CPUID.TCPUInstructionSet.isExMMX;
+  isSSE = GR32.CPUID.TCPUInstructionSet.isSSE;
+  isSSE2 = GR32.CPUID.TCPUInstructionSet.isSSE2;
+  isSSE3 = GR32.CPUID.TCPUInstructionSet.isSSE3;
+  isSSSE3 = GR32.CPUID.TCPUInstructionSet.isSSSE3;
+  isSSE41 = GR32.CPUID.TCPUInstructionSet.isSSE41;
+  isSSE42 = GR32.CPUID.TCPUInstructionSet.isSSE42;
+  isAVX = GR32.CPUID.TCPUInstructionSet.isAVX;
+  isAVX2 = GR32.CPUID.TCPUInstructionSet.isAVX2;
+  isAVX512f = GR32.CPUID.TCPUInstructionSet.isAVX512f;
+
+
+//------------------------------------------------------------------------------
+//
+//      TFunctionInfo
+//
+//------------------------------------------------------------------------------
+// Describes a function implementation.
+//------------------------------------------------------------------------------
+type
   TFunctionInfo = record
     FunctionID: NativeInt;      // Either an ID or a pointer
     Proc: Pointer;              // Pointer to the implementing function
@@ -57,42 +88,73 @@ type
     Priority: Integer;          // Function priority; Smaller is better. Used by default TFunctionPriority callback
     Flags: Cardinal;            // Optional, user defined flags for use in a custom TFunctionPriority callback
   end;
+  PFunctionInfo = ^TFunctionInfo;
 
-  TFunctionPriority = function (Info: PFunctionInfo): Integer;
 
-  PFunctionBinding = ^TFunctionBinding;
-  TFunctionBinding = record
-    FunctionID: NativeInt;      // Either an ID or a pointer
-    BindVariable: PPointer;     // Pointer to the function delegate
-  end;
+//------------------------------------------------------------------------------
+//
+//      TFunctionPriority
+//
+//------------------------------------------------------------------------------
+// Delegate used when evaluating a binding resolution.
+//------------------------------------------------------------------------------
+type
+  TFunctionPriority = function(Info: PFunctionInfo): Integer;
 
+
+//------------------------------------------------------------------------------
+//
+//      TFunctionRegistry
+//
+//------------------------------------------------------------------------------
+// This class fascilitates a registry that allows multiple function to be
+// registered together with information about their CPU requirements and
+// an additional 'flags' parameter. Functions that share the same FunctionID
+// can be assigned to a function variable through the rebind methods.
+// A priority callback function is used to assess the most optimal function.
+//------------------------------------------------------------------------------
 const
-  BindingPriorityDefault = 0;
-  BindingPriorityBetter = -1;
-  BindingPriorityWorse = 1;
+  BindingPriorityDefault = 0;   // Default priority
+  BindingPriorityBetter = -1;   // Negative = Better
+  BindingPriorityWorse = 1;     // Positive = Worse
 
 type
-  TFunctionInfoList = TList<TFunctionInfo>;
-  TFunctionBindingList = TList<TFunctionBinding>;
-
-type
-  { TFunctionRegistry }
-  { This class fascilitates a registry that allows multiple function to be
-    registered together with information about their CPU requirements and
-    an additional 'flags' parameter. Functions that share the same FunctionID
-    can be assigned to a function variable through the rebind methods.
-    A priority callback function is used to assess the most optimal function. }
   TFunctionRegistry = class(TPersistent)
+  private type
+    PFunctionBinding = ^TFunctionBinding;
+    TFunctionBinding = record
+      FunctionID: NativeInt;      // Either an ID or a pointer
+      BindVariable: PPointer;     // Pointer to the function delegate
+    end;
+
+  type
+    TFunctionInfoList = TList<TFunctionInfo>;
+    TFunctionBindingList = TList<TFunctionBinding>;
+{$IFDEF FPC}
+    TFunctionInfoListCracker = class(TFunctionInfoList);
+    TFunctionBindingListCracker = class(TFunctionBindingList);
+{$ENDIF}
+
+  private class var
+    FBindingRegistries: TObjectList<TFunctionRegistry>;
+
   private
     FItems: TFunctionInfoList;
     FBindings: TFunctionBindingList;
     FName: string;
     FNeedRebind: boolean;
+
     procedure SetName(const Value: string);
+
+    class function NewRegistry(const Name: string): TFunctionRegistry;
+    class destructor Destroy;
   protected
     function FindBinding(BindVariable: PPointer): NativeInt;
     function FindFunctionInfo(FunctionID: NativeInt; PriorityCallback: TFunctionPriority = nil): PFunctionInfo; overload;
     function FindFunctionInfo(BindVariable: PPointer; PriorityCallback: TFunctionPriority = nil): PFunctionInfo; overload;
+
+  public const
+    INVALID_PRIORITY: Integer = MaxInt;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -123,53 +185,93 @@ type
     property Name: string read FName write SetName;
   end;
 
+const
+  INVALID_PRIORITY: Integer = MaxInt deprecated 'Use TFunctionRegistry.INVALID_PRIORITY';
+
+
+//------------------------------------------------------------------------------
+//
+//      NewRegistry
+//
+//------------------------------------------------------------------------------
+// Create a new binding registry
+//------------------------------------------------------------------------------
 function NewRegistry(const Name: string = ''): TFunctionRegistry;
+
+
+//------------------------------------------------------------------------------
 
 function DefaultPriorityProc(Info: PFunctionInfo): Integer;
 
 var
   DefaultPriority: TFunctionPriority = DefaultPriorityProc;
 
-const
-  INVALID_PRIORITY: Integer = MaxInt;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 implementation
 
 uses
-  Math;
+  Math,
+  GR32_System;
 
-{$IFDEF FPC}
-type
-  TFunctionInfoListCracker = class(TFunctionInfoList);
-  TFunctionBindingListCracker = class(TFunctionBindingList);
-{$ENDIF}
-
-var
-  BindingRegistries: TObjectList<TFunctionRegistry>;
+//------------------------------------------------------------------------------
 
 function NewRegistry(const Name: string): TFunctionRegistry;
 begin
-  if BindingRegistries = nil then
-    BindingRegistries := TObjectList<TFunctionRegistry>.Create;
-
-  Result := TFunctionRegistry.Create;
-  {$IFDEF NEXTGEN}
-  Result.__ObjAddRef;
-  {$ENDIF}
-  Result.Name := Name;
-
-  BindingRegistries.Add(Result);
+  Result := TFunctionRegistry.NewRegistry(Name);
 end;
+
+//------------------------------------------------------------------------------
 
 function DefaultPriorityProc(Info: PFunctionInfo): Integer;
 begin
   if (Info.InstructionSupport <= GR32_System.CPU.InstructionSupport) then
     Result := Info.Priority
   else
-    Result := INVALID_PRIORITY;
+    Result := TFunctionRegistry.INVALID_PRIORITY;
 end;
 
-{ TFunctionRegistry }
+
+//------------------------------------------------------------------------------
+//
+//      TFunctionRegistry
+//
+//------------------------------------------------------------------------------
+constructor TFunctionRegistry.Create;
+begin
+  FItems := TFunctionInfoList.Create;
+  FBindings := TFunctionBindingList.Create;
+end;
+
+destructor TFunctionRegistry.Destroy;
+begin
+  Clear;
+  FItems.Free;
+  FBindings.Free;
+  inherited;
+end;
+
+class destructor TFunctionRegistry.Destroy;
+begin
+  FBindingRegistries.Free;
+  FBindingRegistries := nil;
+end;
+
+class function TFunctionRegistry.NewRegistry(const Name: string): TFunctionRegistry;
+begin
+  if (FBindingRegistries = nil) then
+    FBindingRegistries := TObjectList<TFunctionRegistry>.Create;
+
+  Result := TFunctionRegistry.Create;
+  FBindingRegistries.Add(Result);
+
+  Result.Name := Name;
+end;
+
+//------------------------------------------------------------------------------
 
 procedure TFunctionRegistry.Add(BindVariable: PPointer; Proc: Pointer; InstructionSupport: TInstructionSupport; Priority: Integer; Flags: Cardinal);
 var
@@ -196,25 +298,15 @@ begin
   FNeedRebind := True;
 end;
 
+//------------------------------------------------------------------------------
+
 procedure TFunctionRegistry.Clear;
 begin
   FItems.Clear;
   FBindings.Clear;
 end;
 
-constructor TFunctionRegistry.Create;
-begin
-  FItems := TFunctionInfoList.Create;
-  FBindings := TFunctionBindingList.Create;
-end;
-
-destructor TFunctionRegistry.Destroy;
-begin
-  Clear;
-  FItems.Free;
-  FBindings.Free;
-  inherited;
-end;
+//------------------------------------------------------------------------------
 
 function TFunctionRegistry.FindBinding(BindVariable: PPointer): NativeInt;
 var
@@ -228,6 +320,8 @@ begin
       break;
     end;
 end;
+
+//------------------------------------------------------------------------------
 
 function TFunctionRegistry.FindFunctionInfo(BindVariable: PPointer; PriorityCallback: TFunctionPriority): PFunctionInfo;
 var
@@ -274,6 +368,8 @@ begin
   end;
 end;
 
+//------------------------------------------------------------------------------
+
 function TFunctionRegistry.FindFunction(BindVariable: PPointer; PriorityCallback: TFunctionPriority): Pointer;
 var
   Info: PFunctionInfo;
@@ -295,6 +391,8 @@ begin
   else
     Result := nil;
 end;
+
+//------------------------------------------------------------------------------
 
 function TFunctionRegistry.Rebind(BindVariable: PPointer; PriorityCallback: TFunctionPriority): boolean;
 var
@@ -328,6 +426,8 @@ begin
   end;
 end;
 
+//------------------------------------------------------------------------------
+
 procedure TFunctionRegistry.RebindAll(AForce: boolean; PriorityCallback: TFunctionPriority);
 begin
   if AForce then
@@ -356,6 +456,8 @@ begin
   FNeedRebind := False;
 end;
 
+//------------------------------------------------------------------------------
+
 procedure TFunctionRegistry.RegisterBinding(BindVariable: PPointer);
 begin
   RegisterBinding(NativeInt(BindVariable), BindVariable);
@@ -374,20 +476,13 @@ begin
   FNeedRebind := True;
 end;
 
+//------------------------------------------------------------------------------
+
 procedure TFunctionRegistry.SetName(const Value: string);
 begin
   FName := Value;
 end;
 
-procedure FreeRegistries;
-begin
-  BindingRegistries.Free;
-  BindingRegistries := nil;
-end;
-
-initialization
-
-finalization
-  FreeRegistries;
+//------------------------------------------------------------------------------
 
 end.

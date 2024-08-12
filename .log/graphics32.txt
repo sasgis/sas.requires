@@ -1,3 +1,345 @@
+commit 1658a346c2de238fdd4913cd0a94a8110aa4b110
+Merge: 8a26d69b afdcd9bc
+Author: zed <starmen@tut.by>
+Date:   2024-08-12 16:13:21 +0300
+
+    Merge branch 'master' into sasgis
+
+commit afdcd9bc58f3eaa337db95828988945bfff97bc5
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-08-04 14:03:30 +0200
+
+    Quick-fixed a bunch of array overruns in Mandelbrot example.
+
+commit 97aea89a66a3e88222f308ca4ce26f1ac596ae37
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-08-04 14:01:43 +0200
+
+    Fixed memory leak in TBooleanMap.
+    
+    Added TBooleanMap.Clear(Boolean) method.
+    Fixes #325
+
+commit 7dfee5d9a28fe62c17305a2014de6270ebb15b66
+Merge: ec8ff5b3 d1717bcf
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-30 22:54:21 +0200
+
+    Merge branch 'HtmlRadialGradient'
+
+commit d1717bcf55e2dec72ba808fa7b047b48f77db904
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-30 22:53:52 +0200
+
+    Added TRadialExGradientSampler implementing HTML5 radial gradient.
+    
+    Fixes #324
+
+commit ec8ff5b3b33420812a7b0fdda335bf8646fa6674
+Merge: dbd2777c 2919b388
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-30 12:24:54 +0200
+
+    Merge branch 'MirrorReflect'
+
+commit dbd2777caa5239490d59f1b689218c748e63fb6c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-25 10:50:05 +0200
+
+    Fix for PNG failing to load on Korean systems due to Ansi->Unicode conversion of PNG file signature
+
+commit 1251b0450136a392c18d95a24709d3a2072c3245
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-23 23:40:10 +0200
+
+    Fix for range error in TColor32Gradient.ClearColorStops
+    
+    Minor reformat of GR32_ColorGradients
+
+commit 16cf9b05b00b2863ed2cb0db39925f4de75c4c72
+Merge: c72a255c 588b750f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-23 17:59:27 +0200
+
+    Merge branch 'colorpickers'
+
+commit 588b750f9f96f06e829cfd7c19723cb9187cebd3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-23 17:58:04 +0200
+
+    All Graphics32 controls on design-time color picker form are now created at run-time.
+    
+    Fixes #321
+
+commit d97d28e4b27b20fcce2bb6559e480ae2b1217524
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-23 16:23:16 +0200
+
+    Fixed poor handling of RGB/BGR in Color picker form.
+
+commit b1accb76dab67c3f0a37c4844bfd459797bf9972
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-23 16:20:11 +0200
+
+    Fix: The Click and DoubleClick events of TColorSwatch did not work.
+    
+    Removed some left-behind test code in TCustomColorSwatch.Paint
+
+commit dffee653d01a3a111deb63f19e885f2ea9d69ba5
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-23 16:16:41 +0200
+
+    The (optional) frame of the Color Picker controls is now a simple, flat 1 pixel frame instead of a 3D frame.
+    
+    When 3D frames become vogue again (as they inevitably will) they can be enabled with the GR32_COLORPICKER_FRAME3D compiler define.
+
+commit 6f8ebbef0f4646b974812184c38586445d227445
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-23 16:10:44 +0200
+
+    Color32(TAlphaColor) has been replaced with Color32(AlphaColor: TAlphaColorRec) to avoid conflict with Color32(TColor)
+
+commit 2919b388b47966d9c40a4188a25db92ebbd4c1cf
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-22 17:01:06 +0200
+
+    Updated unit tests for LowLevel.Reflect
+
+commit 28f9b73f54e398008662deb0798a9bdeeb3b5992
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-21 23:50:08 +0200
+
+    Reintroduced old wmMirror wrapmode behavior as wmReflect.
+    
+    For now wmReflect is only declared if GR32_WRAPMODE_REFLECT is defined (default).
+    Implemented Mirror wrapmode for TRadialGradientPolygonFiller.
+    Refs #291
+
+commit c72a255c7744eb97a6fc4a7edb002dfab0b9a6e1
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-19 01:02:35 +0200
+
+    Avoid needless use of non-volatile registers in ScaleMems SSE implementations.
+
+commit c06554c66e4b9b6937e65de83c4b21dc18ccff8a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-19 01:00:47 +0200
+
+    Fix for early exit in FPC assembler function with stackframe bypassing stack cleanup
+
+commit 6b4605f0c9417f2d327b038176bc4e97e4403421
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-18 16:08:03 +0200
+
+    Fix for FPC: Apparently Lazarus doesn't have TNoRefCountObject yet
+
+commit 7a6906f2259ceffc02cba5da9e6e96b978a3d962
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-18 16:05:38 +0200
+
+    Removed use of TBitmap32List from design-time bitmap property editor.
+    
+    Bitmaps are now loaded from a resource.
+    Refs #321
+
+commit cc2b624faa4d51555ed2f1ba6e039b3409d504f0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-18 13:59:29 +0200
+
+    Updated LineSimplification example screenshot
+
+commit 1071bf748b3bda17a6f155b7fccbe7c414fecbeb
+Merge: 2d80f527 14e6498d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-18 13:43:39 +0200
+
+    Merge branch 'RamerDouglasPeucker'
+
+commit 14e6498d593247feae5f184a1e58ea21c47d669c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-18 11:24:50 +0200
+
+    LineSimplification example improvements:
+    
+    - Display both original and simplified polyline and vertices.
+    - Epsilon can be controlled by user.
+    - Display help and stats.
+
+commit 74650fc98c4e2af79d5ea1f52154b64109f3f3f1
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-18 13:39:12 +0200
+
+    Removed fixed point version of RamerDouglasPeucker as it frequently failed due to unavoidable integer overflows.
+    
+    The fixed point VertexReduction function now simply converts to floating point and then defers to the float version of VertexReduction.
+
+commit 7f67277f11c2470e5ff6d2c9261102e45a2e0707
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-18 01:29:11 +0200
+
+    Various RamerDouglasPeucker optimizations:
+    
+    - Avoid Sqrt and Abs when calculating and comparing distances.
+    - Moved static expressions out of loop.
+
+commit bc3b3f7b9318e33d3ef8537afecd813f39bdc90c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-17 23:03:17 +0200
+
+    Fix for infinite recursion in RamerDouglasPeucker with closed paths
+    
+    Fixes #87
+
+commit 2d80f52759635d128493ebe351ea5f57df54c13c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-17 23:07:33 +0200
+
+    Conditionally replaced use of TSingletonImplementation with TNoRefCountObject
+    
+    Fixes #320
+
+commit 8e159908ccb3eb9121d0257c6aa435751334a492
+Merge: 74c78b18 a9d0ed65
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-17 00:59:39 +0200
+
+    Merge branch 'PurgeZombies'
+    
+    Fixes #317
+
+commit 74c78b1848dc918b5f0b3ad5cf9fa29772de1a23
+Merge: 3dd467d6 00b02a02
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-17 00:52:38 +0200
+
+    Merge branch 'Clipper2'
+
+commit 3dd467d6aff0db749a3a73b04bc60ca416b1995e
+Merge: b3563f37 67bdb571
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-17 00:52:23 +0200
+
+    Merge branch 'DET_2x2'
+
+commit 67bdb5718c8b805d93583aad653e87a4a5380b97
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-17 00:52:07 +0200
+
+    Fix for broken DET_2x2 x64 implementation and wrong compiler define.
+    
+    64-bit DET_2x2 implementation is now categorized as SSE.
+
+commit 00b02a0212a2de4a01d390a9700e4fda02cf39e3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-16 19:05:35 +0200
+
+    Updated Clipper2 to 1.4.0
+    
+    Fixes #277
+
+commit b3563f37a5194f87c1e3102ae0c2d7cbf0195d71
+Merge: 00798faf a344dce0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-15 21:32:25 +0200
+
+    Merge branch 'LowLevel.Mirror'
+
+commit a344dce0540759534cb6393fd420433ec2d2cbec
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-12 09:53:03 +0200
+
+    Replaced Mirror implementation using DivMod with iterative solution.
+    
+    MirrorPow2 has been removed. It didn't work and apparently an optimized solution isn't possible.
+    Fixes #291
+
+commit 57d6fa317c89103d2d81b93adb75f38d5b63064a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-23 02:14:40 +0100
+
+    Fix for Mirror() PUREPASCAL implementation not producing a perfect triangle "wave".
+    
+    Mirror() assembler implementation used wrong (and thus uninitialized) register.
+    MirrorPow2 still broken.
+    Updated Mirror and MirrorPow2 unit tests.
+    Refs #291
+
+commit a9d0ed6592e8eda559059de07f73a6176e8fb320
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-15 15:29:45 +0200
+
+    Removed obsolete Example files.
+
+commit 0cd861af0ae1e2e935b49cf84e29c52f6ed23de6
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-15 15:29:23 +0200
+
+    Removed Maintenance files.
+
+commit 00798faf3d885d62c297e91627e60684c167db41
+Merge: 13c7e5fe 3be8f7d0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-11 09:54:28 +0200
+
+    Merge branch 'TPolygonRenderer32VPR.FillProc'
+
+commit 3be8f7d0b2eb8bdb157703b00a64257f71f9f011
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-03-17 03:29:05 +0100
+
+    TPolygonRenderer32VPR's internal coverage functions are now managed by binding system.
+    
+    TPolygonRenderer32VPR.UpdateFillProc has been made protected and a new method added that retrieves the current fill proc.
+
+commit 13c7e5fef0575654893bf1faf6a15167b40ef540
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-10 22:00:51 +0200
+
+    TCPU, TInstructionSupport, and TCPUInstructionSet aliases moved from GR32_System to GR32_Bindings.
+    
+    This eliminates many dependencies and pressure on the GR32_System unit and moves the aliases to a contextually more relevant unit (i.e. bindings stuff).
+
+commit 4cb7abbb0a3d49195bb243ee63a7e28db5296635
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-10 21:10:05 +0200
+
+    GR32.CPUID now supports PUREPASCAL
+    
+    This eliminates the need to exclude the unit in PUREPASCAL mode and provide dummy replacement types and functions.
+    Also, binding system refactoring in preparation for some other changes.
+
+commit ce99157e227fca981ca8fadbabe5b29930c9995b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-10 14:54:34 +0200
+
+    ParticleSwarm example tweaks. Mainly elimination of key magic numbers.
+
+commit 8f7a177a64d6fa388ac62d141cfc5fef7de68c7b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-09 17:57:37 +0200
+
+    Renamed GR32.Blend.ASM to GR32.Blend.Assembler.
+    
+    Fixes #315
+
+commit f1c60588295cb191e63df571dd598a4626fcefbc
+Merge: 8a030782 4498fa23
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-09 14:49:15 +0200
+
+    Merge branch 'FadeToBlack'
+
+commit 4498fa23c86252cb96442ab810e7bf29c161b361
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-07-09 14:48:10 +0200
+
+    Added ScaleMems function with Pascal and SSE4.1 implementations.
+    
+    ScaleMems can be used to fade an image to black. See the ParticleSwarm and GradLines examples.
+    For fading, ScaleMems is preferred over BlendMems since it's impossible to fade to complete black with BlendMems due to rounding errors. ScaleMems is also slightly faster (~5%).
+    For now ScaleMems is not guaranteed to preserve the alpha channel.
+    Added benchmark mode to ParticleSwarm example.
+
 commit 8a26d69b662157f532da4e70eeca9dcd954eb9ed
 Merge: 163cc5dd 8a030782
 Author: zed <starmen@tut.by>

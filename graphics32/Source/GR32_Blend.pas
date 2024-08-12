@@ -146,6 +146,7 @@ type
 // Misc
 //------------------------------------------------------------------------------
   TLightenReg  = function(C: TColor32; Amount: Integer): TColor32;
+  TScaleMems = procedure(Dst: PColor32; Count: Integer; Weight: Cardinal);
 
 
 //------------------------------------------------------------------------------
@@ -221,6 +222,7 @@ var
 //------------------------------------------------------------------------------
   LightenReg: TLightenReg;
   Lighten: TLightenReg absolute LightenReg; // Lighten is an alias for LigthenReg
+  ScaleMems: TScaleMems;
 
 //------------------------------------------------------------------------------
 // EMMS
@@ -388,11 +390,9 @@ procedure BlendLine1(F: TColor32; B: PColor32; Count: Integer); {$IFDEF USEINLIN
 implementation
 
 uses
-{$IFNDEF PUREPASCAL}
   GR32_System,
-{$ENDIF}
 {$IFNDEF PUREPASCAL}
-  GR32.Blend.&ASM,
+  GR32.Blend.Assembler,
 {$IFNDEF OMIT_MMX}
   GR32.Blend.MMX,
 {$ENDIF}
@@ -407,8 +407,6 @@ procedure EMMS;
 begin
 end;
 {$ENDIF}
-
-{$IFNDEF PUREPASCAL}
 
 //------------------------------------------------------------------------------
 //
@@ -453,7 +451,6 @@ begin
   if (AlphaTable <> nil) then
     FreeMem(AlphaTable);
 end;
-{$ENDIF}
 
 
 //------------------------------------------------------------------------------
@@ -554,6 +551,7 @@ begin
   BlendRegistry.RegisterBinding(FID_BLENDCOLORMODULATE, @@BlendColorModulate);
 
   BlendRegistry.RegisterBinding(FID_LIGHTEN,            @@LightenReg);
+  BlendRegistry.RegisterBinding(@@ScaleMems);
 end;
 
 var
@@ -576,18 +574,12 @@ initialization
 
   MakeMergeTables;
 
-{$IFNDEF PUREPASCAL}
   AlphaTable := nil;
   MMX_ACTIVE := (isMMX in CPU.InstructionSupport);
   if [isMMX, isSSE2] * CPU.InstructionSupport <> [] then
     GenAlphaTable;
-{$ELSE}
-  MMX_ACTIVE := False;
-{$ENDIF}
 
 finalization
-{$IFNDEF PUREPASCAL}
   FreeAlphaTable;
-{$ENDIF}
 
 end.

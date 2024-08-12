@@ -115,6 +115,9 @@ type
     procedure TestWrapMinMax;
     procedure TestWrapPow2;
     procedure TestMirror;
+    procedure TestMirrorMinMax;
+    procedure TestReflect;
+    procedure TestReflectMinMax;
     procedure TestSAR;
   end;
 
@@ -193,6 +196,8 @@ uses
   GR32_LowLevel,
   GR32_Math;
 
+{$WARN SYMBOL_PLATFORM OFF}
+
 // ----------------------------------------------------------------------------
 //
 // TBindingTestCase
@@ -211,37 +216,31 @@ begin
   if (isAssembler in Info.InstructionSupport) then
     Result := 0
   else
-    Result := INVALID_PRIORITY;
+    Result := TFunctionRegistry.INVALID_PRIORITY;
 end;
 
 class function TBindingTestCase.PriorityProcMMX(Info: PFunctionInfo): Integer;
 begin
-{$if not defined(PUREPASCAL)}
   if (isMMX in Info.InstructionSupport) then
     Result := 0
   else
-    Result := INVALID_PRIORITY;
-{$ifend}
+    Result := TFunctionRegistry.INVALID_PRIORITY;
 end;
 
 class function TBindingTestCase.PriorityProcSSE2(Info: PFunctionInfo): Integer;
 begin
-{$if not defined(PUREPASCAL)}
   if (isSSE2 in Info.InstructionSupport) then
     Result := 0
   else
-    Result := INVALID_PRIORITY;
-{$ifend}
+    Result := TFunctionRegistry.INVALID_PRIORITY;
 end;
 
 class function TBindingTestCase.PriorityProcSSE41(Info: PFunctionInfo): Integer;
 begin
-{$if not defined(PUREPASCAL)}
   if (isSSE41 in Info.InstructionSupport) then
     Result := 0
   else
-    Result := INVALID_PRIORITY;
-{$ifend}
+    Result := TFunctionRegistry.INVALID_PRIORITY;
 end;
 
 function TBindingTestCase.Rebind(FunctionID: Integer; RequireImplementation: boolean): boolean;
@@ -671,12 +670,149 @@ end;
 
 procedure TTestLowLevel.TestMirror;
 begin
-  CheckEquals(50, Mirror(50, 100));
-  CheckEquals(51, Mirror(150, 100));
-  CheckEquals(50, Mirror(149, 99));
-  CheckEquals(64, MirrorPow2(64, 127));
-  CheckEquals(63, MirrorPow2(192, 127));
-  CheckEquals(95, MirrorPow2(160, 127));
+  // Edge cases
+  CheckEquals(  0, Mirror(  0, 100));
+  CheckEquals(100, Mirror(100, 100));
+  CheckEquals(  1, Mirror(  1, 100));
+  CheckEquals( 99, Mirror( 99, 100));
+  CheckEquals( 99, Mirror(101, 100));
+  CheckEquals(  1, Mirror( -1, 100));
+
+  CheckEquals( 50, Mirror(150, 100));
+  CheckEquals(  0, Mirror(200, 100));
+  CheckEquals( 50, Mirror(250, 100));
+  CheckEquals(100, Mirror(300, 100));
+
+  CheckEquals( 49, Mirror(149,  99));
+end;
+
+procedure TTestLowLevel.TestMirrorMinMax;
+begin
+  // Inside range
+  for var Value := 25 to 100 do
+    CheckEquals(Value, Mirror(Value, 25, 100), Format('Mirror(%d, 25, 100)', [Value]));
+
+  // Outside range
+  for var Value := 0 to 25 do
+    CheckEquals(50-Value, Mirror(Value, 25, 100), Format('Mirror(%d, 25, 100)', [Value]));
+  for var Value := 100 to 175 do
+    CheckEquals(100+100-Value, Mirror(Value, 25, 100), Format('Mirror(%d, 25, 100)', [Value]));
+  for var Value := 175 to 225 do
+    CheckEquals(25+Value-175, Mirror(Value, 25, 100), Format('Mirror(%d, 25, 100)', [Value]));
+
+  // Negative values
+  for var Value := -50 to 0 do
+    CheckEquals(50+Abs(Value), Mirror(Value, 25, 100), Format('Mirror(%d, 25, 100)', [Value]));
+end;
+
+procedure TTestLowLevel.TestReflect;
+
+  procedure DoTestReflection(Direction: integer);
+  begin
+    for var MaxValue := 1 to 10 do
+    begin
+      var LastValue := 0;
+      var ReflectDirection := 1;
+      var DoReflect := True;
+
+      var Value := 0;
+      if (Direction < 0) then
+        Value := -1;
+
+      while Value <> 3*MaxValue*Direction do
+      begin
+        var Expected: integer;
+        if (not DoReflect) then
+        begin
+          Expected := LastValue + ReflectDirection;
+
+          DoReflect := True;
+          if (Expected = 0) then
+            ReflectDirection := +1
+          else
+          if (Expected = MaxValue) then
+            ReflectDirection := -1
+          else
+            DoReflect := False;
+        end else
+        begin
+          Expected := LastValue;
+          DoReflect := False;
+        end;
+
+        var Actual := Reflect(Value, MaxValue);
+        CheckEquals(Expected, Actual, Format('Reflect(%d, %d)', [Value, MaxValue]));
+
+        if (IsPowerOf2(MaxValue+1)) then
+        begin
+          Actual := ReflectPow2(Value, MaxValue);
+          CheckEquals(Expected, Actual, Format('ReflectPow2(%d, %d)', [Value, MaxValue]));
+        end;
+
+        LastValue := Actual;
+
+        Value := Value + Direction;
+      end;
+    end;
+  end;
+
+begin
+  // Edge cases
+  CheckEquals(  0, Reflect(  0, 100));
+  CheckEquals(100, Reflect(100, 100));
+  CheckEquals(  1, Reflect(  1, 100));
+  CheckEquals( 99, Reflect( 99, 100));
+  CheckEquals(100, Reflect(101, 100));
+  CheckEquals(  0, Reflect( -1, 100));
+
+  DoTestReflection(1);
+  DoTestReflection(-1);
+end;
+
+procedure TTestLowLevel.TestReflectMinMax;
+
+  procedure DoTestReflection(Direction: integer);
+  begin
+    for var MaxValue := 1 to 10 do
+    begin
+      for var MinValue := 1 to MaxValue do
+      begin
+        var Value := MinValue;
+
+        while Value <> 3*MaxValue*Direction do
+        begin
+          // Validate using Reflect(Value, Max)
+          var Expected: integer;
+          if (MaxValue > MinValue) then
+            Expected := Reflect(Value-MinValue, MaxValue-MinValue)+MinValue
+          else
+            Expected := MinValue;
+          var Actual := Reflect(Value, MinValue, MaxValue);
+          CheckEquals(Expected, Actual, Format('Reflect(%d, %d, %d)', [Value, MinValue, MaxValue]));
+
+          if (IsPowerOf2(MaxValue-MinValue+1)) then
+          begin
+            Actual := ReflectPow2(Value, MinValue, MaxValue);
+            CheckEquals(Expected, Actual, Format('ReflectPow2(%d, %d, %d)', [Value, MinValue, MaxValue]));
+          end;
+
+          Value := Value + Direction;
+        end;
+      end;
+    end;
+  end;
+
+begin
+  // Edge cases
+  CheckEquals( 50, Reflect( 50, 50, 100));
+  CheckEquals(100, Reflect(100, 50, 100));
+  CheckEquals( 51, Reflect( 51, 50, 100));
+  CheckEquals( 99, Reflect( 99, 50, 100));
+  CheckEquals(100, Reflect(101, 50, 100));
+  CheckEquals( 50, Reflect( 49, 50, 100));
+
+  DoTestReflection(1);
+  DoTestReflection(-1);
 end;
 
 procedure TTestLowLevel.TestMoveLongword;
@@ -1715,15 +1851,18 @@ initialization
 //  RegisterTest(TTestLowLevel.Suite);
 
   RegisterTest(TTestLowLevelPas.Suite);
-{$if not defined(PUREPASCAL)}
-  RegisterTest(TTestLowLevelAsm.Suite);
+
+  if isAssembler in GR32_System.CPU.InstructionSupport then
+    RegisterTest(TTestLowLevelAsm.Suite);
+
   if isMMX in GR32_System.CPU.InstructionSupport then
     RegisterTest(TTestLowLevelMMX.Suite);
+
   if isSSE2 in GR32_System.CPU.InstructionSupport then
     RegisterTest(TTestLowLevelSSE2.Suite);
+
   if isSSE41 in GR32_System.CPU.InstructionSupport then
     RegisterTest(TTestLowLevelSSE41.Suite);
-{$ifend}
 
   RegisterTest(TTestMath.Suite);
 end.
