@@ -1,3 +1,176 @@
+commit ed98928c66707988d4eb2c49a31c41380a08931c
+Author: zed <zedxxx@users.noreply.github.com>
+Date:   2024-10-14 22:05:53 +0300
+
+    fix after type renaming (#901)
+
+commit 2b665ac7e3e4ede7c32ce89e608f5163ea4d2756
+Author: angusj <angus@angusj.com>
+Date:   2024-10-10 08:41:44 +1000
+
+    Reversed LINQ dependency in C# code
+
+commit 907d1fdf077473f770b8a3fbe23dea1538a910bf
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2024-09-30 18:06:35 -0500
+
+    And linq (#895)
+    
+    * Proposed clean-ups
+    
+    This is a partial set of clean-ups. There could be others, but they may be controversial (e.g. adopting LINQ in some areas, which may or may not hurt performance). I've also tried to be mindful of target framework versions and also some edge cases (e.g. hashing) where seemingly redundant chunks of code, if removed or changed for another option, may blow things up.
+    
+    See what you think.
+    
+    * Adding LINQ on top of the other clean-ups
+    
+    Pre-change:
+    
+    // * Summary *
+    
+    BenchmarkDotNet=v0.12.1, OS=endeavouros
+    AMD Ryzen 7 5800H with Radeon Graphics, 1 CPU, 16 logical and 8 physical cores
+    .NET Core SDK=8.0.108
+      [Host]     : .NET Core 8.0.8 (CoreCLR 8.0.824.36612, CoreFX 8.0.824.36612), X64 RyuJIT
+      Job-GRIUMJ : .NET Core 8.0.8 (CoreCLR 8.0.824.36612, CoreFX 8.0.824.36612), X64 RyuJIT
+    
+    IterationCount=1  LaunchCount=1  WarmupCount=1
+    
+    |         Method | EdgeCount |       Mean | Error |     Gen 0 |     Gen 1 |     Gen 2 | Allocated |
+    |--------------- |---------- |-----------:|------:|----------:|----------:|----------:|----------:|
+    | Intersection_N |      1000 |   119.9 ms |    NA | 1000.0000 |         - |         - |   9.04 MB |
+    | Intersection_N |      2000 |   542.1 ms |    NA | 1000.0000 |         - |         - |   16.2 MB |
+    | Intersection_N |      3000 | 1,431.1 ms |    NA | 5000.0000 | 4000.0000 | 1000.0000 |  37.28 MB |
+    | Intersection_N |      4000 | 3,008.9 ms |    NA | 6000.0000 | 5000.0000 | 1000.0000 |  47.41 MB |
+    | Intersection_N |      5000 | 6,173.7 ms |    NA | 9000.0000 | 8000.0000 | 1000.0000 |  74.05 MB |
+    
+    // * Legends *
+      EdgeCount : Value of the 'EdgeCount' parameter
+      Mean      : Arithmetic mean of all measurements
+      Error     : Half of 99.9% confidence interval
+      Gen 0     : GC Generation 0 collects per 1000 operations
+      Gen 1     : GC Generation 1 collects per 1000 operations
+      Gen 2     : GC Generation 2 collects per 1000 operations
+      Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+      1 ms      : 1 Millisecond (0.001 sec)
+    
+    // * Diagnostic Output - MemoryDiagnoser *
+    
+    // ***** BenchmarkRunner: End *****
+    // ** Remained 0 benchmark(s) to run **
+    Run time: 00:00:47 (47.83 sec), executed benchmarks: 5
+    
+    Global total time: 00:00:57 (57.28 sec), executed benchmarks: 5
+    
+    Post-change:
+    
+    // * Summary *
+    
+    BenchmarkDotNet=v0.12.1, OS=endeavouros
+    AMD Ryzen 7 5800H with Radeon Graphics, 1 CPU, 16 logical and 8 physical cores
+    .NET Core SDK=8.0.108
+      [Host]     : .NET Core 8.0.8 (CoreCLR 8.0.824.36612, CoreFX 8.0.824.36612), X64 RyuJIT
+      Job-WWTCPL : .NET Core 8.0.8 (CoreCLR 8.0.824.36612, CoreFX 8.0.824.36612), X64 RyuJIT
+    
+    IterationCount=1  LaunchCount=1  WarmupCount=1
+    
+    |         Method | EdgeCount |       Mean | Error |     Gen 0 |     Gen 1 |     Gen 2 | Allocated |
+    |--------------- |---------- |-----------:|------:|----------:|----------:|----------:|----------:|
+    | Intersection_N |      1000 |   127.1 ms |    NA |         - |         - |         - |   6.85 MB |
+    | Intersection_N |      2000 |   475.1 ms |    NA | 2000.0000 | 1000.0000 |         - |  23.04 MB |
+    | Intersection_N |      3000 | 1,408.1 ms |    NA | 5000.0000 | 4000.0000 | 1000.0000 |  36.15 MB |
+    | Intersection_N |      4000 | 2,874.6 ms |    NA | 5000.0000 | 4000.0000 | 1000.0000 |  41.76 MB |
+    | Intersection_N |      5000 | 5,954.3 ms |    NA | 9000.0000 | 8000.0000 | 2000.0000 |  68.62 MB |
+    
+    // * Legends *
+      EdgeCount : Value of the 'EdgeCount' parameter
+      Mean      : Arithmetic mean of all measurements
+      Error     : Half of 99.9% confidence interval
+      Gen 0     : GC Generation 0 collects per 1000 operations
+      Gen 1     : GC Generation 1 collects per 1000 operations
+      Gen 2     : GC Generation 2 collects per 1000 operations
+      Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+      1 ms      : 1 Millisecond (0.001 sec)
+    
+    // * Diagnostic Output - MemoryDiagnoser *
+    
+    // ***** BenchmarkRunner: End *****
+    // ** Remained 0 benchmark(s) to run **
+    Run time: 00:00:46 (46.34 sec), executed benchmarks: 5
+    
+    Global total time: 00:00:51 (51.28 sec), executed benchmarks: 5
+    
+    * Oops - roll back the net version for this project to work on GitHub
+
+commit 304235b0d25cbbd034e34233a7b666605d098680
+Author: Andre Popovitch <andre@popovit.ch>
+Date:   2024-09-30 08:30:02 -0500
+
+    Fix warnings (#896)
+
+commit 80ef1fd656bc83db962fabb0c5f9f81c0028f6b9
+Author: philstopford <phil.stopford@gmail.com>
+Date:   2024-09-30 01:46:19 -0500
+
+    Proposed clean-ups (#894)
+    
+    This is a partial set of clean-ups. There could be others, but they may be controversial (e.g. adopting LINQ in some areas, which may or may not hurt performance). I've also tried to be mindful of target framework versions and also some edge cases (e.g. hashing) where seemingly redundant chunks of code, if removed or changed for another option, may blow things up.
+    
+    See what you think.
+
+commit 20bd69475f48f55730df09c4ce2dfa5051f6fe02
+Author: angusj <angus@angusj.com>
+Date:   2024-09-17 08:08:42 +1000
+
+    Missed uploading clipper.engine.cs during the previous revision
+
+commit 97906fea2bed3a16bc46ce01ecf1607c366908b2
+Author: angusj <angus@angusj.com>
+Date:   2024-09-17 08:00:44 +1000
+
+    Renamed ClipType.None to ClipType.NoClip (#885)
+    Trivial code tidy in TestExportHeaders.cpp
+
+commit 5c96b89c83910662c93759a533d80a8b521cadf8
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2024-08-16 16:20:40 +1000
+
+    Preparing to merge export_usingz branch (#878)
+    
+    * Branch from main - to test USINGZ in clipper.export.h
+    
+    * clipper.header.h - Replaced problematic bit_cast function
+    
+    * clipper.export.h - tweaked new Reinterpret function
+    
+    * Tweaked a C++ CI test routine
+    
+    * clipper.export.h - minor tweak to Reinterpret function
+    
+    * tweaks to CI config.
+    
+    * another tweak to C++ CI configuration
+
+commit c19da7257e7d3efdd02aede46d011fcf2f1bf4cc
+Author: angusj <angus@angusj.com>
+Date:   2024-07-24 22:51:42 +1000
+
+    Fixed compile bugs in previous commit.
+
+commit 2a99f839552ee1f0b9d594a572e380843c5bed6c
+Author: angusj <angus@angusj.com>
+Date:   2024-07-24 22:41:22 +1000
+
+    Clipper.Offset - fixed a bug occasionally encountered when over shrinking paths (#873)
+
+commit 6a346b4f887aaf09765dd5741c610c110f1b6079
+Author: LarsSkiba <105490553+LarsSkiba@users.noreply.github.com>
+Date:   2024-07-22 04:03:34 +0200
+
+    Add operator+ and operator+= to Rect<T> (#875)
+    
+    Co-authored-by: Lars Skiba <lars@moduleworks.com>
+
 commit 7f41c18ba8011307c87ec862998053775695f123
 Author: Richard Barnes <rbarnes@umn.edu>
 Date:   2024-07-16 17:38:19 -0400

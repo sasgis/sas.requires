@@ -12,7 +12,7 @@ TEST(Clipper2Tests, TestOffsets) {
     ClipperOffset co;
     Paths64 subject, subject_open, clip;
     Paths64 solution, solution_open;
-    ClipType ct = ClipType::None;
+    ClipType ct = ClipType::NoClip;
     FillRule fr = FillRule::NonZero;
     int64_t stored_area = 0, stored_count = 0;
     ASSERT_TRUE(LoadTestNum(ifs, test_number, subject, subject_open, clip, stored_area, stored_count, ct, fr));
@@ -658,3 +658,20 @@ TEST(Clipper2Tests, TestOffsets10) // see #715
   EXPECT_EQ(solution.size(), 2);
 }
 
+TEST(Clipper2Tests, TestOffsets11) // see #405
+{
+  PathsD subject, solution;
+  subject.push_back(MakePathD({ -1.0, -1.0, -1.0, 11.0, 11.0, 11.0, 11.0, -1.0 }));
+  // offset polyline
+  solution = InflatePaths(subject, -50, JoinType::Miter, EndType::Polygon);
+  EXPECT_TRUE(solution.empty());
+}
+
+TEST(Clipper2Tests, TestOffsets12) // see #873
+{
+  Paths64 subject = { 
+    MakePath({667680768, -36382704, 737202688, -87034880, 742581888, -86055680, 747603968, -84684800}) 
+  };
+  Paths64 solution = InflatePaths(subject, -249561088, JoinType::Miter, EndType::Polygon);
+  EXPECT_TRUE(solution.empty());
+}
