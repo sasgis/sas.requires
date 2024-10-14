@@ -1,3 +1,32 @@
+commit f7b3e87ae633bcf2ab6e53c0b3a2b25fa2ef91fc
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-10-14 13:28:32 +0200
+
+    fix invalid pointer cast when IMAGE_FILE_LARGE_ADDRESS_AWARE enabled
+    - as fixed by https://github.com/synopse/mORMot/pull/457
+
+commit 16ada8a17816300e1dc58f386a972a9c5c5a1034
+Merge: c3e4eff4 c0aa5613
+Author: ab <webcontact01@synopse.info>
+Date:   2024-10-14 13:26:19 +0200
+
+    Merge pull request #457 from zedxxx/master
+    
+    fix invalid pointer cast when IMAGE_FILE_LARGE_ADDRESS_AWARE enabled …
+
+commit c0aa5613b4c8eb4c639f9572a2551bb2a4615693
+Author: zed <starmen@tut.by>
+Date:   2024-10-14 12:18:39 +0300
+
+    fix invalid pointer cast when IMAGE_FILE_LARGE_ADDRESS_AWARE enabled and first 2G RAM reserved (delphi, win32)
+
+commit c3e4eff44cb690d9d30f3f0ec48ce7ca299b036a
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-09-26 14:05:05 +0200
+
+    let TRttiEnumType.SizeInStorageAsSet support 64-bit sets
+    - our code (e.g. smvSet) supports up to Int64 anyway
+
 commit 1d7845ee649545b45a08ee8cadd2433c9931c16c
 Merge: ce229fa6 1febefc9
 Author: ab <webcontact01@synopse.info>
