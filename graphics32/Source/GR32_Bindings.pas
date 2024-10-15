@@ -35,7 +35,7 @@ unit GR32_Bindings;
 
 interface
 
-{$I GR32.inc}
+{$include GR32.inc}
 
 uses
   Generics.Collections,
@@ -155,6 +155,8 @@ type
 
   public const
     INVALID_PRIORITY: Integer = MaxInt;
+    BEST_PRIORITY: integer = -MaxInt;
+    WORST_PRIORITY: integer = MaxInt-1;
   public
     constructor Create; virtual;
     destructor Destroy; override;

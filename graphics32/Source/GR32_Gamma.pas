@@ -1,6 +1,38 @@
 unit GR32_Gamma;
 
+(* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1 or LGPL 2.1 with linking exception
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * Alternatively, the contents of this file may be used under the terms of the
+ * Free Pascal modified version of the GNU Lesser General Public License
+ * Version 2.1 (the "FPC modified LGPL License"), in which case the provisions
+ * of this license are applicable instead of those above.
+ * Please see the file LICENSE.txt for additional information concerning this
+ * license.
+ *
+ * The Original Code is Graphics32
+ *
+ * The Initial Developer of the Original Code is
+ * Alex A. Denisov
+ *
+ * Portions created by the Initial Developer are Copyright (C) 2000-2009
+ * the Initial Developer. All Rights Reserved.
+ *
+ * ***** END LICENSE BLOCK ***** *)
+
 interface
+
+{$include GR32.inc}
 
 uses
   GR32;
@@ -11,7 +43,15 @@ type
   TGammaTable8Bit = array [Byte] of Byte;
 
 var
-  GAMMA_VALUE: Double;
+  GAMMA_IS_SRGB: boolean;                       // True if GAMMA_ENCODING_TABLE and GAMMA_DECODING_TABLE
+                                                // contains sRGB <-> Linear mapping values.
+                                                // The Set_sRGB procedure sets this value to True while
+                                                // the SetGamma procedure sets it to False.
+
+  GAMMA_VALUE: Double;                          // If GAMMA_IS_SRGB is False, GAMMA_VALUE contains the
+                                                // gamma value upon which GAMMA_ENCODING_TABLE and
+                                                // GAMMA_DECODING_TABLE is based.
+
   GAMMA_ENCODING_TABLE: TGammaTable8Bit;
   GAMMA_DECODING_TABLE: TGammaTable8Bit;
 
@@ -19,8 +59,8 @@ const
   DEFAULT_GAMMA: Double = 1.6;
 
 // set gamma
-procedure SetGamma; overload;  {$IFDEF USEINLINING} inline; {$ENDIF}
-procedure SetGamma(Gamma: Double); overload;  {$IFDEF USEINLINING} inline; {$ENDIF}
+procedure SetGamma; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
+procedure SetGamma(Gamma: Double); overload;
 procedure SetGamma(Gamma: Double; var GammaTable: TGammaTable8Bit); overload;
 
 procedure Set_sRGB; overload;
@@ -41,10 +81,37 @@ procedure ApplyInvGamma(Bitmap: TBitmap32); overload;
 procedure ApplyCustomGamma(Bitmap: TBitmap32; GammaTable: TGammaTable8Bit); overload;
 procedure ApplyCustomGamma(Bitmap: TBitmap32; Gamma: Double); overload;
 
+// Gamma change notification
+// Warning: Not thread safe
+type
+  TGammaChangedProc = procedure of object;
+
+procedure RegisterGammaChangeNotification(Delegate: TGammaChangedProc);
+procedure UnregisterGammaChangeNotification(Delegate: TGammaChangedProc);
+
 implementation
 
 uses
-  Math;
+  Math,
+  SysUtils,
+  Generics.Collections;
+
+var
+  GammaChangedDelegates: TList<TGammaChangedProc>;
+
+procedure RegisterGammaChangeNotification(Delegate: TGammaChangedProc);
+begin
+  if (GammaChangedDelegates = nil) then
+    GammaChangedDelegates := TList<TGammaChangedProc>.Create;
+  GammaChangedDelegates.Add(Delegate);
+end;
+
+procedure UnregisterGammaChangeNotification(Delegate: TGammaChangedProc);
+begin
+  if (GammaChangedDelegates <> nil) then
+    GammaChangedDelegates.Remove(Delegate);
+end;
+
 
 function ApplyGamma(Color: TColor32): TColor32;
 begin
@@ -145,15 +212,22 @@ begin
 end;
 
 procedure SetGamma(Gamma: Double);
+var
+  GammaChangedProc: TGammaChangedProc;
 begin
   if (IsZero(Gamma)) then
       exit;
 
   GAMMA_VALUE := Gamma;
+  GAMMA_IS_SRGB := False;
 
   // calculate default gamma tables
   SetGamma(1 / Gamma, GAMMA_ENCODING_TABLE);
   SetGamma(Gamma, GAMMA_DECODING_TABLE);
+
+  if (GammaChangedDelegates <> nil) then
+    for GammaChangedProc in GammaChangedDelegates do
+      GammaChangedProc;
 end;
 
 procedure SetGamma(Gamma: Double; var GammaTable: TGammaTable8Bit);
@@ -165,9 +239,16 @@ begin
 end;
 
 procedure Set_sRGB;
+var
+  GammaChangedProc: TGammaChangedProc;
 begin
   Set_sRGB(GAMMA_ENCODING_TABLE);
   SetInv_sRGB(GAMMA_DECODING_TABLE);
+  GAMMA_IS_SRGB := True;
+
+  if (GammaChangedDelegates <> nil) then
+    for GammaChangedProc in GammaChangedDelegates do
+      GammaChangedProc;
 end;
 
 procedure Set_sRGB(var GammaTable: TGammaTable8Bit);
@@ -202,4 +283,7 @@ begin
   end;
 end;
 
+initialization
+finalization
+  FreeAndNil(GammaChangedDelegates);
 end.

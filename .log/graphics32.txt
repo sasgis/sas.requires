@@ -1,3 +1,237 @@
+commit dd2c07b3cdfcd9b875e4a9ef07ed3102acf7e3ae
+Merge: 1658a346 4fdbd5f2
+Author: zed <starmen@tut.by>
+Date:   2024-10-15 12:48:02 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 4fdbd5f2b896e072eac8a18200f0e06cca4982c8
+Merge: b38ecf53 eb599577
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-14 23:15:15 +0200
+
+    Merge branch 'CopyMapTo'
+
+commit b38ecf531d97a9ced2260ab5fa8830d94b4d3a54
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-14 23:14:01 +0200
+
+    Moved declaration of Clamp (0..255) function so it's declared the same place as the other two Clamp functions.
+
+commit eb599577c7d7050a8a02d23e576304b0ad094f97
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-11 01:57:00 +0200
+
+    The TCustomBitmap32.CopyMapTo method has been made public.
+
+commit f9c95a48dad9f6caf395d348664dcee405b3dbda
+Merge: 610d8c57 fb92ff02
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-26 17:06:16 +0200
+
+    Merge branch 'PremultTables'
+
+commit fb92ff026232a375faf5fe8c90469b6f9929b3e9
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-26 17:04:47 +0200
+
+    The RcTable and DivTable lookup tables have been renamed to DivMul255Table and MulDiv255Table.
+    
+    The old names have been aliased via "absolute" to the new names for backward compatibility.
+
+commit 610d8c576062d37c88fbc0b989bd4c722a94a8b2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-25 00:04:49 +0200
+
+    Replaced all {$I ...} with {$include ...}
+    
+    Refs #331
+
+commit bcc738cab947eef2d493bc175b32ae426ff824ec
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-24 23:41:55 +0200
+
+    Added missing {$I GR32.inc} in GR32_Gamma.
+    
+    Removed some unnecessary (and some problematic) inlines.
+    Fixes #331
+
+commit 8b3e0daf3331b3e3e8f05ffc83d821b4caf1b2a1
+Merge: af17272c b889dc9c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-24 22:08:22 +0200
+
+    Merge branch 'LayerHitTesting'
+
+commit b889dc9c8d1c979547066c27eebd20567ca84bfc
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-24 17:03:49 +0200
+
+    Fix for incorrect hit-testing of unscaled rubberband layers.
+    
+    A related problem caused selection handles to be drawn in the wrong position.
+
+commit a43796f241373f0f206f9f9b8782eee20106c671
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-24 17:03:37 +0200
+
+    Foreground layer(s) i PixelCombine example is now movable.
+    
+    Additionally added a second layer (also movable but scaled).
+
+commit af17272c602d08f414a6c1331694eb1280bd5654
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-24 13:42:54 +0200
+
+    Fix for TBitmap32.LoadFromStream/LoadFromResource failing when loading a JPEG because the TGraphic handler unconditionally tries to load image with LoadFromStream and doesn't handle failure gracefully.
+
+commit 6c2d120494c9af2c8027bf74263d01e301c4afa5
+Merge: ce21141b 325758ad
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-23 23:21:53 +0200
+
+    Merge branch 'better_blur'
+
+commit 325758ad1e1d741b7fd2131fce506121a572cac3
+Merge: 9da9c4a1 02a0f49d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-23 23:21:33 +0200
+
+    Merge branch 'SelectiveGaussian' into better_blur
+
+commit 02a0f49db6f8ac81d2b682ad8e56c84abf3d042d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-23 23:17:51 +0200
+
+    Selective Blur no longer blurs alpha channel since that didn't really makes sense given that it would be blurred independently from the RGB channels.
+
+commit d4cb972c91a0fe3919b4768ef8b8e8bbed9a6903
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-23 11:44:21 +0200
+
+    Added Selective Gaussian Blur
+    
+    Moved SelectiveGaussianBlur API out of core blur unit since it's not a core function.
+    Updated Blurs example to also demonstrate Selective Blur.
+
+commit 9da9c4a1d3fbd648a5e212393e16478479831fce
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-22 20:27:55 +0200
+
+    Added  1-dimensional HorizontalBlur using RecursiveGaussianBlur
+
+commit b026d78df633446477e6568d57d392d39b2de816
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-16 01:05:51 +0200
+
+    Fix for TByteMap.ReadFrom and WriteTo not taking RGBA_FORMAT into account
+
+commit ce21141bce947cc660afc5dd1327e7d4e321f5e1
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-19 23:33:27 +0200
+
+    Fix for TImgView32 mouse panning not working when scrollbars have been explicitly hidden.
+    
+    Fixes #330
+
+commit 206301572a71bca4924e11a868fce1cae36b5998
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-19 10:52:22 +0200
+
+    HoverZoom now zooms in using easing for a smoother and more consistent result.
+    
+    Zoom is now clipped to bitmap rect and viewport, instead of just viewport - which is what a user would intuitively expect.
+    Added missing example screenshot
+
+commit 2dc09c920ccb5c4a7c43a7239f0a83274c138120
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-18 22:27:35 +0200
+
+    Published TImage32 and TImgView32 OnScaleChange event.
+    
+    It was probably an oversight that the property hadn't been published before.
+
+commit 1d3ea87fab4323dca85a0c2f3b9cc1ce20486610
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-18 19:11:05 +0200
+
+    Fix for AnimatedTween not reaching final value on super slow systems.
+    
+    Fixes #329
+
+commit 9f6e2b383c6ec839d4bcb290e3a662ad3f54bd08
+Merge: afdcd9bc a6dcd803
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-18 15:39:15 +0200
+
+    Merge branch 'HoverZoom'
+
+commit a6dcd8036c21c945ff90b9c5bf67297092f653ce
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-18 14:05:30 +0200
+
+    Added HoverZoom example
+    
+    Refs #328
+
+commit 430105e1a10231aa410f37af0d17bdc10be5afb4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-02 11:33:16 +0200
+
+    Added Blur benchmark
+
+commit 35156bc55ef0ebfd03b5368f4ec9175a0b106312
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-02 00:02:15 +0200
+
+    Fixed priority goof in Transpose registration.
+    
+    No real harm done since it turns out that SuperDuper* isn't always that super...
+
+commit f362d9ec829754c11d9f9e25e0cb3fd1583d3a77
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-01 23:09:17 +0200
+
+    Updated Blurs example
+
+commit ec309e0f78ed2e4d904b2f83591b593596042e37
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-08-31 16:39:59 +0200
+
+    TCallbackPolygonFiller and TBitmapPolygonFiller now validates their setup in BeginRendering so we get a nice targeted exception instead of an access violation in case of incorrect settings.
+
+commit 63c1002b15caa09ecd7bcf1f9955b96c2c6cda99
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-08-31 16:37:38 +0200
+
+    Implemented region blur replacements.
+    
+    The region blur is a generic solution implemented with a bitmap pattern polygon filler.
+    Additionally a bug has been fixed in the gamma variant of the old region motion blur; It didn't constrain the blur to the specified region which indicates that this function has never been used by anyone.
+
+commit 5f8a6536b42fb0369aac9b46f3d201c6c6b46798
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-08-30 11:04:16 +0200
+
+    Updated blur examples to use new Gaussian blur
+
+commit b44098c86595d2dc9805e103db794141064aeafa
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-08-25 15:29:46 +0200
+
+    Fix: Incorrect use of TPaintBox32.Buffer in GammaBlur example caused edge artifacts in blur test results
+    
+    The reason was that the buffer was larger than expected due to the BufferOversize property.
+
+commit 7949ca4a4ab72d17719839cbde96806509497f98
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-06-14 12:19:11 +0200
+
+    Added new GR32.Blur unit which will be replacing GR32_Blurs
+    
+    The new blur implementation provides a much better Gaussian approximation, has full support for fractional radii, and is faster than both of the old blur functions.
+    Some of the functions in GR32_Blurs still provide features which are missing from the new blur unit, such as masked- and motion blur, so the unit will be kept around until all features has been incorporated into the new blur functions.
+
 commit 1658a346c2de238fdd4913cd0a94a8110aa4b110
 Merge: 8a26d69b afdcd9bc
 Author: zed <starmen@tut.by>

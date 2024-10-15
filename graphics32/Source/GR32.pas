@@ -32,7 +32,7 @@ unit GR32;
 
 interface
 
-{$I GR32.inc}
+{$include GR32.inc}
 
 uses
   Math,
@@ -887,7 +887,6 @@ type
 {$ENDIF}
 
   protected
-    procedure CopyMapTo(Dst: TCustomBitmap32); virtual;
     procedure CopyPropertiesTo(Dst: TCustomBitmap32); virtual;
 
     procedure AssignTo(Dst: TPersistent); override;
@@ -946,6 +945,7 @@ type
     procedure Changed; overload; override;
     procedure Changed(const Area: TRect; const Info: Cardinal = AREAINFO_RECT); reintroduce; overload; virtual;
 
+    procedure CopyMapTo(Dst: TCustomBitmap32); virtual;
     procedure Assign(Source: TPersistent); override;
     function  BoundsRect: TRect;
     function  Empty: Boolean; override;
@@ -1116,11 +1116,11 @@ type
 
     procedure FontChanged(Sender: TObject);
     procedure CanvasChanged(Sender: TObject);
-    function GetCanvas: TCanvas;         {$IFDEF USEINLINING} inline; {$ENDIF}
+    function GetCanvas: TCanvas;
 
-    function GetBitmapInfo: TBitmapInfo; {$IFDEF USEINLINING} inline; {$ENDIF}
-    function GetHandle: HBITMAP;         {$IFDEF USEINLINING} inline; {$ENDIF}
-    function GetHDC: HDC;                {$IFDEF USEINLINING} inline; {$ENDIF}
+    function GetBitmapInfo: TBitmapInfo;
+    function GetHandle: HBITMAP;
+    function GetHDC: HDC;
 
     function GetFont: TFont;
     procedure SetFont(Value: TFont);
