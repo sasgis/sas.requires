@@ -36,12 +36,14 @@ interface
 {$include GR32.inc}
 
 {-$define FADE_BLEND}
+{$define PARTICLE_AA}
 
 uses
   Messages,
   SysUtils, Classes,
   Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, Types,
   GR32,
+  GR32_System,
   GR32_Image,
   GR32.Noise.Simplex;
 
@@ -51,7 +53,7 @@ uses
 //
 //------------------------------------------------------------------------------
 // Control the motion of a swarm of particles using 3D Simplex Noise, the third
-// dimentions being time.
+// dimension being time.
 //------------------------------------------------------------------------------
 //
 // Based on ideas by:
@@ -75,8 +77,8 @@ const
   ParamColorSaturation = 0.75;
   ParamColorLightness = 0.5;
 
-  ParamParticleSpaceFactor = 0.005;     // How much does the current position affect the simplex noise
-  ParamParticleTimeFactor = 0.0001;     // How much does the current time affect the simplex noise
+  ParamParticleSpaceFactor = 0.003;     // How much does the current position affect the simplex noise
+  ParamParticleTimeFactor = 0.001;     // How much does the current time affect the simplex noise
   ParamParticleVectorFactor = 0.25;     // Amount of randomness in vector
   ParamParticleSpeedFactor = 0.95;      // Velocity decay; <=1, 1=none
 
@@ -122,7 +124,7 @@ type
     FParticles: TArray<TParticle>;
     FNoise: TSimplexNoise;
     FFrameCount: integer;
-    FLastTick: UInt64;
+    FFrameRateStopwatch: TStopwatch;
 
     FBenchmark: boolean;
     FIteration: integer;
@@ -165,7 +167,7 @@ begin
 
   FOptionAnimateColors := True;
   FOptionFade := True;
-  FLastTick := GetTickCount;
+  FFrameRateStopwatch := TStopwatch.StartNew;
 
   FBenchmark := FindCmdLineSwitch('benchmark');
 
@@ -352,22 +354,23 @@ end;
 
 procedure TFormMain.TimerFrameRateTimer(Sender: TObject);
 var
-  TimeElapsed: Cardinal;
   FPS: Single;
 begin
-  TTimer(Sender).Enabled := False;
-  TimeElapsed := GetTickCount64 - FLastTick;
+  FFrameRateStopwatch.Stop;
 
-  if (TimeElapsed <> 0) then
-    FPS := 1000 * FFrameCount / TimeElapsed
+  TTimer(Sender).Enabled := False;
+
+  if (FFrameRateStopwatch.ElapsedMilliseconds <> 0) then
+    FPS := 1000 * FFrameCount / FFrameRateStopwatch.ElapsedMilliseconds
   else
     FPS := 0;
 
   Caption := Format('%.0n particles @ %.0n fps', [Length(FParticles)*1.0, FPS]);
 
   FFrameCount := 0;
-  FLastTick := GetTickCount;
   TTimer(Sender).Enabled := True;
+
+  FFrameRateStopwatch := TStopwatch.StartNew;
 end;
 
 { TParticle }
@@ -379,8 +382,13 @@ end;
 
 procedure TParticle.Render(Buffer: TBitmap32);
 begin
+{$if defined(PARTICLE_AA)}
   Buffer.MoveToF(FTrail.X, FTrail.Y);
   Buffer.LineToFS(FPosition.X, FPosition.Y);
+{$else}
+  Buffer.MoveTo(Round(FTrail.X), Round(FTrail.Y));
+  Buffer.LineToS(Round(FPosition.X), Round(FPosition.Y));
+{$ifend}
 end;
 
 procedure TParticle.Reset(const ABounds: TRect);

@@ -337,11 +337,12 @@
     {$EXCESSPRECISION OFF}
   {$ifend}
 
-  {$ifdef LINUX}
+  {$if defined(LINUX)}
     {$define BITS_GETTER}
-  {$else}
-    {$define Windows}
-  {$endif}
+  {$ifend}
+  {$if defined(MSWINDOWS)}
+    {$define Windows} // For backward compatibility; We use the MSWINDOWS define now
+  {$ifend}
 
   {$define EXT_PROP_EDIT}
   {$define HasParentBackground}
@@ -363,6 +364,8 @@
     {$define RGBA_FORMAT}
   {$ifend}
 
+  {$define USE_FONT_QUALITY} // Apparently Font.Quality now also works with VCL. Not sure which version fixed it though...
+
 {$else}
 (*
 ** FPC
@@ -376,7 +379,7 @@
   // 16 byte code alignment required for SSE aligned loads from asm db blocks
   {$CODEALIGN PROC=16}
 
-  {$ifndef WINDOWS}
+  {$ifndef MSWINDOWS}
     {$define RGBA_FORMAT}
   {$endif}
 
@@ -390,6 +393,10 @@
     // StackAlloc currently only works with 32-bit FPC
     {$define USESTACKALLOC}
   {$ifend}
+
+  {-$define HasParentBackground} // FPC has ParentBackground but we haven't implemented support for it
+
+  {$define USE_FONT_QUALITY} // Font.Quality works on LCL
 
 {$ifend}
 

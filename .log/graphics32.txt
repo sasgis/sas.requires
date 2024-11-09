@@ -1,3 +1,224 @@
+commit 4dc4b33250486188c40a3ca9c4273e4ee8477faa
+Merge: dd2c07b3 e38452f2
+Author: zed <starmen@tut.by>
+Date:   2024-11-09 13:14:45 +0300
+
+    Merge branch 'master' into sasgis
+
+commit e38452f2eeb1dd234cf6dae91edee51488453602
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-11-02 14:05:50 +0100
+
+    Fix for TLayerCollection.Add<T> and Insert<T> not compiling under Delphi XE8 (and likely older).
+    
+    Same now compiles with FPC.
+    Fixes #335
+
+commit 0543b747951498409b887ce467d9a54523e5caf4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-11-02 14:02:12 +0100
+
+    Minor refactoring. Mainly removal of unused private types.
+
+commit c301bbf2f20829b8f0c695e94268e92c2d41119f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-31 00:19:50 +0100
+
+    Tweaked some Swarm example parameters
+
+commit 5f3ce7222849782777710a2ad5c7d967d48b4d64
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-30 22:48:37 +0100
+
+    Fix for TImgView32 cursor not being updated when moving from layer to outside viewport but inside control.
+    
+    Also moved some cursor logic from TLayerCollection to TImgView32.
+
+commit 5b762b828bfd472c1988a38ce234be36654ec7cd
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-30 22:17:32 +0100
+
+    Fix for TImage32/TImgView32 update rects not being clipped causing painting outside viewport (specifically TImgView32 SizeGrip area).
+
+commit c99987265bc12ad26dd6b4b70b394257627a268f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-30 22:08:42 +0100
+
+    Minor improvement for TImgView32 paint without SizeGrip
+
+commit b39eb45b8bab1f13d22c4ddee6ce878220768080
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-30 22:06:59 +0100
+
+    Ignore all mouse events outside TImgView32 viewport.
+    
+    This mainly fixes the "problem" that it was possible to interact with the SizeGrip area as if it was part the image.
+
+commit bf815438f27b442809f8465f61aba45de1a36116
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-30 19:00:48 +0100
+
+    Minor defensive change in TCustomImage32 destructor
+
+commit 629a80f7248ca0fc8d9b7782d4f64d6d151874b8
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 23:25:11 +0100
+
+    TImgView32.ScrollToCenter has been moved to the base class so it's now also available for TImage32
+
+commit 445d0212e1f49b349ef6b8760c0ea64b2906c9ee
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 19:37:31 +0100
+
+    Replaced (most) use of GetTickCount in examples with TStopwatch
+
+commit cca15c7b22aeb507cec4b7536726df695d5cebdc
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 18:46:25 +0100
+
+    Eliminated dependency between GR32 and GR32_Image. The dependency was introduced in GR32_Backends.
+
+commit 98845116920a54fc9a50d186240a833576975c7f
+Merge: 8172cd5c 7f9f9146
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 19:40:25 +0100
+
+    Merge branch 'MMX_deprecation'
+
+commit 7f9f9146fcc18f23fb7c8bd9dbd067ba76f0cdc5
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 19:10:15 +0100
+
+    Updated Delphi run-time packages
+
+commit f7ff8e5e1dfaf6998b2d3199b5a7cbaa05e10177
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 17:56:42 +0100
+
+    Eliminated MMX implementations and support functions and declarations
+    
+    Notably Calling EMMS is no longer necessary and will generate a deprecated compiler warning.
+
+commit 8172cd5cdfa274d52643d5a01bb40c72ac5a910a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 15:15:13 +0100
+
+    Eliminated obsolete 3DNow implementations
+
+commit 1d8fafe53da5d821487ea366aebc7f87b5a43d65
+Merge: 6d5e1c39 696d23af
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 01:27:58 +0200
+
+    Merge branch 'FPC'
+
+commit 696d23af0415ffa71d96de4850fe4a5101227778
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 00:29:30 +0200
+
+    Replaced WINDOWS compiler define with MSWINDOWS
+
+commit b611fea57f476eb702f937457b821891116e856d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-26 22:28:39 +0200
+
+    The GR32_Text_VCL unit has been replaced by GR32.Text.Win. The unit is used by both the Delphi and Lazarus backend on Windows.
+
+commit 15819d114a3f7b71c19d913153c8ac7a54543475
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-25 23:14:47 +0200
+
+    The GR32_Text_LCL_Win unit has been superseded by the GR32_Text_VCL unit which is now used for both Delphi and Lazarus.
+    
+    Both units should be considered internal; Use the backend methods instead.
+    The text layout functionality will be refactored out into backend independent functions at some point.
+
+commit 6d5e1c39c7b6c863aa52283370a9899392ea8bfe
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 01:17:52 +0200
+
+    GradLines example modified to use repaint optimization also for slow fade. Slow fade made even slower.
+
+commit fc6cc8e15c303dfd6f25182420abe32927ea7824
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 00:00:11 +0200
+
+    The clNone32 color constant ($00000000) has been made public
+
+commit 4e3e730c38f70c430a8a7c9c5a62eaf8bd25f7f9
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-27 01:02:32 +0200
+
+    Fixed a few harmless copy/paste bugs
+
+commit 1b27403b2158cf173811ce47e2fa6826bd5218ee
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-23 13:33:55 +0200
+
+    Various minor Lazarus example tweaks
+
+commit 42901df77b60ea46151e9e2610cc2156e82dbd55
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-23 13:27:40 +0200
+
+    Fix for Lazarus design-time package failed to compile on first build
+
+commit a20a705c0bd77a71d6801b4dba1ea4f7a6dd4a4c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-23 13:26:49 +0200
+
+    Replaced "Unit Cache" output folder with "Lib"
+
+commit a5f7b6fef91bc4d245cebe153bf33a907327937a
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-22 22:47:37 +0200
+
+    Fix for layer free-notification being sent to layer being free'd instead of subscribers :-/
+    
+    Breaking change: TCustomLayer.Notification is now named TCustomLayer.FreeNotification
+    
+    (cherry picked from commit 924b55b9f815f2dbe3d8fc15f2e64e0983c8ae57)
+
+commit 67bd81044704d70b1edc9cb70aa6d2a81d63c7bb
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-22 18:45:20 +0200
+
+    Fix for abysmal TBitmap32.RenderText performance with Delphi; Performance has roughly doubled with this change.
+    
+    TBitmap32.RenderText now expect the caller to specify anti-aliasing with TFont.Quality.
+    
+    (cherry picked from commit b155e5794638d452431eec3289392c5bbf62ffa0)
+
+commit 924b55b9f815f2dbe3d8fc15f2e64e0983c8ae57
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-22 22:47:37 +0200
+
+    Fix for layer free-notification being sent to layer being free'd instead of subscribers :-/
+    
+    Breaking change: TCustomLayer.Notification is now named TCustomLayer.FreeNotification
+
+commit 9177784ca486f8803427ccfdff9b3eed30bc3d5f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-22 22:45:47 +0200
+
+    Refreshed Lazarus examples
+
+commit 18c79ee6e4575effc29195e1d846a1bc11becd44
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-22 18:48:31 +0200
+
+    Disabled asm implementation of TSphereTransformation.ReverseTransformFloat with FPC
+    
+    It suddenly can't compile with FPC (Lazarus 3.3 to 3.6, both use FPC 3.2.2) and the small performance improvement it gave isn't really worth the hassle.
+
+commit b155e5794638d452431eec3289392c5bbf62ffa0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-22 18:45:20 +0200
+
+    Fix for abysmal TBitmap32.RenderText performance with Delphi; Performance has roughly doubled with this change.
+    
+    TBitmap32.RenderText now expect the caller to specify anti-aliasing with TFont.Quality.
+
 commit dd2c07b3cdfcd9b875e4a9ef07ed3102acf7e3ae
 Merge: 1658a346 4fdbd5f2
 Author: zed <starmen@tut.by>
@@ -18,11 +239,94 @@ Date:   2024-10-14 23:14:01 +0200
 
     Moved declaration of Clamp (0..255) function so it's declared the same place as the other two Clamp functions.
 
+commit b89ac8b2beea6f31e798131c5a8055eb19cf66b2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-11 13:33:41 +0200
+
+    Packages and design time source updated.
+    
+    Various design-time fixes:
+    - Background color of the various controls that support it is now applied.
+    - Background color now resolves clDefault.
+    - TSyntheticImage32.Buffer is no longer published.
+
 commit eb599577c7d7050a8a02d23e576304b0ad094f97
 Author: Anders Melander <anders@melander.dk>
 Date:   2024-10-11 01:57:00 +0200
 
     The TCustomBitmap32.CopyMapTo method has been made public.
+
+commit c51d753745d106cf3958ec37588d8b5f4e081830
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-10 23:10:57 +0200
+
+    Additional GR32.Transpose assembler changes for FPC
+
+commit 080f306b3c9bdef679c050764773d6b0523d676b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-10 23:05:14 +0200
+
+    Additional GR32.Blur.RecursiveGaussian assembler changes for FPC
+
+commit e57ac37eeae2ac7de945f1782aac757106f3130f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-10 18:25:16 +0200
+
+    Additional GR32.Blur.SelectiveGaussian assembler changes for FPC
+
+commit dff488eb58d2356c1f48c5a68567f69610632444
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-10 22:58:50 +0200
+
+    Speculative (i.e. not tested) SSE2 Blend fix for FPC 64-bit
+
+commit efddb35aa6e72094d7a326e90ab91dbc5b05fa55
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-09 21:47:20 +0200
+
+    Lazarus packages and design time source updated
+
+commit 39195293d494052e3c18eaa4610f029940c7dd87
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-09 11:01:47 +0200
+
+    Blurs example updated for FPC
+
+commit 1d4145367701a56e3b077c936bd50f599a28a295
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-09 04:43:21 +0200
+
+    GR32.Blur.SelectiveGaussian updated for FPC
+
+commit 3e9be57e96c323b6ad7b3d4f764a440b867cc63d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-09 04:43:03 +0200
+
+    GR32.Blur.RecursiveGaussian updated for FPC
+
+commit b102d35a37f1637feca1943f7612f86e3c5799a9
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-09 04:42:53 +0200
+
+    GR32.Blur updated for FPC
+
+commit 5253c1f61727e1a19413553050f4802a78c78b6c
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-09 03:49:15 +0200
+
+    GR32.Math.Complex updated for FPC
+
+commit b58556b47b7357ee0f92958d5f933cd835bfeb8d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-09 03:48:42 +0200
+
+    GR32.Transpose updated for FPC
+
+commit 925cc524bc21fa508658da728596f2175eea1750
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-10-09 03:18:29 +0200
+
+    GR32_Layers updated for FPC
 
 commit f9c95a48dad9f6caf395d348664dcee405b3dbda
 Merge: 610d8c57 fb92ff02

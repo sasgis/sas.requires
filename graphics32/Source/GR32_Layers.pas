@@ -80,7 +80,6 @@ const
 
 type
   TCustomLayer = class;
-  TPositionedLayer = class;
   TLayerClass = class of TCustomLayer;
 
   TLayerCollection = class;
@@ -205,16 +204,20 @@ type
     procedure Unsubscribe(const ASubscriber: IInterface);
 
     function Add(ItemClass: TLayerClass): TCustomLayer; overload;
-    function Add<T: TCustomLayer>: T; overload;
     function Insert(Index: Integer; ItemClass: TLayerClass): TCustomLayer; overload;
+{$if defined(FPC) or (CompilerVersion > 29.0)} // Delphi 10 or later
+    function Add<T: TCustomLayer>: T; overload;
     function Insert<T: TCustomLayer>(Index: Integer): T; overload;
+{$ifend}
     procedure Delete(Index: Integer);
     procedure Clear;
     function IndexOf(Item: TCustomLayer): integer;
 
     procedure Assign(Source: TPersistent); override;
-    function  LocalToViewport(const APoint: TFloatPoint; AScaled: Boolean): TFloatPoint;
-    function  ViewportToLocal(const APoint: TFloatPoint; AScaled: Boolean): TFloatPoint;
+    function LocalToViewport(const APoint: TFloatPoint; AScaled: Boolean): TFloatPoint; overload;
+    function LocalToViewport(const APoint: TPoint; AScaled: Boolean): TFloatPoint; overload; // Needed because FPC lacks implicit TPoint<->TFloatPoint conversion
+    function ViewportToLocal(const APoint: TFloatPoint; AScaled: Boolean): TFloatPoint; overload;
+    function ViewportToLocal(const APoint: TPoint; AScaled: Boolean): TFloatPoint; overload; // Needed because FPC lacks implicit TPoint<->TFloatPoint conversion
     procedure GetViewportScale(out ScaleX, ScaleY: TFloat); virtual;
     procedure GetViewportShift(out ShiftX, ShiftY: TFloat); virtual;
 
@@ -244,7 +247,7 @@ type
   TCustomLayer = class(TNotifiablePersistent)
   strict private
     FCursor: TCursor;
-    FFreeNotifies: TList;
+    FFreeNotifies: TList<TCustomLayer>;
     FLayerCollection: TLayerCollection;
     FTag: NativeInt;
     FClicked: Boolean;
@@ -273,7 +276,13 @@ type
   strict protected
     FLayerOptions: Cardinal;
   protected
-    procedure AddNotification(ALayer: TCustomLayer);
+    procedure AddNotification(ALayer: TCustomLayer); deprecated 'Use AddFreeNotification instead';
+    procedure RemoveNotification(ALayer: TCustomLayer); deprecated 'Use RemoveFreeNotification instead';
+    procedure Notification(ALayer: TCustomLayer); deprecated 'Use FreeNotification instead'; // No longer virtual; We want to force desecendant to use FreeNotification.
+    procedure AddFreeNotification(ALayer: TCustomLayer);
+    procedure RemoveFreeNotification(ALayer: TCustomLayer);
+    procedure FreeNotification(ALayer: TCustomLayer); virtual;
+  protected
     procedure Changing;
     procedure Click; virtual;
     procedure DblClick; virtual;
@@ -285,10 +294,8 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); virtual;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); virtual;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); virtual;
-    procedure Notification(ALayer: TCustomLayer); virtual;
     procedure Paint(Buffer: TBitmap32); virtual;
     procedure PaintGDI(Canvas: TCanvas); virtual;
-    procedure RemoveNotification(ALayer: TCustomLayer);
     procedure SetIndex(Value: Integer); virtual;
     procedure SetCursor(Value: TCursor); virtual;
     procedure SetLayerCollection(Value: TLayerCollection); virtual;
@@ -349,6 +356,7 @@ type
 //------------------------------------------------------------------------------
 // Base class for layers that has position and size.
 //------------------------------------------------------------------------------
+type
   TLayerGetUpdateRectEvent = procedure(Sender: TObject; var UpdateRect: TRect) of object;
 
   TPositionedLayer = class(TCustomLayer)
@@ -397,6 +405,7 @@ type
 //------------------------------------------------------------------------------
 // Base class for layers referencing a bitmap. The layer does not own the bitmap.
 //------------------------------------------------------------------------------
+type
   TCustomIndirectBitmapLayer = class(TPositionedLayer)
   strict private
     FAlphaHit: Boolean;
@@ -438,6 +447,7 @@ type
 //------------------------------------------------------------------------------
 // Abstract base class for layers containing a bitmap. The layer owns the bitmap.
 //------------------------------------------------------------------------------
+type
   TCustomBitmapLayer = class abstract(TCustomIndirectBitmapLayer)
   strict protected
     function OwnsBitmap: boolean; override;
@@ -457,6 +467,7 @@ type
 //------------------------------------------------------------------------------
 // A layer containing a TBitmap32. The layer owns the bitmap.
 //------------------------------------------------------------------------------
+type
   TBitmapLayer = class(TCustomBitmapLayer)
   protected
     function GetBitmapClass: TCustomBitmap32Class; override;
@@ -587,7 +598,7 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure Notification(ALayer: TCustomLayer); override;
+    procedure FreeNotification(ALayer: TCustomLayer); override;
     procedure Paint(Buffer: TBitmap32); override;
     procedure SetLayerOptions(Value: Cardinal); override;
     procedure UpdateChildLayer; virtual;
@@ -657,6 +668,7 @@ type
   public
     property Vertices;
   end;
+
 
 //------------------------------------------------------------------------------
 //
@@ -803,10 +815,12 @@ begin
   Notify(lnLayerAdded, Result, Result.Index);
 end;
 
+{$if defined(FPC) or (CompilerVersion > 29.0)}
 function TLayerCollection.Add<T>: T;
 begin
   Result := T(Add(T));
 end;
+{$ifend}
 
 procedure TLayerCollection.Assign(Source: TPersistent);
 var
@@ -962,10 +976,12 @@ begin
   end;
 end;
 
+{$if defined(FPC) or (CompilerVersion > 29.0)}
 function TLayerCollection.Insert<T>(Index: Integer): T;
 begin
   Result := T(Insert(Index, T));
 end;
+{$ifend}
 
 procedure TLayerCollection.InsertItem(Item: TCustomLayer);
 var
@@ -1023,6 +1039,12 @@ begin
     Result := APoint;
 end;
 
+function TLayerCollection.LocalToViewport(const APoint: TPoint; AScaled: Boolean): TFloatPoint;
+begin
+  Result := LocalToViewport(FloatPoint(APoint), AScaled);
+end;
+
+
 function TLayerCollection.ViewportToLocal(const APoint: TFloatPoint; AScaled: Boolean): TFloatPoint;
 var
   ScaleX, ScaleY, ShiftX, ShiftY: TFloat;
@@ -1037,6 +1059,11 @@ begin
   end
   else
     Result := APoint;
+end;
+
+function TLayerCollection.ViewportToLocal(const APoint: TPoint; AScaled: Boolean): TFloatPoint;
+begin
+  Result := ViewportToLocal(FloatPoint(APoint), AScaled);
 end;
 
 function TLayerCollection.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer): TCustomLayer;
@@ -1063,10 +1090,7 @@ begin
     Result := FindLayerAtPos(X, Y, LOB_MOUSE_EVENTS);
 
   if (Result <> nil) then
-    Result.MouseMove(Shift, X, Y)
-  else
-  if FOwner is TControl then
-    Screen.Cursor := TControl(FOwner).Cursor;
+    Result.MouseMove(Shift, X, Y);
 end;
 
 function TLayerCollection.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer): TCustomLayer;
@@ -1126,7 +1150,7 @@ end;
 
 procedure TLayerCollection.SetItem(Index: Integer; Value: TCustomLayer);
 begin
-  TCollectionItem(FItems[Index]).Assign(Value);
+  FItems[Index].Assign(Value);
 end;
 
 procedure TLayerCollection.SetMouseEvents(Value: Boolean);
@@ -1227,29 +1251,28 @@ end;
 
 destructor TCustomLayer.Destroy;
 var
-  I: Integer;
+//  i: Integer;
+  Subscriber: TCustomLayer;
 begin
   if (FFreeNotifies <> nil) then
   begin
-    for I := FFreeNotifies.Count - 1 downto 0 do
+    for Subscriber in FFreeNotifies.ToArray do // ToArray for stability while items are removed from the list
+//    for i := FFreeNotifies.Count - 1 downto 0 do
     begin
-      TCustomLayer(FFreeNotifies[I]).Notification(Self);
-      if FFreeNotifies = nil then
-        Break;
+      Subscriber.FreeNotification(Self);
+//      FFreeNotifies[i].FreeNotification(Self);
+
+      // When last layer unsubscribes the list is freed
+//      if FFreeNotifies = nil then
+//        Break;
     end;
+    // List might have been freed while we looped but Free can handle that
     FFreeNotifies.Free;
     FFreeNotifies := nil;
   end;
+
   SetLayerCollection(nil);
   inherited;
-end;
-
-procedure TCustomLayer.AddNotification(ALayer: TCustomLayer);
-begin
-  if (FFreeNotifies = nil) then
-    FFreeNotifies := TList.Create;
-  if FFreeNotifies.IndexOf(ALayer) < 0 then
-    FFreeNotifies.Add(ALayer);
 end;
 
 procedure TCustomLayer.BeforeDestruction;
@@ -1257,6 +1280,48 @@ begin
   if Assigned(FOnDestroy) then
     FOnDestroy(Self);
   inherited;
+end;
+
+procedure TCustomLayer.AddFreeNotification(ALayer: TCustomLayer);
+begin
+  if (FFreeNotifies = nil) then
+    FFreeNotifies := TList<TCustomLayer>.Create;
+
+  if not FFreeNotifies.Contains(ALayer) then
+    FFreeNotifies.Add(ALayer);
+end;
+
+procedure TCustomLayer.RemoveFreeNotification(ALayer: TCustomLayer);
+begin
+  if (FFreeNotifies <> nil) then
+  begin
+    FFreeNotifies.Remove(ALayer);
+
+    if FFreeNotifies.Count = 0 then
+    begin
+      FFreeNotifies.Free;
+      FFreeNotifies := nil;
+    end;
+  end;
+end;
+
+procedure TCustomLayer.FreeNotification(ALayer: TCustomLayer);
+begin
+  // do nothing by default
+end;
+
+procedure TCustomLayer.AddNotification(ALayer: TCustomLayer);
+begin
+  AddFreeNotification(ALayer);
+end;
+
+procedure TCustomLayer.RemoveNotification(ALayer: TCustomLayer);
+begin
+  RemoveFreeNotification(ALayer);
+end;
+
+procedure TCustomLayer.Notification(ALayer: TCustomLayer);
+begin
 end;
 
 procedure TCustomLayer.BringToFront;
@@ -1447,11 +1512,6 @@ begin
     FOnMouseUp(Self, Button, Shift, X, Y);
 end;
 
-procedure TCustomLayer.Notification(ALayer: TCustomLayer);
-begin
-  // do nothing by default
-end;
-
 procedure TCustomLayer.Paint(Buffer: TBitmap32);
 begin
   // descendants override this method
@@ -1460,19 +1520,6 @@ end;
 procedure TCustomLayer.PaintGDI(Canvas: TCanvas);
 begin
   // descendants override this method
-end;
-
-procedure TCustomLayer.RemoveNotification(ALayer: TCustomLayer);
-begin
-  if (FFreeNotifies <> nil) then
-  begin
-    FFreeNotifies.Remove(ALayer);
-    if FFreeNotifies.Count = 0 then
-    begin
-      FFreeNotifies.Free;
-      FFreeNotifies := nil;
-    end;
-  end;
 end;
 
 procedure TCustomLayer.SendToBack;
@@ -2367,8 +2414,15 @@ end;
 
 destructor TCustomRubberBandLayer.Destroy;
 begin
+  ChildLayer := nil;
   FPassMouse.Free;
   inherited;
+end;
+
+procedure TCustomRubberBandLayer.FreeNotification(ALayer: TCustomLayer);
+begin
+  if ALayer = FChildLayer then
+    ChildLayer := nil;
 end;
 
 function TCustomRubberBandLayer.DoHitTest(X, Y: Integer): Boolean;
@@ -2759,12 +2813,6 @@ begin
   inherited;
 end;
 
-procedure TCustomRubberBandLayer.Notification(ALayer: TCustomLayer);
-begin
-  if ALayer = FChildLayer then
-    FChildLayer := nil;
-end;
-
 procedure TCustomRubberBandLayer.DrawHandle(Buffer: TBitmap32; X, Y: TFloat);
 var
   Handle: TFloatRect;
@@ -2988,8 +3036,8 @@ end;
 procedure TCustomRubberBandLayer.SetChildLayer(Value: TPositionedLayer);
 begin
   if (FChildLayer <> nil) then
-    RemoveNotification(FChildLayer);
-    
+    FChildLayer.RemoveFreeNotification(Self);
+
   FChildLayer := Value;
 
   if (FChildLayer <> nil) then
@@ -3001,7 +3049,7 @@ begin
     finally
       EndUpdate;
     end;
-    AddNotification(FChildLayer);
+    FChildLayer.AddFreeNotification(Self);
   end;
 end;
 

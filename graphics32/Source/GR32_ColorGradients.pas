@@ -1010,7 +1010,6 @@ resourcestring
 
 const
   CFloatTolerance = 0.001;
-  clNone32: TColor32 = $00000000;
 
 procedure FillLineAlpha(var Dst, AlphaValues: PColor32; Count: Integer;
   Color: TColor32; CombineMode: TCombineMode); {$IFDEF USEINLINING}inline;{$ENDIF}
@@ -1025,7 +1024,6 @@ begin
     Inc(Dst);
     Inc(AlphaValues);
   end;
-  EMMS;
 end;
 
 function Color32FloatPoint(Color: TColor32; Point: TFloatPoint): TColor32FloatPoint;
@@ -1673,11 +1671,8 @@ begin
     if Offset >= 1 then
       Result := FGradientColors[Index].Color32
     else
-    begin
       // interpolate color
       Result := CombineReg(FGradientColors[Index].Color32, FGradientColors[Index - 1].Color32, Round($FF * Offset));
-      EMMS;
-    end;
   end;
 end;
 
@@ -1758,10 +1753,8 @@ begin
     if LocalFraction >= 1 then
       ColorLUT^[LutIndex] := FGradientColors[StopIndex].Color32
     else
-    begin
       ColorLUT^[LutIndex] := CombineReg(FGradientColors[StopIndex].Color32, FGradientColors[StopIndex - 1].Color32, Round($FF * LocalFraction));
-      EMMS;
-    end;
+
     Fraction := Fraction + Delta;
   end;
 end;
@@ -3581,7 +3574,7 @@ begin
       Barycentric[0], Barycentric[1], 1 - Barycentric[1] - Barycentric[0]);
 
     BlendMemEx(Color32, Dst^, AlphaValues^);
-    EMMS;
+
     Inc(Dst);
     Inc(AlphaValues);
   end;
@@ -3852,7 +3845,7 @@ begin
   for X := DstX to DstX + Count - 1 do
   begin
     BlendMemEx(FBarycentric[0].GetSampleFloat(X, DstY), Dst^, AlphaValues^);
-    EMMS;
+
     Inc(Dst);
     Inc(AlphaValues);
   end;
@@ -3915,7 +3908,6 @@ begin
 
 DrawColor:
     BlendMemEx(Color32, Dst^, AlphaValues^);
-    EMMS;
     Inc(Dst);
     Inc(AlphaValues);
   end;
@@ -4247,7 +4239,6 @@ begin
     Inc(Dst);
     Inc(AlphaValues);
   end;
-  EMMS;
 end;
 
 procedure TLinearGradientPolygonFiller.FillLineVerticalExtreme(Dst: PColor32;
@@ -4269,7 +4260,6 @@ begin
     Inc(Dst);
     Inc(AlphaValues);
   end;
-  EMMS;
 end;
 
 procedure TLinearGradientPolygonFiller.FillLinePositive(Dst: PColor32; DstX,
@@ -4334,7 +4324,6 @@ begin
         Inc(Dst);
         Inc(AlphaValues);
       end;
-      EMMS;
     end;
 
     // check whether further drawing is still necessary
@@ -4418,7 +4407,6 @@ begin
         Inc(Dst);
         Inc(AlphaValues);
       end;
-      EMMS;
     end;
 
     // check whether further drawing is still necessary
@@ -4456,7 +4444,6 @@ begin
     Inc(Dst);
     Inc(AlphaValues);
   end;
-  EMMS;
 end;
 
 procedure TLinearGradientPolygonFiller.FillLineVerticalPadExtreme(
@@ -4479,7 +4466,6 @@ begin
     Inc(Dst);
     Inc(AlphaValues);
   end;
-  EMMS;
 end;
 
 procedure TLinearGradientPolygonFiller.FillLineVerticalWrap(
@@ -4500,7 +4486,6 @@ begin
     Inc(Dst);
     Inc(AlphaValues);
   end;
-  EMMS;
 end;
 
 procedure TLinearGradientPolygonFiller.FillLineHorizontalPadPos(
@@ -4540,9 +4525,7 @@ begin
   Scale := Mask / (XOffset[1] - XOffset[0]);
   for X := DstX to DstX + Length - 1 do
   begin
-    BlendMemEx(ColorLUT^[FWrapProc(Round((X - XOffset[0]) * Scale), Mask)],
-      Dst^, AlphaValues^);
-    EMMS;
+    BlendMemEx(ColorLUT^[FWrapProc(Round((X - XOffset[0]) * Scale), Mask)], Dst^, AlphaValues^);
 
     Inc(Dst);
     Inc(AlphaValues);
@@ -4586,9 +4569,7 @@ begin
   Scale := Mask / (XOffset[1] - XOffset[0]);
   for X := DstX to DstX + Length - 1 do
   begin
-    BlendMemEx(ColorLUT^[FWrapProc(Round((XOffset[1] - X) * Scale), Mask)],
-      Dst^, AlphaValues^);
-    EMMS;
+    BlendMemEx(ColorLUT^[FWrapProc(Round((XOffset[1] - X) * Scale), Mask)], Dst^, AlphaValues^);
 
     Inc(Dst);
     Inc(AlphaValues);
@@ -4616,7 +4597,6 @@ begin
   begin
     Index := Round((X - XOffset[0]) * Scale);
     BlendMemEx(ColorLUT^[FWrapProc(Index, Mask)], Dst^, AlphaValues^);
-    EMMS;
 
     Inc(Dst);
     Inc(AlphaValues);
@@ -4644,7 +4624,6 @@ begin
   begin
     Index := Round((XOffset[1] - X) * Scale);
     BlendMemEx(ColorLUT^[FWrapProc(Index, Mask)], Dst^, AlphaValues^);
-    EMMS;
 
     Inc(Dst);
     Inc(AlphaValues);
@@ -4847,7 +4826,7 @@ begin
 
     Color32 := ColorLUT^[Index];
     BlendMemEx(Color32, Dst^, AlphaValues^);
-    EMMS;
+
     Inc(Dst);
     Inc(AlphaValues);
   end;
@@ -4885,7 +4864,7 @@ begin
 
     Color32 := ColorLUT^[Index];
     BlendMemEx(Color32, Dst^, AlphaValues^);
-    EMMS;
+
     Inc(Dst);
     Inc(AlphaValues);
   end;
@@ -4916,7 +4895,7 @@ begin
 
     Color32 := ColorLUT^[Index];
     BlendMemEx(Color32, Dst^, AlphaValues^);
-    EMMS;
+
     Inc(Dst);
     Inc(AlphaValues);
   end;
@@ -4948,7 +4927,7 @@ begin
 
     Color32 := ColorLUT^[Index];
     BlendMemEx(Color32, Dst^, AlphaValues^);
-    EMMS;
+
     Inc(Dst);
     Inc(AlphaValues);
   end;
@@ -5164,7 +5143,7 @@ begin
     end;
 
     BlendMemEx(Color32, Dst^, AlphaValues^);
-    EMMS;
+
     Inc(Dst);
     Inc(AlphaValues);
   end;

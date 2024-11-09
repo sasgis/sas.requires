@@ -40,8 +40,13 @@ interface
 
 uses
   {$IFDEF LCLWin32} Windows, {$ENDIF} LCLIntf, LCLType, Types, Controls,
-  SysUtils, Classes, Graphics, GR32, GR32_Backends, GR32_Backends_Generic,
-  GR32_Containers, GR32_Image, GR32_Paths;
+  SysUtils, Classes, Graphics,
+
+  GR32,
+  GR32_Backends,
+  GR32_Backends_Generic,
+  GR32_Containers,
+  GR32_Paths;
 
 type
   { TLCLBackend }
@@ -91,8 +96,8 @@ type
     { IPaintSupport }
     procedure ImageNeeded;
     procedure CheckPixmap;
-    procedure DoPaint(ABuffer: TBitmap32; AInvalidRects: TRectList;
-      ACanvas: TCanvas; APaintBox: TCustomPaintBox32);
+    procedure DoPaint(ABuffer: TBitmap32; AInvalidRects: TRectList; ACanvas: TCanvas); overload;
+    procedure DoPaint(ABuffer: TBitmap32; const AInvalidRect: TRect; ACanvas: TCanvas); overload;
 
     { IBitmapContextSupport }
     function GetBitmapInfo: TBitmapInfo;
@@ -174,7 +179,7 @@ type
 
   TLCLMemoryBackend = class(TMemoryBackend, IPaintSupport, IDeviceContextSupport)
   private
-    procedure DoPaintRect(ABuffer: TBitmap32; ARect: TRect; ACanvas: TCanvas);
+    procedure DoPaintRect(ABuffer: TBitmap32; const ARect: TRect; ACanvas: TCanvas);
 
     function GetHandle: HDC; // Dummy
   protected
@@ -188,7 +193,8 @@ type
     { IPaintSupport }
     procedure ImageNeeded;
     procedure CheckPixmap;
-    procedure DoPaint(ABuffer: TBitmap32; AInvalidRects: TRectList; ACanvas: TCanvas; APaintBox: TCustomPaintBox32);
+    procedure DoPaint(ABuffer: TBitmap32; AInvalidRects: TRectList; ACanvas: TCanvas); overload;
+    procedure DoPaint(ABuffer: TBitmap32; const AInvalidRect: TRect; ACanvas: TCanvas); overload;
 
     { IInteroperabilitySupport }
     function CopyFrom(Graphic: TGraphic): Boolean; overload;
@@ -202,7 +208,7 @@ type
 implementation
 
 uses
-  GR32_Text_LCL_Win;
+  GR32.Text.Win;
 
 var
   StockFont: HFONT;
@@ -311,18 +317,18 @@ begin
 
 end;
 
-procedure TLCLBackend.DoPaint(ABuffer: TBitmap32; AInvalidRects: TRectList;
-  ACanvas: TCanvas; APaintBox: TCustomPaintBox32);
+procedure TLCLBackend.DoPaint(ABuffer: TBitmap32; AInvalidRects: TRectList; ACanvas: TCanvas);
 var
   i: Integer;
 begin
-  if AInvalidRects.Count > 0 then
-    for i := 0 to AInvalidRects.Count - 1 do
-      with AInvalidRects[i]^ do
-        Windows.BitBlt(ACanvas.Handle, Left, Top, Right - Left, Bottom - Top, ABuffer.Handle, Left, Top, SRCCOPY)
-  else
-    with APaintBox.GetViewportRect do
+  for i := 0 to AInvalidRects.Count - 1 do
+    with AInvalidRects[i]^ do
       Windows.BitBlt(ACanvas.Handle, Left, Top, Right - Left, Bottom - Top, ABuffer.Handle, Left, Top, SRCCOPY);
+end;
+
+procedure TLCLBackend.DoPaint(ABuffer: TBitmap32; const AInvalidRect: TRect; ACanvas: TCanvas);
+begin
+  Windows.BitBlt(ACanvas.Handle, AInvalidRect.Left, AInvalidRect.Top, AInvalidRect.Width, AInvalidRect.Height, ABuffer.Handle, AInvalidRect.Left, AInvalidRect.Top, SRCCOPY);
 end;
 
 
@@ -539,25 +545,24 @@ var
   R: TFloatRect;
 begin
   R := FloatRect(X, Y, X, Y);
-  GR32_Text_LCL_Win.TextToPath(Font.Handle, Path, R, Text, 0);
+  TextToolsWin.TextToPath(Font.Handle, Path, R, Text, 0);
 end;
 
 procedure TLCLBackend.TextToPath(Path: TCustomPath; const DstRect: TFloatRect;
   const Text: string; Flags: Cardinal);
 begin
-  GR32_Text_LCL_Win.TextToPath(Font.Handle, Path, DstRect, Text, Flags);
+  TextToolsWin.TextToPath(Font.Handle, Path, DstRect, Text, Flags);
 end;
 
 function TLCLBackend.MeasureText(const DstRect: TFloatRect;
   const Text: string; Flags: Cardinal): TFloatRect;
 begin
-  Result := GR32_Text_LCL_Win.MeasureText(Font.Handle, DstRect, Text, Flags);
+  Result := TextToolsWin.MeasureText(Font.Handle, DstRect, Text, Flags);
 end;
 
 procedure TLCLBackend.DrawTo(hDst: HDC; DstX, DstY: Integer);
 begin
-  Windows.BitBlt(hDst, DstX, DstY, FOwner.Width, FOwner.Height, Handle, 0, 0,
-    SRCCOPY);
+  Windows.BitBlt(hDst, DstX, DstY, FOwner.Width, FOwner.Height, Handle, 0, 0, SRCCOPY);
 (*
 StretchDIBits(
     hDst, DstX, DstY, FOwner.Width, FOwner.Height,
@@ -729,8 +734,7 @@ begin
 
 end;
 
-procedure TLCLMemoryBackend.DoPaintRect(ABuffer: TBitmap32;
-  ARect: TRect; ACanvas: TCanvas);
+procedure TLCLMemoryBackend.DoPaintRect(ABuffer: TBitmap32; const ARect: TRect; ACanvas: TCanvas);
 var
   Bitmap        : HBITMAP;
   DeviceContext : HDC;
@@ -753,10 +757,8 @@ begin
       begin
         OldObject := SelectObject(DeviceContext, Bitmap);
         try
-          Move(ABuffer.Bits^, Buffer^, FBitmapInfo.bmiHeader.biWidth *
-            FBitmapInfo.bmiHeader.biHeight * SizeOf(Cardinal));
-          Windows.BitBlt(ACanvas.Handle, ARect.Left, ARect.Top, ARect.Right -
-            ARect.Left, ARect.Bottom - ARect.Top, DeviceContext, 0, 0, SRCCOPY);
+          Move(ABuffer.Bits^, Buffer^, FBitmapInfo.bmiHeader.biWidth * FBitmapInfo.bmiHeader.biHeight * SizeOf(Cardinal));
+          Windows.BitBlt(ACanvas.Handle, ARect.Left, ARect.Top, ARect.Right - ARect.Left, ARect.Bottom - ARect.Top, DeviceContext, 0, 0, SRCCOPY);
         finally
           if OldObject <> 0 then
             SelectObject(DeviceContext, OldObject);
@@ -773,16 +775,17 @@ begin
   {$ENDIF}
 end;
 
-procedure TLCLMemoryBackend.DoPaint(ABuffer: TBitmap32;
-  AInvalidRects: TRectList; ACanvas: TCanvas; APaintBox: TCustomPaintBox32);
+procedure TLCLMemoryBackend.DoPaint(ABuffer: TBitmap32; const AInvalidRect: TRect; ACanvas: TCanvas);
+begin
+  DoPaintRect(ABuffer, AInvalidRect, ACanvas)
+end;
+
+procedure TLCLMemoryBackend.DoPaint(ABuffer: TBitmap32; AInvalidRects: TRectList; ACanvas: TCanvas);
 var
   i : Integer;
 begin
-  if AInvalidRects.Count > 0 then
-    for i := 0 to AInvalidRects.Count - 1 do
-      DoPaintRect(ABuffer, AInvalidRects[i]^, ACanvas)
-  else
-    DoPaintRect(ABuffer, APaintBox.GetViewportRect, ACanvas);
+  for i := 0 to AInvalidRects.Count - 1 do
+    DoPaintRect(ABuffer, AInvalidRects[i]^, ACanvas);
 end;
 
 
@@ -823,8 +826,7 @@ begin
     DeviceContext := CreateCompatibleDC(hDst);
     if DeviceContext <> 0 then
     try
-      Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo, DIB_RGB_COLORS,
-        Buffer, 0, 0);
+      Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo, DIB_RGB_COLORS, Buffer, 0, 0);
 
       if Bitmap <> 0 then
       begin

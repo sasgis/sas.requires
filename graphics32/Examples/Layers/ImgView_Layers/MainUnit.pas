@@ -41,7 +41,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, LCLType, {$ELSE} Windows, Actions, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Menus, ExtCtrls,
-  ExtDlgs, StdCtrls, Buttons, Types, ActnList,
+  StdCtrls, Buttons, Types, ActnList,
   GR32, GR32_Image, GR32_Layers, GR32_RangeBars,
   GR32_Filters, GR32_Transforms, GR32_Resamplers;
 
@@ -198,7 +198,7 @@ uses
   MacOSAll,
 {$ENDIF}
   Math, Printers, ClipBrd,
-  GR32_LowLevel, GR32_Paths, GR32_VectorUtils, GR32_Backends, GR32_Text_VCL,
+  GR32_LowLevel, GR32_Paths, GR32_VectorUtils, GR32_Backends,
   GR32_ColorGradients, GR32_Polygons, GR32_Geometry, GR32_Clipboard,
   GR32.ImageFormats,
   GR32.ImageFormats.JPG,
@@ -256,7 +256,11 @@ begin
   R := ImgView.GetViewportRect;
   P := ImgView.ControlToBitmap(R.CenterPoint);
 
+  // Here's one way to add a layer:
+  Result := ImgView.Layers.Add<TPositionedLayer>;
+  (* and here's another way:
   Result := TPositionedLayer.Create(ImgView.Layers);
+  *)
   Result.Location := FloatRect(P.X - 32, P.Y - 32, P.X + 32, P.Y + 32);
   Result.Scaled := True;
   Result.MouseEvents := True;
