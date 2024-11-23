@@ -45,10 +45,6 @@ uses
 // -- TEWBMouseHook ------------------------------------------------------------
 
 type
-  TFNMouseProc = function(nCode: Integer; wp: WPARAM; lp: LPARAM): LRESULT
-    stdcall;
-  TFNMouseMethod = function(nCode: Integer; wp: WPARAM; lp: LPARAM): LRESULT
-    stdcall of object;
   TMouseWheelEvent = procedure(Point: TPoint; hwndFromPoint: HWND; lp: LPARAM;
     var Handled: Boolean) of object;
 
@@ -56,10 +52,7 @@ type
   TEWBMouseHook = class(TObject)
   private
     FMouseHook: HHOOK;
-    FMouseHookProc: TFNMouseProc;
-    FMouseHookMethod: TFNMouseMethod;
-    function LocalMouseProc(nCode: Integer; wp: WPARAM; lp: LPARAM): LRESULT
-      stdcall;
+    function LocalMouseProc(nCode: Integer; wp: WPARAM; lp: LPARAM): LRESULT;
   public
     OnMouseWheel: TMouseWheelEvent;
     FActiveFormOnly: Boolean;
@@ -79,56 +72,22 @@ implementation
 uses
   EWBCoreTools;
 
-{$IFDEF DELPHI5}
-type
-  TMethod = record
-    Code, Data: Pointer;
-  end;
-{$ENDIF}
-
 var
   GEWBMouseHook: TEWBMouseHook = nil;
   GRefCount: Integer = 0;
 
-  //  MakeStdcallCallback (thunk to use stdcall method as static callback)
-
-function MakeStdcallCallback(const Method: TMethod): Pointer;
-type
-  PCallbackCode = ^TCallbackCode;
-  TCallbackCode = packed record
-    Ops1: array[0..2] of Longword;
-    Val1: Pointer;
-    Ops2: array[0..1] of Longword;
-    Val2: Pointer;
-  end;
+function LowLevelMouseHookProc(nCode: Integer; wp: WPARAM; lp: LPARAM): LRESULT stdcall;
 begin
-  Result := VirtualAlloc(nil, $100, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-  if Assigned(Result) then
-  try
-    with PCallbackCode(Result)^ do
-    begin
-      Ops1[0] := $448B5050;
-      Ops1[1] := $44890824;
-      Ops1[2] := $058B0424;
-      Val1 := Addr(Method.Data);
-      Ops2[0] := $08244489;
-      Ops2[1] := $25FF9058;
-      Val2 := Addr(Method.Code);
-    end;
-  except
-    VirtualFree(Result, 0, MEM_RELEASE);
-    Result := nil;
+  if Assigned(GEWBMouseHook) then
+    Result := GEWBMouseHook.LocalMouseProc(nCode, wp, lp)
+  else
+  begin
+    Assert(False);
+    Result := CallNextHookEx(0, nCode, wp, lp);
   end;
 end;
 
-procedure FreeCallback(Callback: Pointer);
-begin
-  if Assigned(Callback) then
-    VirtualFree(Callback, 0, MEM_RELEASE);
-end;
-
-function TEWBMouseHook.LocalMouseProc(nCode: Integer; wp: WPARAM; lp: LPARAM):
-  LRESULT stdcall;
+function TEWBMouseHook.LocalMouseProc(nCode: Integer; wp: WPARAM; lp: LPARAM): LRESULT;
 var
   bHandled, bCancel: Boolean;
   mhs: TMouseHookStruct;
@@ -226,13 +185,7 @@ end;
 procedure TEWBMouseHook.Activate;
 begin
   if (FMouseHook = 0) and EWBEnableMouseWheelFix then
-  begin
-    FMouseHookMethod := LocalMouseProc;
-    FMouseHookProc :=
-      TFNMouseProc(MakeStdcallCallback(TMethod(FMouseHookMethod)));
-    FMouseHook := SetWindowsHookEx(WH_MOUSE, TFNHookProc(FMouseHookProc), 0,
-      GetCurrentThreadID);
-  end;
+    FMouseHook := SetWindowsHookEx(WH_MOUSE, @LowLevelMouseHookProc, 0, GetCurrentThreadID);
 end;
 
 procedure TEWBMouseHook.Deactivate;
@@ -241,11 +194,6 @@ begin
   begin
     if UnhookWindowsHookEx(FMouseHook) then
       FMouseHook := 0;
-  end;
-  if Assigned(FMouseHookProc) then
-  begin
-    FreeCallback(Addr(FMouseHookProc));
-    FMouseHookProc := nil;
   end;
 end;
 

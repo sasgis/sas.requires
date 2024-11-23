@@ -1,3 +1,33 @@
+commit c7d3986aebebc40517dd3588b5fbf80969858d98
+Author: zed <starmen@tut.by>
+Date:   2024-11-10 11:59:05 +0300
+
+    more win64 fixes
+
+commit e6dd0e7404e46643f8a3745e4e51bc149ef5269e
+Author: zed <starmen@tut.by>
+Date:   2024-11-10 11:38:46 +0300
+
+    more refcounting fixes for Delphi 10+
+
+commit fe9e776a51ca7534853811841d66047f835a7bdf
+Author: zed <starmen@tut.by>
+Date:   2024-11-10 11:37:11 +0300
+
+    fix win64 typecasts
+
+commit 6a58c286e32fbd5bc24028ce9130a66077dcf09d
+Author: zed <starmen@tut.by>
+Date:   2024-11-10 10:17:20 +0300
+
+    update jedi.inc
+
+commit b8f659042e0a6b30ab824a89c4ee24b4961648cc
+Author: zed <starmen@tut.by>
+Date:   2024-11-10 10:12:02 +0300
+
+    fix MouseHook for win64 build
+
 commit 4cc28453aca1097bd018b9fd23cfd464fb652944
 Author: zed <starmen@tut.by>
 Date:   2016-12-21 12:06:45 +0300

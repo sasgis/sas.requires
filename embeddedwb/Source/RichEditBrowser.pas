@@ -804,7 +804,7 @@ var
   AppName: AnsiString;
 begin
   Result := False;
-  if boolean(SendMessage(ARichEdit.Handle, EM_GETOLEINTERFACE, 0, longint(@RichOleInterface))) then
+  if boolean(SendMessage(ARichEdit.Handle, EM_GETOLEINTERFACE, 0, LPARAM(@RichOleInterface))) then
   begin
     try
       AppName := AnsiString(Application.Title);
@@ -1491,7 +1491,7 @@ var
   Loc: TRect;
 begin
   SetRect(Loc, FLeftGap, FTopGap, (ClientWidth - 1) - FRightGap, (ClientHeight + 1) - FBottomGap);
-  SendMessage(Handle, EM_SETRECTNP, 0, LongInt(@Loc));
+  SendMessage(Handle, EM_SETRECTNP, 0, LPARAM(@Loc));
 end;
 
 procedure TRichEditWB.setLeftGap(Value: Integer);
@@ -1584,16 +1584,16 @@ end;
 procedure TRichEditWB.SetTabWidth(FTabWidth: Integer);
 begin
   WantTabs := True;
-  SendMessage(Handle, EM_SETTABSTOPS, 1, Longint(@FTabWidth));
+  SendMessage(Handle, EM_SETTABSTOPS, 1, LPARAM(@FTabWidth));
 end;
 
 procedure TRichEditWB.SetOffSetsValues(SetTo: Integer);
 var
   Rect: TRect;
 begin
-  SendMessage(Handle, EM_GETRECT, 0, LongInt(@Rect));
+  SendMessage(Handle, EM_GETRECT, 0, LPARAM(@Rect));
   Rect.Left := SetTo;
-  SendMessage(Handle, EM_SETRECT, 0, LongInt(@Rect));
+  SendMessage(Handle, EM_SETRECT, 0, LPARAM(@Rect));
   Refresh;
 end;
 
@@ -1746,7 +1746,7 @@ begin
     chrg.cpMin := 0;
     chrg.cpMax := -1;
   end;
-  SendMessage(Handle, EM_FORMATRANGE, 1, Longint(@Range));
+  SendMessage(Handle, EM_FORMATRANGE, 1, LPARAM(@Range));
   SendMessage(Handle, EM_FORMATRANGE, 0, 0);
   if not Assigned(fImage) then
   begin
@@ -1825,7 +1825,7 @@ begin
   end
   else
     cf.crTextColor := Font.Color;
-  SendMessage(Handle, EM_SETCHARFORMAT, wParam, Integer(@cf));
+  SendMessage(Handle, EM_SETCHARFORMAT, wParam, LPARAM(@cf));
 end;
 
 procedure TRichEditWB.SetSelectionHyperLink(Hyperlink: Boolean);
@@ -1868,7 +1868,7 @@ begin
       if (p.Msg = WM_LBUTTONDOWN) then
       begin
         try
-          SendMessage(Handle, EM_EXSETSEL, 0, Longint(@(p.chrg)));
+          SendMessage(Handle, EM_EXSETSEL, 0, LPARAM(@(p.chrg)));
           sURL := SelText;
           DoURLClick(sURL);
         except
@@ -2540,7 +2540,7 @@ begin
   pf2.cbSize := SizeOf(PARAFORMAT2);
   pf2.dwMask := PFM_LINESPACING;
   pf2.bLineSpacingRule := lineSpacing;
-  SendMessage(Handle, EM_SETPARAFORMAT, 0, Longint(@pf2));
+  SendMessage(Handle, EM_SETPARAFORMAT, 0, LPARAM(@pf2));
 end;
 
 procedure TRichEditWB.SetToMoreThen64KB;

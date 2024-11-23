@@ -923,7 +923,9 @@ begin
     Result := S_OK;
   FBSCBTimer.Enabled := True; {Timeout timer}
   FTimedOut := False;
+  {$IFNDEF DELPHIX_SEATTLE_UP}
   Self._Release;
+  {$ENDIF}
 end;
 
 function TBSCB.OnResponse(dwResponseCode: DWORD; szResponseHeaders,
@@ -1594,9 +1596,13 @@ begin //OK
     else if (Assigned(FSender.FOnConnect)) then
       FSender.FOnConnect(Self, HR, Registering_new_moniker +
         ResponseCodeToStr(HR));
+    {$IFNDEF DELPHIX_SEATTLE_UP}
     m_pPrevBSCB._Release;
+    {$ENDIF}
     m_pPrevBSCB := nil;
+    {$IFNDEF DELPHIX_SEATTLE_UP}
     FBindCtx._Release;
+    {$ENDIF}
     FBindCtx := nil;
     Dec(FSender.FRefCount);
   end;
