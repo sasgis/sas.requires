@@ -2,13 +2,13 @@
 TALHttpClient is a ancestor of class like
 TALWinInetHttpClient or TALWinHttpClient
 ****************************************}
-unit ALHttpClient;
+unit Alcinoe.HTTP.Client;
 
 interface
 
 {$I Alcinoe.inc}
 
-{$IFNDEF ALCompilerVersionSupported}
+{$IFNDEF ALCompilerVersionSupported122}
   {$MESSAGE WARN 'Check if Web.HTTPApp was not updated and adjust the IFDEF'}
 {$IFEND}
 
@@ -17,8 +17,8 @@ uses
   {$IFDEF MSWINDOWS}
   Winapi.Wininet,
   {$ENDIF}
-  ALStringList,
-  ALMultiPartParser,
+  Alcinoe.StringList,
+  Alcinoe.MultiPartParser,
   System.Classes;
 
 type
@@ -30,13 +30,14 @@ type
   TALHTTPProtocolVersion = (v1_0, v1_1);
 
   {--Request method--}
-  TALHTTPMethod = (Get,
-                   Post,
-                   Head,
-                   Trace,
-                   Put,
-                   Delete,
-                   Options);
+  TALHTTPMethod = (
+    Get,
+    Post,
+    Head,
+    Trace,
+    Put,
+    Delete,
+    Options);
 
   {--Request header--}
   TALHTTPRequestHeader = Class(TObject)
@@ -479,26 +480,28 @@ Function  AlCombineUrl(
 {$ENDIF}
 
 const
-  AlRfc822DayOfWeekNames: array[1..7] of AnsiString = ('Sun',
-                                                       'Mon',
-                                                       'Tue',
-                                                       'Wed',
-                                                       'Thu',
-                                                       'Fri',
-                                                       'Sat');
+  AlRfc822DayOfWeekNames: array[1..7] of AnsiString = (
+    'Sun',
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat');
 
-  ALRfc822MonthOfTheYearNames: array[1..12] of AnsiString = ('Jan',
-                                                             'Feb',
-                                                             'Mar',
-                                                             'Apr',
-                                                             'May',
-                                                             'Jun',
-                                                             'Jul',
-                                                             'Aug',
-                                                             'Sep',
-                                                             'Oct',
-                                                             'Nov',
-                                                             'Dec');
+  ALRfc822MonthOfTheYearNames: array[1..12] of AnsiString = (
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec');
 
 function ALGmtDateTimeToRfc822Str(const aValue: TDateTime): AnsiString;
 function ALDateTimeToRfc822Str(const aValue: TDateTime): AnsiString;
@@ -530,9 +533,15 @@ procedure ALDecompressHttpResponseContent(const aContentEncoding: AnsiString; va
 procedure ALDecompressHttpResponseContent(const aContentEncoding: String; var aContentStream: TMemoryStream); overload;
 
 Const
-  cALHTTPCLient_MsgInvalidURL         = 'Invalid url ''%s'' - only supports ''http'' and ''https'' schemes';
-  cALHTTPCLient_MsgInvalidHTTPRequest = 'Invalid HTTP Request: Length is 0';
-  cALHTTPCLient_MsgEmptyURL           = 'Empty URL';
+  ALHTTPCLientMsgInvalidURL         = 'Invalid url ''%s'' - only supports ''http'' and ''https'' schemes';
+  ALHTTPCLientMsgInvalidHTTPRequest = 'Invalid HTTP Request: Length is 0';
+  ALHTTPCLientMsgEmptyURL           = 'Empty URL';
+
+var
+  ALMaxKeepAliveHttpClientPerHost: integer = 16;
+  ALCreateHttpClientReceiveTimeout: integer = 20000;
+  ALCreateHttpClientSendTimeout: integer = 20000;
+  ALCreateHttpClientConnectTimeout: integer = 20000;
 
 implementation
 
@@ -548,8 +557,8 @@ uses
   System.SysConst,
   System.Math,
   system.AnsiStrings,
-  ALCommon,
-  ALString;
+  Alcinoe.Common,
+  Alcinoe.StringUtils;
 
 {************************************************************************************}
 function _AlStringFetch(var AInput: AnsiString; const ADelim: AnsiString): AnsiString;
@@ -1627,7 +1636,7 @@ Begin
 
 end;
 
-{*************************************************************}
+{************************************************************}
 {Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
  the function allow also date like "Sun, 06-Nov-1994 08:49:37 GMT"
  to be compatible with cookies field (http://wp.netscape.com/newsref/std/cookie_spec.html)}
@@ -1715,7 +1724,7 @@ Begin
 
 End;
 
-{********************************************************************************}
+{*******************************************************************************}
 {This function calculates ending IPv4-address for a given start of IPv4 range and
  length of subnetwork mask.
  Calculation is described in RFC: http://tools.ietf.org/html/rfc1878,

@@ -31,11 +31,23 @@ large number of strings (else if your list don't contain a lot of strings the
 performance is lower than TALStringListA because of the cost to calculate the
 hash)
 *******************************************************************************}
-unit ALStringList;
+unit Alcinoe.StringList;
 
 interface
 
 {$I Alcinoe.inc}
+
+{$IFNDEF ALCompilerVersionSupported122}
+  {$MESSAGE WARN 'Check if System.classes.TStringsEnumerator didn''t change and adjust the IFDEF'}
+{$IFEND}
+
+{$IFNDEF ALCompilerVersionSupported122}
+  {$MESSAGE WARN 'Check if System.classes.TStrings didn''t change and adjust the IFDEF'}
+{$IFEND}
+
+{$IFNDEF ALCompilerVersionSupported122}
+  {$MESSAGE WARN 'Check if System.classes.TStringList didn''t change and adjust the IFDEF'}
+{$IFEND}
 
 Uses
   System.Classes,
@@ -44,15 +56,15 @@ Uses
   System.Generics.Collections,
   System.Math,
   System.Contnrs,
-  ALAVLBinaryTree,
-  ALQuickSortList;
+  Alcinoe.AVLBinaryTree,
+  Alcinoe.QuickSortList;
 
 Type
 
-  {-----------------}
+  {------------------}
   TALStringsA = class;
 
-  {--------------------------}
+  {---------------------------}
   TALStringsEnumeratorA = class
   private
     FIndex: Integer;
@@ -64,7 +76,7 @@ Type
     property Current: AnsiString read GetCurrent;
   end;
 
-  {-----------------------------}
+  {------------------------------}
   TALStringsA = class(TPersistent)
   private
     //[deleted from Tstrings] FEncoding: TEncoding;
@@ -86,6 +98,7 @@ Type
     function GetDelimitedText: AnsiString;
     procedure SetCommaText(const Value: AnsiString);
     procedure SetDelimitedText(const Value: AnsiString);
+    function GetIsEmpty: Boolean; inline;
   protected
     //[deleted from Tstrings] procedure SetEncoding(const Value: TEncoding);
     //[deleted from Tstrings] procedure DefineProperties(Filer: TFiler); override;
@@ -99,6 +112,7 @@ Type
     procedure SetPersistentValueFromIndex(Index: Integer; const Value: AnsiString); virtual; // [added from Tstrings]
     procedure Error(const Msg: String; Data: Integer); overload;
     procedure Error(Msg: PResStringRec; Data: Integer); overload;
+    procedure IndexError(AIndex, AMaxIndex: Integer);
     function ExtractName(const S: AnsiString): AnsiString;
     function Get(Index: Integer): AnsiString; virtual; abstract;
     function GetCapacity: Integer; virtual;
@@ -135,6 +149,9 @@ Type
     procedure Assign(Source: TPersistent); override;
     procedure BeginUpdate;
     procedure Clear; virtual; abstract;
+    function Contains(const S: AnsiString): Boolean; inline;
+    function ContainsName(const Name: AnsiString): Boolean; inline;
+    function ContainsObject(const AObject: TObject): Boolean; inline;
     procedure Delete(Index: Integer); virtual; abstract;
     procedure EndUpdate;
     function Equals(Strings: TALStringsA): Boolean; reintroduce;
@@ -162,6 +179,7 @@ Type
     property Capacity: Integer read GetCapacity write SetCapacity;
     property CommaText: AnsiString read GetCommaText write SetCommaText;
     property Count: Integer read GetCount;
+    property IsEmpty: Boolean read GetIsEmpty;
     property Delimiter: AnsiChar read fDelimiter write fDelimiter;
     property DelimitedText: AnsiString read GetDelimitedText write SetDelimitedText;
     property LineBreak: AnsiString read fLineBreak write fLineBreak;
@@ -180,21 +198,21 @@ Type
     property ProtectedSave: Boolean read fProtectedSave write fProtectedSave;
   end;
 
-  {--------------------}
+  {---------------------}
   TALStringListA = class;
 
-  {-----------------------------}
+  {-------------------------------}
   PALStringItemA = ^TALStringItemA;
   TALStringItemA = record
     FString: AnsiString;
     FObject: TObject;
   end;
 
-  {-----------------------------------------}
+  {-------------------------------------------}
   TALStringItemListA = array of TALStringItemA;
   TALStringListSortCompareA = reference to function(List: TALStringListA; Index1, Index2: Integer): Integer;
 
-  {-------------------------------}
+  {---------------------------------}
   TALStringListA = class(TALStringsA)
   private
     FList: TALStringItemListA;
@@ -227,7 +245,6 @@ Type
     procedure InsertItem(Index: Integer; const S: AnsiString; AObject: TObject); virtual;
     procedure AssignTo(Dest: TPersistent); override; //[added from Tstrings]
     procedure init(OwnsObjects: Boolean); virtual; //[added from TStringList]
-  public
     function Find(const S: AnsiString; var Index: Integer): Boolean; virtual;
   public
     constructor Create; overload; override;
@@ -257,10 +274,10 @@ Type
     property NameValueOptimization: Boolean read FNameValueOptimization write FNameValueOptimization;
   end;
 
-  {----------------------}
+  {-----------------------}
   TALNVStringListA = class;
 
-  {---------------------------------}
+  {-----------------------------------}
   PALNVStringItemA = ^TALNVStringItemA;
   TALNVStringItemA = record
     FName: AnsiString;
@@ -269,11 +286,11 @@ Type
     FObject: TObject;
   end;
 
-  {---------------------------------------------}
+  {-----------------------------------------------}
   TALNVStringItemListA = array of TALNVStringItemA;
   TALNVStringListSortCompareA = reference to function(List: TALNVStringListA; Index1, Index2: Integer): Integer;
 
-  {---------------------------------}
+  {-----------------------------------}
   TALNVStringListA = class(TALStringsA)
   private
     FList: TALNVStringItemListA;
@@ -351,11 +368,11 @@ Type
     property OwnsObjects: Boolean read FOwnsObject write FOwnsObject;
   end;
 
-  {-----------------------}
+  {------------------------}
   TALAVLStringListA = class;
   TALAVLStringListSortCompareA = function(List: TALAVLStringListA; Index1, Index2: Integer): Integer;
 
-  {-------------------------------------------------------------------}
+  {--------------------------------------------------------------------}
   TALAVLStringListBinaryTreeNodeA = class(TALStringKeyAVLBinaryTreeNode)
   Private
   Protected
@@ -438,7 +455,7 @@ Type
     property OwnsObjects: Boolean read FOwnsObject write FOwnsObject;
   end;
 
-  {--------------------------}
+  {---------------------------}
   TALHashedStringListA = class;
   TALHashedStringListSortCompareA = function(List: TALHashedStringListA; Index1, Index2: Integer): Integer;
 
@@ -454,7 +471,7 @@ Type
     Nvs: Boolean; // if NameValueSeparator was present
   end;
 
-  {----------------------------------}
+  {-------------------------------}
   //when duplicate is set to ignore
   //it's take care only about the "name" part
   //and ignore the value part. exemple
@@ -546,10 +563,7 @@ Type
     property Current: String read GetCurrent;
   end;
 
-  {----------------------------------}
-  {$IFNDEF ALCompilerVersionSupported}
-    {$MESSAGE WARN 'Check if System.classes.TStrings didn''t change and adjust the IFDEF'}
-  {$IFEND}
+  {------------------------------}
   TALStringsW = class(TPersistent)
   private
     //[deleted from Tstrings] procedure SetStringsAdapter(const Value: IStringsAdapter);
@@ -571,6 +585,7 @@ Type
     procedure SetCommaText(const Value: String);
     procedure SetDelimitedText(const Value: String);
     procedure SetDefaultEncoding(const Value: TEncoding);
+    function GetIsEmpty: Boolean; inline;
   protected
     //[deleted from Tstrings] procedure DefineProperties(Filer: TFiler); override;
     function GetName(Index: Integer): String; virtual;
@@ -583,6 +598,7 @@ Type
     procedure SetPersistentValueFromIndex(Index: Integer; const Value: String); virtual; // [added from Tstrings]
     procedure Error(const Msg: String; Data: Integer); overload;
     procedure Error(Msg: PResStringRec; Data: Integer); overload;
+    procedure IndexError(AIndex, AMaxIndex: Integer);
     function ExtractName(const S: String): String;
     function Get(Index: Integer): String; virtual; abstract;
     function GetCapacity: Integer; virtual;
@@ -613,6 +629,9 @@ Type
     procedure Assign(Source: TPersistent); override;
     procedure BeginUpdate;
     procedure Clear; virtual; abstract;
+    function Contains(const S: string): Boolean; inline;
+    function ContainsName(const Name: string): Boolean; inline;
+    function ContainsObject(const AObject: TObject): Boolean; inline;
     procedure Delete(Index: Integer); virtual; abstract;
     procedure EndUpdate;
     function Equals(Strings: TALStringsW): Boolean; reintroduce;
@@ -642,6 +661,7 @@ Type
     property Capacity: Integer read GetCapacity write SetCapacity;
     property CommaText: String read GetCommaText write SetCommaText;
     property Count: Integer read GetCount;
+    property IsEmpty: Boolean read GetIsEmpty;
     property DefaultEncoding: TEncoding read FDefaultEncoding write SetDefaultEncoding;
     property Delimiter: Char read fDelimiter write fDelimiter;
     property DelimitedText: String read GetDelimitedText write SetDelimitedText;
@@ -677,10 +697,7 @@ Type
   TALStringItemListW = array of TALStringItemW;
   TALStringListSortCompareW = reference to function(List: TALStringListW; Index1, Index2: Integer): Integer;
 
-  {----------------------------------}
-  {$IFNDEF ALCompilerVersionSupported}
-    {$MESSAGE WARN 'Check if System.classes.TStringList didn''t change and adjust the IFDEF'}
-  {$IFEND}
+  {---------------------------------}
   TALStringListW = class(TALStringsW)
   private
     FList: TALStringItemListW;
@@ -843,8 +860,21 @@ Uses
   system.IOUtils,
   System.Ansistrings,
   System.Hash,
-  ALString,
-  ALCommon;
+  Alcinoe.StringUtils,
+  Alcinoe.Common;
+
+{$IF CompilerVersion < 36.0}
+function ListIndexErrorMsg(AIndex, AMaxIndex: NativeInt; AListObj: TObject): string;
+var s: string;
+begin
+  if AListObj <> nil then s := AListObj.ClassName else s := '<nil>';
+  Result := Format('List index out of bounds (%d)', [AIndex]);
+  if AMaxIndex < 0 then
+    Result := Result + Format('.  %s is empty', [s])
+  else
+    Result := Result + Format('.  %s range is 0..%d', [s, AMaxIndex]);
+end;
+{$ENDIF}
 
 {**************************************************************}
 constructor TALStringsEnumeratorA.Create(AStrings: TALStringsA);
@@ -863,8 +893,9 @@ end;
 {***********************************************}
 function TALStringsEnumeratorA.MoveNext: Boolean;
 begin
-  Inc(FIndex);
-  Result := FIndex < FStrings.Count;
+  Result := FIndex < FStrings.Count - 1;
+  if Result then
+    Inc(FIndex);
 end;
 
 {*****************************}
@@ -1046,17 +1077,37 @@ begin
   Result := True;
 end;
 
+{$IFOPT O+}
+  // Turn off optimizations to force creating a EBP stack frame and
+  // place params on the stack.
+  {$DEFINE OPTIMIZATIONSON}
+  {$O-}
+{$ENDIF O+}
+
 {************************************************************}
 procedure TALStringsA.Error(const Msg: String; Data: Integer);
 begin
-  raise EStringListError.CreateFmt(Msg, [Data]);
+  raise EStringListError.CreateFmt(Msg, [Data]) at
+    PPointer(PByte(@Msg) + SizeOf(Msg) + SizeOf(Self) + SizeOf(Pointer))^;
 end;
 
 {*************************************************************}
 procedure TALStringsA.Error(Msg: PResStringRec; Data: Integer);
 begin
-  raise EStringListError.CreateFmt(LoadResString(Msg), [Data]);
+  raise EStringListError.CreateFmt(LoadResString(Msg), [Data]) at
+    PPointer(PByte(@Msg) + SizeOf(Msg) + SizeOf(Self) + SizeOf(Pointer))^;
 end;
+
+{***********************************************************}
+procedure TALStringsA.IndexError(AIndex, AMaxIndex: Integer);
+begin
+  raise EStringListError.Create(ListIndexErrorMsg(AIndex, AMaxIndex, Self)) at ReturnAddress;
+end;
+
+{$IFDEF OPTIMIZATIONSON}
+  {$UNDEF OPTIMIZATIONSON}
+  {$O+}
+{$ENDIF OPTIMIZATIONSON}
 
 {******************************************************}
 procedure TALStringsA.Exchange(Index1, Index2: Integer);
@@ -1194,6 +1245,12 @@ end;
 function TALStringsA.GetEnumerator: TALStringsEnumeratorA;
 begin
   Result := TALStringsEnumeratorA.Create(Self);
+end;
+
+{***************************************}
+function TALStringsA.GetIsEmpty: Boolean;
+begin
+  Result := GetCount = 0;
 end;
 
 {*******************************************************}
@@ -1349,6 +1406,24 @@ begin
   for Result := 0 to GetCount - 1 do
     if GetObject(Result) = AObject then Exit;
   Result := -1;
+end;
+
+{**********************************************************}
+function TALStringsA.Contains(const S: AnsiString): Boolean;
+begin
+  Result := IndexOf(S) >= 0;
+end;
+
+{*****************************************************************}
+function TALStringsA.ContainsName(const Name: AnsiString): Boolean;
+begin
+  Result := IndexOfName(Name) >= 0;
+end;
+
+{*******************************************************************}
+function TALStringsA.ContainsObject(const AObject: TObject): Boolean;
+begin
+  Result := IndexOfObject(AObject) >= 0;
 end;
 
 {****************************************************************************************}
@@ -1892,7 +1967,8 @@ procedure TALStringListA.Delete(Index: Integer);
 var
   Obj: TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= FCount) then
+    IndexError(Index, FCount - 1);
   Changing;
   // If this list owns its objects then free the associated TObject with this index
   if OwnsObjects then
@@ -1923,7 +1999,8 @@ end;
 {**************************************************************}
 function  TALStringListA.ExtractObject(Index: Integer): TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= FCount) then
+    IndexError(Index, FCount - 1);
   Changing;
   result := FList[Index].FObject;
   FList[Index].FObject := nil;
@@ -1933,8 +2010,10 @@ end;
 {*********************************************************}
 procedure TALStringListA.Exchange(Index1, Index2: Integer);
 begin
-  if (Index1 < 0) or (Index1 >= FCount) then Error(@SListIndexError, Index1);
-  if (Index2 < 0) or (Index2 >= FCount) then Error(@SListIndexError, Index2);
+  if (Index1 < 0) or (Index1 >= FCount) then
+    IndexError(Index1, FCount - 1);
+  if (Index2 < 0) or (Index2 >= FCount) then
+    IndexError(Index2, FCount - 1);
   Changing;
   ExchangeItems(Index1, Index2);
   Changed;
@@ -2031,7 +2110,7 @@ end;
 function TALStringListA.Get(Index: Integer): AnsiString;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   Result := FList[Index].FString;
 end;
 
@@ -2051,7 +2130,7 @@ end;
 function TALStringListA.GetObject(Index: Integer): TObject;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   Result := FList[Index].FObject;
 end;
 
@@ -2096,7 +2175,8 @@ end;
 procedure TALStringListA.InsertObject(Index: Integer; const S: AnsiString; AObject: TObject);
 begin
   if Sorted then Error(@SSortedListError, 0);
-  if (Index < 0) or (Index > FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index > FCount) then
+    IndexError(Index, FCount);
   InsertItem(Index, S, AObject);
 end;
 
@@ -2144,7 +2224,7 @@ procedure TALStringListA.Put(Index: Integer; const S: AnsiString);
 begin
   if not sorted then begin
     if Cardinal(Index) >= Cardinal(FCount) then
-      Error(@SListIndexError, Index);
+      IndexError(Index, FCount - 1);
     Changing;
     FList[Index].FString := S;
     Changed;
@@ -2161,7 +2241,7 @@ var
   Obj: TObject;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   Changing;
 
   // Change from orignal TStringList
@@ -2666,7 +2746,8 @@ procedure TALNVStringListA.Delete(Index: Integer);
 var
   Obj: TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= FCount) then
+    IndexError(Index, FCount - 1);
   Changing;
   // If this list owns its objects then free the associated TObject with this index
   if OwnsObjects then
@@ -2698,7 +2779,8 @@ end;
 {****************************************************************}
 function  TALNVStringListA.ExtractObject(Index: Integer): TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= FCount) then
+    IndexError(Index, FCount - 1);
   Changing;
   result := FList[Index].FObject;
   FList[Index].FObject := nil;
@@ -2708,8 +2790,10 @@ end;
 {***********************************************************}
 procedure TALNVStringListA.Exchange(Index1, Index2: Integer);
 begin
-  if (Index1 < 0) or (Index1 >= FCount) then Error(@SListIndexError, Index1);
-  if (Index2 < 0) or (Index2 >= FCount) then Error(@SListIndexError, Index2);
+  if (Index1 < 0) or (Index1 >= FCount) then
+    IndexError(Index1, FCount - 1);
+  if (Index2 < 0) or (Index2 >= FCount) then
+    IndexError(Index2, FCount - 1);
   Changing;
   ExchangeItems(Index1, Index2);
   Changed;
@@ -2899,7 +2983,7 @@ end;
 function TALNVStringListA.Get(Index: Integer): AnsiString;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   if FList[Index].fNvs then Result := FList[Index].FName + NameValueSeparator + FList[Index].fValue
   else Result := FList[Index].fname;
 end;
@@ -2920,7 +3004,7 @@ end;
 function TALNVStringListA.GetObject(Index: Integer): TObject;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   Result := FList[Index].FObject;
 end;
 
@@ -3039,7 +3123,8 @@ end;
 procedure TALNVStringListA.InsertObject(Index: Integer; const S: AnsiString; AObject: TObject);
 begin
   if Sorted then Error(@SSortedListError, 0);
-  if (Index < 0) or (Index > FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index > FCount) then
+    IndexError(Index, FCount);
   InsertItem(Index, S, AObject);
 end;
 
@@ -3053,7 +3138,8 @@ end;
 procedure TALNVStringListA.InsertNameValueObject(Index: Integer; const Name, Value: AnsiString; AObject: TObject);
 begin
   if Sorted then Error(@SSortedListError, 0);
-  if (Index < 0) or (Index > FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index > FCount) then
+    IndexError(Index, FCount - 1);
   InsertItem(Index, Name, Value, AObject);
 end;
 
@@ -3139,7 +3225,7 @@ var Name, Value: ansiString;
 begin
   if not sorted then begin
     if Cardinal(Index) >= Cardinal(FCount) then
-      Error(@SListIndexError, Index);
+      IndexError(Index, FCount - 1);
     Changing;
     if ExtractNameValue(S, Name, Value) then begin
       FList[Index].FName := Name;
@@ -3165,7 +3251,7 @@ var
   Obj: TObject;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   Changing;
 
   // Change from orignal TStringList
@@ -3421,16 +3507,16 @@ end;
 {************************************************************}
 function TALNVStringListA.GetName(Index: Integer): AnsiString;
 begin
-  if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+  if Cardinal(Index) >= Cardinal(FCount) then
+    IndexError(Index, FCount - 1);
   Result := Flist[Index].fName;
 end;
 
 {******************************************************************}
 function TALNVStringListA.GetStrictName(Index: Integer): AnsiString;
 begin
-  if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+  if Cardinal(Index) >= Cardinal(FCount) then
+    IndexError(Index, FCount - 1);
   if Flist[Index].fnvs then Result := Flist[Index].fName
   else result := ''
 end;
@@ -3474,8 +3560,8 @@ function TALNVStringListA.GetValueFromIndex(Index: Integer): AnsiString;
 begin
   if Index >= 0 then
   begin
-    if Cardinal(Index) >= Cardinal(Count) then
-      Error(@SListIndexError, Index);
+    if Cardinal(Index) >= Cardinal(FCount) then
+      IndexError(Index, FCount - 1);
     if (Flist[index].fNvs) then
       result := Flist[index].fValue
     else
@@ -3492,8 +3578,8 @@ begin
   begin
     if Index < 0 then AddNameValue('', Value)
     else begin
-      if Cardinal(Index) >= Cardinal(Count) then
-        Error(@SListIndexError, Index);
+      if Cardinal(Index) >= Cardinal(FCount) then
+        IndexError(Index, FCount - 1);
       Changing;
       Flist[Index].fValue := Value;
       Flist[Index].fNVS := True;
@@ -3524,8 +3610,8 @@ procedure TALNVStringListA.SetPersistentValueFromIndex(Index: Integer; const Val
 begin
   if Index < 0 then AddNameValue('', Value)
   else begin
-    if Cardinal(Index) >= Cardinal(Count) then
-      Error(@SListIndexError, Index);
+    if Cardinal(Index) >= Cardinal(FCount) then
+      IndexError(Index, FCount - 1);
     Changing;
     Flist[Index].fValue := Value;
     Flist[Index].fNVS := True;
@@ -3685,7 +3771,8 @@ var
   Obj: TObject;
   i: integer;
 begin
-  if (Index < 0) or (Index >= Count) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= Count) then
+    IndexError(Index, Count - 1);
   Changing;
   // If this list owns its objects then free the associated TObject with this index
   if OwnsObjects then
@@ -3706,7 +3793,8 @@ end;
 {*****************************************************************}
 function  TALAVLStringListA.ExtractObject(Index: Integer): TObject;
 begin
-  if (Index < 0) or (Index >= Count) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= Count) then
+    IndexError(Index, Count - 1);
   Changing;
   with TALAVLStringListBinaryTreeNodeA(FNodeList[Index]) do begin
     result := Obj;
@@ -3718,8 +3806,10 @@ end;
 {************************************************************}
 procedure TALAVLStringListA.Exchange(Index1, Index2: Integer);
 begin
-  if (Index1 < 0) or (Index1 >= Count) then Error(@SListIndexError, Index1);
-  if (Index2 < 0) or (Index2 >= Count) then Error(@SListIndexError, Index2);
+  if (Index1 < 0) or (Index1 >= Count) then
+    IndexError(Index1, Count - 1);
+  if (Index2 < 0) or (Index2 >= Count) then
+    IndexError(Index2, Count - 1);
   Changing;
   ExchangeItems(Index1, Index2);
   Changed;
@@ -3740,7 +3830,7 @@ end;
 function TALAVLStringListA.Get(Index: Integer): AnsiString;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   with TALAVLStringListBinaryTreeNodeA(FNodelist[Index]) do begin
     if Nvs then Result := ID + NameValueSeparator + Val
     else Result := ID;
@@ -3757,7 +3847,7 @@ end;
 function TALAVLStringListA.GetObject(Index: Integer): TObject;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   Result := TALAVLStringListBinaryTreeNodeA(FNodelist[Index]).Obj;
 end;
 
@@ -3850,7 +3940,8 @@ end;
 {**********************************************************************************************}
 procedure TALAVLStringListA.InsertObject(Index: Integer; const S: AnsiString; AObject: TObject);
 begin
-  if (Index < 0) or (Index > Count) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index > Count) then
+    IndexError(Index, Count);
   InsertItem(Index, S, AObject);
 end;
 
@@ -3863,7 +3954,8 @@ end;
 {*****************************************************************************************************************}
 procedure TALAVLStringListA.InsertNameValueObject(Index: Integer; const Name, Value: AnsiString; AObject: TObject);
 begin
-  if (Index < 0) or (Index > Count) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index > Count) then
+    IndexError(Index, Count - 1);
   InsertItem(Index, Name, Value, AObject);
 end;
 
@@ -3948,7 +4040,7 @@ Var LNewName, LNewValue: AnsiString;
     LNewNode, LOldNode: TALAVLStringListBinaryTreeNodeA;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   Changing;
 
   LNewNvs := ExtractNameValue(S, LNewName, LNewValue);
@@ -3985,7 +4077,7 @@ var
   Obj: TObject;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   Changing;
 
   // Change from orignal TStringList
@@ -4132,7 +4224,7 @@ end;
 function TALAVLStringListA.GetName(Index: Integer): AnsiString;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   Result := TALAVLStringListBinaryTreeNodeA(FNodelist[Index]).ID;
 end;
 
@@ -4140,7 +4232,7 @@ end;
 function TALAVLStringListA.GetStrictName(Index: Integer): AnsiString;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   if TALAVLStringListBinaryTreeNodeA(FNodelist[Index]).nvs then Result := TALAVLStringListBinaryTreeNodeA(FNodelist[Index]).ID
   else result := ''
 end;
@@ -4185,7 +4277,7 @@ begin
   if Index >= 0 then
   begin
     if Cardinal(Index) >= Cardinal(Count) then
-      Error(@SListIndexError, Index);
+      IndexError(Index, Count - 1);
     if (TALAVLStringListBinaryTreeNodeA(FNodeList[index]).Nvs) then
       result := TALAVLStringListBinaryTreeNodeA(FNodeList[index]).Val
     else
@@ -4203,7 +4295,7 @@ begin
     if Index < 0 then AddNameValue('', Value)
     else begin
       if Cardinal(Index) >= Cardinal(Count) then
-        Error(@SListIndexError, Index);
+        IndexError(Index, Count - 1);
       Changing;
       TALAVLStringListBinaryTreeNodeA(FNodeList[Index]).Val := Value;
       TALAVLStringListBinaryTreeNodeA(FNodeList[Index]).NVS := True;
@@ -4235,7 +4327,7 @@ begin
   if Index < 0 then AddNameValue('', Value)
   else begin
     if Cardinal(Index) >= Cardinal(Count) then
-      Error(@SListIndexError, Index);
+      IndexError(Index, Count - 1);
     Changing;
     TALAVLStringListBinaryTreeNodeA(FNodeList[Index]).Val := Value;
     TALAVLStringListBinaryTreeNodeA(FNodeList[Index]).NVS := True;
@@ -4395,7 +4487,8 @@ var
   Obj: TObject;
   i: integer;
 begin
-  if (Index < 0) or (Index >= Count) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= Count) then
+    IndexError(Index, Count - 1);
   Changing;
   // If this list owns its objects then free the associated TObject with this index
   if OwnsObjects then
@@ -4416,7 +4509,8 @@ end;
 {********************************************************************}
 function  TALHashedStringListA.ExtractObject(Index: Integer): TObject;
 begin
-  if (Index < 0) or (Index >= Count) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= Count) then
+    IndexError(Index, Count - 1);
   Changing;
   with FNodeList[Index] do begin
     result := Obj;
@@ -4428,8 +4522,10 @@ end;
 {***************************************************************}
 procedure TALHashedStringListA.Exchange(Index1, Index2: Integer);
 begin
-  if (Index1 < 0) or (Index1 >= Count) then Error(@SListIndexError, Index1);
-  if (Index2 < 0) or (Index2 >= Count) then Error(@SListIndexError, Index2);
+  if (Index1 < 0) or (Index1 >= Count) then
+    IndexError(Index1, Count - 1);
+  if (Index2 < 0) or (Index2 >= Count) then
+    IndexError(Index2, Count - 1);
   Changing;
   ExchangeItems(Index1, Index2);
   Changed;
@@ -4450,7 +4546,7 @@ end;
 function TALHashedStringListA.Get(Index: Integer): AnsiString;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   with FNodelist[Index] do begin
     if Nvs then Result := ID + NameValueSeparator + Val
     else Result := ID;
@@ -4467,7 +4563,7 @@ end;
 function TALHashedStringListA.GetObject(Index: Integer): TObject;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   Result := FNodelist[Index].Obj;
 end;
 
@@ -4557,7 +4653,8 @@ end;
 {*************************************************************************************************}
 procedure TALHashedStringListA.InsertObject(Index: Integer; const S: AnsiString; AObject: TObject);
 begin
-  if (Index < 0) or (Index > Count) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index > Count) then
+    IndexError(Index, Count);
   InsertItem(Index, S, AObject);
 end;
 
@@ -4570,7 +4667,8 @@ end;
 {********************************************************************************************************************}
 procedure TALHashedStringListA.InsertNameValueObject(Index: Integer; const Name, Value: AnsiString; AObject: TObject);
 begin
-  if (Index < 0) or (Index > Count) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index > Count) then
+    IndexError(Index, Count - 1);
   InsertItem(Index, Name, Value, AObject);
 end;
 
@@ -4665,7 +4763,7 @@ Var LNewName, LNewValue: AnsiString;
     LNewNode, LOldNode: TALHashedStringListDictionaryNodeA;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   Changing;
 
   LNewNvs := ExtractNameValue(S, LNewName, LNewValue);
@@ -4707,7 +4805,7 @@ var
   Obj: TObject;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   Changing;
 
   // Change from orignal TStringList
@@ -4869,9 +4967,9 @@ end;
 
 type
 
-  {**********************************}
-  {$IFNDEF ALCompilerVersionSupported}
-    {$MESSAGE WARN 'Check if System.Generics.Collections.TObjectDictionary<TKey,TValue> was not updated and adjust the IFDEF'}
+  {*************************************}
+  {$IFNDEF ALCompilerVersionSupported122}
+    {$MESSAGE WARN 'Check if System.Generics.Collections.TObjectDictionary<K,V> was not updated and adjust the IFDEF'}
   {$ENDIF}
   _TObjectDictionaryAccessPrivate<K,V> = class(TObjectDictionary<K,V>)
   private
@@ -4927,7 +5025,7 @@ end;
 function TALHashedStringListA.GetName(Index: Integer): AnsiString;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   Result := FNodelist[Index].ID;
 end;
 
@@ -4935,7 +5033,7 @@ end;
 function TALHashedStringListA.GetStrictName(Index: Integer): AnsiString;
 begin
   if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, Count - 1);
   if FNodelist[Index].nvs then Result := FNodelist[Index].ID
   else result := ''
 end;
@@ -4980,7 +5078,7 @@ begin
   if Index >= 0 then
   begin
     if Cardinal(Index) >= Cardinal(Count) then
-      Error(@SListIndexError, Index);
+      IndexError(Index, Count - 1);
     if (FNodeList[index].Nvs) then
       result := FNodeList[index].Val
     else
@@ -4998,7 +5096,7 @@ begin
     if Index < 0 then AddNameValue('', Value)
     else begin
       if Cardinal(Index) >= Cardinal(Count) then
-        Error(@SListIndexError, Index);
+        IndexError(Index, Count - 1);
       Changing;
       FNodeList[Index].Val := Value;
       FNodeList[Index].NVS := True;
@@ -5030,7 +5128,7 @@ begin
   if Index < 0 then AddNameValue('', Value)
   else begin
     if Cardinal(Index) >= Cardinal(Count) then
-      Error(@SListIndexError, Index);
+      IndexError(Index, Count - 1);
     Changing;
     FNodeList[Index].Val := Value;
     FNodeList[Index].NVS := True;
@@ -5055,8 +5153,9 @@ end;
 {***********************************************}
 function TALStringsEnumeratorW.MoveNext: Boolean;
 begin
-  Inc(FIndex);
-  Result := FIndex < FStrings.Count;
+  Result := FIndex < FStrings.Count - 1;
+  if Result then
+    Inc(FIndex);
 end;
 
 {*****************************}
@@ -5261,17 +5360,37 @@ begin
   Result := True;
 end;
 
+{$IFOPT O+}
+  // Turn off optimizations to force creating a EBP stack frame and
+  // place params on the stack.
+  {$DEFINE OPTIMIZATIONSON}
+  {$O-}
+{$ENDIF O+}
+
 {************************************************************}
 procedure TALStringsW.Error(const Msg: String; Data: Integer);
 begin
-  raise EStringListError.CreateFmt(Msg, [Data]);
+  raise EStringListError.CreateFmt(Msg, [Data]) at
+    PPointer(PByte(@Msg) + SizeOf(Msg) + SizeOf(Self) + SizeOf(Pointer))^;
 end;
 
 {*************************************************************}
 procedure TALStringsW.Error(Msg: PResStringRec; Data: Integer);
 begin
-  raise EStringListError.CreateFmt(LoadResString(Msg), [Data]);
+  raise EStringListError.CreateFmt(LoadResString(Msg), [Data]) at
+    PPointer(PByte(@Msg) + SizeOf(Msg) + SizeOf(Self) + SizeOf(Pointer))^;
 end;
+
+{***********************************************************}
+procedure TALStringsW.IndexError(AIndex, AMaxIndex: Integer);
+begin
+  raise EStringListError.Create(ListIndexErrorMsg(AIndex, AMaxIndex, Self)) at ReturnAddress;
+end;
+
+{$IFDEF OPTIMIZATIONSON}
+  {$UNDEF OPTIMIZATIONSON}
+  {$O+}
+{$ENDIF OPTIMIZATIONSON}
 
 {******************************************************}
 procedure TALStringsW.Exchange(Index1, Index2: Integer);
@@ -5411,6 +5530,12 @@ end;
 function TALStringsW.GetEnumerator: TALStringsEnumeratorW;
 begin
   Result := TALStringsEnumeratorW.Create(Self);
+end;
+
+{***************************************}
+function TALStringsW.GetIsEmpty: Boolean;
+begin
+  Result := GetCount = 0;
 end;
 
 {***************************************************}
@@ -5566,6 +5691,24 @@ begin
   for Result := 0 to GetCount - 1 do
     if GetObject(Result) = AObject then Exit;
   Result := -1;
+end;
+
+{******************************************************}
+function TALStringsW.Contains(const S: string): Boolean;
+begin
+  Result := IndexOf(S) >= 0;
+end;
+
+{*************************************************************}
+function TALStringsW.ContainsName(const Name: string): Boolean;
+begin
+  Result := IndexOfName(Name) >= 0;
+end;
+
+{*******************************************************************}
+function TALStringsW.ContainsObject(const AObject: TObject): Boolean;
+begin
+  Result := IndexOfObject(AObject) >= 0;
 end;
 
 {************************************************************************************}
@@ -6149,7 +6292,8 @@ procedure TALStringListW.Delete(Index: Integer);
 var
   Obj: TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= FCount) then
+    IndexError(Index, FCount - 1);
   Changing;
   // If this list owns its objects then free the associated TObject with this index
   if OwnsObjects then
@@ -6180,7 +6324,8 @@ end;
 {**************************************************************}
 function  TALStringListW.ExtractObject(Index: Integer): TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= FCount) then
+    IndexError(Index, FCount - 1);
   Changing;
   result := FList[Index].FObject;
   FList[Index].FObject := nil;
@@ -6190,8 +6335,10 @@ end;
 {*********************************************************}
 procedure TALStringListW.Exchange(Index1, Index2: Integer);
 begin
-  if (Index1 < 0) or (Index1 >= FCount) then Error(@SListIndexError, Index1);
-  if (Index2 < 0) or (Index2 >= FCount) then Error(@SListIndexError, Index2);
+  if (Index1 < 0) or (Index1 >= FCount) then
+    IndexError(Index1, FCount - 1);
+  if (Index2 < 0) or (Index2 >= FCount) then
+    IndexError(Index2, FCount - 1);
   Changing;
   ExchangeItems(Index1, Index2);
   Changed;
@@ -6288,7 +6435,7 @@ end;
 function TALStringListW.Get(Index: Integer): String;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   Result := FList[Index].FString;
 end;
 
@@ -6308,7 +6455,7 @@ end;
 function TALStringListW.GetObject(Index: Integer): TObject;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   Result := FList[Index].FObject;
 end;
 
@@ -6353,7 +6500,8 @@ end;
 procedure TALStringListW.InsertObject(Index: Integer; const S: String; AObject: TObject);
 begin
   if Sorted then Error(@SSortedListError, 0);
-  if (Index < 0) or (Index > FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index > FCount) then
+    IndexError(Index, FCount);
   InsertItem(Index, S, AObject);
 end;
 
@@ -6401,7 +6549,7 @@ procedure TALStringListW.Put(Index: Integer; const S: String);
 begin
   if not sorted then begin
     if Cardinal(Index) >= Cardinal(FCount) then
-      Error(@SListIndexError, Index);
+      IndexError(Index, FCount - 1);
     Changing;
     FList[Index].FString := S;
     Changed;
@@ -6418,7 +6566,7 @@ var
   Obj: TObject;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   Changing;
 
   // Change from orignal TStringList
@@ -6909,7 +7057,8 @@ procedure TALNVStringListW.Delete(Index: Integer);
 var
   Obj: TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= FCount) then
+    IndexError(Index, FCount - 1);
   Changing;
   // If this list owns its objects then free the associated TObject with this index
   if OwnsObjects then
@@ -6941,7 +7090,8 @@ end;
 {****************************************************************}
 function  TALNVStringListW.ExtractObject(Index: Integer): TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index >= FCount) then
+    IndexError(Index, FCount - 1);
   Changing;
   result := FList[Index].FObject;
   FList[Index].FObject := nil;
@@ -6951,8 +7101,10 @@ end;
 {***********************************************************}
 procedure TALNVStringListW.Exchange(Index1, Index2: Integer);
 begin
-  if (Index1 < 0) or (Index1 >= FCount) then Error(@SListIndexError, Index1);
-  if (Index2 < 0) or (Index2 >= FCount) then Error(@SListIndexError, Index2);
+  if (Index1 < 0) or (Index1 >= FCount) then
+    IndexError(Index1, FCount - 1);
+  if (Index2 < 0) or (Index2 >= FCount) then
+    IndexError(Index2, FCount - 1);
   Changing;
   ExchangeItems(Index1, Index2);
   Changed;
@@ -7142,7 +7294,7 @@ end;
 function TALNVStringListW.Get(Index: Integer): String;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   if FList[Index].fNvs then Result := FList[Index].FName + NameValueSeparator + FList[Index].fValue
   else Result := FList[Index].fname;
 end;
@@ -7163,7 +7315,7 @@ end;
 function TALNVStringListW.GetObject(Index: Integer): TObject;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   Result := FList[Index].FObject;
 end;
 
@@ -7282,7 +7434,8 @@ end;
 procedure TALNVStringListW.InsertObject(Index: Integer; const S: String; AObject: TObject);
 begin
   if Sorted then Error(@SSortedListError, 0);
-  if (Index < 0) or (Index > FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index > FCount) then
+    IndexError(Index, FCount);
   InsertItem(Index, S, AObject);
 end;
 
@@ -7296,7 +7449,8 @@ end;
 procedure TALNVStringListW.InsertNameValueObject(Index: Integer; const Name, Value: String; AObject: TObject);
 begin
   if Sorted then Error(@SSortedListError, 0);
-  if (Index < 0) or (Index > FCount) then Error(@SListIndexError, Index);
+  if (Index < 0) or (Index > FCount) then
+    IndexError(Index, FCount - 1);
   InsertItem(Index, Name, Value, AObject);
 end;
 
@@ -7382,7 +7536,7 @@ var Name, Value: String;
 begin
   if not sorted then begin
     if Cardinal(Index) >= Cardinal(FCount) then
-      Error(@SListIndexError, Index);
+      IndexError(Index, FCount - 1);
     Changing;
     if ExtractNameValue(S, Name, Value) then begin
       FList[Index].FName := Name;
@@ -7408,7 +7562,7 @@ var
   Obj: TObject;
 begin
   if Cardinal(Index) >= Cardinal(FCount) then
-    Error(@SListIndexError, Index);
+    IndexError(Index, FCount - 1);
   Changing;
 
   // Change from orignal TStringList
@@ -7664,16 +7818,16 @@ end;
 {********************************************************}
 function TALNVStringListW.GetName(Index: Integer): String;
 begin
-  if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+  if Cardinal(Index) >= Cardinal(FCount) then
+    IndexError(Index, FCount - 1);
   Result := Flist[Index].fName;
 end;
 
 {**************************************************************}
 function TALNVStringListW.GetStrictName(Index: Integer): String;
 begin
-  if Cardinal(Index) >= Cardinal(Count) then
-    Error(@SListIndexError, Index);
+  if Cardinal(Index) >= Cardinal(FCount) then
+    IndexError(Index, FCount - 1);
   if Flist[Index].fnvs then Result := Flist[Index].fName
   else result := ''
 end;
@@ -7717,8 +7871,8 @@ function TALNVStringListW.GetValueFromIndex(Index: Integer): String;
 begin
   if Index >= 0 then
   begin
-    if Cardinal(Index) >= Cardinal(Count) then
-      Error(@SListIndexError, Index);
+    if Cardinal(Index) >= Cardinal(FCount) then
+      IndexError(Index, FCount - 1);
     if (Flist[index].fNvs) then
       result := Flist[index].fValue
     else
@@ -7735,8 +7889,8 @@ begin
   begin
     if Index < 0 then AddNameValue('', Value)
     else begin
-      if Cardinal(Index) >= Cardinal(Count) then
-        Error(@SListIndexError, Index);
+      if Cardinal(Index) >= Cardinal(FCount) then
+        IndexError(Index, FCount - 1);
       Changing;
       Flist[Index].fValue := Value;
       Flist[Index].fNVS := True;
@@ -7767,8 +7921,8 @@ procedure TALNVStringListW.SetPersistentValueFromIndex(Index: Integer; const Val
 begin
   if Index < 0 then AddNameValue('', Value)
   else begin
-    if Cardinal(Index) >= Cardinal(Count) then
-      Error(@SListIndexError, Index);
+    if Cardinal(Index) >= Cardinal(FCount) then
+      IndexError(Index, FCount - 1);
     Changing;
     Flist[Index].fValue := Value;
     Flist[Index].fNVS := True;

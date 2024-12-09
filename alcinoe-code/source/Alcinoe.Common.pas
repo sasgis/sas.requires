@@ -1,4 +1,4 @@
-unit ALCommon;
+unit Alcinoe.Common;
 
 interface
 
@@ -15,6 +15,7 @@ uses
   system.Generics.Collections,
   system.SyncObjs,
   system.sysutils,
+  system.math,
   system.types,
   System.UITypes;
 
@@ -87,6 +88,7 @@ type
     fRequests: TObjectList<TALWorkerThreadRequest>;
     function GetPriorityDirection: TPriorityDirection;
     function GetPriorityStartingPoint: int64;
+    function GetPriorityStartingPointExt(const AExtData: Tobject): Int64;
     procedure SetPriorityDirection(const Value: TPriorityDirection);
     procedure SetPriorityStartingPoint(const Value: int64);
   protected
@@ -178,10 +180,18 @@ type
 
 type
 
+  TALPointFHelper = record helper for TPointF
+    function RoundTo(const ADigit: TRoundToEXRangeExtended): TPointF;
+  end;
+
+  TALRectFHelper = record helper for TRectF
+    function RoundTo(const ADigit: TRoundToEXRangeExtended): TRectF;
+  end;
+
   TALPointDType = array [0..1] of Double;
 
-  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported}
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  {$IFNDEF ALCompilerVersionSupported122}
     {$MESSAGE WARN 'Check if System.Types.TPointf still having the same implementation and adjust the IFDEF'}
   {$IFEND}
   PALPointD = ^TALPointD;
@@ -201,7 +211,9 @@ type
     class operator Multiply(const AFactor: Double; const APoint: TALPointD): TALPointD;
     class operator Divide(const APoint: TALPointD; const AFactor: Double): TALPointD;
 
-    class function PointInCircle(const Point, Center: TALPointD; const Radius: Integer): Boolean; static; inline;
+    class function PointInCircle(const Point, Center: TALPointD; const Radius: Double): Boolean; static; inline;
+    function IsInCircle(const Center: TALPointD; const Radius: Double): Boolean;
+
     /// <summary> Zero point having values of (0, 0). </summary>
     class function Zero: TALPointD; inline; static;
 
@@ -229,6 +241,7 @@ type
     function Ceiling: TPoint;
     function Truncate: TPoint;
     function Round: TPoint;
+    function RoundTo(const ADigit: TRoundToEXRangeExtended): TALPointD;
     function ReducePrecision: TPointf;
     /// <summary> Rounds the current point to the specified scale value
     /// <param name="AScale"> The scale of scene </param>
@@ -253,8 +266,8 @@ type
           Y: Double;);
   end;
 
-  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported}
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  {$IFNDEF ALCompilerVersionSupported122}
     {$MESSAGE WARN 'Check if System.Types.TSizef still having the same implementation and adjust the IFDEF'}
   {$IFEND}
   PALSizeD = ^TALSizeD;
@@ -278,6 +291,7 @@ type
     function Ceiling: TSize;
     function Truncate: TSize;
     function Round: TSize;
+    function RoundTo(const ADigit: TRoundToEXRangeExtended): TALSizeD;
     function ReducePrecision: TSizeF;
 
     // metods
@@ -292,8 +306,8 @@ type
     property Height: Double read cy write cy;
   end;
 
-  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported}
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  {$IFNDEF ALCompilerVersionSupported122}
     {$MESSAGE WARN 'Check if System.Types.TRectf still having the same implementation and adjust the IFDEF'}
   {$IFEND}
   PALRectD = ^TALRectD;
@@ -418,6 +432,7 @@ type
     function Ceiling: TRect;
     function Truncate: TRect;
     function Round: TRect;
+    function RoundTo(const ADigit: TRoundToEXRangeExtended): TALRectD;
     function ReducePrecision: TRectF;
 
     function EqualsTo(const R: TALRectD; const Epsilon: Double = 0): Boolean;
@@ -441,8 +456,8 @@ type
     1: (TopLeft, BottomRight: TALPointD);
   end;
 
-{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-{$IFNDEF ALCompilerVersionSupported}
+{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+{$IFNDEF ALCompilerVersionSupported122}
   {$MESSAGE WARN 'Check if functions below implemented in System.Types still having the same implementation and adjust the IFDEF'}
 {$IFEND}
 function ALRectWidth(const Rect: TRect): Integer; inline; overload;
@@ -459,23 +474,18 @@ function ALRectCenter(var R: TRectf; const Bounds: TRectf): TRectf; inline; over
 function ALRectCenter(var R: TALRectD; const Bounds: TALRectD): TALRectD; overload;
 function ALIntersectRect(out Rect: TALRectD; const R1, R2: TALRectD): Boolean;
 function ALUnionRect(out Rect: TALRectD; const R1, R2: TALRectD): Boolean;
+function ALScaleRect(const Rect: TRectF; const Ratio: Single): TRectF; inline; overload;
+function ALScaleRect(const Rect: TALRectD; const Ratio: Double): TALRectD; inline; overload;
 
 {**************************************************************************************************************************}
 function ALRectFitInto(const R: TRectf; const Bounds: TRectf; const CenterAt: TpointF; out Ratio: Single): TRectF; overload;
 function ALRectFitInto(const R: TRectf; const Bounds: TRectf; const CenterAt: TpointF): TRectF; overload;
 function ALRectFitInto(const R: TRectf; const Bounds: TRectF; out Ratio: Single): TRectF; overload;
 function ALRectFitInto(const R: TRectf; const Bounds: TRectF): TRectF; overload;
-function ALRectPlaceInto(
-           const R: TRectf;
-           const Bounds: TRectf;
-           const CenterAt: TpointF;
-           out Ratio: Single): TRectF; overload;
+function ALRectPlaceInto(const R: TRectf; const Bounds: TRectf; const CenterAt: TpointF; out Ratio: Single): TRectF; overload;
 function ALRectPlaceInto(const R: TRectf; const Bounds: TRectf; const CenterAt: TpointF): TRectF; overload;
-function ALRectPlaceInto(
-           const R: TRectf;
-           const Bounds: TRectF;
-           const AHorzAlign: THorzRectAlign = THorzRectAlign.Center;
-           const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TRectF; overload;
+function ALRectPlaceInto(const R: TRectf; const Bounds: TRectF; out Ratio: Single; const AHorzAlign: THorzRectAlign = THorzRectAlign.Center; const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TRectF; overload;
+function ALRectPlaceInto(const R: TRectf; const Bounds: TRectF; const AHorzAlign: THorzRectAlign = THorzRectAlign.Center; const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TRectF; overload;
 
 type
 
@@ -488,21 +498,39 @@ type
     constructor CreateFmt(const Msg: string; const Args: array of const); overload;
   end;
 
-{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-var ALCallStackCustomLogsMaxCount: integer = 50;
-procedure ALAddCallStackCustomLog(Const aLog: String);
-function ALGetCallStackCustomLogs(Const aPrependTimeStamp: boolean = True; Const aPrependThreadID: boolean = True): String;
+{~~}
+Type
+  TalLogType = (VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT);
+  TALCustomLogMsgProc = procedure(Const Tag: String; Const msg: String; const &Type: TalLogType) of object;
+  TALCustomLogExceptionProc = procedure(Const Tag: String; Const E: Exception; const &Type: TalLogType) of object;
 
-{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-Type TalLogType = (VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT);
-procedure ALLog(Const Tag: String; Const msg: String; const _type: TalLogType = TalLogType.INFO); overload;
-procedure ALLog(Const Tag: String; const _type: TalLogType = TalLogType.INFO); overload;
-Var ALEnqueueLog: Boolean; // We can use this flag to enqueue the log when the device just started and when we didn't yet
-procedure ALPrintLogQueue; // pluged the device to the monitoring tool, so that we can print the log a little later
+var
+  ALCustomLogMsgProc: TALCustomLogMsgProc = nil;
+  ALCustomLogExceptionProc: TALCustomLogExceptionProc = nil;
 
-{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-type TALCustomDelayedFreeObjectProc = procedure(var aObject: Tobject) of object;
-var ALCustomDelayedFreeObjectProc: TALCustomDelayedFreeObjectProc;
+procedure _ALLog(
+            Const Tag: String;
+            Const msg: String;
+            Const &Type: TalLogType;
+            Const ThreadID: TThreadID;
+            Const CanPreserve: boolean);
+procedure ALLog(Const Tag: String; Const msg: String; const &Type: TalLogType = TalLogType.VERBOSE); overload;
+procedure ALLog(Const Tag: String; const &Type: TalLogType = TalLogType.VERBOSE); overload;
+procedure ALLog(Const Tag: String; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR); overload;
+
+var ALMaxLogHistory: integer = 0;
+function ALGetLogHistory(const AIgnoreLastLogItemMsg: Boolean = False): String;
+
+Var ALEnqueueLog: Boolean = False; // We can use this flag to enqueue the log when the device just started and when we didn't yet
+procedure ALPrintLogQueue;         // pluged the device to the monitoring tool, so that we can print the log a little later
+
+{~~}
+type
+  TALCustomDelayedFreeObjectProc = procedure(var aObject: Tobject) of object;
+
+var
+  ALCustomDelayedFreeObjectProc: TALCustomDelayedFreeObjectProc = nil;
+
 {$IF CompilerVersion >= 34} // sydney
 Procedure ALFreeAndNil(const [ref] Obj: TObject; const ADelayed: boolean = false); inline;
 {$ELSE}
@@ -513,6 +541,16 @@ Procedure ALFreeAndNil(var Obj; const ADelayed: boolean = false); inline;
 Function AlBoolToInt(Value:Boolean):Integer;
 Function AlIntToBool(Value:integer):boolean;
 Function ALMediumPos(LTotal, LBorder, LObject : integer):Integer;
+function ALTryRGBAHexToAlphaColor(const aHexValue: String; out AAlphaColor: TAlphaColor): Boolean;
+function ALRGBAHexToAlphaColor(const aHexValue: String): TAlphaColor;
+function ALTryARGBHexToAlphaColor(const aHexValue: String; out AAlphaColor: TAlphaColor): Boolean;
+function ALARGBHexToAlphaColor(const aHexValue: String): TAlphaColor;
+function ALCeil(const X: Single; const Epsilon: Single = 0): Integer; overload;
+function ALCeil(const X: Double; const Epsilon: Double = 0): Integer; overload;
+function ALCeil(const X: Extended; const Epsilon: Extended = 0): Integer; overload;
+function ALFloor(const X: Single; const Epsilon: Single = 0): Integer; overload;
+function ALFloor(const X: Double; const Epsilon: Double = 0): Integer; overload;
+function ALFloor(const X: Extended; const Epsilon: Extended = 0): Integer; overload;
 
 {**************************************************************************************************************}
 function  ALIfThen(AValue: Boolean; const ATrue: Integer; const AFalse: Integer = 0): Integer; overload; inline;
@@ -524,8 +562,20 @@ function  ALIfThen(AValue: Boolean; const ATrue: Extended; const AFalse: Extende
 function  ALIfThenA(AValue: Boolean; const ATrue: AnsiString; AFalse: AnsiString = ''): AnsiString; overload; inline;
 function  ALIfThenW(AValue: Boolean; const ATrue: String; AFalse: String = ''): String; overload; inline;
 
+const
+  ALMsPerSec = 1000;
+  ALNanosPerMs = 1000000;
+  ALNanosPerSec = 1000000000;
+
+{********************************}
+function ALElapsedTimeNano: int64;
+function ALElapsedTimeMillisAsDouble: Double;
+function ALElapsedTimeMillisAsInt64: int64;
+function ALElapsedTimeSecondsAsDouble: Double;
+function ALElapsedTimeSecondsAsInt64: int64;
+
 {$IFDEF MSWINDOWS}
-{$IFNDEF ALCompilerVersionSupported}
+{$IFNDEF ALCompilerVersionSupported122}
   {$MESSAGE WARN 'Check if EnumDynamicTimeZoneInformation/SystemTimeToTzSpecificLocalTimeEx/TzSpecificLocalTimeToSystemTimeEx are still not declared in Winapi.Windows and adjust the IFDEF'}
 {$ENDIF}
 {$WARNINGS OFF}
@@ -552,6 +602,7 @@ function ALUTCNow: TDateTime;
 function ALUnixMsToDateTime(const aValue: Int64): TDateTime;
 function ALDateTimeToUnixMs(const aValue: TDateTime): Int64;
 Function ALInc(var x: integer; Count: integer): Integer;
+procedure ALAssignError(Const ASource: TObject; const ADest: Tobject);
 var ALMove: procedure (const Source; var Dest; Count: NativeInt);
 {$IFDEF MSWINDOWS}
 type
@@ -612,24 +663,34 @@ const
                   // but finally -0.5 have a big drawback, if you convert it to string and back
                   // to datetime then you will obtain 0.5 ! same if you convert it to unix and
                   // back to datetime :( so i decide that 0 if more suitable than -0.5
+  ALNullLatLng = 999; // 999 because 0 is a valid latitude/longitude
 
 implementation
 
 uses
-  system.math,
   system.Rtti,
+  System.RTLConsts,
+  {$IF defined(MSWindows)}
+  Winapi.MMSystem,
+  {$ENDIF}
   {$IF defined(ANDROID)}
   Posix.Sched,
   Androidapi.JNI.JavaTypes,
   Androidapi.Helpers,
   Alcinoe.AndroidApi.Common,
+  Posix.Time,
   {$ENDIF}
   {$IF defined(IOS)}
   Posix.Sched,
   Macapi.Helpers,
+  Macapi.Mach,
+  {$ENDIF}
+  {$IF defined(ALMacOS)}
+  Macapi.Mach,
   {$ENDIF}
   system.DateUtils,
-  ALString;
+  System.UIConsts,
+  Alcinoe.StringUtils;
 
 {****************************************}
 constructor TALWorkerThreadRequest.Create(
@@ -789,6 +850,12 @@ end;
 function TALWorkerThreadPool.GetPriorityStartingPoint: int64;
 begin
   result := AtomicCmpExchange(FPriorityStartingPoint{Target},0{NewValue},0{Comparand});
+end;
+
+{***************************************************************************************}
+function TALWorkerThreadPool.GetPriorityStartingPointExt(const AExtData: Tobject): Int64;
+begin
+  result := GetPriorityStartingPoint;
 end;
 
 {*************************************************************************}
@@ -968,7 +1035,7 @@ procedure TALWorkerThreadPool.ExecuteProc(
             const AExtData: Tobject; // ExtData will be free by the worker thread
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, AExtData, 0{APriority}, nil{AGetPriorityFunc}, AAsync);
+  ExecuteProc(AProc, AExtData, 0{APriority}, GetPriorityStartingPointExt, AAsync);
 end;
 
 {****************************************}
@@ -976,7 +1043,7 @@ procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadRefProc;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, nil{AGetPriorityFunc}, AAsync);
+  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, GetPriorityStartingPointExt, AAsync);
 end;
 
 {****************************************}
@@ -1052,7 +1119,7 @@ procedure TALWorkerThreadPool.ExecuteProc(
             const AExtData: Tobject; // ExtData will be free by the worker thread
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, AExtData, 0{APriority}, nil{AGetPriorityFunc}, AAsync);
+  ExecuteProc(AProc, AExtData, 0{APriority}, GetPriorityStartingPointExt, AAsync);
 end;
 
 {****************************************}
@@ -1060,45 +1127,7 @@ procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadObjProc;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, nil{AGetPriorityFunc}, AAsync);
-end;
-
-type
-
-  {*****************************}
-  _TALCallStackCustomLog = record
-    ThreadID: TThreadID;
-    TimeStamp: TDateTime;
-    log: String;
-  end;
-
-var
-  _ALCallStackCustomLogs: TList<_TALCallStackCustomLog>;
-  _ALCallStackCustomLogsCurrentIndex: integer = -1;
-
-type
-
-  {***********************}
-  _TALLogQueueItem = record
-  private
-    Tag: String;
-    msg: String;
-    _type: TalLogType;
-    ThreadID: TThreadID;
-  public
-    class function Create(const ATag: String; const AMsg: String; Const aType: TalLogType; Const aThreadID: TThreadID): _TALLogQueueItem; static; inline;
-  end;
-
-var
-  _ALLogQueue: TList<_TALLogQueueItem>;
-
-{****************************************************************************************************************************************************}
-class function _TALLogQueueItem.Create(const ATag: String; const AMsg: String; Const aType: TalLogType; Const aThreadID: TThreadID): _TALLogQueueItem;
-begin
-  Result.Tag := aTag;
-  Result.Msg := aMsg;
-  Result._Type := aType;
-  Result.ThreadID := aThreadID;
+  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, GetPriorityStartingPointExt, AAsync);
 end;
 
 {***********************************************}
@@ -1212,7 +1241,7 @@ var
   tmpRect: TALRectD;
 begin
   tmpRect := R1;
-  if not R2.IsEmpty then
+  if not ((R2.Right < R2.Left) or (R2.Bottom < R2.Top)) then
   begin
     if R2.Left < R1.Left then tmpRect.Left := R2.Left;
     if R2.Top < R1.Top then tmpRect.Top := R2.Top;
@@ -1228,6 +1257,26 @@ begin
     tmpRect.Right := 0.0;
   end;
   Rect := tmpRect;
+end;
+
+{********************************************************************}
+function ALScaleRect(const Rect: TRectF; const Ratio: Single): TRectF;
+begin
+  Result := Rect;
+  Result.Top := Result.Top * Ratio;
+  Result.Bottom := Result.Bottom * Ratio;
+  Result.Left := Result.Left * Ratio;
+  Result.Right := Result.Right * Ratio;
+end;
+
+{************************************************************************}
+function ALScaleRect(const Rect: TALRectD; const Ratio: Double): TALRectD;
+begin
+  Result := Rect;
+  Result.Top := Result.Top * Ratio;
+  Result.Bottom := Result.Bottom * Ratio;
+  Result.Left := Result.Left * Ratio;
+  Result.Right := Result.Right * Ratio;
 end;
 
 {***********************************************************************************************}
@@ -1359,6 +1408,7 @@ end;
 function ALRectPlaceInto(
            const R: TRectf;
            const Bounds: TRectF;
+           out Ratio: Single;
            const AHorzAlign: THorzRectAlign = THorzRectAlign.Center;
            const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TRectF;
 var
@@ -1366,18 +1416,47 @@ var
 begin
   Result := R;
   if (R.Width > Bounds.Width) or (R.Height > Bounds.Height) then
-    Result := ALRectFitInto(Result, Bounds);
- case AHorzAlign of
-   THorzRectAlign.Center: LLocation.X := (Bounds.Left + Bounds.Right - Result.Width) / 2;
-   THorzRectAlign.Left: LLocation.X := Bounds.Left;
-   THorzRectAlign.Right: LLocation.X := Bounds.Right - Result.Width;
- end;
- case AVertAlign of
-   TVertRectAlign.Center: LLocation.Y := (Bounds.Top + Bounds.Bottom - Result.Height) / 2;
-   TVertRectAlign.Top: LLocation.Y := Bounds.Top;
-   TVertRectAlign.Bottom: LLocation.Y := Bounds.Bottom - Result.Height;
- end;
- Result.SetLocation(LLocation);
+    Result := ALRectFitInto(Result, Bounds, Ratio)
+ else
+    Ratio := 1;
+  case AHorzAlign of
+    THorzRectAlign.Center: LLocation.X := (Bounds.Left + Bounds.Right - Result.Width) / 2;
+    THorzRectAlign.Left: LLocation.X := Bounds.Left;
+    THorzRectAlign.Right: LLocation.X := Bounds.Right - Result.Width;
+  end;
+  case AVertAlign of
+    TVertRectAlign.Center: LLocation.Y := (Bounds.Top + Bounds.Bottom - Result.Height) / 2;
+    TVertRectAlign.Top: LLocation.Y := Bounds.Top;
+    TVertRectAlign.Bottom: LLocation.Y := Bounds.Bottom - Result.Height;
+  end;
+  Result.SetLocation(LLocation);
+end;
+
+{********************************************************************************************************************}
+//this is the same as TRectf.PlaceInto but it is here for old delphi version (like xe4) with don't have it implemented
+function ALRectPlaceInto(
+           const R: TRectf;
+           const Bounds: TRectF;
+           const AHorzAlign: THorzRectAlign = THorzRectAlign.Center;
+           const AVertAlign: TVertRectAlign = TVertRectAlign.Center): TRectF;
+var
+  LRatio: Single;
+begin
+  Result := ALRectPlaceInto(R, Bounds, LRatio, AHorzAlign, AVertAlign);
+end;
+
+{*******************************************************************************}
+function TALPointFHelper.RoundTo(const ADigit: TRoundToEXRangeExtended): TPointF;
+begin
+  Result.X := System.math.RoundTo(X, ADigit);
+  Result.Y := System.math.RoundTo(Y, ADigit);
+end;
+
+{*****************************************************************************}
+function TALRectFHelper.RoundTo(const ADigit: TRoundToEXRangeExtended): TRectF;
+begin
+  Result.TopLeft := TopLeft.RoundTo(ADigit);
+  Result.BottomRight := BottomRight.RoundTo(ADigit);
 end;
 
 {***************************************************************}
@@ -1539,10 +1618,19 @@ begin
   Self.Offset(TALPointD.Create(APoint));
 end;
 
-{*****************************************************************************************************}
-class function TALPointD.PointInCircle(const Point, Center: TALPointD; const Radius: Integer): Boolean;
+{************************************************************************************}
+function TALPointD.IsInCircle(const Center: TALPointD; const Radius: Double): Boolean;
+var
+  D: Double;
 begin
-  Result := Point.Distance(Center) <= Radius;
+  D := Distance(Center);
+  Result := (D < Radius) or SameValue(D, Radius);
+end;
+
+{****************************************************************************************************}
+class function TALPointD.PointInCircle(const Point, Center: TALPointD; const Radius: Double): Boolean;
+begin
+  Result := Point.IsInCircle(Center, Radius);
 end;
 
 {***************************************}
@@ -1577,6 +1665,13 @@ function TALPointD.Round: TPoint;
 begin
   Result.X := System.Round(X);
   Result.Y := System.Round(Y);
+end;
+
+{***************************************************************************}
+function TALPointD.RoundTo(const ADigit: TRoundToEXRangeExtended): TALPointD;
+begin
+  Result.X := System.Math.RoundTo(X, ADigit);
+  Result.Y := System.Math.RoundTo(Y, ADigit);
 end;
 
 {******************************************}
@@ -2132,6 +2227,13 @@ begin
   Result.BottomRight := BottomRight.Round;
 end;
 
+{*************************************************************************}
+function TALRectD.RoundTo(const ADigit: TRoundToEXRangeExtended): TALRectD;
+begin
+  Result.TopLeft := TopLeft.RoundTo(ADigit);
+  Result.BottomRight := BottomRight.RoundTo(ADigit);
+end;
+
 {****************************************}
 function TALRectD.ReducePrecision: TRectF;
 begin
@@ -2299,6 +2401,13 @@ begin
   Result.cy := Trunc(cy + 0.5);
 end;
 
+{*************************************************************************}
+function TALSizeD.RoundTo(const ADigit: TRoundToEXRangeExtended): TALSizeD;
+begin
+  Result.cx := system.math.RoundTo(cx, ADigit);
+  Result.cy := system.math.RoundTo(cy, ADigit);
+end;
+
 {****************************************}
 function TALSizeD.ReducePrecision: TSizeF;
 begin
@@ -2344,77 +2453,128 @@ begin
   inherited CreateFmt(Msg, Args);
 end;
 
-{****************************************************}
-procedure ALAddCallStackCustomLog(Const aLog: String);
-var LCallStackCustomLog: _TALCallStackCustomLog;
+type
+
+  {******************}
+  _TALLogItem = record
+  private
+    Tag: String;
+    msg: String;
+    &Type: TalLogType;
+    ThreadID: TThreadID;
+    TimeStamp: TDateTime;
+  public
+    class function Create(
+                     const ATag: String;
+                     const AMsg: String;
+                     Const AType: TalLogType;
+                     Const AThreadID: TThreadID;
+                     const ATimeStamp: TDateTime): _TALLogItem; static; inline;
+  end;
+
+var
+  _ALLogQueue: TList<_TALLogItem>;
+  _ALLogHistory: TList<_TALLogItem>;
+  _ALLogHistoryIndex: integer = -1;
+
+{********************************}
+class function _TALLogItem.Create(
+                 const ATag: String;
+                 const AMsg: String;
+                 Const AType: TalLogType;
+                 Const AThreadID: TThreadID;
+                 const ATimeStamp: TDateTime): _TALLogItem;
 begin
-  LCallStackCustomLog.ThreadID := TThread.Current.ThreadID;
-  LCallStackCustomLog.TimeStamp := Now;
-  LCallStackCustomLog.log := aLog;
-  Tmonitor.enter(_ALCallStackCustomLogs);
-  Try
-    _ALCallStackCustomLogsCurrentIndex := (_ALCallStackCustomLogsCurrentIndex + 1) mod ALCallStackCustomLogsMaxCount;
-    if _ALCallStackCustomLogsCurrentIndex <= _ALCallStackCustomLogs.Count - 1 then
-      _ALCallStackCustomLogs[_ALCallStackCustomLogsCurrentIndex] := LCallStackCustomLog
-    else
-      _ALCallStackCustomLogsCurrentIndex := _ALCallStackCustomLogs.Add(LCallStackCustomLog);
-  Finally
-    Tmonitor.exit(_ALCallStackCustomLogs);
-  End;
+  Result.Tag := aTag;
+  Result.Msg := aMsg;
+  Result.&Type := aType;
+  Result.ThreadID := aThreadID;
+  Result.TimeStamp := ATimeStamp;
 end;
 
-{*************************************************************************************************************************}
-function ALGetCallStackCustomLogs(Const aPrependTimeStamp: boolean = True; Const aPrependThreadID: boolean = True): String;
-Var i: integer;
+{*****************************************************************************}
+function ALGetLogHistory(const AIgnoreLastLogItemMsg: Boolean = False): String;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  function _LogItemToStr(const ALogItem: _TALLogItem; const aIgnoreLogItemMsg: Boolean): String;
+  begin
+    Result := ALFormatDateTimeW(
+                'yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''',
+                TTimeZone.Local.ToUniversalTime(ALogItem.TimeStamp),
+                ALDefaultFormatSettingsW);
+    case ALogItem.&Type of
+      TalLogType.VERBOSE: Result := Result + ' [V]';
+      TalLogType.DEBUG:   Result := Result + ' [D][V]';
+      TalLogType.INFO:    Result := Result + ' [I][D][V]';
+      TalLogType.WARN:    Result := Result + ' [W][I][D][V]';
+      TalLogType.ERROR:   Result := Result + ' [E][W][I][D][V]';
+      TalLogType.ASSERT:  Result := Result + ' [A][E][W][I][D][V]';
+      else raise Exception.Create('Error 651AAEA2-4FF7-4621-A4DB-4BA299E238CE');
+    end;
+    if ALogItem.ThreadID <> MainThreadID then Result := Result + '['+ALIntToStrW(ALogItem.ThreadID)+']';
+    if ALogItem.Tag <> '' then Result := Result + ' ' + ALogItem.Tag;
+    if (not aIgnoreLogItemMsg) and (ALogItem.msg <> '') then begin
+      var lMsg := ALStringReplaceW(ALogItem.msg, #13#10, #10, [rfreplaceALL]);
+      lMsg := ALStringReplaceW(lMsg, #13, #10, [rfreplaceALL]);
+      Result := ALTrim(ALStringReplaceW(#10+lMsg, #10, #13#10+Result+' | ', [RfReplaceALL]));
+    end;
+  end;
+
 begin
   Result := '';
-  Tmonitor.enter(_ALCallStackCustomLogs);
+  Tmonitor.enter(_ALLogHistory);
   Try
-    if aPrependTimeStamp and aPrependThreadID then begin
-      for i := _ALCallStackCustomLogsCurrentIndex downto 0 do
-        Result := Result + ALFormatDateTimeW('yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''', TTimeZone.Local.ToUniversalTime(_ALCallStackCustomLogs[i].TimeStamp), ALDefaultFormatSettingsW) + ' [' + ALIntToStrW(_ALCallStackCustomLogs[i].ThreadID) + ']: ' + _ALCallStackCustomLogs[i].log + #13#10;
-      for i := _ALCallStackCustomLogs.Count - 1 downto _ALCallStackCustomLogsCurrentIndex + 1 do
-        Result := Result + ALFormatDateTimeW('yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''', TTimeZone.Local.ToUniversalTime(_ALCallStackCustomLogs[i].TimeStamp), ALDefaultFormatSettingsW) + ' [' + ALIntToStrW(_ALCallStackCustomLogs[i].ThreadID) + ']: ' + _ALCallStackCustomLogs[i].log + #13#10;
-    end
-    else if aPrependTimeStamp then begin
-      for i := _ALCallStackCustomLogsCurrentIndex downto 0 do
-        Result := Result + ALFormatDateTimeW('yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''', TTimeZone.Local.ToUniversalTime(_ALCallStackCustomLogs[i].TimeStamp), ALDefaultFormatSettingsW) + ': ' + _ALCallStackCustomLogs[i].log + #13#10;
-      for i := _ALCallStackCustomLogs.Count - 1 downto _ALCallStackCustomLogsCurrentIndex + 1 do
-        Result := Result + ALFormatDateTimeW('yyyy''-''mm''-''dd''T''hh'':''nn'':''ss''.''zzz''Z''', TTimeZone.Local.ToUniversalTime(_ALCallStackCustomLogs[i].TimeStamp), ALDefaultFormatSettingsW) + ': ' + _ALCallStackCustomLogs[i].log + #13#10;
-    end
-    else if aPrependThreadID then begin
-      for i := _ALCallStackCustomLogsCurrentIndex downto 0 do
-        Result := Result + '[' + ALIntToStrW(_ALCallStackCustomLogs[i].ThreadID) + ']: ' + _ALCallStackCustomLogs[i].log + #13#10;
-      for i := _ALCallStackCustomLogs.Count - 1 downto _ALCallStackCustomLogsCurrentIndex + 1 do
-        Result := Result + '[' + ALIntToStrW(_ALCallStackCustomLogs[i].ThreadID) + ']: ' + _ALCallStackCustomLogs[i].log + #13#10;
-    end
-    else begin
-      for i := _ALCallStackCustomLogsCurrentIndex downto 0 do
-        Result := Result + _ALCallStackCustomLogs[i].log + #13#10;
-      for i := _ALCallStackCustomLogs.Count - 1 downto _ALCallStackCustomLogsCurrentIndex + 1 do
-        Result := Result + _ALCallStackCustomLogs[i].log + #13#10;
-    end;
+    for var i := _ALLogHistoryIndex downto 0 do
+      Result := Result + _LogItemToStr(_ALLogHistory[i], AIgnoreLastLogItemMsg and (_ALLogHistoryIndex=i)) + #13#10;
+    for var i := _ALLogHistory.Count - 1 downto _ALLogHistoryIndex + 1 do
+      Result := Result + _LogItemToStr(_ALLogHistory[i], false) + #13#10;
   Finally
-    Tmonitor.exit(_ALCallStackCustomLogs);
+    Tmonitor.exit(_ALLogHistory);
   End;
   Result := ALTrim(Result);
 end;
 
-{*********************************************************************************************************}
-procedure _ALLog(Const Tag: String; Const msg: String; const _type: TalLogType; const ThreadID: TThreadID);
+{***************}
+procedure _ALLog(
+            Const Tag: String;
+            Const msg: String;
+            Const &Type: TalLogType;
+            Const ThreadID: TThreadID;
+            Const CanPreserve: boolean);
 begin
-  if ALEnqueueLog then begin
+  if CanPreserve and (ALMaxLogHistory > 0) then begin
+    var LLogItem := _TALLogItem.Create(
+                      Tag, // const ATag: String;
+                      Msg, // const AMsg: String;
+                      &Type, // Const aType: TalLogType
+                      ThreadID, // Const AThreadID: TThreadID;
+                      Now); // const ATimeStamp: TDateTime
+    Tmonitor.enter(_ALLogHistory);
+    Try
+      _ALLogHistoryIndex := (_ALLogHistoryIndex + 1) mod ALMaxLogHistory;
+      if _ALLogHistoryIndex <= _ALLogHistory.Count - 1 then
+        _ALLogHistory[_ALLogHistoryIndex] := LLogItem
+      else
+        _ALLogHistoryIndex := _ALLogHistory.Add(LLogItem);
+    Finally
+      Tmonitor.exit(_ALLogHistory);
+    End;
+  end;
+  //--
+  if CanPreserve and ALEnqueueLog then begin
     Tmonitor.Enter(_ALLogQueue);
     try
       _ALLogQueue.Add(
-        _TALLogQueueItem.Create(
+        _TALLogItem.Create(
           Tag, // const ATag: String;
           Msg, // const AMsg: String;
-          _Type, // Const aType: TalLogType
-          ThreadID));
+          &Type, // Const aType: TalLogType
+          ThreadID, // Const AThreadID: TThreadID;
+          Now)); // const ATimeStamp: TDateTime
     finally
       Tmonitor.Exit(_ALLogQueue);
     end;
+    if &Type = TalLogType.ASSERT then ALPrintLogQueue
   end
   else begin
     {$IF defined(ANDROID)}
@@ -2422,7 +2582,7 @@ begin
     if Msg <> '' then LMsg := msg
     else LMsg := '<empty>';
     if ThreadID <> MainThreadID then LMsg := '['+ALIntToStrW(ThreadID)+'] ' + LMsg;
-    case _type of
+    case &Type of
       TalLogType.VERBOSE: TJLog.JavaClass.v(StringToJString(Tag), StringToJString(LMsg));
       TalLogType.DEBUG: TJLog.JavaClass.d(StringToJString(Tag), StringToJString(LMsg));
       TalLogType.INFO: TJLog.JavaClass.i(StringToJString(Tag), StringToJString(LMsg));
@@ -2432,7 +2592,7 @@ begin
     end;
     {$ELSEIF defined(IOS)}
     var LMsg: String;
-    if msg <> '' then LMsg := Tag + ' => ' + msg
+    if msg <> '' then LMsg := Tag + ' | ' + msg
     else LMsg := Tag;
     var LThreadID: String;
     if ThreadID <> MainThreadID then LThreadID := '['+ALIntToStrW(ThreadID)+']'
@@ -2443,7 +2603,7 @@ begin
     while P <= length(LMsg) do begin
       var LMsgPart := ALCopyStr(LMsg, P, 950); // to stay safe
       inc(P, 950);
-      case _type of
+      case &Type of
         TalLogType.VERBOSE: NSLog(StringToID('[V]'+LThreadID+' ' + LMsgPart));
         TalLogType.DEBUG:   NSLog(StringToID('[D][V]'+LThreadID+' ' + LMsgPart));
         TalLogType.INFO:    NSLog(StringToID('[I][D][V]'+LThreadID+' ' + LMsgPart));
@@ -2453,11 +2613,11 @@ begin
       end;
     end;
     {$ELSEIF defined(MSWINDOWS)}
-    if _type <> TalLogType.VERBOSE  then begin // because log on windows slow down the app so skip verbosity
+    //if &Type <> TalLogType.VERBOSE  then begin // because log on windows slow down the app so skip verbosity
       var LMsg: String;
-      if msg <> '' then LMsg := Tag + ' => ' + stringReplace(msg, '%', '%%', [rfReplaceALL]) // https://quality.embarcadero.com/browse/RSP-15942
+      if msg <> '' then LMsg := Tag + ' | ' + stringReplace(msg, '%', '%%', [rfReplaceALL]) // https://quality.embarcadero.com/browse/RSP-15942
       else LMsg := Tag;
-      case _type of
+      case &Type of
         TalLogType.VERBOSE: OutputDebugString(pointer('[V] ' + LMsg + ' |'));
         TalLogType.DEBUG:   OutputDebugString(pointer('[D][V] ' + LMsg + ' |'));
         TalLogType.INFO:    OutputDebugString(pointer('[I][D][V] ' + LMsg + ' |'));
@@ -2465,39 +2625,49 @@ begin
         TalLogType.ERROR:   OutputDebugString(pointer('[E][W][I][D][V] ' + LMsg + ' |'));
         TalLogType.ASSERT:  OutputDebugString(pointer('[A][E][W][I][D][V] ' + LMsg + ' |'));
       end;
-    end;
+    //end;
     {$IFEND}
   end;
 end;
 
-{***********************************************************************************************}
-procedure ALLog(Const Tag: String; Const msg: String; const _type: TalLogType = TalLogType.INFO);
+{**************************************************************************************************}
+procedure ALLog(Const Tag: String; Const msg: String; const &Type: TalLogType = TalLogType.VERBOSE);
 begin
-  _ALLog(Tag, msg, _type, TThread.Current.ThreadID);
+  if assigned(ALCustomLogMsgProc) then
+    ALCustomLogMsgProc(Tag, msg, &Type)
+  else
+    _ALLog(Tag, msg, &Type, TThread.Current.ThreadID, True{CanPreserve});
 end;
 
-{****************************************************************************}
-procedure ALLog(Const Tag: String; const _type: TalLogType = TalLogType.INFO);
+{*******************************************************************************}
+procedure ALLog(Const Tag: String; const &Type: TalLogType = TalLogType.VERBOSE);
 begin
-  _ALLog(Tag, '', _type, TThread.Current.ThreadID);
+  if assigned(ALCustomLogMsgProc) then
+    ALCustomLogMsgProc(Tag, '', &Type)
+  else
+    _ALLog(Tag, '', &Type, TThread.Current.ThreadID, True{CanPreserve});
+end;
+
+{*************************************************************************************************}
+procedure ALLog(Const Tag: String; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR);
+begin
+  if assigned(ALCustomLogExceptionProc) then
+    ALCustomLogExceptionProc(Tag, E, &Type)
+  else
+    _ALLog(Tag, E.message, &Type, TThread.Current.ThreadID, True{CanPreserve});
 end;
 
 {************************}
 procedure ALPrintLogQueue;
-var LOldEnqueueLogValue: Boolean;
-    i: integer;
 begin
-  LOldEnqueueLogValue := ALEnqueueLog;
-  ALEnqueueLog := False;
   Tmonitor.Enter(_ALLogQueue);
   try
-    for I := 0 to _ALLogQueue.Count - 1 do
+    for var I := 0 to _ALLogQueue.Count - 1 do
       with _ALLogQueue[i] do
-        _ALLog(Tag, Msg, _type, ThreadID);
+        _ALLog(Tag, Msg, &Type, ThreadID, False{CanPreserve});
     _ALLogQueue.Clear;
   finally
     Tmonitor.Exit(_ALLogQueue);
-    ALEnqueueLog := LOldEnqueueLogValue;
   end;
 end;
 
@@ -2519,6 +2689,108 @@ Function ALMediumPos(LTotal, LBorder, LObject : integer):Integer;
 Begin
   result := (LTotal - (LBorder*2) - LObject) div 2 + LBorder;
 End;
+
+{************************************************************************************************}
+function ALTryRGBAHexToAlphaColor(const aHexValue: String; out AAlphaColor: TAlphaColor): Boolean;
+begin
+  var R, G, B, A: Integer;
+  case Length(aHexValue) of
+    6: // RRGGBB
+      begin
+        If not ALTryStrToInt('$' + AHexValue.Substring(0, 2), R) or (R < low(Byte)) or (R > high(Byte)) then exit(false);
+        If not ALTryStrToInt('$' + AHexValue.Substring(2, 2), G) or (G < low(Byte)) or (G > high(Byte)) then exit(false);
+        If not ALTryStrToInt('$' + AHexValue.Substring(4, 2), B) or (B < low(Byte)) or (B > high(Byte)) then exit(false);
+        A := high(Byte);
+      end;
+    8: // RRGGBBAA
+      begin
+        If not ALTryStrToInt('$' + AHexValue.Substring(0, 2), R) or (R < low(Byte)) or (R > high(Byte)) then exit(false);
+        If not ALTryStrToInt('$' + AHexValue.Substring(2, 2), G) or (G < low(Byte)) or (G > high(Byte)) then exit(false);
+        If not ALTryStrToInt('$' + AHexValue.Substring(4, 2), B) or (B < low(Byte)) or (B > high(Byte)) then exit(false);
+        If not ALTryStrToInt('$' + AHexValue.Substring(6, 2), A) or (A < low(Byte)) or (A > high(Byte)) then exit(false);
+      end;
+  else
+    exit(False);
+  end;
+  AAlphaColor := MakeColor(R, G, B, A);
+  Result := True;
+end;
+
+{*******************************************************************}
+function ALRGBAHexToAlphaColor(const aHexValue: String): TAlphaColor;
+begin
+  if not ALTryRGBAHexToAlphaColor(aHexValue, Result) then
+    raise Exception.Create('Invalid RGBA hex color format');
+end;
+
+{************************************************************************************************}
+function ALTryARGBHexToAlphaColor(const aHexValue: String; out AAlphaColor: TAlphaColor): Boolean;
+begin
+  var R, G, B, A: Integer;
+  case Length(aHexValue) of
+    6: // RRGGBB
+      begin
+        A := high(Byte);
+        If not ALTryStrToInt('$' + AHexValue.Substring(0, 2), R) or (R < low(Byte)) or (R > high(Byte)) then exit(false);
+        If not ALTryStrToInt('$' + AHexValue.Substring(2, 2), G) or (G < low(Byte)) or (G > high(Byte)) then exit(false);
+        If not ALTryStrToInt('$' + AHexValue.Substring(4, 2), B) or (B < low(Byte)) or (B > high(Byte)) then exit(false);
+      end;
+    8: // AARRGGBB
+      begin
+        If not ALTryStrToInt('$' + AHexValue.Substring(0, 2), A) or (A < low(Byte)) or (A > high(Byte)) then exit(false);
+        If not ALTryStrToInt('$' + AHexValue.Substring(2, 2), R) or (R < low(Byte)) or (R > high(Byte)) then exit(false);
+        If not ALTryStrToInt('$' + AHexValue.Substring(4, 2), G) or (G < low(Byte)) or (G > high(Byte)) then exit(false);
+        If not ALTryStrToInt('$' + AHexValue.Substring(6, 2), B) or (B < low(Byte)) or (B > high(Byte)) then exit(false);
+      end;
+  else
+    exit(False);
+  end;
+  AAlphaColor := MakeColor(R, G, B, A);
+  Result := True;
+end;
+
+{*******************************************************************}
+function ALARGBHexToAlphaColor(const aHexValue: String): TAlphaColor;
+begin
+  if not ALTryARGBHexToAlphaColor(aHexValue, Result) then
+    raise Exception.Create('Invalid ARGB hex color format');
+end;
+
+{*******************************************************************}
+function ALCeil(const X: Single; const Epsilon: Single = 0): Integer;
+begin
+  Result := ceil(X - Epsilon);
+end;
+
+{*******************************************************************}
+function ALCeil(const X: Double; const Epsilon: Double = 0): Integer;
+begin
+  Result := ceil(X - Epsilon);
+end;
+
+{***********************************************************************}
+function ALCeil(const X: Extended; const Epsilon: Extended = 0): Integer;
+begin
+  Result := ceil(X - Epsilon);
+end;
+
+{********************************************************************}
+function ALFloor(const X: Single; const Epsilon: Single = 0): Integer;
+begin
+  Result := Floor(X + Epsilon);
+end;
+
+{********************************************************************}
+function ALFloor(const X: Double; const Epsilon: Double = 0): Integer;
+begin
+  Result := Floor(X + Epsilon);
+end;
+
+{************************************************************************}
+function ALFloor(const X: Extended; const Epsilon: Extended = 0): Integer;
+begin
+  Result := Floor(X + Epsilon);
+end;
 
 {************************************************************************************************}
 function ALIfThenA(AValue: Boolean; const ATrue: AnsiString; AFalse: AnsiString = ''): AnsiString;
@@ -2590,6 +2862,62 @@ begin
     Result := ATrue
   else
     Result := AFalse;
+end;
+
+{$IF defined(MSWindows)}
+var
+  ALPerformanceFrequency: TLargeInteger;
+{$ENDIF}
+
+{********************************}
+function ALElapsedTimeNano: int64;
+begin
+  {$IFDEF ANDROID}
+  var res: timespec;
+  clock_gettime(CLOCK_MONOTONIC, @res);
+  Result := Int64(ALNanosPerSec) * res.tv_sec + res.tv_nsec;
+  {$ELSEIF defined(IOS)}
+  Result := AbsoluteToNanoseconds(mach_absolute_time)
+  {$ELSEIF defined(ALMacOS)}
+  Result := AbsoluteToNanoseconds(mach_absolute_time)
+  {$ELSEIF defined(MSWindows)}
+  if ALPerformanceFrequency = -1 then begin
+    if not QueryPerformanceFrequency(ALPerformanceFrequency) then
+      ALPerformanceFrequency := 0;
+  end;
+  if ALPerformanceFrequency = 0 then Result := timeGetTime * ALNanosPerMs
+  else begin
+    var PerformanceCounter: Int64;
+    QueryPerformanceCounter(PerformanceCounter);
+    Result := trunc(PerformanceCounter / (ALPerformanceFrequency{counts per second} / ALNanosPerSec{nanos per second}));
+  end;
+  {$ELSE}
+    Raise Exception.Create('The platform has not been implemented yet');
+  {$ENDIF}
+end;
+
+{*******************************************}
+function ALElapsedTimeMillisAsDouble: Double;
+begin
+  Result := ALElapsedTimeNano / ALNanosPerMs;
+end;
+
+{*****************************************}
+function ALElapsedTimeMillisAsInt64: int64;
+begin
+  Result := trunc(ALElapsedTimeNano / ALNanosPerMs);
+end;
+
+{********************************************}
+function ALElapsedTimeSecondsAsDouble: Double;
+begin
+  Result := ALElapsedTimeNano / ALNanosPerSec;
+end;
+
+{******************************************}
+function ALElapsedTimeSecondsAsInt64: int64;
+begin
+  Result := trunc(ALElapsedTimeNano / ALNanosPerSec);
 end;
 
 {****************}
@@ -2819,6 +3147,18 @@ begin
   result := X;
 end;
 
+{********************************************************************}
+procedure ALAssignError(Const ASource: TObject; const ADest: Tobject);
+begin
+  var LSourceName: string;
+  if ASource <> nil then LSourceName := ASource.ClassName
+  else LSourceName := 'nil';
+  var LDestName: string;
+  if ADest <> nil then LDestName := ADest.ClassName
+  else LDestName := 'nil';
+  raise EConvertError.CreateResFmt(@SAssignError, [LSourceName, LDestName]);
+end;
+
 {******************************************************}
 {Accepts number of milliseconds in the parameter aValue,
  provides 1000 times more precise value of TDateTime}
@@ -2827,7 +3167,7 @@ begin
   Result := IncMilliSecond(UnixDateDelta, aValue);
 end;
 
-{********************************************************}
+{*******************************************************}
 {Returns UNIX-time as the count of milliseconds since the
  UNIX epoch. Can be very useful for the purposes of
  special precision.}
@@ -3084,15 +3424,16 @@ end;
 
 
 initialization
-  ALCustomDelayedFreeObjectProc := nil;
-  ALEnqueueLog := False;
-  _ALLogQueue := TList<_TALLogQueueItem>.Create;
-  _ALCallStackCustomLogs := TList<_TALCallStackCustomLog>.Create;
+  {$IF defined(MSWindows)}
+  ALPerformanceFrequency := -1;
+  {$ENDIF}
+  _ALLogQueue := TList<_TALLogItem>.Create;
+  _ALLogHistory := TList<_TALLogItem>.Create;
   ALMove := system.Move;
 
 
 Finalization
-  ALFreeAndNil(_ALCallStackCustomLogs);
+  ALFreeAndNil(_ALLogHistory);
   ALFreeAndNil(_ALLogQueue);
 
 end.

@@ -1,3 +1,15 @@
+commit f6197011789b23f51a36b0f308cdd07e7a08a991
+Author: zed <starmen@tut.by>
+Date:   2024-12-09 19:19:01 +0300
+
+    Backward compatibility fix
+
+commit 376fc627209632a0ddfc2b510379974d4a005b50
+Author: zed <starmen@tut.by>
+Date:   2024-12-09 18:26:30 +0300
+
+    Sync with upstream
+
 commit 0b11ed17279217084ba7a31fe8c133520d2732cd
 Author: zed <starmen@tut.by>
 Date:   2023-04-12 16:27:19 +0300

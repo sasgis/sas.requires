@@ -4,7 +4,7 @@ Binary trees that are self-balancing in the AVL sense
 (the depth of any left branch differs by no more than
 one from the depth of the right branch).
 ****************************************************}
-unit ALAVLBinaryTree;
+unit Alcinoe.AVLBinaryTree;
 
 interface
 
@@ -17,7 +17,7 @@ type
   TALBaseAVLBinaryTreeNode = class;
   TALBaseAVLBinaryTree = class;
 
-  {iterate function--------------------------------------------------}
+  {iterate function----------------------}
   TALAVLBinaryTreeIterateFunc = procedure(
                                   aTree: TALBaseAVLBinaryTree;
                                   aNode: TALBaseAVLBinaryTreeNode;
@@ -92,7 +92,7 @@ type
     Constructor Create; Override;
   end;
 
-  {TALIntegerKeyAVLBinaryTree-------------------------}
+  {TALIntegerKeyAVLBinaryTree----------------------------}
   TALIntegerKeyAVLBinaryTree = class(TALBaseAVLBinaryTree)
   private
   protected
@@ -122,7 +122,7 @@ type
     Constructor Create; Override;
   end;
 
-  {TALCardinalKeyAVLBinaryTree-------------------------}
+  {TALCardinalKeyAVLBinaryTree----------------------------}
   TALCardinalKeyAVLBinaryTree = class(TALBaseAVLBinaryTree)
   private
   protected
@@ -182,7 +182,7 @@ type
     Constructor Create; Override;
   end;
 
-  {TALStringKeyAVLBinaryTreeCompareKeyFunct----------------------------------------------------------}
+  {TALStringKeyAVLBinaryTreeCompareKeyFunct--------------------------------------------------------------}
   TALStringKeyAVLBinaryTreeCompareKeyFunct = function (const aKey1, aKey2: AnsiString): Integer of object;
 
   {TALStringKeyAVLBinaryTree----------------------------}
@@ -217,7 +217,7 @@ uses
   System.Contnrs,
   System.sysUtils,
   System.AnsiStrings,
-  ALString;
+  Alcinoe.StringUtils;
 
 {Following stack declarations are used to avoid recursion in all tree
  routines. Because the tree is AVL-balanced, a stack size of 40

@@ -1,11 +1,11 @@
-unit ALHTML;
+unit Alcinoe.HTML;
 
 interface
 
 {$I Alcinoe.inc}
 
 uses
-  ALStringList;
+  Alcinoe.StringList;
 
 procedure ALExtractHTMLText(
             HtmlContent: AnsiString;
@@ -51,9 +51,9 @@ uses
   Winapi.Ole2,
   Winapi.ActiveX,
   {$ENDIF}
-  ALCommon,
-  ALString,
-  ALQuickSortList;
+  Alcinoe.Common,
+  Alcinoe.StringUtils,
+  Alcinoe.QuickSortList;
 
 Var
   _ALHtmlEntities: TALStringsA;

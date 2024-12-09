@@ -1,11 +1,6 @@
 //https://docwiki.embarcadero.com/RADStudio/Alexandria/en/Compiler_Versions
-{$IF (CompilerVersion <= 35.0) and (not declared(RTLVersion114))} // This mean <= Delphi Alexandria 11.3
-  //When updating this block then first create the define ALCompilerVersionSupported_TMP that
-  //is set for the current compiler version, then progressively replace in all source
-  //files ALCompilerVersionSupported by ALCompilerVersionSupported_TMP and when everything done
-  //delete ALCompilerVersionSupported_TMP from here and replace in all files ALCompilerVersionSupported_TMP
-  //by ALCompilerVersionSupported
-  {$DEFINE ALCompilerVersionSupported}
+{$IF (CompilerVersion <= 36.0) and (not declared(RTLVersion123))} // Delphi Athens 12.2
+  {$DEFINE ALCompilerVersionSupported122}
 {$ENDIF}
 
 {$IF defined(CPUX86) or defined(CPUX64)} // CPU is an Intel 386 or later on any platform.
@@ -44,12 +39,25 @@
   {$MESSAGE ERROR 'Unknown Extended type'}
 {$ENDIF}
 
-{$IF Defined(ANDROID) or defined(IOS)}
-  {$DEFINE ALUseTexture}
+{$IF Defined(SKIA)}
+  {$DEFINE ALSkiaEngine}
+  {$DEFINE ALSkiaCanvas}
+{$ELSEIF Defined(ALDPK)}
+  {$DEFINE ALSkiaEngine}
+{$ELSEIF Defined(ANDROID) or defined(IOS)}
+  {$DEFINE ALGpuCanvas}
+{$ENDIF}
+
+{$IF Defined(ALSkiaEngine)}
+  {$DEFINE ALSkiaAvailable}
 {$ENDIF}
 
 {$IF defined(MACOS) and not defined(IOS)}
   {$DEFINE ALMacOS} 
+{$ENDIF}
+
+{$IF defined(ALMacOS) or defined(IOS)}
+  {$DEFINE ALAppleOS} 
 {$ENDIF}
 
 {$IF not defined(MSWINDOWS)}
@@ -57,3 +65,7 @@
 {$ENDIF}
 
 {$SCOPEDENUMS ON}
+
+{$IF Defined(ALDPK)}
+  {$DEFINE ALBackwardCompatible}
+{$ENDIF}
