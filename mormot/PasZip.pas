@@ -36,6 +36,10 @@ unit PasZip;
    - .zip reading from file, resource or direct memory - Windows only
    - .zip write into a file (new .zip creation, not update) - Windows only
 
+   This unit is a cut-down stand-alone zip reader/writer, to be used e.g.
+   in installers or size-critical projects. Consider mormot.core.zip.pas from
+   mORMot 2 for more features, and better performance (thanks to libdeflate).
+
 }
 
 {$WARNINGS OFF}
@@ -80,6 +84,8 @@ function CompressString(const data: RawByteZip; failIfGrow: boolean = false): Ra
 /// uncompress memory using the ZLib INFLATE algorithm, checking crc32 checksum
 function UncompressString(const data: RawByteZip): RawByteZip;
 
+/// create a void .zip file
+procedure CreateVoidZip(const aFileName: TFileName);
 
 {$ifdef MSWINDOWS} { use Windows MapFile }
 
@@ -107,9 +113,6 @@ function IsCompressedFileEqual(const uncomprFile, comprFile: TFileName): boolean
 //  is set to TRUE.
 function Zip(const zip: TFileName; const files, zipAs: array of TFileName;
   NoSubDirectories: boolean = false): boolean;
-
-/// create a void .zip file
-procedure CreateVoidZip(const aFileName: TFileName);
 
 {$endif MSWINDOWS}
 
@@ -243,7 +246,7 @@ type
   // - can open a .zip archive file content from memory
   TZipRead = class
   private
-    file_, map: dword; // we use a memory mapped file to access the zip content
+    file_, map: THandle; // we use a memory mapped file to access the zip content
     buf: PByteArray;
     fZipStartOffset: cardinal;
     fShowMessageBoxOnError: boolean;
@@ -292,7 +295,7 @@ type
     fMagic: cardinal;
   public
     /// the associated file handle
-    Handle: integer;
+    Handle: THandle;
     /// the total number of entries
     Count: integer;
     /// the resulting file entries
@@ -335,6 +338,7 @@ implementation
 {$ifndef FPC}
 type
   PtrUInt = {$ifdef CPU64}NativeUInt{$else}cardinal{$endif};
+  PtrInt  = {$ifdef CPU64}NativeInt {$else}integer {$endif};
 {$endif FPC}
 
 // special tuned Move() routine, including data overlap bug correction
@@ -3796,8 +3800,27 @@ begin
     result := '';
 end;
 
+procedure CreateVoidZip(const aFileName: TFileName);
+var
+  H: THandle;
+  lhr: TLastHeader;
+begin
+  fillchar(lhr, sizeof(lhr), 0);
+  lhr.signature := $06054b50 + 1;
+  dec(lhr.signature); // +1 to avoid finding it in the exe
+  H := FileCreate(aFileName);
+  if H < 0 then
+    exit;
+  FileWrite(H, lhr, sizeof(lhr));
+  FileClose(H);
+end;
 
 {$ifdef MSWINDOWS}
+
+function ValidHandle(Handle: THandle): boolean; {$ifdef HASINLINE}inline;{$endif}
+begin
+  result := PtrInt(Handle) > 0;
+end;
 
 type
   splitInt64 = packed record
@@ -3806,8 +3829,8 @@ type
 
 function CompressFile(const srcFile, dstFile: TFileName; failIfGrow: boolean): boolean;
 var
-  sf, df: dword;
-  sm, dm: dword;
+  sf, df: THandle;
+  sm, dm: THandle;
   sb, db: pointer;
   sl, dl: int64;
   err: dword;
@@ -3817,10 +3840,10 @@ begin
   try
     sf := CreateFile(pointer(srcFile), GENERIC_READ, FILE_SHARE_READ or
       FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
-    if sf <> INVALID_HANDLE_VALUE then begin
+    if ValidHandle(sf) then begin
       df := CreateFile(pointer(dstFile), GENERIC_READ or GENERIC_WRITE, 0, nil,
         CREATE_ALWAYS, 0, 0);
-      if df <> INVALID_HANDLE_VALUE then begin
+      if ValidHandle(df) then begin
         sm := CreateFileMapping(sf, nil, PAGE_READONLY, 0, 0, nil);
         if sm <> 0 then begin
           splitInt64(sl).loCard := GetFileSize(sf, @splitInt64(sl).hiCard);
@@ -3881,8 +3904,8 @@ end;
 function UncompressFile(const srcFile, dstFile: TFileName; lastWriteTime: int64;
   attr: dword): boolean;
 var
-  sf, df: dword;
-  sm, dm: dword;
+  sf, df: THandle;
+  sm, dm: THandle;
   sb, db: pointer;
   sl, dl: int64;
   err: dword;
@@ -3893,10 +3916,10 @@ begin
     sf := CreateFile(pointer(srcFile), GENERIC_READ, FILE_SHARE_READ or
       FILE_SHARE_WRITE, nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or
       FILE_FLAG_SEQUENTIAL_SCAN, 0);
-    if sf <> INVALID_HANDLE_VALUE then begin
+    if ValidHandle(sf) then begin
       df := CreateFile(pointer(dstFile), GENERIC_READ or GENERIC_WRITE, 0, nil,
         CREATE_ALWAYS, attr or FILE_FLAG_SEQUENTIAL_SCAN, 0);
-      if df <> INVALID_HANDLE_VALUE then begin
+      if ValidHandle(df) then begin
         sm := CreateFileMapping(sf, nil, PAGE_READONLY, 0, 0, nil);
         if sm <> 0 then begin
           sb := MapViewOfFile(sm, FILE_MAP_READ, 0, 0, 0);
@@ -3962,21 +3985,22 @@ var
   crc1, crc2: dword;
 begin
   result := GetCompressedFileInfo(comprFile, size1, crc1) and
-    GetUncompressedFileInfo(uncomprFile, size2, crc2) and (size1 = size2) and
-    (crc1 = crc2);
+            GetUncompressedFileInfo(uncomprFile, size2, crc2) and
+            (size1 = size2) and
+            (crc1 = crc2);
 end;
 
 function GetCompressedFileInfo(const comprFile: TFileName; var size: int64;
   var crc32: dword): boolean;
 var
-  file_: dword;
+  file_: THandle;
   c1: dword;
 begin
   result := false;
   crc32 := 0;
   file_ := CreateFile(pointer(comprFile), GENERIC_READ, FILE_SHARE_READ or
     FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
-  if file_ <> INVALID_HANDLE_VALUE then begin
+  if ValidHandle(file_) then begin
     result := ReadFile(file_, size, 8, c1, nil) and (c1 = 8) and ReadFile(file_,
       crc32, 4, c1, nil) and (c1 = 4);
     CloseHandle(file_);
@@ -3986,13 +4010,13 @@ end;
 function GetUncompressedFileInfo(const uncomprFile: TFileName; var size: int64;
   var crc32: dword): boolean;
 var
-  file_, map: dword;
+  file_, map: THandle;
   buf: pointer;
 begin
   result := false;
   file_ := CreateFile(pointer(uncomprFile), GENERIC_READ, FILE_SHARE_READ or
     FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
-  if file_ <> INVALID_HANDLE_VALUE then begin
+  if ValidHandle(file_) then begin
     splitInt64(size).loCard := GetFileSize(file_, @splitInt64(size).hiCard);
     map := CreateFileMapping(file_, nil, PAGE_READONLY, 0, 0, nil);
     if map <> 0 then begin
@@ -4049,18 +4073,16 @@ end;
 
 
 {$ifdef MSWINDOWS}
+
 function Zip(const zip: TFileName; const files, zipAs: array of TFileName;
   NoSubDirectories: boolean = false): boolean;
 var
   i1, i2, i3: integer;
-  dstFh: dword;
-  srcFh: dword;
+  dstFh, srcFh: THandle;
   ft: TFileTime;
-  c1: dword;
+  c1, size: dword;
   lfhr: TLocalFileHeader;
-  srcBuf: pointer;
-  dstBuf: pointer;
-  size: dword;
+  srcBuf, dstBuf: pointer;
   zipRec: array of record
     name: TZipName;
     fhr: TFileHeader;
@@ -4068,7 +4090,7 @@ var
   lhr: TLastHeader;
 begin
   dstFh := CreateFile(pointer(zip), GENERIC_WRITE, 0, nil, CREATE_ALWAYS, 0, 0);
-  result := dstFh <> INVALID_HANDLE_VALUE;
+  result := ValidHandle(dstFh);
   if result then begin
     SetLength(zipRec, Length(files));
     i2 := 0;
@@ -4087,7 +4109,7 @@ begin
           name := TZipName(zipAs[i1]);
         srcFh := CreateFile(pointer(files[i1]), GENERIC_READ, FILE_SHARE_READ,
           nil, OPEN_EXISTING, 0, 0);
-        if srcFh <> INVALID_HANDLE_VALUE then begin
+        if ValidHandle(srcFh) then begin
           size := GetFileSize(srcFh, nil);
           srcBuf := pointer(LocalAlloc(LPTR, size));
           if srcBuf <> nil then begin
@@ -4170,21 +4192,6 @@ begin
   end;
 end;
 
-procedure CreateVoidZip(const aFileName: TFileName);
-var
-  H: THandle;
-  lhr: TLastHeader;
-begin
-  fillchar(lhr, sizeof(lhr), 0);
-  lhr.signature := $06054b50 + 1;
-  dec(lhr.signature); // +1 to avoid finding it in the exe
-  H := FileCreate(aFileName);
-  if H < 0 then
-    exit;
-  FileWrite(H, lhr, sizeof(lhr));
-  FileClose(H);
-end;
-
 {$endif MSWINDOWS}
 
 {$ifdef DYNAMIC_CRC_TABLE}
@@ -4228,6 +4235,7 @@ begin // this code is 49 bytes long, generating a 1KB table
   end;
 end;
 {$endif}
+
 
 {$ifdef MSWINDOWS}
 
@@ -4313,7 +4321,7 @@ begin
   fShowMessageBoxOnError := ShowMessageBoxOnError;
   file_ := CreateFile(pointer(aFileName), GENERIC_READ, FILE_SHARE_READ, nil,
     OPEN_EXISTING, 0, 0);
-  if file_ = INVALID_HANDLE_VALUE then
+  if not ValidHandle(file_) then
     exit; // file doesn't exist -> leave no Entry[] (Count=0)
   if Size = 0 then
     Size := GetFileSize(file_, nil);
@@ -4344,13 +4352,13 @@ end;
 procedure TZipRead.UnMap;
 begin
   Count := 0;
-  if file_ <> INVALID_HANDLE_VALUE then begin
+  if ValidHandle(file_) then begin
     if map <> 0 then begin
       UnmapViewOfFile(Buf);
       CloseHandle(map);
     end;
     CloseHandle(file_);
-    file_ := INVALID_HANDLE_VALUE;
+    file_ := 0;
   end;
   Buf := nil;
 end;
@@ -4452,7 +4460,7 @@ begin
     DestPath := DestPath + '\';
   F := CreateFile(pointer(DestPath + Entry[aIndex].Name), GENERIC_READ,
     FILE_SHARE_READ, nil, OPEN_EXISTING, 0, 0);
-  if F <> INVALID_HANDLE_VALUE then
+  if ValidHandle(F) then
     with Entry[aIndex] do
     try
       Size := GetFileSize(F, nil);
@@ -4507,7 +4515,7 @@ begin
 {$endif}
     f := DestPath + n;
     H := FileOpen(f, fmOpenRead);
-    if H <> INVALID_HANDLE_VALUE then begin
+    if ValidHandle(H) then begin
       GetFileTime(H, nil, nil, @fFileTime);
       FileTimeToLocalFileTime(fFileTime, fFileTime);
       fFileSize := GetFileSize(H, nil);
@@ -4523,7 +4531,7 @@ begin
     end;
     ForceDirectories(ExtractFileDir(f));
     H := FileCreate(f);
-    if H <> INVALID_HANDLE_VALUE then
+    if ValidHandle(H) then
     try
       if info^.zZipMethod = 0 then begin // stored method
         if info^.zcrc32 <> not UpdateCrc32(dword(-1), data, info^.zfullSize) then
@@ -4570,7 +4578,7 @@ var
   tmp: pointer;
   tmpsize: integer;
 begin
-  if (self = nil) or (Handle = 0) or (Handle < 0) then
+  if (self = nil) or not ValidHandle(Handle) then
     exit;
   if Count >= length(Entry) then
     SetLength(Entry, length(Entry) + 20);
@@ -4611,26 +4619,31 @@ var
   FileTime: LongRec;
 begin
   H := FileOpen(aFileName, fmOpenRead or fmShareDenyNone);
-  if H = INVALID_HANDLE_VALUE then
-    exit;
-  if RemovePath then
-    ZipName := TZipName(ExtractFileName(aFileName))
-  else
-    ZipName := TZipName(aFileName);
-  GetFileTime(H, nil, nil, @Time);
-  FileTimeToLocalFileTime(Time, Time);
-  FileTimeToDosDateTime(Time, FileTime.Hi, FileTime.Lo);
-  Size := GetFileSize(H, nil);
-  getmem(buf, Size);
-  FileRead(H, buf^, Size);
-  AddDeflated(ZipName, buf, size, CompressLevel, integer(FileTime));
-  freemem(buf);
-  FileClose(H);
+  if ValidHandle(H) then
+  try
+    if RemovePath then
+      ZipName := TZipName(ExtractFileName(aFileName))
+    else
+      ZipName := TZipName(aFileName);
+    GetFileTime(H, nil, nil, @Time);
+    FileTimeToLocalFileTime(Time, Time);
+    FileTimeToDosDateTime(Time, FileTime.Hi, FileTime.Lo);
+    Size := GetFileSize(H, nil);
+    getmem(buf, Size);
+    try
+      FileRead(H, buf^, Size);
+      AddDeflated(ZipName, buf, size, CompressLevel, integer(FileTime));
+    finally
+      freemem(buf);
+    end;
+  finally
+    FileClose(H);
+  end;
 end;
 
 procedure TZipWrite.AddFromZip(const ZipEntry: TZipEntry);
 begin
-  if (self = nil) or (Handle = 0) or (Handle = integer(INVALID_HANDLE_VALUE)) then
+  if (self = nil) or not ValidHandle(Handle) then
     exit;
   if Count >= length(Entry) then
     SetLength(Entry, length(Entry) + 20);
@@ -4655,7 +4668,7 @@ end;
 procedure TZipWrite.AddStored(const aZipName: TZipName; Buf: pointer; Size,
   FileAge: integer);
 begin
-  if (self = nil) or (Handle = 0) or (Handle = integer(INVALID_HANDLE_VALUE)) then
+  if (self = nil) or not ValidHandle(Handle) then
     exit;
   if Count >= length(Entry) then
     SetLength(Entry, length(Entry) + 20);
@@ -4683,7 +4696,7 @@ end;
 
 procedure TZipWrite.Append(const Content: RawByteZip);
 begin
-  if (self = nil) or (Handle = 0) or (Handle = integer(INVALID_HANDLE_VALUE)) or
+  if (self = nil) or not ValidHandle(Handle) or
     (fAppendOffset <> 0) then
     exit;
   fAppendOffset := length(Content);

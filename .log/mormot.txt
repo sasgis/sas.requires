@@ -1,3 +1,52 @@
+commit f35fb0f6568dd748718f85688fdf42bfa426bd46
+Merge: 9fd6c984 f499f632
+Author: ab <webcontact01@synopse.info>
+Date:   2025-03-03 17:00:08 +0100
+
+    Merge pull request #460 from SteveNew/master
+    
+    Increased buffer in GetHeader due to token length
+
+commit f499f6324ace5a198cdbdb54819e1b17c4463302
+Author: Steffen Nyeland <sn@ivt2.com>
+Date:   2025-03-03 15:50:20 +0100
+
+    Increased buffer in GetHeader due to token length
+
+commit 9fd6c984555befaa450ad241eaa79121f8abd1c3
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-12-10 12:46:45 +0100
+
+    some missing THandle definitions in PasZip
+    - as reported by https://github.com/synopse/mORMot/pull/459
+
+commit 4fe8e8ddd853bf866455d6c3dc783b26d4226245
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-12-09 09:58:13 +0100
+
+    another pass on PasZip for Win64 compatibility
+    - see https://github.com/synopse/mORMot/issues/458
+
+commit f7372b8018f7d45aceed1bd619f703b5f969940c
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-12-02 12:31:19 +0100
+
+    fixed PasZip on Win64
+    - as reported by https://github.com/synopse/mORMot/issues/458
+
+commit b385c61684c1473729257bb20bf716b429a857e9
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-10-16 12:17:38 +0200
+
+    fixed Delphi compilation
+
+commit 1098c7d413a8daf777c77e49f1066300fb71543c
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2024-10-16 11:15:17 +0200
+
+    updated SQLite3 engine to 3.46.1
+    - also uploaded mormot2static.7z/tgz files to synopse.info/files
+
 commit f7b3e87ae633bcf2ab6e53c0b3a2b25fa2ef91fc
 Author: Arnaud Bouchez <ab@synopse.info>
 Date:   2024-10-14 13:28:32 +0200

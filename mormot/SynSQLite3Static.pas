@@ -1,4 +1,4 @@
-/// SQLite3 3.44.2 Database engine - statically linked for Windows/Linux
+/// SQLite3 3.46.1 Database engine - statically linked for Windows/Linux
 // - this unit is a part of the freeware Synopse mORMot framework,
 // licensed under a MPL/GPL/LGPL tri-license; version 1.18
 unit SynSQLite3Static;
@@ -47,7 +47,7 @@ unit SynSQLite3Static;
   ***** END LICENSE BLOCK *****
 
 
-    Statically linked SQLite3 3.44.2 engine with optional AES encryption
+    Statically linked SQLite3 3.46.1 engine with optional AES encryption
    **********************************************************************
 
   To be declared in your project uses clause:  will fill SynSQlite3.sqlite3
@@ -473,6 +473,32 @@ end;
 function fabs(x: double): double; cdecl; // needed since 3.44.2
 begin
   result := abs(x);
+end;
+
+function strchr(p: PAnsiChar; chr: AnsiChar): PAnsiChar; cdecl;
+begin // needed since 3.46.1
+  result := nil;
+  if p <> nil then
+    while p^ <> chr do
+      if p^ = #0 then
+        exit // not found
+      else
+        inc(p);
+  result := p;
+end;
+
+function memchr(p: pointer; chr: byte; n: PtrInt): PAnsiChar; cdecl;
+var
+  i: PtrInt;
+begin // needed since 3.46.1
+  result := p;
+  if p = nil then
+    exit;
+  i := ByteScanIndex(p, n, chr);
+  if i >= 0 then
+    inc(result, i)
+  else
+    result := nil; // not found
 end;
 {$endif CPU32}
 {$endif MSWINDOWS}
@@ -1161,7 +1187,7 @@ function sqlite3_trace_v2(DB: TSQLite3DB; Mask: integer; Callback: TSQLTraceCall
 const
   // error message if statically linked sqlite3.o(bj) does not match this
   // - Android may be a little behind, so we don't check exact version
-  EXPECTED_SQLITE3_VERSION = {$ifdef ANDROID}''{$else}'3.44.2'{$endif};
+  EXPECTED_SQLITE3_VERSION = {$ifdef ANDROID}''{$else}'3.46.1'{$endif};
 
 constructor TSQLite3LibraryStatic.Create;
 var error: RawUTF8;
