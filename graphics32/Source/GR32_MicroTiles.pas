@@ -48,13 +48,12 @@ interface
 {-$DEFINE CODESITE_HIGH}
 
 uses
-{$ifdef MSWINDOWS}
-  Windows,
-{$ENDIF}
 {$IFDEF CODESITE}
   CSIntf, CSAux,
 {$ENDIF}
+{$if defined(UseInlining)}
   Types,
+{$ifend}
   SysUtils, Classes,
   GR32,
   GR32_System,
@@ -1667,26 +1666,22 @@ end;
 
 {$ENDIF}
 
-const
-  FID_MICROTILEUNION = 0;
-  FID_MICROTILESUNION = 1;
-
 var
   Registry: TFunctionRegistry;
 
 procedure RegisterBindings;
 begin
   Registry := NewRegistry('GR32_MicroTiles bindings');
-  Registry.RegisterBinding(FID_MICROTILEUNION, @@MicroTileUnion);
-  Registry.RegisterBinding(FID_MICROTILESUNION, @@MicroTilesU);
+  Registry.RegisterBinding(@@MicroTileUnion, 'MicroTileUnion');
+  Registry.RegisterBinding(@@MicroTilesU, 'MicroTilesU');
 
-  Registry.Add(FID_MICROTILEUNION, @MicroTileUnion_Pas, [isPascal]);
-  Registry.Add(FID_MICROTILESUNION, @MicroTilesUnion_Pas, [isPascal]);
+  Registry[@@MicroTileUnion].Add(       @MicroTileUnion_Pas,    [isPascal]).Name := 'MicroTileUnion_Pas';
+  Registry[@@MicroTilesU].Add(          @MicroTilesUnion_Pas,   [isPascal]).Name := 'MicroTilesUnion_Pas';
 
   // TODO : rewrite MMX implementations using SSE
 {$if (not defined(PUREPASCAL)) and (not defined(OMIT_MMX)) and defined(TARGET_x86)}
-  Registry.Add(FID_MICROTILEUNION, @MicroTileUnion_EMMX, [isExMMX]);
-  Registry.Add(FID_MICROTILESUNION, @MicroTilesUnion_EMMX, [isExMMX]);
+  Registry[@@MicroTileUnion].Add(       @MicroTileUnion_EMMX,   [isExMMX]).Name := 'MicroTileUnion_EMMX';
+  Registry[@@MicroTilesU].Add(          @MicroTilesUnion_EMMX,  [isExMMX]).Name := 'MicroTilesUnion_EMMX';
 {$ifend}
 
   Registry.RebindAll;

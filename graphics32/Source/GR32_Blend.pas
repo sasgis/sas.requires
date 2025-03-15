@@ -311,7 +311,9 @@ const
 //
 //------------------------------------------------------------------------------
 type
-  TLUT88 = array [Byte, Byte] of Byte;
+  TLUT8 = array[byte] of byte;
+  PLUT8 = ^TLUT8;
+  TLUT88 = array [byte] of TLUT8;
 
 var
   //
@@ -462,12 +464,16 @@ var
 begin
   for j := 0 to 255 do
   begin
-    MulDiv255Table[0, j] := 0;
-    DivMul255Table[0, j] := 0;
-
-    for i := 1 to 255 do
+    for i := j to 255 do
     begin
       MulDiv255Table[i, j] := Round(i * j * COne255th);
+      if (i <> j) then
+        MulDiv255Table[j, i] := MulDiv255Table[i, j]; // a*b = b*a
+    end;
+
+    DivMul255Table[0, j] := 0;
+    for i := 1 to 255 do
+    begin
       if i > j then
         DivMul255Table[i, j] := Round(j * 255 / i)
       else
@@ -510,50 +516,50 @@ end;
 //------------------------------------------------------------------------------
 procedure RegisterBindings;
 begin
-  BlendRegistry.RegisterBinding(FID_BLENDREG,           @@BlendReg);
-  BlendRegistry.RegisterBinding(FID_BLENDMEM,           @@BlendMem);
-  BlendRegistry.RegisterBinding(FID_BLENDMEMS,          @@BlendMems);
-  BlendRegistry.RegisterBinding(FID_BLENDLINE,          @@BlendLine);
-  BlendRegistry.RegisterBinding(FID_BLENDREGEX,         @@BlendRegEx);
-  BlendRegistry.RegisterBinding(FID_BLENDMEMEX,         @@BlendMemEx);
-  BlendRegistry.RegisterBinding(FID_BLENDLINEEX,        @@BlendLineEx);
-  BlendRegistry.RegisterBinding(FID_BLENDREGRGB,        @@BlendRegRGB);
-  BlendRegistry.RegisterBinding(FID_BLENDMEMRGB,        @@BlendMemRGB);
+  BlendRegistry.RegisterBinding(FID_BLENDREG,           @@BlendReg,     'BlendReg');
+  BlendRegistry.RegisterBinding(FID_BLENDMEM,           @@BlendMem,     'BlendMem');
+  BlendRegistry.RegisterBinding(FID_BLENDMEMS,          @@BlendMems,    'BlendMems');
+  BlendRegistry.RegisterBinding(FID_BLENDLINE,          @@BlendLine,    'BlendLine');
+  BlendRegistry.RegisterBinding(FID_BLENDREGEX,         @@BlendRegEx,   'BlendRegEx');
+  BlendRegistry.RegisterBinding(FID_BLENDMEMEX,         @@BlendMemEx,   'BlendMemEx');
+  BlendRegistry.RegisterBinding(FID_BLENDLINEEX,        @@BlendLineEx,  'BlendLineEx');
+  BlendRegistry.RegisterBinding(FID_BLENDREGRGB,        @@BlendRegRGB,  'BlendRegRGB');
+  BlendRegistry.RegisterBinding(FID_BLENDMEMRGB,        @@BlendMemRGB,  'BlendMemRGB');
 {$IFDEF TEST_BLENDMEMRGB128SSE4}
-  BlendRegistry.RegisterBinding(FID_BLENDMEMRGB128,     @@BlendMemRGB128);
+  BlendRegistry.RegisterBinding(FID_BLENDMEMRGB128,     @@BlendMemRGB128, 'BlendMemRGB128');
 {$ENDIF}
 
-  BlendRegistry.RegisterBinding(FID_MERGEREG,           @@MergeReg);
-  BlendRegistry.RegisterBinding(FID_MERGEMEM,           @@MergeMem);
-  BlendRegistry.RegisterBinding(FID_MERGEMEMS,          @@MergeMems);
-  BlendRegistry.RegisterBinding(FID_MERGELINE,          @@MergeLine);
-  BlendRegistry.RegisterBinding(FID_MERGEREGEX,         @@MergeRegEx);
-  BlendRegistry.RegisterBinding(FID_MERGEMEMEX,         @@MergeMemEx);
-  BlendRegistry.RegisterBinding(FID_MERGELINEEX,        @@MergeLineEx);
+  BlendRegistry.RegisterBinding(FID_MERGEREG,           @@MergeReg,     'MergeReg');
+  BlendRegistry.RegisterBinding(FID_MERGEMEM,           @@MergeMem,     'MergeMem');
+  BlendRegistry.RegisterBinding(FID_MERGEMEMS,          @@MergeMems,    'MergeMems');
+  BlendRegistry.RegisterBinding(FID_MERGELINE,          @@MergeLine,    'MergeLine');
+  BlendRegistry.RegisterBinding(FID_MERGEREGEX,         @@MergeRegEx,   'MergeRegEx');
+  BlendRegistry.RegisterBinding(FID_MERGEMEMEX,         @@MergeMemEx,   'MergeMemEx');
+  BlendRegistry.RegisterBinding(FID_MERGELINEEX,        @@MergeLineEx,  'MergeLineEx');
 
-  BlendRegistry.RegisterBinding(FID_COMBINEREG,         @@CombineReg);
-  BlendRegistry.RegisterBinding(FID_COMBINEMEM,         @@CombineMem);
-  BlendRegistry.RegisterBinding(FID_COMBINELINE,        @@CombineLine);
+  BlendRegistry.RegisterBinding(FID_COMBINEREG,         @@CombineReg,   'CombineReg');
+  BlendRegistry.RegisterBinding(FID_COMBINEMEM,         @@CombineMem,   'CombineMem');
+  BlendRegistry.RegisterBinding(FID_COMBINELINE,        @@CombineLine,  'CombineLine');
 
-  BlendRegistry.RegisterBinding(FID_COLORMAX,           @@ColorMax);
-  BlendRegistry.RegisterBinding(FID_COLORMIN,           @@ColorMin);
-  BlendRegistry.RegisterBinding(FID_COLORAVERAGE,       @@ColorAverage);
-  BlendRegistry.RegisterBinding(FID_COLORADD,           @@ColorAdd);
-  BlendRegistry.RegisterBinding(FID_COLORSUB,           @@ColorSub);
-  BlendRegistry.RegisterBinding(FID_COLORDIV,           @@ColorDiv);
-  BlendRegistry.RegisterBinding(FID_COLORMODULATE,      @@ColorModulate);
-  BlendRegistry.RegisterBinding(FID_COLORDIFFERENCE,    @@ColorDifference);
-  BlendRegistry.RegisterBinding(FID_COLOREXCLUSION,     @@ColorExclusion);
-  BlendRegistry.RegisterBinding(FID_COLORSCALE,         @@ColorScale);
-  BlendRegistry.RegisterBinding(FID_COLORSCREEN,        @@ColorScreen);
-  BlendRegistry.RegisterBinding(FID_COLORDODGE,         @@ColorDodge);
-  BlendRegistry.RegisterBinding(FID_COLORBURN,          @@ColorBurn);
+  BlendRegistry.RegisterBinding(FID_COLORMAX,           @@ColorMax,     'ColorMax');
+  BlendRegistry.RegisterBinding(FID_COLORMIN,           @@ColorMin,     'ColorMin');
+  BlendRegistry.RegisterBinding(FID_COLORAVERAGE,       @@ColorAverage, 'ColorAverage');
+  BlendRegistry.RegisterBinding(FID_COLORADD,           @@ColorAdd,     'ColorAdd');
+  BlendRegistry.RegisterBinding(FID_COLORSUB,           @@ColorSub,     'ColorSub');
+  BlendRegistry.RegisterBinding(FID_COLORDIV,           @@ColorDiv,     'ColorDiv');
+  BlendRegistry.RegisterBinding(FID_COLORMODULATE,      @@ColorModulate, 'ColorModulate');
+  BlendRegistry.RegisterBinding(FID_COLORDIFFERENCE,    @@ColorDifference, 'ColorDifference');
+  BlendRegistry.RegisterBinding(FID_COLOREXCLUSION,     @@ColorExclusion, 'ColorExclusion');
+  BlendRegistry.RegisterBinding(FID_COLORSCALE,         @@ColorScale,   'ColorScale');
+  BlendRegistry.RegisterBinding(FID_COLORSCREEN,        @@ColorScreen,  'ColorScreen');
+  BlendRegistry.RegisterBinding(FID_COLORDODGE,         @@ColorDodge,   'ColorDodge');
+  BlendRegistry.RegisterBinding(FID_COLORBURN,          @@ColorBurn,    'ColorBurn');
 
-  BlendRegistry.RegisterBinding(FID_BLENDCOLORADD,      @@BlendColorAdd);
-  BlendRegistry.RegisterBinding(FID_BLENDCOLORMODULATE, @@BlendColorModulate);
+  BlendRegistry.RegisterBinding(FID_BLENDCOLORADD,      @@BlendColorAdd, 'BlendColorAdd');
+  BlendRegistry.RegisterBinding(FID_BLENDCOLORMODULATE, @@BlendColorModulate, 'BlendColorModulate');
 
-  BlendRegistry.RegisterBinding(FID_LIGHTEN,            @@LightenReg);
-  BlendRegistry.RegisterBinding(@@ScaleMems);
+  BlendRegistry.RegisterBinding(FID_LIGHTEN,            @@LightenReg,   'LightenReg');
+  BlendRegistry.RegisterBinding(@@ScaleMems,                            'ScaleMems');
 end;
 
 var

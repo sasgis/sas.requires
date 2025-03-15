@@ -1426,18 +1426,18 @@ end;
 {$IFNDEF PUREPASCAL}
 procedure RegisterBindingFunctions;
 begin
-  BlendRegistry.Add(FID_COMBINEREG,     @CombineReg_ASM,        [isAssembler]);
-  BlendRegistry.Add(FID_COMBINEMEM,     @CombineMem_ASM,        [isAssembler]);
-  BlendRegistry.Add(FID_BLENDREG,       @BlendReg_ASM,          [isAssembler]);
-  BlendRegistry.Add(FID_BLENDMEM,       @BlendMem_ASM,          [isAssembler]);
-  BlendRegistry.Add(FID_BLENDMEMS,      @BlendMems_ASM,         [isAssembler]);
-  BlendRegistry.Add(FID_BLENDREGEX,     @BlendRegEx_ASM,        [isAssembler]);
+  BlendRegistry[@@CombineReg].Add(      @CombineReg_ASM,        [isAssembler]).Name := 'CombineReg_ASM';
+  BlendRegistry[@@CombineMem].Add(      @CombineMem_ASM,        [isAssembler]).Name := 'CombineMem_ASM';
+  BlendRegistry[@@BlendReg].Add(        @BlendReg_ASM,          [isAssembler]).Name := 'BlendReg_ASM';
+  BlendRegistry[@@BlendMem].Add(        @BlendMem_ASM,          [isAssembler]).Name := 'BlendMem_ASM';
+  BlendRegistry[@@BlendMems].Add(       @BlendMems_ASM,         [isAssembler]).Name := 'BlendMems_ASM';
+  BlendRegistry[@@BlendRegEx].Add(      @BlendRegEx_ASM,        [isAssembler]).Name := 'BlendRegEx_ASM';
 {$IFDEF TARGET_X86}
-  BlendRegistry.Add(FID_BLENDMEMEX,     @BlendMemEx_ASM,        [isAssembler]); // Implemented on x64 but broken
+  BlendRegistry[@@BlendMemEx].Add(      @BlendMemEx_ASM,        [isAssembler]).Name := 'BlendMemEx_ASM'; // Implemented on x64 but broken
 {$ENDIF}
-  BlendRegistry.Add(FID_BLENDLINE,      @BlendLine_ASM,         [isAssembler]);
+  BlendRegistry[@@BlendLine].Add(       @BlendLine_ASM,         [isAssembler]).Name := 'BlendLine_ASM';
 {$IFNDEF TARGET_x64}
-  BlendRegistry.Add(FID_MERGEREG,       @MergeReg_ASM,          [isAssembler]);
+  BlendRegistry[@@MergeReg].Add(        @MergeReg_ASM,          [isAssembler]).Name := 'MergeReg_ASM';
 {$ENDIF}
 end;
 {$ENDIF}

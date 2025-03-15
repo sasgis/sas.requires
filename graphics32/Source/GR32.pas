@@ -48,7 +48,7 @@ uses
   WinApi.Windows,
   {$ifend}
   VCL.Graphics,
-  VCL.Controls,
+  VCL.Controls, // Required by DrawTo(TControlCanvas)
 {$elseif defined(FRAMEWORK_FMX)}
   {$if defined(MSWINDOWS) and not defined(PLATFORM_INDEPENDENT)}
   WinApi.Windows,
@@ -351,7 +351,7 @@ type
   PFloat = ^TFloat;
   TFloat = Single;
 
-{ Other dynamic arrays }
+{ Various arrays }
 type
   PByteArray = ^TByteArray;
   TByteArray = array [0..0] of Byte;
@@ -391,10 +391,11 @@ const
   // Fixed point math constants
   FixedOne = $10000;
   FixedHalf = $7FFF;
-  FixedPI  = Round(PI * FixedOne);
-  FixedToFloat = 1 / FixedOne;
+  FixedPI: Double = Round(PI * FixedOne);
+  FixedToFloat: Double = 1 / FixedOne;
 
-  COne255th = 1 / $FF;
+  COne255th: Double = 1 / $FF;
+
 
 function Fixed(S: Single): TFixed; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
 function Fixed(I: Integer): TFixed; overload; {$IFDEF USEINLINING} inline; {$ENDIF}
@@ -536,6 +537,23 @@ type
   TRect = {$ifndef FPC}System.{$endif}Types.TRect;
   PRect = {$ifndef FPC}System.{$endif}Types.PRect;
 
+
+{$IFDEF SupportsBoost}
+  (*$HPPEMIT '#include <boost/strong_typedef.hpp>'*)
+{$ENDIF}
+  (*$HPPEMIT 'namespace Gr32 {'*)
+{$IFDEF SupportsBoost}
+  (*$HPPEMIT 'BOOST_STRONG_TYPEDEF(int, TFixed)'*)
+{$ELSE}
+  (*$HPPEMIT 'typedef int TFixed;'*)
+{$ENDIF}
+  (*$HPPEMIT 'struct TFixedPoint { float X, Y; }; typedef struct TFixedPoint TFixedPoint;'*)
+{$if not defined(HAS_TRECTF)}
+  (*$HPPEMIT 'struct TFloatRect { float Left, Top, Right, Bottom; }; typedef struct TFloatRect TFloatRect;'*)
+{$ifend}
+  (*$HPPEMIT 'struct TFixedRect { TFixed Left, Top, Right, Bottom; }; typedef struct TFixedRect TFixedRect;'*)
+  (*$HPPEMIT '} // namespace Gr32 '*)
+
 //------------------------------------------------------------------------------
 // TFloatRect
 //------------------------------------------------------------------------------
@@ -550,19 +568,6 @@ type
 {$else}
 
   {$NODEFINE TFloatRect}
-{$IFDEF SupportsBoost}
-  (*$HPPEMIT '#include <boost/strong_typedef.hpp>'*)
-{$ENDIF}
-  (*$HPPEMIT 'namespace Gr32 {'*)
-{$IFDEF SupportsBoost}
-  (*$HPPEMIT 'BOOST_STRONG_TYPEDEF(int, TFixed)'*)
-{$ELSE}
-  (*$HPPEMIT 'typedef int TFixed;'*)
-{$ENDIF}
-  (*$HPPEMIT 'struct TFixedPoint { float X, Y; }; typedef struct TFixedPoint TFixedPoint;'*)
-  (*$HPPEMIT 'struct TFloatRect { float Left, Top, Right, Bottom; }; typedef struct TFloatRect TFloatRect;'*)
-  (*$HPPEMIT 'struct TFixedRect { TFixed Left, Top, Right, Bottom; }; typedef struct TFixedRect TFixedRect;'*)
-  (*$HPPEMIT '} // namespace Gr32 '*)
 
   TFloatRect = packed record
   private
@@ -990,8 +995,8 @@ type
     procedure DrawTo(Dst: TCustomBitmap32; const DstRect: TRect); overload;
     procedure DrawTo(Dst: TCustomBitmap32; const DstRect, SrcRect: TRect); overload;
 
-    procedure SetStipple(NewStipple: TArrayOfColor32); overload;
-    procedure SetStipple(NewStipple: array of TColor32); overload;
+    procedure SetStipple(const NewStipple: TArrayOfColor32); overload;
+    procedure SetStipple(const NewStipple: array of TColor32); overload;
     procedure AdvanceStippleCounter(LengthPixels: Single);
     function  GetStippleColor: TColor32;
 
@@ -1165,7 +1170,7 @@ type
     function  TextHeight(const Text: string): Integer;
     function  TextWidth(const Text: string): Integer;
     procedure RenderText(X, Y: Integer; const Text: string; AALevel: Integer; Color: TColor32); overload; deprecated 'Use RenderText(...; AntiAlias: boolean) or TCanvas32.RenderText(...) instead';
-    procedure RenderText(X, Y: Integer; const Text: string; Color: TColor32; AntiAlias: boolean); overload; deprecated 'Use Bitmap.Font.Quality to set anti-aliasing instead';
+    procedure RenderText(X, Y: Integer; const Text: string; Color: TColor32; AntiAlias: boolean); overload; //deprecated 'Use Bitmap.Font.Quality to set anti-aliasing instead';
     procedure RenderText(X, Y: Integer; const Text: string; Color: TColor32); overload;
 
     property  Canvas: TCanvas read GetCanvas;
@@ -1299,13 +1304,7 @@ resourcestring
 implementation
 
 uses
-{$if defined(FRAMEWORK_VCL)}
-  Vcl.Clipbrd,
-{$elseif defined(FRAMEWORK_FMX)}
-  Fmx.Clipboard,
-{$elseif defined(FRAMEWORK_LCL)}
-  Clipbrd,
-{$ifend}
+  GR32.Types.SIMD,
   GR32_Blend,
   GR32_LowLevel,
   GR32_System,
@@ -3795,18 +3794,18 @@ begin
 end;
 
 
-procedure TCustomBitmap32.SetStipple(NewStipple: TArrayOfColor32);
+procedure TCustomBitmap32.SetStipple(const NewStipple: TArrayOfColor32);
 begin
   FStippleCounter := 0;
-  FStipplePattern := Copy(NewStipple, 0, Length(NewStipple));
+  FStipplePattern := Copy(NewStipple);
 end;
 
-procedure TCustomBitmap32.SetStipple(NewStipple: array of TColor32);
+procedure TCustomBitmap32.SetStipple(const NewStipple: array of TColor32);
 var
   L: Integer;
 begin
   FStippleCounter := 0;
-  L := High(NewStipple) + 1;
+  L := Length(NewStipple);
   SetLength(FStipplePattern, L);
   MoveLongword(NewStipple[0], FStipplePattern[0], L);
 end;
@@ -3843,13 +3842,15 @@ begin
   Result := Round($FF * (Value - PrevIndex));
 end;
 
-function FastPrevWeight_SSE41(Value: TFloat; PrevIndex: Cardinal): Cardinal; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
+function FastPrevWeight_SSE41(Value: TFloat; PrevIndex: Cardinal): Cardinal; {$IFDEF FPC} assembler; {$ENDIF}
 // Note: roundss is a SSE4.1 instruction
-const
-  ROUND_MODE = $08 + $00; // $00=Round, $01=Floor, $02=Ceil, $03=Trunc
 const
   Float255 : TFloat = 255.0;
 asm
+{$if (not defined(FPC)) and (defined(TARGET_X64))}
+        .NOFRAME
+{$ifend}
+
 {$if defined(TARGET_x86)}
         MOVSS   xmm0, Value
 {$ifend}
@@ -3857,12 +3858,12 @@ asm
 
         SUBSS   xmm0, xmm1
 {$if (not defined(FPC)) or (not defined(TARGET_X64))}
-        MULSS   xmm0, Float255
+        MULSS   xmm0, DWORD PTR [Float255]
 {$else}
         MULSS   xmm0, [rip+Float255].DWORD
 {$ifend}
 
-        ROUNDSS xmm0, xmm0, ROUND_MODE
+        ROUNDSS xmm0, xmm0, SSE_ROUND.TO_NEAREST_INT + SSE_ROUND.NO_EXC
         CVTSS2SI eax, xmm0
 end;
 
@@ -7864,7 +7865,7 @@ end;
 procedure RegisterBindings;
 begin
 {$if (not defined(PUREPASCAL)) and (not defined(OMIT_SSE2))}
-  GeneralRegistry.RegisterBinding(@@FastPrevWeight);
+  GeneralRegistry.RegisterBinding(@@FastPrevWeight, 'FastPrevWeight');
 {$ifend}
 end;
 
@@ -7890,8 +7891,8 @@ procedure RegisterBindingFunctions;
 begin
 {$if (not defined(PUREPASCAL)) and (not defined(OMIT_SSE2))}
   // For PUREPASCAL FastPrevWeight is inlined and thus doesn't use the binding system
-  GeneralRegistry.Add(@@FastPrevWeight, @FastPrevWeight_Pas,    [isPascal]);
-  GeneralRegistry.Add(@@FastPrevWeight, @FastPrevWeight_SSE41,  [isSSE41]);
+  GeneralRegistry[@@FastPrevWeight].Add(@FastPrevWeight_Pas,    [isPascal]);
+  GeneralRegistry[@@FastPrevWeight].Add(@FastPrevWeight_SSE41,  [isSSE41]);
 {$ifend}
 end;
 

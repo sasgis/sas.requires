@@ -1,3 +1,855 @@
+commit 5d8247909fa4b481fb611c050ed8024755855dcd
+Author: zed <starmen@tut.by>
+Date:   2025-03-15 11:54:50 +0300
+
+    Disable warning about deprecated function
+
+commit e2ebc6af8b4185b2c6e91012b1445d2730d3b3ea
+Merge: 4dc4b332 bd83dd72
+Author: zed <starmen@tut.by>
+Date:   2025-03-15 11:49:34 +0300
+
+    Merge branch 'master' into sasgis
+
+commit bd83dd72aa74a5db00a8d9f56b97f73e65b3f558
+Merge: a32484d0 6c4bc1d6
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-13 11:29:49 +0100
+
+    Merge branch 'VPR2-fixes'
+    
+    # Conflicts:
+    #       Examples/Drawing/AntiAliasing/MainUnit.pas
+    #       Source/GR32.Blend.SSE2.pas
+    #       Source/GR32.pas
+    #       Source/GR32_Bindings.pas
+    #       Source/Packages/Lazarus/GR32_Lazarus.lpk
+    #       Source/Packages/Lazarus/GR32_Lazarus.pas
+
+commit a32484d097039a9b077ba1431cbe7e29c1b3046d
+Merge: ffa0d515 e8025234
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-13 10:07:29 +0100
+
+    Merge branch 'FPC_Linux'
+
+commit 6c4bc1d6bca4581ebd8408951ab4b31259d0ff8f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-13 00:38:29 +0100
+
+    More VPR comments.
+    
+    Minor refactoring for readability.
+
+commit 8dcec66022db0b7e737a3287fc7121c4223bd2d7
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-12 21:39:15 +0100
+
+    Added "almost" horizontal and vertical lines to AA example
+
+commit 239f6e04414159903ab45da0e379037d715efb2d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-10 23:51:48 +0200
+
+    Added VPR dummy test case for internal use
+
+commit 51e916c5a27d0ca3eb07a616f7c66969ac96d8e2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-09 22:20:05 +0200
+
+    Conditionally replaced use of SetRoundMode in favor of FastFloor, and FastCeil.
+    
+    More refactoring and comments for readability.
+
+commit 4c3f17cd579261e51b4853b653dcf70ae3fd3705
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-09 21:47:40 +0200
+
+    Added SIMD and Pascal implementations of FastCeil
+
+commit e64b9b6c4bea0933cab9d50dee1bd256452aecad
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-01-27 01:47:12 +0100
+
+    VPR comments
+
+commit a90d7311312a29d4cd6f207830b3147e5cca7f8e
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-12 02:30:58 +0100
+
+    Minor Benchmark example change for FPC
+
+commit fd69639dfc8a8dec750a3f326ccf827584644c62
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-12 02:03:10 +0100
+
+    Various fixed regarding handling of PUREPASCAL and OMIT_SSE2
+
+commit e802523466d2cb45f42128770b5841690f3c7550
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-11 23:36:06 +0100
+
+    Removed unnecessary references to Windows unit
+    
+    More explicit handling of units that are included for inlining purposes.
+    refs #350
+
+commit f1ff52c4347d0c02ca9219bc28c71087242cdcb8
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-11 21:52:46 +0100
+
+    Removed obsolete GR32_XPThemes unit.
+
+commit 6e88cf02974592d5badd56d037826b47c7edee5f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-11 01:11:38 +0100
+
+    Fix: Only use SendMessage(WM_SETREDRAW) on Windows
+    
+    Refs #350
+
+commit 4645032df74a5cbabadeb0a3bbf3b7746b0410dd
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-10 23:58:59 +0100
+
+    Fix for PNG32 clipboard support had hard dependency on Windows unit.
+    
+    Refs #350
+
+commit fd97e2c6d53fd5bc9b446c400704d42eb170adc1
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-10 23:40:18 +0100
+
+    Eliminated ImagesForLazarus and JPEG units. Also nuked remaining lfm-files while I was at it.
+    
+    Fixes #351
+    Deprecated Lion and SVGPath examples.
+
+commit ffa0d5157bb50563f013d368c6fa8a0faa8132ca
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-10 10:30:48 +0100
+
+    Adjusted uses clause for FPC
+    
+    Fixes #349
+    Updated Lazarus run-time package.
+
+commit b45d1108a8f57b66739731e952f81e2636c63abd
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-01-19 17:21:24 +0100
+
+    Cleaned up some white-space merge mess in GR32_Layers
+
+commit ab8c303a777f867b216a9da58c11e34eb1433b8b
+Merge: 63c7c1d2 d1bd09f3
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-02 15:33:49 +0100
+
+    Merge branch 'stipple'
+
+commit d1bd09f3c38b1ec029002a7496dedd621f29d12b
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-27 03:12:09 +0100
+
+    Added animation to LineStippling example
+
+commit d9eddcc058c5956f8074f197f9de699e7e8dbae3
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-01 23:48:58 +0100
+
+    Added benchmark command line switch to Benchmark example. For use when profiling.
+
+commit 4d5467c8228d634549029bb90c21dbd5d7731c0f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-01 23:47:34 +0100
+
+    Added simple SSE2 version of CumSum for Sandy- and Ivy Bridge
+    
+    Outperforms Pascal and the other SSE2 versions on these processors.
+
+commit dbd163bd57cf5e4253c431e55e4835768f0eb6a0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-27 03:10:45 +0100
+
+    Minor stipple changes.
+
+commit cfd6b32998b60cd9305f882e7a1dc47663d408e2
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-28 20:13:45 +0100
+
+    Added GR32_Polygons unit test for MakeAlpha functions.
+
+commit 7b5904c97dc5e3e4c756cd19e0e0cee53148fc63
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-28 18:27:49 +0100
+
+    Changes for FPC
+
+commit 24c08bc6384afa0b95561ef9844bad04f2ceadcd
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-27 13:54:52 +0100
+
+    Various GR32_Polygons cleanup
+
+commit ba4432246cec70ca21cbc7afebeb09f41da0c7a5
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-26 23:41:29 +0100
+
+    MakeAlpha*SSE* cleanup
+
+commit 39155cce8b9d2cd058465f9702a3c97b53c58925
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-25 21:33:32 +0100
+
+    Moved SIMD types and constants to GR32.Types.SIMD
+
+commit 63c7c1d22e3fc50ecfebde42ba487223c2a1e4c7
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-26 17:52:12 +0100
+
+    Removed obsolete reference to Clipbrd unit from GR32
+
+commit 597860984c63c3318a2c380d4a5cff1dc1f5b173
+Merge: 6552f8b7 304714bc
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-26 21:11:13 +0100
+
+    Merge branch 'BCB_bindings'
+
+commit 304714bcb8f56c76ebf2839d4ca3f06174697c72
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-26 18:34:48 +0100
+
+    Eliminated internal use of binding by ordinal ID.
+    
+    Disabled property overloads with BCB
+
+commit eafa8282babfb6995eb32ea13ef3d2cac71cd5b9
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-23 01:18:55 +0100
+
+    Added ability to change the priority of a function implementation binding after is has been registered
+    
+    (cherry picked from commit e960d6f67ce9b6f4eb83f6712bbba7474a930a39)
+
+commit 8359d24389d7b8f2902a5f90c194bed281106404
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 01:25:04 +0100
+
+    Bindings changes for FPC
+    
+    (cherry picked from commit 5766450f3927bf67e587cd5d4786396b14ce41da)
+    (cherry picked from commit 0eebbaaeab476e167114e5f1098b60beb891523a)
+
+commit 6552f8b7661a172097d89377851219b2ace38956
+Merge: c7be8db4 dcef9937
+Author: Anders Melander <github@melander.dk>
+Date:   2025-02-25 23:26:16 +0100
+
+    Merge pull request #347 from rgomezc/cbuilder_compatibility_improvements
+    
+    Changes to improve compatibility with C++Builder
+
+commit dcef99377a8c1707bca3f953c8df04630327c1c5
+Author: Rodrigo Gomez <rgomez@rodrigogomez.com.mx>
+Date:   2025-02-25 16:23:51 -0600
+
+    Solution proposed by andersmelander for the constants that make the generated header impossible to use as part of a PCH set.
+
+commit 3e3541378354038f06a6f52d44caf7380c74f318
+Author: Rodrigo Gomez <rgomez@rodrigogomez.com.mx>
+Date:   2025-02-25 15:56:35 -0600
+
+    Fixed the {$if ndefined} for the correct construct: {$if not defined}.
+    Guarded the the two Extended consts that make the header unusable with PCHs with {$NODEFINE}, to be able to use the generated header as-is.
+
+commit c7be8db4a59e371bf43bfe5cbd8f9faa0317e5ab
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-25 21:34:52 +0100
+
+    Minor (very) performance tweak of CumSum_Pas
+
+commit 53f2f886e76d2e60bf132f77f831bfa3e501b464
+Author: Rodrigo Gomez <rgomez@trafficsystem.com.mx>
+Date:   2025-02-25 11:29:34 -0600
+
+    Changes to improve compatibility with C++Builder:
+      - the constants DT_* have to be protected by {$NODEFINE} as they are defined in the WinApi headers.
+      - Moved some {$if defs] in the TFloatRect definition to fix the headers produced by this code and be able to use them on C++Builder
+      - removed a duplicate definition from a BCB {$if def}
+
+commit 72e52a00ac3803b3af2b5645bb66f38303f75b5b
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-25 16:11:09 +0100
+
+    Fix merge typo in Examples group project.
+    
+    Examples group project renamed from Examples to GR32_Examples
+
+commit b4a94f49f8870f2e9a96fccd37835257e8388236
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-24 11:30:53 +0100
+
+    Fixed leak in AntiAliasing example
+
+commit c4573c314ef79877813f1a1190f130be0b0b4697
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-24 11:27:28 +0100
+
+    Fix for leak in binding system caused by interface reference cycle.
+    
+    Fixes #345
+
+commit ec24338363066f280efc263a4f72fcb7ec61b62b
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-23 19:02:57 +0100
+
+    Eliminated inline vars from ThickLines example.
+    
+    Added proper hung detect prevention.
+
+commit 938a76cefc4653b6ebeb49461bb26462eb817ade
+Merge: 774f6f86 c5100df2
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-23 01:22:21 +0100
+
+    Merge branch 'PolygonRasterizers'
+
+commit 774f6f8688d8708df8f8e4733e374514d79db8ee
+Merge: b5d79d98 73778973
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-23 01:21:56 +0100
+
+    Merge branch 'Bindings_redesign'
+
+commit f6b5c06baacb8e3957fe6c3ed06e6d8d82a4b16c
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-23 01:17:43 +0100
+
+    CumSum_SSE2_kadaif2 is now the default SIMD CumSum implementation.
+    
+    The 64-bit CumSum SIMD is no longer used on old (15 years) Sandy- and Ivy Bridge processors as they are much slower than the Pascal implementation there.
+
+commit e960d6f67ce9b6f4eb83f6712bbba7474a930a39
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-23 01:18:55 +0100
+
+    Added ability to change the priority of a function implementation binding after is has been registered
+
+commit ba48d61e52726a4cce05aac5a0aaaf9f48893fcf
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-23 01:13:32 +0100
+
+    Cleaned up and reorganized CPUID unit a bit.
+    
+    Added various obscure and some new CPU signatures.
+    Changed VendorStr to TCPUVendor mapping to handle many to one mapping.
+
+commit 2116eb082bf04f108c9975331eece77a90aea061
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-21 23:15:45 +0100
+
+    Added MakeAlphaEvenOddUP_SSE2
+
+commit f78e3693caadad5e5e7c997c81f0a327fd7c836f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-21 23:06:34 +0100
+
+    Updated MakeAlphaNonZeroUP_SSE2
+
+commit ff39239a2bacdcc48741d63509d28bc12e74d287
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-21 23:03:14 +0100
+
+    Added MakeAlphaEvenOddUP_SSE41
+
+commit b6ca283de3b50375bcf21d828eca82bbdecd473d
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-21 23:02:49 +0100
+
+    GR32_Polygons: Added some header comments and moved stuff around
+
+commit b8ec28e8b53800ad3abf03947a68f4b541068dd7
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-19 03:28:08 +0100
+
+    Updated CumSum_SSE2_kadaif3
+    
+    Added CumSum_SSE2_kadaif4
+
+commit bd740842f0e4d3c7f11bbd3c3f4c5cc358167eca
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-19 03:14:36 +0100
+
+    Cleaned up rasterizer Benchmark example
+
+commit 749dedccd997b01ca7855eea5f59d4107b4e97f6
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-19 03:07:17 +0100
+
+    Updated Polygon unit test with test case for VPR2 issue.
+    
+    Changed polygon test suite to test all registered polygon rasterizers.
+    Separated VecorUtils and rasterizer tests.
+
+commit 7d8b67adc79728c4f8740f497dcf4df2dcb8b726
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 21:46:23 +0100
+
+    Updated CumSum benchmark
+
+commit f5d29be5eb94b771d9cc60354e7cc77c682abb0f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 21:43:20 +0100
+
+    Updated MakeAlpha benchmark
+
+commit c4f84aa88174cfc92cafa65c2ed307eb64692f8e
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 21:38:25 +0100
+
+    Removed alignment stuff from MakeAlphaNonZeroUP_SSE2; It made no difference.
+    
+    Fixed MakeAlphaNonZeroUP_SSE2 being bound to EvenOdd instead of NonZero.
+
+commit f9f77103a488f0996ce0aff0cd0b686f3ac87f4d
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 15:05:34 +0100
+
+    Removed GR32_PolygonsAggLite from Lazarus run-time package
+    
+    Unit has been renamed and doesn't need to be in the package anyway.
+
+commit 929408c16f920affca8393fad39edc3796cfbfd0
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 14:34:21 +0100
+
+    FastPrevWeight_SSE41 fixed for FPC
+
+commit bbbcbf96357b31e5139a77050c01f58e76f446be
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 14:32:46 +0100
+
+    CombineMem_SSE41_Kadaif now appears to work on FPC
+
+commit 030574a669f8c5d24ad49894fe26f447f34bbe29
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 03:19:43 +0100
+
+    MakeAlphaNonZeroUP_SSE2 fixes for FPC
+
+commit 6325fd7c02cb7b30b794f0ac7d02c1fb8a8c1b65
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 03:30:29 +0100
+
+    TPolygonRenderer32VPR2 fix for FPC
+
+commit 0eebbaaeab476e167114e5f1098b60beb891523a
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 01:25:32 +0100
+
+    Bindings typo
+
+commit 5766450f3927bf67e587cd5d4786396b14ce41da
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 01:25:04 +0100
+
+    Bindings changes for FPC
+
+commit 2ca7b7c8a731849fcf4ddd2cbe5fcef80ba0d4ff
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-12 18:11:16 +0100
+
+    Disabled 64-bit in CumSum_SSE2_kadaif3 since it's just the same as CumSum_SSE2
+
+commit 032f3b33f7024c2ea44878108ab3120352b6aa90
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-12 14:38:38 +0100
+
+    Added SSE2 version of MakeAlphaNonZeroUP
+
+commit 6cf284d1f7a5259ccd744213dbfcb55e9e0614e3
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-12 02:55:56 +0100
+
+    Updated Kadaif's improved CumSum_SSE2
+
+commit e9fd44994e9fd85b94564bed181228dc86238f1d
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-11 23:01:03 +0100
+
+    Added Kadaif's improved CumSum_SSE2.
+
+commit 5cc46d2560003218687d9b4bb5d68395e185a75e
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-10 23:25:57 +0100
+
+    VPR fix for corrupt horizontal span with almost vertical segments.
+    
+    Renamed some identifiers for readability and to better understand the algorithm (DDA I think).
+    Minor performance optimizations.
+
+commit c5100df2acdb37902c339e4af58654144e1f6df9
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 01:26:30 +0100
+
+    Polygon rasterizer benchmark changes for FPC
+
+commit f1f51820388902c397f9db2ee02503eb1df77d2c
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-18 02:07:45 +0100
+
+    TPolygonRenderer32GDI fix for FPC
+
+commit b5d79d986ccafa75e071518e62f3e47850b62d6c
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-17 03:20:29 +0100
+
+    Updated ThickLines example with 1-pixel wide non-aliased lines
+
+commit f9fdc2b62e8bb17350bc92e2f33f284e8f7e3226
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-12 02:56:26 +0100
+
+    Fix for polygon rasterizer benchmark not terminating outer loop on [Esc]
+
+commit 7d63779a110f687eab30c0d7cae4e1d7e2400cfb
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-11 22:56:40 +0100
+
+    Benchmark example: Improved sampling method. Now choses best result from a set of test results.
+    
+    Batching has been made optional.
+
+commit b9c1e5ea0570136e399e8e650251afc86da609f7
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-11 22:58:32 +0100
+
+    Added Blend2D polygon rasterizer. Only available in Benchmark example.
+    
+    Requires Blend2D DLLs which are not included.
+
+commit 5ed4aba5d48b037fd3747d6b29e3b0098f22e61c
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-11 22:52:03 +0100
+
+    Added function to unregister a polygon renderer.
+
+commit 0fc10ea4cc90421c416ef451a6fbfd2142fba2c3
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-09 17:09:40 +0100
+
+    Added ability to abort benchmark with [Esc].
+    
+    Fixed Windows considering application hung during benchmark.
+
+commit 53600ef9ca32e79e7d40dfd5f04ad00bb3900b98
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-09 16:07:03 +0100
+
+    Fixed GDI+ rasterizer handling of composite polypolygons (Alternate fillmode).
+
+commit ac100b3b02a4f8757b96d9048d908e1328d7f1d0
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-09 16:05:32 +0100
+
+    Added GDI polygon rasterizer and added to Benchmark example.
+    
+    Benchmark now explicitly sets FillMode.
+
+commit e0306266fdabbfb4f6facc5cb0530b886408723d
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-09 00:53:19 +0100
+
+    Added Direct2D polygon rasterizer and added to Benchmark example.
+
+commit 033efebb878651ebac7aaf23a0dd72a5c7fbbb32
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-08 22:55:48 +0100
+
+    Renamed GR32_PolygonsAggLite to GR32_Polygons.AggLite and GR32_PolygonsGDIPlus to GR32_Polygons.GDIPlus
+
+commit 2a43d48647d42d5fcca2c3677664e0f69a13a9c4
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-08 22:46:09 +0100
+
+    Disabled the 64-bit ASM & SSE2 implementations of the AggLite polygon rasterizer since they cause AVs
+
+commit 0fcfb2968051484618a99f6e72c5a400962b4826
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-08 22:44:34 +0100
+
+    Added GDI+ rasterizer to Benchmark example.
+    
+    Changed Benchmark example to only time rasterization + rendering and exclude path flattening.
+
+commit 6f7b3904cc68d286308ff4ee7ac4c4f89a188ebb
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-08 22:07:44 +0100
+
+    Added GDI+ polygon rasterizer (mostly for test and benchmarking since it's pretty slow).
+
+commit d3d674a5f0d21b53ce423f3b8b7528b51f2d5b63
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-08 19:46:19 +0100
+
+    Remaining TPolygonRenderer32 property setter methods has been made virtual.
+    
+    Constructor now goes through setters when setting initial values.
+
+commit 7377897381a1bb540a70e8c9166988b01a8058d4
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-12 22:25:49 +0100
+
+    Added MakeAlphaNonZeroUP benchmark
+
+commit edab067bdb21550ac62d8d6b594144f872a70472
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-12 18:13:54 +0100
+
+    Added CumSum benchmark
+
+commit 420bb9ebe6cc06b962f7987ba1f0f2baa11f0325
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-12 18:06:33 +0100
+
+    Binding system has been reimplemented
+    
+    Bindings and implementations are now enumerable and can be queried by name. This is primarily for use in unit tests and benchmarking.
+    The new binding API is backward compatible with some methods marked deprecated. The only breaking change is the custom priority function parameter which has been changed from a record pointer to an interface.
+    All existing bindings and implementations has been named (for use in benchmarks and unit tests)
+    All unit tests and benchmarks has been updated to use the new API.
+    Added FastTrunc, FastRound, FastFloorSingle, and Mirror benchmarks.
+    Added benchmarks group project: GR32_Benchmarks.
+
+commit 4ada393a94b401edff29ec30aad407aeafba8715
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-13 11:43:09 +0100
+
+    Updated Spring.Benchmark
+
+commit 50cb300e386be83d0b54bd14c63b1d2b73daa757
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-13 00:54:53 +0100
+
+    Fixed CPUID model and family logic and cache descriptor parsing.
+
+commit d160e16e07fa46eb9b74cea542325c32d3418001
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-09 22:41:23 +0100
+
+    Minor Thick Line example improvements
+
+commit ed4108e892404328c314cfb6db121599f62ced0a
+Merge: e4573219 8c24d40c
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-09 21:48:42 +0100
+
+    Merge branch 'PaintTools'
+
+commit 8c24d40c5ea21b846e6dfaa93c7c9ff0e21d06c2
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-01-18 01:23:23 +0100
+
+    Changed premultiplication to use existing GR32 alpha tables
+
+commit 93752605d199243eba604d06757d136eb2bb653d
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-01-18 01:22:23 +0100
+
+    Minor refactoring of MakeMergeTables.
+    
+    Introduced TLUT8 type so we can use the merge tables without range checks disabled.
+
+commit 2e751c8b75d59bc94c12b1eef5f6f0b095e27e0e
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-01-17 17:11:21 +0100
+
+    Delegated cursor handling to separate feature interfaces
+
+commit ec59238fda888d34690d1f6b20b730b764f79e62
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-01-16 00:19:49 +0100
+
+    More separation; Removed TImage32 dependency from controller base class.
+    
+    Moved tool context out of API and into separate unit.
+    Removed old, unused, and most TODO stuff.
+    Improved cursor handling.
+
+commit 254f9fe5b6776576eea1db33ef44e2b378404206
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-01-14 11:02:10 +0100
+
+    Mainly fixes for paint tool cursor handling.
+    
+    Still a bit of refactoring to do.
+
+commit 8f7723cc29a33cdab61ce30147b49aeb63e54899
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-01-14 04:54:20 +0100
+
+    Moved all paint logic out of form and into controller classes.
+    
+    Still a bit to do before it's done...
+
+commit 9b44c81b025ba6925c2602ce32d23cddfb8cf7ce
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-01-13 06:18:26 +0100
+
+    Added TransparentForm example
+    
+    Demonstrates alpha-blended transparent forms - and the paint tools.
+
+commit e4573219efcdf49a5a7f9e627ead28dd443b5645
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-09 19:14:37 +0100
+
+    Added Thick Lines example
+
+commit d5721f645baa33c5a1365ed7ab24e4367c94ec30
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-01-29 20:56:40 +0100
+
+    Added missing JPEG support to examples.
+    
+    Fixes #341
+
+commit 52b6f52ab54e93239c32f51256c6119ee3f5990c
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-01-13 06:02:33 +0100
+
+    Initial revision of paint tools
+
+commit f28f950eec82eb9edc8b0f87d3219b716fb4ab4f
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-27 18:15:14 +0100
+
+    The rubberband layer OnPaintHandle event now enables the user to customize the individual handle settings.
+    
+    This is a breaking change since the parameters of the virtual DrawHandle method (protected) has changed.
+    The PerspectiveCorrection example has been updated to demonstrate the new capabilities.
+
+commit b570ca8321569f3d7cba9885eed00375dfd40638
+Merge: 3450dd8f 5c3e5da2
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-27 17:08:38 +0100
+
+    Merge branch 'RubberBandHandleStyle'
+
+commit 3450dd8fa25382eb8cd3a037587d4bd20400eb9b
+Merge: da856184 62a1ebd6
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-27 17:08:23 +0100
+
+    Merge branch 'RubberbandLayerHitTesting'
+
+commit 5c3e5da227b1619b52bbfb162e9d0339d9d0cbf9
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-05-20 02:34:36 +0200
+
+    TCustomRubberBandLayer: Added HandleStyle, HandleFrameSize, and HandleHitZone properties.
+
+commit 62a1ebd687c522fda750eb11f25f7f2b389b4d09
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-26 03:45:35 +0100
+
+    Added PerspectiveCorrection to Examples group project
+
+commit ee0e113223e76474a7c80142c14ddaf7da68a2ce
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-04 09:24:18 +0100
+
+    Added experimental layer/updaterect paint-order compile time option
+
+commit 671b949c3d45c54d51edae595127631317902667
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-04 09:17:58 +0100
+
+    Added option to control update batching to Sprites performance example
+
+commit f1a9aab158dd4da5773f1d13db0d2da15c1f9011
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-04 09:00:33 +0100
+
+    Updated examples for layer changes
+
+commit ef3737deeaeb3b8aa48f3b829c31d85a69e098bd
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-02 01:17:47 +0100
+
+    Fixed layer key handling so layers beside the one with mouse capture now receive key events.
+
+commit 180a656e9594ff22b0bdd07b5fa1ade5361599e5
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-02 01:17:15 +0100
+
+    Added layer hot tracking with MouseEnter/MouseLeave handling.
+
+commit 540af8fd62c8e790e86cc20775f76f69fbf8db6d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-17 03:37:50 +0100
+
+    Fix for infinite recursion in rubberband layer
+
+commit 96edfd9d85e36a261d4b0693f54baefb26e07f61
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-02 01:02:43 +0100
+
+    RubberBand layer HitTest, Move, and Resize handling rewritten.
+    
+    Various related coordinate space bugs fixed.
+
+commit da856184d7a02f2b5922eab4792d13cbe34607ac
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-27 15:55:51 +0100
+
+    Updated Rotate example
+    
+    Removed obsolete stuff.
+
+commit f36ee22dfe7c27cc829d2ea8ca7b9b28dc988329
+Merge: ea467d4e 88cbb3e1
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-27 15:26:36 +0100
+
+    Merge remote-tracking branch 'TommiPrami/BinaryDfmToText'
+
+commit 88cbb3e1fccda4e95c736080a9d1bc1054aee9e5
+Author: Tommi Prami <tommi.prami@gmail.com>
+Date:   2024-12-27 11:21:51 +0200
+
+    Dfm as text
+
+commit ea467d4e679f739ecd47e0c7b6d17dc298dfe560
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-11-26 00:12:42 +0100
+
+    Minor refactoring/reformat of TCustomLayer; Just moved stuff around and added white space.
+
+commit 5757a7f813e19e77d6b501bc59a157a9d853a4ab
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-11-23 16:50:49 +0100
+
+    Fixed the work-around for Delphi <= 10.2 anonymous methods.
+    
+    Fixes #336
+
+commit 13a4e7dc2ccfe41978292875c4e5fc2df4a27534
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-11-23 01:13:40 +0100
+
+    Added work-around for Delphi <= 10.2 anonymous methods.
+    
+    In older versions of Delphi a closure can't capture an implicit by-reference type (such as a const record function parameter) by value.
+    Fixes #336
+
+commit e6441e524786bed46c1230a5dd1f228b04d528c6
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-11-21 13:29:06 +0100
+
+    Added merge blend unit tests for the case where background alpha=0
+
 commit 4dc4b33250486188c40a3ca9c4273e4ee8477faa
 Merge: dd2c07b3 e38452f2
 Author: zed <starmen@tut.by>
