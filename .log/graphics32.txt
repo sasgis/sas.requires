@@ -1,3 +1,107 @@
+commit 6763afb88981283b5fc5572c5000981f88287d19
+Merge: 1c6ce7ff 0b167070
+Author: zed <starmen@tut.by>
+Date:   2025-05-04 12:37:21 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 0b167070d638e41bbda65f3d6a4fb4e278a8cd9a
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-05-03 22:14:59 +0200
+
+    Added local declaration of arrayofT for pre-Delphi 11
+    
+    Fixes #360
+
+commit 4fbc8d2a3083e42a00ca776eaa52af7cab2de34a
+Merge: b95767cf d6a79098
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-04-01 18:46:50 +0200
+
+    Merge branch 'NO_GENERIC_METACLASS_LISTS'
+
+commit d6a79098152efc51b47ec2c17a002bed681aae71
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-04-01 02:00:26 +0200
+
+    Added work around for C++ Builder LIB266 linker error
+    
+    Refs #357
+
+commit b95767cf8290194ab1c09af21bfdccff569bef9a
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-30 15:31:19 +0200
+
+    Fix for infinite recursion in TBarycentricGradientPolygonFiller leading to stack overflow when a TColorPickerGTK is dropped on a form
+    
+    Fixes #356
+
+commit 803c4e6ac065c9356b999d1315a04142b055ab3c
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-18 21:50:03 +0100
+
+    Minor fixes for FPC 3.2.2
+
+commit 0b7b891db7ff28f1b55c2baeedb8e2e20f2bf313
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-17 11:14:32 +0100
+
+    Additional improvements to RenderText example
+
+commit ed45d5f138443ab9c37e9cfa9c2f47fead36a79f
+Merge: 80c480bd 46165b71
+Author: Anders Melander <github@melander.dk>
+Date:   2025-03-17 10:32:56 +0100
+
+    Merge pull request #353 from zedxxx/master
+    
+    Minor improvements for the RenderText example:
+
+commit 46165b7104c8f9b59624a9ddd1a937faf2633e11
+Author: zed <starmen@tut.by>
+Date:   2025-03-17 10:19:24 +0300
+
+    Minor improvements for the RenderText example:
+    
+      - add checkboxes Bold and Italic to customize font style
+      - rename button "Click me!" to "Run Benchmark"
+      - fix rendered text alignment (add more space between text lines)
+
+commit 80c480bdb1854193ca023edb1db0041199cfd206
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-16 23:07:00 +0100
+
+    RenderText example now also demonstrates TCanvas32.RenderText
+
+commit 5ca32cc3ec25c034c2192030809006582976bc25
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-16 23:00:13 +0100
+
+    Modified TextBlueToAlpha to use green channel instead of blue just in case the source is ClearType anti-aliased
+
+commit ce49669edfd21b297c8cb644ade2db0440612eb2
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-16 22:58:27 +0100
+
+    RenderText(X, Y: Integer; const Text: string; Color: TColor32; AntiAlias: boolean) is no longer deprecated.
+    
+    Refs #352
+
+commit 1c6ce7ff9e43deeadf6e539144ec05c128a560c3
+Merge: 5d824790 d2e2923c
+Author: zed <starmen@tut.by>
+Date:   2025-03-16 08:13:24 +0300
+
+    Merge branch 'master' into sasgis
+
+commit d2e2923ce2ba055d400df0f558335b6e520fc4f4
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-15 19:22:48 +0100
+
+    TClassList reimplemented as TList<TClass> (more or less). Fixes #352
+    
+    PolygonRendererList now contains a list of TPolygonRenderer32 classes while CustomPolygonRendererList contains the full list of TCustomPolygonRenderer classes.
+
 commit 5d8247909fa4b481fb611c050ed8024755855dcd
 Author: zed <starmen@tut.by>
 Date:   2025-03-15 11:54:50 +0300

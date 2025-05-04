@@ -1170,7 +1170,7 @@ type
     function  TextHeight(const Text: string): Integer;
     function  TextWidth(const Text: string): Integer;
     procedure RenderText(X, Y: Integer; const Text: string; AALevel: Integer; Color: TColor32); overload; deprecated 'Use RenderText(...; AntiAlias: boolean) or TCanvas32.RenderText(...) instead';
-    procedure RenderText(X, Y: Integer; const Text: string; Color: TColor32; AntiAlias: boolean); overload; //deprecated 'Use Bitmap.Font.Quality to set anti-aliasing instead';
+    procedure RenderText(X, Y: Integer; const Text: string; Color: TColor32; AntiAlias: boolean); overload;
     procedure RenderText(X, Y: Integer; const Text: string; Color: TColor32); overload;
 
     property  Canvas: TCanvas read GetCanvas;
@@ -7144,7 +7144,7 @@ var
 begin
   if (Value <> '') and (FResampler.ClassName <> Value) and (ResamplerList <> nil) then
   begin
-    ResamplerClass := TCustomResamplerClass(ResamplerList.Find(Value));
+    ResamplerClass := ResamplerList.Find(Value);
     if (ResamplerClass <> nil) then
       ResamplerClass.Create(Self);
   end;
@@ -7478,16 +7478,21 @@ asm
 end;
 *)
 var
-  I: Integer;
+  i: Integer;
   P: PColor32;
+  Alpha: Byte;
 begin
-  // convert blue channel to alpha and fill the color
+  // Convert green channel to alpha and fill the color.
+  // We use the green channel instead of the blue in case the source
+  // is ClearType anti-aliased.
   Color := Color and $00FFFFFF;
   P := @B.Bits[0];
-  for I := 0 to B.Width * B.Height - 1 do
+  
+  for i := 0 to B.Width * B.Height - 1 do
   begin
-    if P^ <> 0 then
-        P^ := ((P^ and $FF) shl 24) or Color
+    Alpha := PColor32Entry(P).G;
+    if Alpha <> 0 then
+      P^ := (Alpha shl 24) or Color
     else
       P^ := 0;
     Inc(P);

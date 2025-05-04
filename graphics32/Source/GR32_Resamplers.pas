@@ -1060,9 +1060,25 @@ procedure DownsampleByteMap4x(Source, Dest: TByteMap);
 procedure RegisterResampler(ResamplerClass: TCustomResamplerClass);
 procedure RegisterKernel(KernelClass: TCustomKernelClass);
 
+type
+{$if defined(NO_GENERIC_METACLASS_LISTS)}
+  TKernelList = class(TClassList)
+  public
+    function Find(const AClassName: string): TCustomKernelClass;
+  end;
+
+  TResamplerList = class(TClassList)
+  public
+    function Find(const AClassName: string): TCustomResamplerClass;
+  end;
+{$else}
+  TKernelList = TCustomClassList<TCustomKernelClass>;
+  TResamplerList = TCustomClassList<TCustomResamplerClass>;
+{$ifend}
+
 var
-  KernelList: TClassList;
-  ResamplerList: TClassList;
+  KernelList: TKernelList;
+  ResamplerList: TResamplerList;
 
 const
   EMPTY_ENTRY: TBufferEntry = (B: 0; G: 0; R: 0; A: 0) deprecated 'Use Default(TBufferEntry)';
@@ -3745,7 +3761,7 @@ var
 begin
   if (Value <> '') and (FKernel.ClassName <> Value) and (KernelList <> nil) then
   begin
-    KernelClass := TCustomKernelClass(KernelList.Find(Value));
+    KernelClass := KernelList.Find(Value);
     if (KernelClass <> nil) then
     begin
       NewKernel := KernelClass.Create;
@@ -5022,16 +5038,34 @@ end;
 procedure RegisterResampler(ResamplerClass: TCustomResamplerClass);
 begin
   if (ResamplerList = nil) then
-    ResamplerList := TClassList.Create;
+    ResamplerList := TResamplerList.Create;
   ResamplerList.Add(ResamplerClass);
 end;
 
 procedure RegisterKernel(KernelClass: TCustomKernelClass);
 begin
   if (KernelList = nil) then
-    KernelList := TClassList.Create;
+    KernelList := TKernelList.Create;
   KernelList.Add(KernelClass);
 end;
+
+
+//------------------------------------------------------------------------------
+//
+//      NO_GENERIC_METACLASS_LISTS
+//
+//------------------------------------------------------------------------------
+{$if defined(NO_GENERIC_METACLASS_LISTS)}
+function TKernelList.Find(const AClassName: string): TCustomKernelClass;
+begin
+  Result := TCustomKernelClass(inherited Find(AClassName));
+end;
+
+function TResamplerList.Find(const AClassName: string): TCustomResamplerClass;
+begin
+  Result := TCustomResamplerClass(inherited Find(AClassName));
+end;
+{$ifend}
 
 
 //------------------------------------------------------------------------------
