@@ -1,3 +1,42 @@
+commit 11326f5bd07c95e8d2a0eed040b92e69ef42484f
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2025-04-23 10:38:46 +0200
+
+    hardened against 'RemoteIP:' header injection from client side
+
+commit 1f06b78289d9e2d1ed4e88bb38916fddafcbfd5e
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2025-04-23 10:36:11 +0200
+
+    revert some unexpected change during last merge
+
+commit e36bf92aa08bb78b7ed5e0f9f610ba008a8941a9
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2025-04-23 10:35:22 +0200
+
+    fixed PasZip compilation on POSIX
+
+commit 6c57c33a756eb1a63495162cc975554a8ac1a286
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2025-04-23 10:31:53 +0200
+
+    minor fixes with no functional change
+    - mostly documentation or formatting
+
+commit 225ed2d583fea595d25966351c28d9243949d0c2
+Merge: 0a5d1375 f35fb0f6
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2025-04-23 10:31:02 +0200
+
+    Merge remote-tracking branch 'refs/remotes/origin/master'
+
+commit 0a5d1375a0921d3c072b1d84cae30dee5563981f
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2025-04-23 10:30:27 +0200
+
+    minor fixes with no functional change
+    - mostly documentation or formatting
+
 commit f35fb0f6568dd748718f85688fdf42bfa426bd46
 Merge: 9fd6c984 f499f632
 Author: ab <webcontact01@synopse.info>
