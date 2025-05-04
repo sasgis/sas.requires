@@ -1,3 +1,144 @@
+commit 3dd975ad6d6d770ed5be02e5b898a0937c21b806
+Author: angusj <angus@angusj.com>
+Date:   2025-04-18 21:08:29 +1000
+
+    Fixed UInt128Struct broken in previous 2 commits (C++)
+
+commit ccd4b88ed1fc47d4c21ec2f9f42d8bcbfdd63f95
+Author: angusj <angus@angusj.com>
+Date:   2025-04-18 20:57:08 +1000
+
+    Fixed missing parentheses in previous commit (C++)
+
+commit 272eb9beae70afa80553ec0dca67afd6aa7a8e42
+Author: angusj <angus@angusj.com>
+Date:   2025-04-18 20:50:31 +1000
+
+    Fixed a significant clipping bug (#960)
+    Added performance improving CrossProductSign function (C++).
+
+commit ca6e8fd58e30521115d5b83ee785b90cea07c059
+Author: angusj <angus@angusj.com>
+Date:   2025-03-05 17:14:03 +1000
+
+    InflatePaths - fixed issue with no ArcTolerance scaling (#949)
+    clipper.offset.cpp - fixed missing PreserveCollinear assignment (#951)
+
+commit c86619cf4feb470a91464b06cfdaad0ca6012914
+Merge: fcf5607 065f398
+Author: angusj <angus@angusj.com>
+Date:   2025-02-09 11:05:04 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git
+
+commit fcf56074a57373af9d39f7daaefc4ff26b6d0a52
+Author: angusj <angus@angusj.com>
+Date:   2025-02-09 11:04:19 +1000
+
+    Clipper.Engine - fixed incorrect Polytree (#942)
+
+commit 065f39811fea9ad95ec72c70d6e3921eba878233
+Author: nonwill <46510529+nonwill@users.noreply.github.com>
+Date:   2025-01-31 06:42:34 +0800
+
+    Add compatible function from Clipper1Lib: operator<< (#941)
+    
+    Path<T>& operator<<(Path<T>& poly, const Point<T2>& p)
+    Paths<T>& operator<<(Paths<T>& polys, const Path<T>& p)
+
+commit 6901921c4be75126d1de60bfd24bd86a61319fd0
+Author: angusj <angus@angusj.com>
+Date:   2025-01-27 10:10:58 +1000
+
+    Version 1.5.2
+
+commit d6baa5229734d2174909ddb018c4b9d59557e646
+Author: nonwill <46510529+nonwill@users.noreply.github.com>
+Date:   2025-01-27 08:01:27 +0800
+
+    Fix header including to avoid confusion:  header only included where they are needed (#940)
+
+commit e39a44f51606369725e9ce6830573290863bea91
+Author: angusj <angus@angusj.com>
+Date:   2025-01-27 10:00:03 +1000
+
+    Version 1.5.1
+
+commit baa7014321d32896e0a3aea689e57ff35dccfede
+Author: nonwill <46510529+nonwill@users.noreply.github.com>
+Date:   2025-01-27 07:36:14 +0800
+
+    std::vector: Using emplace_back to replace push_back to improve performance (#939)
+
+commit 51bb2841fd716d1cdd6a8bd7f64a249253f8503b
+Author: Henner Zeller <h.zeller@acm.org>
+Date:   2025-01-26 15:33:02 -0800
+
+    Installed Clipper2.pc:: Use canonical way to refer to inc and libdir (#937)
+    
+    Cmake already provides variables where the installed libraries
+    and include directories end up, so use these for most compatible
+    way of generating the package config.
+
+commit 41b5f0199f72f125e0fd602c400040e447fe24bb
+Author: Andreas Deininger <andreas@deininger.net>
+Date:   2025-01-26 16:47:38 +0100
+
+    Fix broken links, convert links from http to https protocol (#936)
+
+commit 59c2fc2b0f268b53a3a930b5f85b7a353137af69
+Author: Andreas Deininger <andreas@deininger.net>
+Date:   2025-01-26 15:04:02 +0100
+
+    Fix typos (#935)
+
+commit ef6dbfdcaba251ef4363ec121216ba168f694b68
+Author: angusj <angus@angusj.com>
+Date:   2025-01-24 22:09:37 +1000
+
+    Clipper2 ver 1.5.0
+
+commit d10ad598fcbaa697337c117552f6762de4f5feff
+Author: angusj <angus@angusj.com>
+Date:   2025-01-24 08:52:47 +1000
+
+    InflatePaths function (C# only) - added missing arcTolerance parameter.
+    Updated clipper.export.h documention.
+
+commit 4ab4da0f98d02b86fcc841af348dcddcea45775d
+Author: angusj <angus@angusj.com>
+Date:   2025-01-22 09:40:29 +1000
+
+    Clipper.Offset - changed arc_tolerance default
+
+commit 7598be97d333837c460c778dd16ba8d945fefdba
+Author: Pavel Kretov <firegurafiku@gmail.com>
+Date:   2024-12-21 09:09:30 +0200
+
+    Clipper.Core.cs: make USINGZ as local as possible (minor refactoring) (#924)
+    
+    Keeping USINGZ-enable and USINGS-disabled code close together is going to
+    help in preventing accidental code divergences.
+
+commit c1b13f6aba7f45dbe8977ede0d1882a591d6edf7
+Author: angusj <angus@angusj.com>
+Date:   2024-12-21 17:05:05 +1000
+
+    CI update - Ubuntu non-default clang changed to 17 (was 13).
+
+commit a8269cafe92cdbf92572bceda5e9fdacc4684b51
+Merge: fe5f6b7 ed98928
+Author: angusj <angus@angusj.com>
+Date:   2024-11-22 10:17:52 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git
+
+commit fe5f6b7faa166cca2d20a8d7698361ec2bf6bbee
+Author: angusj <angus@angusj.com>
+Date:   2024-11-22 10:17:08 +1000
+
+    Clipper.Offset: fixed a bug seen with excessive deflation (#916)
+
 commit ed98928c66707988d4eb2c49a31c41380a08931c
 Author: zed <zedxxx@users.noreply.github.com>
 Date:   2024-10-14 22:05:53 +0300

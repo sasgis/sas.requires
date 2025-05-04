@@ -1,21 +1,15 @@
 /*******************************************************************************
 * Author    :  Angus Johnson                                                   *
-* Date      :  17 September 2024                                               *
-* Website   :  http://www.angusj.com                                           *
-* Copyright :  Angus Johnson 2010-2024                                         *
+* Date      :  18 April 2025                                                   *
+* Website   :  https://www.angusj.com                                          *
+* Copyright :  Angus Johnson 2010-2025                                         *
 * Purpose   :  This is the main polygon clipping module                        *
-* License   :  http://www.boost.org/LICENSE_1_0.txt                            *
+* License   :  https://www.boost.org/LICENSE_1_0.txt                           *
 *******************************************************************************/
-
-#include <cstdlib>
-#include <cmath>
-#include <stdexcept>
-#include <vector>
-#include <numeric>
-#include <algorithm>
 
 #include "clipper2/clipper.engine.h"
 #include "clipper2/clipper.h"
+#include <stdexcept>
 
 // https://github.com/AngusJohnson/Clipper2/discussions/334
 // #discussioncomment-4248602
@@ -517,7 +511,7 @@ namespace Clipper2Lib {
         while (op2 != op && op2->pt.y > pt.y) op2 = op2->next;
       if (op2 == op) break;
 
-      // must have touched or crossed the pt.Y horizonal
+      // must have touched or crossed the pt.Y horizontal
       // and this must happen an even number of times
 
       if (op2->pt.y == pt.y) // touching the horizontal
@@ -538,9 +532,9 @@ namespace Clipper2Lib {
         val = 1 - val; // toggle val
       else
       {
-        double d = CrossProduct(op2->prev->pt, op2->pt, pt);
-        if (d == 0) return PointInPolygonResult::IsOn;
-        if ((d < 0) == is_above) val = 1 - val;
+        int i = CrossProductSign(op2->prev->pt, op2->pt, pt);
+        if (i == 0) return PointInPolygonResult::IsOn;
+        if ((i < 0) == is_above) val = 1 - val;
       }
       is_above = !is_above;
       op2 = op2->next;
@@ -548,9 +542,9 @@ namespace Clipper2Lib {
 
     if (is_above != starting_above)
     {
-      double d = CrossProduct(op2->prev->pt, op2->pt, pt);
-      if (d == 0) return PointInPolygonResult::IsOn;
-      if ((d < 0) == is_above) val = 1 - val;
+      int i = CrossProductSign(op2->prev->pt, op2->pt, pt);
+      if (i == 0) return PointInPolygonResult::IsOn;
+      if ((i < 0) == is_above) val = 1 - val;
     }
 
     if (val == 0) return PointInPolygonResult::IsOutside;
@@ -564,7 +558,7 @@ namespace Clipper2Lib {
     while (op2->next != op &&
       ((op2->pt.x == op2->next->pt.x && op2->pt.x == op2->prev->pt.x) ||
         (op2->pt.y == op2->next->pt.y && op2->pt.y == op2->prev->pt.y))) op2 = op2->next;
-    result.push_back(op2->pt);
+    result.emplace_back(op2->pt);
     OutPt* prevOp = op2;
     op2 = op2->next;
     while (op2 != op)
@@ -572,7 +566,7 @@ namespace Clipper2Lib {
       if ((op2->pt.x != op2->next->pt.x || op2->pt.x != prevOp->pt.x) &&
         (op2->pt.y != op2->next->pt.y || op2->pt.y != prevOp->pt.y))
       {
-        result.push_back(op2->pt);
+        result.emplace_back(op2->pt);
         prevOp = op2;
       }
       op2 = op2->next;
@@ -611,7 +605,7 @@ namespace Clipper2Lib {
     if ((VertexFlags::LocalMin & vert.flags) != VertexFlags::Empty) return;
 
     vert.flags = (vert.flags | VertexFlags::LocalMin);
-    list.push_back(std::make_unique <LocalMinima>(&vert, polytype, is_open));
+    list.emplace_back(std::make_unique <LocalMinima>(&vert, polytype, is_open));
   }
 
   void AddPaths_(const Paths64& paths, PathType polytype, bool is_open,
@@ -728,7 +722,7 @@ namespace Clipper2Lib {
     if ((VertexFlags::LocalMin & vert.flags) != VertexFlags::Empty) return;
 
     vert.flags = (vert.flags | VertexFlags::LocalMin);
-    minima_list_.push_back(std::make_unique <LocalMinima>(&vert, polytype, is_open));
+    minima_list_.emplace_back(std::make_unique <LocalMinima>(&vert, polytype, is_open));
   }
 
   void ReuseableDataContainer64::AddPaths(const Paths64& paths,
@@ -836,9 +830,7 @@ namespace Clipper2Lib {
 
   void ClipperBase::AddPath(const Path64& path, PathType polytype, bool is_open)
   {
-    Paths64 tmp;
-    tmp.push_back(path);
-    AddPaths(tmp, polytype, is_open);
+    AddPaths(Paths64(1, path), polytype, is_open);
   }
 
   void ClipperBase::AddPaths(const Paths64& paths, PathType polytype, bool is_open)
@@ -857,7 +849,7 @@ namespace Clipper2Lib {
     LocalMinimaList::const_iterator i;
     for (i = reuseable_data.minima_list_.cbegin(); i != reuseable_data.minima_list_.cend(); ++i)
     {
-      minima_list_.push_back(std::make_unique <LocalMinima>((*i)->vertex, (*i)->polytype, (*i)->is_open));
+      minima_list_.emplace_back(std::make_unique <LocalMinima>((*i)->vertex, (*i)->polytype, (*i)->is_open));
       if ((*i)->is_open) has_open_paths_ = true;
     }
   }
@@ -910,7 +902,7 @@ namespace Clipper2Lib {
     if ((VertexFlags::LocalMin & vert.flags) != VertexFlags::Empty) return;
 
     vert.flags = (vert.flags | VertexFlags::LocalMin);
-    minima_list_.push_back(std::make_unique <LocalMinima>(&vert, polytype, is_open));
+    minima_list_.emplace_back(std::make_unique <LocalMinima>(&vert, polytype, is_open));
   }
 
   bool ClipperBase::IsContributingClosed(const Active& e) const
@@ -1130,21 +1122,19 @@ namespace Clipper2Lib {
         return newcomer.curr_x > resident.curr_x;
 
     //get the turning direction  a1.top, a2.bot, a2.top
-    double d = CrossProduct(resident.top, newcomer.bot, newcomer.top);
-    if (d != 0) return d < 0;
+    int i = CrossProductSign(resident.top, newcomer.bot, newcomer.top);
+    if (i != 0) return i < 0;
 
     //edges must be collinear to get here
     //for starting open paths, place them according to
     //the direction they're about to turn
     if (!IsMaxima(resident) && (resident.top.y > newcomer.top.y))
     {
-      return CrossProduct(newcomer.bot,
-        resident.top, NextVertex(resident)->pt) <= 0;
+      return (CrossProductSign(newcomer.bot, resident.top, NextVertex(resident)->pt) <= 0);
     }
     else if (!IsMaxima(newcomer) && (newcomer.top.y > resident.top.y))
     {
-      return CrossProduct(newcomer.bot,
-        newcomer.top, NextVertex(newcomer)->pt) >= 0;
+      return (CrossProductSign(newcomer.bot, newcomer.top, NextVertex(newcomer)->pt) >= 0);
     }
 
     int64_t y = newcomer.bot.y;
@@ -1159,7 +1149,7 @@ namespace Clipper2Lib {
       resident.bot, resident.top)) return true;
     else
       //compare turning direction of the alternate bound
-      return (CrossProduct(PrevPrevVertex(resident)->pt,
+      return (CrossProductSign(PrevPrevVertex(resident)->pt,
         newcomer.bot, PrevPrevVertex(newcomer)->pt) > 0) == newcomerIsLeft;
   }
 
@@ -1494,7 +1484,7 @@ namespace Clipper2Lib {
   {
     OutRec* result = new OutRec();
     result->idx = outrec_list_.size();
-    outrec_list_.push_back(result);
+    outrec_list_.emplace_back(result);
     result->pts = nullptr;
     result->owner = nullptr;
     result->polypath = nullptr;
@@ -1637,12 +1627,12 @@ namespace Clipper2Lib {
         if (Path1InsidePath2(prevOp, newOp))
         {
           newOr->splits = new OutRecList();
-          newOr->splits->push_back(outrec);
+          newOr->splits->emplace_back(outrec);
         }
         else
         {
           if (!outrec->splits) outrec->splits = new OutRecList();
-          outrec->splits->push_back(newOr);
+          outrec->splits->emplace_back(newOr);
         }
       }
     }
@@ -1656,19 +1646,32 @@ namespace Clipper2Lib {
   void ClipperBase::FixSelfIntersects(OutRec* outrec)
   {
     OutPt* op2 = outrec->pts;
+    if (op2->prev == op2->next->next) 
+      return; // because triangles can't self-intersect
     for (; ; )
     {
-      // triangles can't self-intersect
-      if (op2->prev == op2->next->next) break;
       if (SegmentsIntersect(op2->prev->pt,
         op2->pt, op2->next->pt, op2->next->next->pt))
       {
-        if (op2 == outrec->pts || op2->next == outrec->pts)
-          outrec->pts = outrec->pts->prev;
-        DoSplitOp(outrec, op2);
-        if (!outrec->pts) break;
-        op2 = outrec->pts;
-        continue;
+        if (SegmentsIntersect(op2->prev->pt,
+          op2->pt, op2->next->next->pt, op2->next->next->next->pt))
+        {
+          // adjacent intersections (ie a micro self-intersections)
+          op2 = DuplicateOp(op2, false);
+          op2->pt = op2->next->next->next->pt;
+          op2 = op2->next;
+        }
+        else
+        {
+          if (op2 == outrec->pts || op2->next == outrec->pts)
+            outrec->pts = outrec->pts->prev;
+          DoSplitOp(outrec, op2);
+          if (!outrec->pts) break;
+          op2 = outrec->pts;
+          if (op2->prev == op2->next->next)
+            break; // again, because triangles can't self-intersect
+          continue;
+        }
       }
       else
         op2 = op2->next;
@@ -1961,7 +1964,7 @@ namespace Clipper2Lib {
       else if (IsFront(e1) || (e1.outrec == e2.outrec))
       {
         //this 'else if' condition isn't strictly needed but
-        //it's sensible to split polygons that ony touch at
+        //it's sensible to split polygons that only touch at
         //a common vertex (not at common edges).
 
 #ifdef USINGZ
@@ -2245,7 +2248,7 @@ namespace Clipper2Lib {
           HorzJoin join = HorzJoin(
             DuplicateOp(hs1->left_op, true),
             DuplicateOp(hs2->left_op, false));
-          horz_join_list_.push_back(join);
+          horz_join_list_.emplace_back(join);
         }
         else
         {
@@ -2258,7 +2261,7 @@ namespace Clipper2Lib {
           HorzJoin join = HorzJoin(
             DuplicateOp(hs2->left_op, true),
             DuplicateOp(hs1->left_op, false));
-          horz_join_list_.push_back(join);
+          horz_join_list_.emplace_back(join);
         }
       }
     }
@@ -2270,7 +2273,7 @@ namespace Clipper2Lib {
     if (!toOr->splits) toOr->splits = new OutRecList();
     OutRecList::iterator orIter = fromOr->splits->begin();
     for (; orIter != fromOr->splits->end(); ++orIter)
-      toOr->splits->push_back(*orIter);
+      toOr->splits->emplace_back(*orIter);
     fromOr->splits->clear();
   }
 
@@ -2323,7 +2326,7 @@ namespace Clipper2Lib {
             or2->owner = or1->owner;
 
           if (!or1->splits) or1->splits = new OutRecList();
-          or1->splits->push_back(or2);
+          or1->splits->emplace_back(or2);
         }
         else
           or2->owner = or1;
@@ -2382,7 +2385,7 @@ namespace Clipper2Lib {
         else ip.x = TopX(e2, ip.y);
       }
     }
-    intersect_nodes_.push_back(IntersectNode(&e1, &e2, ip));
+    intersect_nodes_.emplace_back(&e1, &e2, ip);
   }
 
   bool ClipperBase::BuildIntersectList(const int64_t top_y)
@@ -2503,7 +2506,7 @@ namespace Clipper2Lib {
   void ClipperBase::AddTrialHorzJoin(OutPt* op)
   {
     if (op->outrec->is_open) return;
-    horz_seg_list_.push_back(HorzSegment(op));
+    horz_seg_list_.emplace_back(op);
   }
 
   bool ClipperBase::ResetHorzDirection(const Active& horz,
@@ -2661,7 +2664,7 @@ namespace Clipper2Lib {
 
         if (horz.outrec)
         {
-          //nb: The outrec containining the op returned by IntersectEdges
+          //nb: The outrec containing the op returned by IntersectEdges
           //above may no longer be associated with horzEdge.
           AddTrialHorzJoin(GetLastOp(horz));
         }
@@ -2905,14 +2908,14 @@ namespace Clipper2Lib {
       lastPt = op->pt;
       op2 = op->next;
     }
-    path.push_back(lastPt);
+    path.emplace_back(lastPt);
 
     while (op2 != op)
     {
       if (op2->pt != lastPt)
       {
         lastPt = op2->pt;
-        path.push_back(lastPt);
+        path.emplace_back(lastPt);
       }
       if (reverse)
         op2 = op2->prev;
@@ -2940,12 +2943,14 @@ namespace Clipper2Lib {
   {
     for (auto split : *splits)
     {
+      if (!split->pts && split->splits &&
+        CheckSplitOwner(outrec, split->splits)) return true; //#942
       split = GetRealOutRec(split);
-      if(!split || split == outrec || split->recursive_split == outrec) continue;
+      if (!split || split == outrec || split->recursive_split == outrec) continue;
       split->recursive_split = outrec; // prevent infinite loops
 
       if (split->splits && CheckSplitOwner(outrec, split->splits))
-          return true;
+        return true;
       else if (CheckBounds(split) &&
         IsValidOwner(outrec, split) &&
         split->bounds.Contains(outrec->bounds) &&
@@ -3037,7 +3042,7 @@ namespace Clipper2Lib {
       {
         Path64 path;
         if (BuildPath64(outrec->pts, reverse_solution_, true, path))
-          open_paths.push_back(path);
+          open_paths.emplace_back(std::move(path));
         continue;
       }
 
@@ -3066,9 +3071,9 @@ namespace Clipper2Lib {
       op2 = op->next;
     }
 #ifdef USINGZ
-    path.push_back(PointD(lastPt.x * inv_scale, lastPt.y * inv_scale, lastPt.z));
+    path.emplace_back(lastPt.x * inv_scale, lastPt.y * inv_scale, lastPt.z);
 #else
-    path.push_back(PointD(lastPt.x * inv_scale, lastPt.y * inv_scale));
+    path.emplace_back(lastPt.x * inv_scale, lastPt.y * inv_scale);
 #endif
 
     while (op2 != op)
@@ -3077,9 +3082,9 @@ namespace Clipper2Lib {
       {
         lastPt = op2->pt;
 #ifdef USINGZ
-        path.push_back(PointD(lastPt.x * inv_scale, lastPt.y * inv_scale, lastPt.z));
+        path.emplace_back(lastPt.x * inv_scale, lastPt.y * inv_scale, lastPt.z);
 #else
-        path.push_back(PointD(lastPt.x * inv_scale, lastPt.y * inv_scale));
+        path.emplace_back(lastPt.x * inv_scale, lastPt.y * inv_scale);
 #endif
 
       }
@@ -3143,7 +3148,7 @@ namespace Clipper2Lib {
       {
         PathD path;
         if (BuildPathD(outrec->pts, reverse_solution_, true, path, invScale_))
-          open_paths.push_back(path);
+          open_paths.emplace_back(std::move(path));
         continue;
       }
 
