@@ -1,3 +1,25 @@
+commit 56ac380294c4fb73fd7889bfb26adf893cc9a62e
+Merge: 6763afb8 65fc23a7
+Author: zed <starmen@tut.by>
+Date:   2025-05-07 19:04:29 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 65fc23a7cc736105f1cdc5f2ce2293643dc894a4
+Merge: 0b167070 5d912ec6
+Author: Anders Melander <github@melander.dk>
+Date:   2025-05-07 16:51:36 +0200
+
+    Merge pull request #361 from zedxxx/fix
+    
+    Fix wrong instructions set usage
+
+commit 5d912ec6c614b122fa523eda10beeab2c91958db
+Author: zed <starmen@tut.by>
+Date:   2025-05-07 17:14:05 +0300
+
+    Fix wrong instructions set usage
+
 commit 6763afb88981283b5fc5572c5000981f88287d19
 Merge: 1c6ce7ff 0b167070
 Author: zed <starmen@tut.by>
