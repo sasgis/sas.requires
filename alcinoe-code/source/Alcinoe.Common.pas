@@ -22,16 +22,16 @@ uses
 type
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  TALWorkerThreadRefProc = reference to procedure(var AExtData: Tobject);
-  TALWorkerThreadObjProc = procedure(var AExtData: Tobject) of object;
-  TALWorkerThreadGetPriorityFunc = function(const AExtData: Tobject): Int64 of object;
+  TALWorkerThreadRefProc = reference to procedure(var AContext: Tobject);
+  TALWorkerThreadObjProc = procedure(var AContext: Tobject) of object;
+  TALWorkerThreadGetPriorityFunc = function(const AContext: Tobject): Int64 of object;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
   TALWorkerThreadRequest = Class(Tobject)
   private
     FRefProc: TALWorkerThreadRefProc;
     FObjProc: TALWorkerThreadObjProc;
-    FExtData: Tobject;
+    FContext: Tobject;
     FPriority: Int64;
     FGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
     FSignal: TEvent;
@@ -39,20 +39,20 @@ type
   public
     constructor Create(
                   const AProc: TALWorkerThreadRefProc;
-                  const AExtData: Tobject;
+                  const AContext: Tobject;
                   const APriority: Int64;
                   const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
                   const ASignal: TEvent); overload;
     constructor Create(
                   const AProc: TALWorkerThreadobjProc;
-                  const AExtData: Tobject;
+                  const AContext: Tobject;
                   const APriority: Int64;
                   const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
                   const ASignal: TEvent); overload;
     destructor Destroy; override;
     property RefProc: TALWorkerThreadRefProc read FRefProc;
     property ObjProc: TALWorkerThreadObjProc read FObjProc;
-    property ExtData: Tobject read FExtData;
+    property Context: Tobject read FContext;
     property Priority: Int64 read GetPriority;
     property Signal: TEvent read FSignal;
   end;
@@ -86,10 +86,8 @@ type
     fPriorityDirection: TPriorityDirection;
     fThreads: TObjectList<TALWorkerThread>;
     fRequests: TObjectList<TALWorkerThreadRequest>;
-    function GetPriorityDirection: TPriorityDirection;
     function GetPriorityStartingPoint: int64;
-    function GetPriorityStartingPointExt(const AExtData: Tobject): Int64;
-    procedure SetPriorityDirection(const Value: TPriorityDirection);
+    function GetPriorityStartingPointExt(const AContext: Tobject): Int64; inline;
     procedure SetPriorityStartingPoint(const Value: int64);
   protected
     procedure EnqueueRequest(const ARequest: TALWorkerThreadRequest);
@@ -100,18 +98,18 @@ type
     //TALWorkerThreadRefProc
     procedure ExecuteProc(
                 const AProc: TALWorkerThreadRefProc;
-                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const AContext: Tobject; // Context will be free by the worker thread
                 const APriority: Int64;
                 const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
                 Const AAsync: Boolean = True); overload; virtual;
     procedure ExecuteProc(
                 const AProc: TALWorkerThreadRefProc;
-                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const AContext: Tobject; // Context will be free by the worker thread
                 const APriority: Int64;
                 Const AAsync: Boolean = True); overload;
     procedure ExecuteProc(
                 const AProc: TALWorkerThreadRefProc;
-                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const AContext: Tobject; // Context will be free by the worker thread
                 const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
                 Const AAsync: Boolean = True); overload;
     procedure ExecuteProc(
@@ -124,7 +122,7 @@ type
                 Const AAsync: Boolean = True); overload;
     procedure ExecuteProc(
                 const AProc: TALWorkerThreadRefProc;
-                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const AContext: Tobject; // Context will be free by the worker thread
                 Const AAsync: Boolean = True); overload;
     procedure ExecuteProc(
                 const AProc: TALWorkerThreadRefProc;
@@ -132,18 +130,18 @@ type
     //TALWorkerThreadObjProc
     procedure ExecuteProc(
                 const AProc: TALWorkerThreadObjProc;
-                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const AContext: Tobject; // Context will be free by the worker thread
                 const APriority: Int64;
                 const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
                 Const AAsync: Boolean = True); overload; virtual;
     procedure ExecuteProc(
                 const AProc: TALWorkerThreadObjProc;
-                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const AContext: Tobject; // Context will be free by the worker thread
                 const APriority: Int64;
                 Const AAsync: Boolean = True); overload;
     procedure ExecuteProc(
                 const AProc: TALWorkerThreadObjProc;
-                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const AContext: Tobject; // Context will be free by the worker thread
                 const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
                 Const AAsync: Boolean = True); overload;
     procedure ExecuteProc(
@@ -156,27 +154,106 @@ type
                 Const AAsync: Boolean = True); overload;
     procedure ExecuteProc(
                 const AProc: TALWorkerThreadObjProc;
-                const AExtData: Tobject; // ExtData will be free by the worker thread
+                const AContext: Tobject; // Context will be free by the worker thread
                 Const AAsync: Boolean = True); overload;
     procedure ExecuteProc(
                 const AProc: TALWorkerThreadObjProc;
                 Const AAsync: Boolean = True); overload;
-    //When we Dequeue a Request, we look for the request with a priority
-    //the most closest to PriorityStartingPoint in the PriorityDirection.
-    //Exemple if we have in the queue the requests with those priorities: 25, 75, 100, 125, 150
-    //and if PriorityStartingPoint = 110, PriorityDirection = lessThan then
-    //dequeue will return the request with a priority of 100. in the opposite
-    //way if PriorityStartingPoint = 110, PriorityDirection = greaterThan then
-    //dequeue will return 125
+    // When dequeuing a request, we search for the one with a priority
+    // that is closest to the PriorityStartingPoint, based on the specified PriorityDirection.
+    // For example, consider a queue with requests having the following priorities: 25, 75, 100, 125, 150.
+    // If PriorityStartingPoint is 110 and PriorityDirection is 'lessThan', then the dequeue operation
+    // will return the request with a priority of 100.
+    // Conversely, if PriorityStartingPoint is 110 and PriorityDirection is 'greaterThan',
+    // it will return the request with a priority of 125.
     property PriorityStartingPoint: int64 read GetPriorityStartingPoint write SetPriorityStartingPoint;
-    property PriorityDirection: TPriorityDirection read GetPriorityDirection write SetPriorityDirection;
+    property PriorityDirection: TPriorityDirection read FPriorityDirection write FPriorityDirection;
   end;
 
 {$IF CompilerVersion <= 25} // xe4
 type
   THorzRectAlign = (Center, Left, Right);
   TVertRectAlign = (Center, Top, Bottom);
-{$IFEND}
+{$ENDIF}
+
+type
+
+  TALBitSet32 = record
+  private
+    FBits: Cardinal;
+  public
+    procedure Clear;
+    procedure MarkBit(const Index: Integer);
+    procedure ClearBit(const Index: Integer);
+    function HasBit(const Index: Integer): Boolean;
+    function IsEmpty: Boolean;
+    function FirstMarkedBit: Integer;
+  end;
+
+type
+
+  // A fixed-size ring buffer that supports pushing/popping at both the front and back.
+  // When full, pushBack overwrites the oldest element, and pushFront overwrites the element
+  // at the opposite end. Random access is available via the default Items property.
+  TALRingBuffer<T> = class
+  private
+    FBuffer: TArray<T>;
+    FCapacity: Integer;  // Total capacity of the buffer.
+    FBegin: Integer;     // Index of the first (oldest) element.
+    FCount: Integer;     // Number of initialized elements.
+    function BufferIndex(Index: Integer): Integer;
+    function GetItem(Index: Integer): T;
+    procedure SetItem(Index: Integer; const Value: T);
+  public
+    /// <summary>
+    /// Creates an empty ring buffer with the given capacity.
+    /// </summary>
+    constructor Create(const ACapacity: Integer); overload;
+    /// <summary>
+    /// Removes all elements from the buffer.
+    /// </summary>
+    procedure Clear;
+    /// <summary>
+    /// Returns True if the buffer is empty.
+    /// </summary>
+    function Empty: Boolean;
+    /// <summary>
+    /// Returns the total capacity of the buffer.
+    /// </summary>
+    function Capacity: Integer;
+    /// <summary>
+    /// Returns the current number of elements in the buffer.
+    /// </summary>
+    function Count: Integer;
+    /// <summary>
+    /// Returns the oldest element.
+    /// </summary>
+    function Front: T;
+    /// <summary>
+    /// Returns the newest element.
+    /// </summary>
+    function Back: T;
+    /// <summary>
+    /// Removes and returns the front element.
+    /// </summary>
+    function PopFront: T;
+    /// <summary>
+    /// Removes and returns the back element.
+    /// </summary>
+    function PopBack: T;
+    /// <summary>
+    /// Inserts an element at the front. When full, the element at the back is overwritten.
+    /// </summary>
+    procedure PushFront(const AItem: T);
+    /// <summary>
+    /// Inserts an element at the back. When full, the element at the front is overwritten.
+    /// </summary>
+    procedure PushBack(const AItem: T);
+    /// <summary>
+    /// Random access (0 = oldest element).
+    /// </summary>
+    property Items[Index: Integer]: T read GetItem write SetItem; default;
+  end;
 
 type
 
@@ -191,9 +268,9 @@ type
   TALPointDType = array [0..1] of Double;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported122}
+  {$IFNDEF ALCompilerVersionSupported123}
     {$MESSAGE WARN 'Check if System.Types.TPointf still having the same implementation and adjust the IFDEF'}
-  {$IFEND}
+  {$ENDIF}
   PALPointD = ^TALPointD;
   TALPointD = record
     class function Create(const AX, AY: Double): TALPointD; overload; static; inline;
@@ -267,9 +344,9 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported122}
+  {$IFNDEF ALCompilerVersionSupported123}
     {$MESSAGE WARN 'Check if System.Types.TSizef still having the same implementation and adjust the IFDEF'}
-  {$IFEND}
+  {$ENDIF}
   PALSizeD = ^TALSizeD;
   TALSizeD = record
     cx: Double;
@@ -307,9 +384,9 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported122}
+  {$IFNDEF ALCompilerVersionSupported123}
     {$MESSAGE WARN 'Check if System.Types.TRectf still having the same implementation and adjust the IFDEF'}
-  {$IFEND}
+  {$ENDIF}
   PALRectD = ^TALRectD;
   TALRectD = record
   private
@@ -457,9 +534,9 @@ type
   end;
 
 {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-{$IFNDEF ALCompilerVersionSupported122}
+{$IFNDEF ALCompilerVersionSupported123}
   {$MESSAGE WARN 'Check if functions below implemented in System.Types still having the same implementation and adjust the IFDEF'}
-{$IFEND}
+{$ENDIF}
 function ALRectWidth(const Rect: TRect): Integer; inline; overload;
 function ALRectWidth(const Rect: TRectF): Single; inline; overload;
 function ALRectWidth(const Rect: TALRectD): Double; inline; overload;
@@ -517,12 +594,23 @@ procedure _ALLog(
 procedure ALLog(Const Tag: String; Const msg: String; const &Type: TalLogType = TalLogType.VERBOSE); overload;
 procedure ALLog(Const Tag: String; const &Type: TalLogType = TalLogType.VERBOSE); overload;
 procedure ALLog(Const Tag: String; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR); overload;
+procedure ALLog(Const Tag: String; const TagArgs: array of const; Const msg: String; const msgArgs: array of const; const &Type: TalLogType = TalLogType.VERBOSE); overload;
+procedure ALLog(Const Tag: String; Const msg: String; const msgArgs: array of const; const &Type: TalLogType = TalLogType.VERBOSE); overload;
+procedure ALLog(Const Tag: String; const Args: array of const; const &Type: TalLogType = TalLogType.VERBOSE); overload;
+procedure ALLog(Const Tag: String; const Args: array of const; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR); overload;
 
+var ALDisableLog: Boolean = False;
+
+// LogHistory is useful for error reporting, allowing the last printed logs
+// to be included in the report. To enable it, set ALMaxLogHistory > 0.
 var ALMaxLogHistory: integer = 0;
 function ALGetLogHistory(const AIgnoreLastLogItemMsg: Boolean = False): String;
 
-Var ALEnqueueLog: Boolean = False; // We can use this flag to enqueue the log when the device just started and when we didn't yet
-procedure ALPrintLogQueue;         // pluged the device to the monitoring tool, so that we can print the log a little later
+// This flag allows us to enqueue logs when the device has just started
+// and hasn't yet been connected to the monitoring tool, enabling us
+// to print the logs later.
+Var ALEnqueueLog: Boolean = False;
+procedure ALPrintLogQueue;
 
 {~~}
 type
@@ -566,6 +654,7 @@ const
   ALMsPerSec = 1000;
   ALNanosPerMs = 1000000;
   ALNanosPerSec = 1000000000;
+  ALSecondsPerNano = 1E-9;
 
 {********************************}
 function ALElapsedTimeNano: int64;
@@ -574,8 +663,11 @@ function ALElapsedTimeMillisAsInt64: int64;
 function ALElapsedTimeSecondsAsDouble: Double;
 function ALElapsedTimeSecondsAsInt64: int64;
 
+function ALIsValidLatlng(const ALatitude, ALongitude: Double): Boolean;
+function ALGetDistanceBetween2Points(const ALatitude1, ALongitude1, ALatitude2, ALongitude2: Double): integer; // in meters
+
 {$IFDEF MSWINDOWS}
-{$IFNDEF ALCompilerVersionSupported122}
+{$IFNDEF ALCompilerVersionSupported123}
   {$MESSAGE WARN 'Check if EnumDynamicTimeZoneInformation/SystemTimeToTzSpecificLocalTimeEx/TzSpecificLocalTimeToSystemTimeEx are still not declared in Winapi.Windows and adjust the IFDEF'}
 {$ENDIF}
 {$WARNINGS OFF}
@@ -603,7 +695,7 @@ function ALUnixMsToDateTime(const aValue: Int64): TDateTime;
 function ALDateTimeToUnixMs(const aValue: TDateTime): Int64;
 Function ALInc(var x: integer; Count: integer): Integer;
 procedure ALAssignError(Const ASource: TObject; const ADest: Tobject);
-var ALMove: procedure (const Source; var Dest; Count: NativeInt);
+procedure ALMove(const Source; var Dest; Count: NativeInt); inline;
 {$IFDEF MSWINDOWS}
 type
   TALConsoleColor = (
@@ -637,7 +729,6 @@ Procedure ALWriteLN(const AStr: String); overload;
 Procedure ALWriteLN(const AStr: String; const aForegroundColor: TALConsoleColor); overload;
 Procedure ALWriteLN(const AStr: String; const aForegroundColor: TALConsoleColor; const aBackgroundColor: TALConsoleColor); overload;
 {$ENDIF}
-
 
 {~~~}
 const
@@ -677,7 +768,7 @@ uses
   Posix.Sched,
   Androidapi.JNI.JavaTypes,
   Androidapi.Helpers,
-  Alcinoe.AndroidApi.Common,
+  Androidapi.JNI.Util,
   Posix.Time,
   {$ENDIF}
   {$IF defined(IOS)}
@@ -690,18 +781,19 @@ uses
   {$ENDIF}
   system.DateUtils,
   System.UIConsts,
+  System.Diagnostics,
   Alcinoe.StringUtils;
 
 {****************************************}
 constructor TALWorkerThreadRequest.Create(
               const AProc: TALWorkerThreadRefProc;
-              const AExtData: Tobject;
+              const AContext: Tobject;
               const APriority: Int64;
               const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
               const ASignal: TEvent);
 begin
   FRefProc := AProc;
-  FExtData := AExtData;
+  FContext := AContext;
   FPriority := APriority;
   FGetPriorityFunc := AGetPriorityFunc;
   FSignal := ASignal;
@@ -710,13 +802,13 @@ end;
 {****************************************}
 constructor TALWorkerThreadRequest.Create(
               const AProc: TALWorkerThreadObjProc;
-              const AExtData: Tobject;
+              const AContext: Tobject;
               const APriority: Int64;
               const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
               const ASignal: TEvent);
 begin
   FObjProc := AProc;
-  FExtData := AExtData;
+  FContext := AContext;
   FPriority := APriority;
   FGetPriorityFunc := AGetPriorityFunc;
   FSignal := ASignal;
@@ -725,14 +817,14 @@ end;
 {****************************************}
 destructor TALWorkerThreadRequest.Destroy;
 begin
-  ALFreeAndNil(FExtData);
+  ALFreeAndNil(FContext);
   inherited;
 end;
 
 {*************************************************}
 function TALWorkerThreadRequest.GetPriority: Int64;
 begin
-  if Assigned(FGetPriorityFunc) then result := fGetPriorityFunc(FExtData)
+  if Assigned(FGetPriorityFunc) then result := fGetPriorityFunc(FContext)
   else result := FPriority;
 end;
 
@@ -753,6 +845,7 @@ end;
 destructor TALWorkerThread.Destroy;
 begin
   Terminate;
+  If Suspended then start;
   FSignal.setevent;
   WaitFor;
   ALfreeandNil(FSignal);
@@ -783,11 +876,10 @@ begin
             //  ClassName + '.Execute',
             //  'Request.Priority:' + ALIntToStrW(LWorkerThreadRequest.Priority) + ' | ' +
             //  'PriorityStartingPoint:' + ALIntToStrW(FWorkerThreadPool.PriorityStartingPoint) + ' | ' +
-            //  'PriorityDirection:' + TRttiEnumerationType.GetName(FWorkerThreadPool.PriorityDirection),
-            //  TalLogType.verbose);
+            //  'PriorityDirection:' + TRttiEnumerationType.GetName(FWorkerThreadPool.PriorityDirection));
             {$ENDIF}
-            if assigned(LWorkerThreadRequest.ObjProc) then LWorkerThreadRequest.ObjProc(LWorkerThreadRequest.FExtData)
-            else LWorkerThreadRequest.RefProc(LWorkerThreadRequest.FExtData);
+            if assigned(LWorkerThreadRequest.ObjProc) then LWorkerThreadRequest.ObjProc(LWorkerThreadRequest.FContext)
+            else LWorkerThreadRequest.RefProc(LWorkerThreadRequest.FContext);
           {$IF defined(ios)}
           finally
             LAutoReleasePool.release;
@@ -830,22 +922,6 @@ begin
   inherited;
 end;
 
-{********************************************************************}
-function TALWorkerThreadPool.GetPriorityDirection: TPriorityDirection;
-begin
-  //sizeof fPriorityDirection is 1 that mean read and write are ATOMIC
-  //no need to use any Interlock mechanism
-  result := fPriorityDirection;
-end;
-
-{**********************************************************************************}
-procedure TALWorkerThreadPool.SetPriorityDirection(const Value: TPriorityDirection);
-begin
-  //sizeof fPriorityDirection is 1 that mean read and write are ATOMIC
-  //no need to use any Interlock mechanism
-  fPriorityDirection := Value;
-end;
-
 {***********************************************************}
 function TALWorkerThreadPool.GetPriorityStartingPoint: int64;
 begin
@@ -853,7 +929,7 @@ begin
 end;
 
 {***************************************************************************************}
-function TALWorkerThreadPool.GetPriorityStartingPointExt(const AExtData: Tobject): Int64;
+function TALWorkerThreadPool.GetPriorityStartingPointExt(const AContext: Tobject): Int64;
 begin
   result := GetPriorityStartingPoint;
 end;
@@ -928,13 +1004,13 @@ begin
     for Var I := 0 to fRequests.Count - 1 do begin
       var LCompare := fRequests[i].Priority - LPriorityStartingPoint;
       if (LCompare > 0) then begin
-        if (LCompare < LGreaterThanFoundCompare) then begin
+        if (LCompare <= LGreaterThanFoundCompare) then begin
           LGreaterThanFoundCompare := LCompare;
           LGreaterThanFoundIndex := i;
         end
       end
       else if (LCompare < 0) then begin
-        if (LCompare > LLesserThanFoundCompare) then begin
+        if (LCompare >= LLesserThanFoundCompare) then begin
           LLesserThanFoundCompare := LCompare;
           LLesserThanFoundIndex := i;
         end
@@ -965,7 +1041,7 @@ end;
 {****************************************}
 procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadRefProc;
-            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const AContext: Tobject; // Context will be free by the worker thread
             const APriority: Int64;
             const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
             Const AAsync: Boolean = True);
@@ -975,7 +1051,7 @@ begin
   try
     var LWorkerThreadRequest := TALWorkerThreadRequest.Create(
                                   AProc,
-                                  AExtData,
+                                  AContext,
                                   APriority,
                                   AGetPriorityFunc,
                                   LSignal);
@@ -994,21 +1070,21 @@ end;
 {****************************************}
 procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadRefProc;
-            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const AContext: Tobject; // Context will be free by the worker thread
             const APriority: Int64;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, AExtData, APriority, nil{AGetPriorityFunc}, AAsync);
+  ExecuteProc(AProc, AContext, APriority, nil{AGetPriorityFunc}, AAsync);
 end;
 
 {****************************************}
 procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadRefProc;
-            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const AContext: Tobject; // Context will be free by the worker thread
             const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, AExtData, 0{APriority}, AGetPriorityFunc, AAsync);
+  ExecuteProc(AProc, AContext, 0{APriority}, AGetPriorityFunc, AAsync);
 end;
 
 {****************************************}
@@ -1017,7 +1093,7 @@ procedure TALWorkerThreadPool.ExecuteProc(
             const APriority: Int64;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, nil{AExtData}, APriority, nil{AGetPriorityFunc}, AAsync);
+  ExecuteProc(AProc, nil{AContext}, APriority, nil{AGetPriorityFunc}, AAsync);
 end;
 
 {****************************************}
@@ -1026,16 +1102,16 @@ procedure TALWorkerThreadPool.ExecuteProc(
             const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, AGetPriorityFunc, AAsync);
+  ExecuteProc(AProc, nil{AContext}, 0{APriority}, AGetPriorityFunc, AAsync);
 end;
 
 {****************************************}
 procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadRefProc;
-            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const AContext: Tobject; // Context will be free by the worker thread
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, AExtData, 0{APriority}, GetPriorityStartingPointExt, AAsync);
+  ExecuteProc(AProc, AContext, 0{APriority}, GetPriorityStartingPointExt, AAsync);
 end;
 
 {****************************************}
@@ -1043,13 +1119,13 @@ procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadRefProc;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, GetPriorityStartingPointExt, AAsync);
+  ExecuteProc(AProc, nil{AContext}, 0{APriority}, GetPriorityStartingPointExt, AAsync);
 end;
 
 {****************************************}
 procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadObjProc;
-            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const AContext: Tobject; // Context will be free by the worker thread
             const APriority: Int64;
             const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
             Const AAsync: Boolean = True);
@@ -1059,7 +1135,7 @@ begin
   try
     var LWorkerThreadRequest := TALWorkerThreadRequest.Create(
                                   AProc,
-                                  AExtData,
+                                  AContext,
                                   APriority,
                                   AGetPriorityFunc,
                                   LSignal);
@@ -1078,21 +1154,21 @@ end;
 {****************************************}
 procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadObjProc;
-            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const AContext: Tobject; // Context will be free by the worker thread
             const APriority: Int64;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, AExtData, APriority, nil{AGetPriorityFunc}, AAsync);
+  ExecuteProc(AProc, AContext, APriority, nil{AGetPriorityFunc}, AAsync);
 end;
 
 {****************************************}
 procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadObjProc;
-            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const AContext: Tobject; // Context will be free by the worker thread
             const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, AExtData, 0{APriority}, AGetPriorityFunc, AAsync);
+  ExecuteProc(AProc, AContext, 0{APriority}, AGetPriorityFunc, AAsync);
 end;
 
 {****************************************}
@@ -1101,7 +1177,7 @@ procedure TALWorkerThreadPool.ExecuteProc(
             const APriority: Int64;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, nil{AExtData}, APriority, nil{AGetPriorityFunc}, AAsync);
+  ExecuteProc(AProc, nil{AContext}, APriority, nil{AGetPriorityFunc}, AAsync);
 end;
 
 {****************************************}
@@ -1110,16 +1186,16 @@ procedure TALWorkerThreadPool.ExecuteProc(
             const AGetPriorityFunc: TALWorkerThreadGetPriorityFunc;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, AGetPriorityFunc, AAsync);
+  ExecuteProc(AProc, nil{AContext}, 0{APriority}, AGetPriorityFunc, AAsync);
 end;
 
 {****************************************}
 procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadObjProc;
-            const AExtData: Tobject; // ExtData will be free by the worker thread
+            const AContext: Tobject; // Context will be free by the worker thread
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, AExtData, 0{APriority}, GetPriorityStartingPointExt, AAsync);
+  ExecuteProc(AProc, AContext, 0{APriority}, GetPriorityStartingPointExt, AAsync);
 end;
 
 {****************************************}
@@ -1127,7 +1203,165 @@ procedure TALWorkerThreadPool.ExecuteProc(
             const AProc: TALWorkerThreadObjProc;
             Const AAsync: Boolean = True);
 begin
-  ExecuteProc(AProc, nil{AExtData}, 0{APriority}, GetPriorityStartingPointExt, AAsync);
+  ExecuteProc(AProc, nil{AContext}, 0{APriority}, GetPriorityStartingPointExt, AAsync);
+end;
+
+{**************************}
+procedure TALBitSet32.Clear;
+begin
+  FBits := 0;
+end;
+
+{**************************************************}
+procedure TALBitSet32.MarkBit(const Index: Integer);
+begin
+  FBits := FBits or (1 shl Index);
+end;
+
+{***************************************************}
+procedure TALBitSet32.ClearBit(const Index: Integer);
+begin
+  FBits := FBits and not (1 shl Index);
+end;
+
+{*********************************************************}
+function TALBitSet32.HasBit(const Index: Integer): Boolean;
+begin
+  Result := (FBits and (1 shl Index)) <> 0;
+end;
+
+{************************************}
+function TALBitSet32.IsEmpty: Boolean;
+begin
+  Result := FBits = 0;
+end;
+
+{*******************************************}
+function TALBitSet32.FirstMarkedBit: Integer;
+begin
+  for var I := 0 to 31 do
+    if (FBits and (1 shl I)) <> 0 then
+      Exit(I);
+  Result := -1;
+end;
+
+{************************************************************}
+constructor TALRingBuffer<T>.Create(const ACapacity: Integer);
+begin
+  if ACapacity <= 0 then
+    raise Exception.Create('Capacity must be greater than zero');
+  FCapacity := ACapacity;
+  SetLength(FBuffer, FCapacity);
+  FBegin := 0;
+  FCount := 0;
+end;
+
+{*************************************************************}
+function TALRingBuffer<T>.BufferIndex(Index: Integer): Integer;
+begin
+  if (Index < 0) or (Index >= FCount) then
+    raise Exception.CreateFmt('Index out of bounds: %d', [Index]);
+  Result := (FBegin + Index) mod FCapacity;
+end;
+
+{***************************************************}
+function TALRingBuffer<T>.GetItem(Index: Integer): T;
+begin
+  Result := FBuffer[BufferIndex(Index)];
+end;
+
+{*****************************************************************}
+procedure TALRingBuffer<T>.SetItem(Index: Integer; const Value: T);
+begin
+  FBuffer[BufferIndex(Index)] := Value;
+end;
+
+{***************************************}
+function TALRingBuffer<T>.Empty: Boolean;
+begin
+  Result := FCount = 0;
+end;
+
+{******************************************}
+function TALRingBuffer<T>.Capacity: Integer;
+begin
+  Result := FCapacity;
+end;
+
+{***************************************}
+function TALRingBuffer<T>.Count: Integer;
+begin
+  Result := FCount;
+end;
+
+{*********************************}
+function TALRingBuffer<T>.Front: T;
+begin
+  if Empty then
+    raise Exception.Create('Buffer is empty');
+  Result := FBuffer[FBegin];
+end;
+
+{********************************}
+function TALRingBuffer<T>.Back: T;
+begin
+  if Empty then
+    raise Exception.Create('Buffer is empty');
+  var Index := (FBegin + FCount - 1) mod FCapacity;
+  Result := FBuffer[Index];
+end;
+
+{*******************************}
+procedure TALRingBuffer<T>.Clear;
+begin
+  FCount := 0;
+  FBegin := 0;
+end;
+
+{************************************}
+function TALRingBuffer<T>.PopFront: T;
+begin
+  if Empty then
+    raise Exception.Create('Buffer is empty');
+  Result := FBuffer[FBegin];
+  FBegin := (FBegin + 1) mod FCapacity;
+  Dec(FCount);
+end;
+
+{***********************************}
+function TALRingBuffer<T>.PopBack: T;
+begin
+  if Empty then
+    raise Exception.Create('Buffer is empty');
+  var Index := (FBegin + FCount - 1) mod FCapacity;
+  Result := FBuffer[Index];
+  Dec(FCount);
+end;
+
+{***************************************************}
+procedure TALRingBuffer<T>.PushFront(const AItem: T);
+begin
+  // Move mBegin one step backward (wrap-around if needed)
+  FBegin := (FBegin - 1 + FCapacity) mod FCapacity;
+  FBuffer[FBegin] := AItem;
+  if FCount < FCapacity then
+    Inc(FCount);
+  // Else when full, pushing to front overwrites the last element.
+end;
+
+{**************************************************}
+procedure TALRingBuffer<T>.PushBack(const AItem: T);
+begin
+  if FCount < FCapacity then begin
+    var Index := (FBegin + FCount) mod FCapacity;
+    FBuffer[Index] := AItem;
+    Inc(FCount);
+  end
+  else begin
+    // When full, pushing back overwrites the front element.
+    FBuffer[FBegin] := AItem;
+    FBegin := (FBegin + 1) mod FCapacity;
+  end;
 end;
 
 {***********************************************}
@@ -1180,10 +1414,11 @@ end;
 
 {***********************************************************************}
 function ALRectCenter(var R: TALRectD; const Bounds: TALRectD): TALRectD;
+var
+  Offset: TALPointD;
 begin
-  ALOffsetRect(R, -R.Left, -R.Top);
-  ALOffsetRect(R, (ALRectWidth(Bounds)/2 - ALRectWidth(R)/2), (ALRectHeight(Bounds)/2 - ALRectHeight(R)/2));
-  ALOffsetRect(R, Bounds.Left, Bounds.Top);
+  Offset := Bounds.CenterPoint - R.CenterPoint;
+  ALOffsetRect(R, Offset.X, Offset.Y);
   Result := R;
 end;
 
@@ -2542,6 +2777,12 @@ procedure _ALLog(
             Const ThreadID: TThreadID;
             Const CanPreserve: boolean);
 begin
+  if ALDisableLog then exit;
+  {$IF defined(ALCodeProfiler)}
+  // Logging can consume time, so to ensure accurate performance statistics,
+  // ignore all verbose logs.
+  if &Type = TalLogType.VERBOSE then exit;
+  {$ENDIF}
   if CanPreserve and (ALMaxLogHistory > 0) then begin
     var LLogItem := _TALLogItem.Create(
                       Tag, // const ATag: String;
@@ -2577,22 +2818,36 @@ begin
     if &Type = TalLogType.ASSERT then ALPrintLogQueue
   end
   else begin
-    {$IF defined(ANDROID)}
     var LMsg: String;
-    if Msg <> '' then LMsg := msg
-    else LMsg := '<empty>';
+    {$IF defined(ALCodeProfiler)}
+    if ALCodeProfilerIsrunning then begin
+      var LMilliseconds: Double := (TStopwatch.GetTimeStamp - ALCodeProfilerAppStartTimeStamp) * ALCodeProfilerMillisecondsPerTick;
+      var LMinutes: integer := Trunc(LMilliseconds) div (1000 * 60);
+      LMilliseconds := LMilliseconds - (LMinutes * 1000 * 60);
+      var LSeconds: integer := Trunc(LMilliseconds) div 1000;
+      LMilliseconds := LMilliseconds - (LSeconds * 1000);
+      var LHundredNanoseconds: integer := Round(Frac(LMilliseconds) * 10000);
+      if Msg <> '' then
+        LMsg := Msg + ALFormatW(' | StartTimeStamp: %.2d:%.2d:%.3d.%.5d', [{LHours,} LMinutes, LSeconds, Trunc(LMilliseconds), LHundredNanoseconds])
+      else
+        LMsg := ALFormatW('StartTimeStamp: %.2d:%.2d:%.3d.%.5d', [{LHours,} LMinutes, LSeconds, Trunc(LMilliseconds), LHundredNanoseconds]);
+    end;
+    {$ELSE}
+    LMsg := msg;
+    {$ENDIF}
+    {$IF defined(ANDROID)}
+    if LMsg = '' then LMsg := '<empty>';
     if ThreadID <> MainThreadID then LMsg := '['+ALIntToStrW(ThreadID)+'] ' + LMsg;
     case &Type of
-      TalLogType.VERBOSE: TJLog.JavaClass.v(StringToJString(Tag), StringToJString(LMsg));
-      TalLogType.DEBUG: TJLog.JavaClass.d(StringToJString(Tag), StringToJString(LMsg));
-      TalLogType.INFO: TJLog.JavaClass.i(StringToJString(Tag), StringToJString(LMsg));
-      TalLogType.WARN: TJLog.JavaClass.w(StringToJString(Tag), StringToJString(LMsg));
-      TalLogType.ERROR: TJLog.JavaClass.e(StringToJString(Tag), StringToJString(LMsg));
-      TalLogType.ASSERT: TJLog.JavaClass.wtf(StringToJString(Tag), StringToJString(LMsg)); // << wtf for What a Terrible Failure but everyone know that it's for what the fuck !
+      TalLogType.VERBOSE: TJutil_Log.JavaClass.v(StringToJString(Tag), StringToJString(LMsg));
+      TalLogType.DEBUG: TJutil_Log.JavaClass.d(StringToJString(Tag), StringToJString(LMsg));
+      TalLogType.INFO: TJutil_Log.JavaClass.i(StringToJString(Tag), StringToJString(LMsg));
+      TalLogType.WARN: TJutil_Log.JavaClass.w(StringToJString(Tag), StringToJString(LMsg));
+      TalLogType.ERROR: TJutil_Log.JavaClass.e(StringToJString(Tag), StringToJString(LMsg));
+      TalLogType.ASSERT: TJutil_Log.JavaClass.wtf(StringToJString(Tag), StringToJString(LMsg)); // << wtf for What a Terrible Failure but everyone know that it's for what the fuck !
     end;
     {$ELSEIF defined(IOS)}
-    var LMsg: String;
-    if msg <> '' then LMsg := Tag + ' | ' + msg
+    if LMsg <> '' then LMsg := Tag + ' | ' + LMsg
     else LMsg := Tag;
     var LThreadID: String;
     if ThreadID <> MainThreadID then LThreadID := '['+ALIntToStrW(ThreadID)+']'
@@ -2613,20 +2868,17 @@ begin
       end;
     end;
     {$ELSEIF defined(MSWINDOWS)}
-    //if &Type <> TalLogType.VERBOSE  then begin // because log on windows slow down the app so skip verbosity
-      var LMsg: String;
-      if msg <> '' then LMsg := Tag + ' | ' + stringReplace(msg, '%', '%%', [rfReplaceALL]) // https://quality.embarcadero.com/browse/RSP-15942
-      else LMsg := Tag;
-      case &Type of
-        TalLogType.VERBOSE: OutputDebugString(pointer('[V] ' + LMsg + ' |'));
-        TalLogType.DEBUG:   OutputDebugString(pointer('[D][V] ' + LMsg + ' |'));
-        TalLogType.INFO:    OutputDebugString(pointer('[I][D][V] ' + LMsg + ' |'));
-        TalLogType.WARN:    OutputDebugString(pointer('[W][I][D][V] ' + LMsg + ' |'));
-        TalLogType.ERROR:   OutputDebugString(pointer('[E][W][I][D][V] ' + LMsg + ' |'));
-        TalLogType.ASSERT:  OutputDebugString(pointer('[A][E][W][I][D][V] ' + LMsg + ' |'));
-      end;
-    //end;
-    {$IFEND}
+    if LMsg <> '' then LMsg := Tag + ' | ' + stringReplace(LMsg, '%', '%%', [rfReplaceALL]) // https://quality.embarcadero.com/browse/RSP-15942
+    else LMsg := Tag;
+    case &Type of
+      TalLogType.VERBOSE: OutputDebugString(pointer('[V] ' + LMsg + ' |'));
+      TalLogType.DEBUG:   OutputDebugString(pointer('[D][V] ' + LMsg + ' |'));
+      TalLogType.INFO:    OutputDebugString(pointer('[I][D][V] ' + LMsg + ' |'));
+      TalLogType.WARN:    OutputDebugString(pointer('[W][I][D][V] ' + LMsg + ' |'));
+      TalLogType.ERROR:   OutputDebugString(pointer('[E][W][I][D][V] ' + LMsg + ' |'));
+      TalLogType.ASSERT:  OutputDebugString(pointer('[A][E][W][I][D][V] ' + LMsg + ' |'));
+    end;
+    {$ENDIF}
   end;
 end;
 
@@ -2655,6 +2907,30 @@ begin
     ALCustomLogExceptionProc(Tag, E, &Type)
   else
     _ALLog(Tag, E.message, &Type, TThread.Current.ThreadID, True{CanPreserve});
+end;
+
+{****************************************************************************************************************************************************************}
+procedure ALLog(Const Tag: String; const TagArgs: array of const; Const msg: String; const msgArgs: array of const; const &Type: TalLogType = TalLogType.VERBOSE);
+begin
+  ALLog(ALFormatW(Tag, TagArgs), ALFormatW(msg, msgArgs), &Type);
+end;
+
+{*********************************************************************************************************************************}
+procedure ALLog(Const Tag: String; Const msg: String; const msgArgs: array of const; const &Type: TalLogType = TalLogType.VERBOSE);
+begin
+  ALLog(Tag, ALFormatW(msg, msgArgs), &Type);
+end;
+
+{***********************************************************************************************************}
+procedure ALLog(Const Tag: String; const Args: array of const; const &Type: TalLogType = TalLogType.VERBOSE);
+begin
+  ALLog(ALFormatW(Tag, Args), &Type);
+end;
+
+{*****************************************************************************************************************************}
+procedure ALLog(Const Tag: String; const Args: array of const; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR);
+begin
+  ALLog(ALFormatW(Tag, Args), E, &Type);
 end;
 
 {************************}
@@ -2920,6 +3196,23 @@ begin
   Result := trunc(ALElapsedTimeNano / ALNanosPerSec);
 end;
 
+{*********************************************************************}
+function ALIsValidLatlng(const ALatitude, ALongitude: Double): Boolean;
+begin
+  result := (ALatitude >= -90) and (ALatitude <= 90) and
+            (ALongitude >= -180) and (ALongitude <= 180);
+end;
+
+{*************************************************************************************************************************}
+function ALGetDistanceBetween2Points(const ALatitude1, ALongitude1, ALatitude2, ALongitude2: Double): integer; // in meters
+begin
+  //http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates
+  var LCosAngle: Double := sin(aLatitude1 * (PI/180)) * sin(alatitude2 * (PI/180)) + cos(aLatitude1 * (PI/180)) * cos(alatitude2 * (PI/180)) *  cos((aLongitude2 * (PI/180)) - (aLongitude1 * (PI/180)));
+  if LCosAngle > 1 then LCosAngle := 1
+  else if LCosAngle < -1 then LCosAngle := -1;
+  result := round(6371 * arccos(LCosAngle) * 1000);
+end;
+
 {****************}
 {$IFDEF MSWINDOWS}
 Function ALGetDynamicTimeZoneInformations: Tarray<TDynamicTimeZoneInformation>;
@@ -3159,6 +3452,12 @@ begin
   raise EConvertError.CreateResFmt(@SAssignError, [LSourceName, LDestName]);
 end;
 
+{*********************************************************}
+procedure ALMove(const Source; var Dest; Count: NativeInt);
+begin
+  Move(Source, Dest, Count);
+end;
+
 {******************************************************}
 {Accepts number of milliseconds in the parameter aValue,
  provides 1000 times more precise value of TDateTime}
@@ -3348,7 +3647,7 @@ end;
 {$IFDEF MSWINDOWS}
 Procedure ALWriteLN(const AStr: String);
 begin
-  System.Write(AStr);
+  System.WriteLN(AStr);
 end;
 {$ENDIF}
 
@@ -3395,7 +3694,7 @@ begin
   if Temp = nil then exit;
   TObject(Obj) := nil;
   {$ENDIF}
-  if adelayed and assigned(ALCustomDelayedFreeObjectProc) then ALCustomDelayedFreeObjectProc(Temp)
+  if ADelayed and assigned(ALCustomDelayedFreeObjectProc) then ALCustomDelayedFreeObjectProc(Temp)
   else begin
     {$IF defined(AUTOREFCOUNT)}
     //AUTOREFCOUNT was removed in 10.4 (sydney) so the
@@ -3429,10 +3728,8 @@ initialization
   {$ENDIF}
   _ALLogQueue := TList<_TALLogItem>.Create;
   _ALLogHistory := TList<_TALLogItem>.Create;
-  ALMove := system.Move;
 
-
-Finalization
+finalization
   ALFreeAndNil(_ALLogHistory);
   ALFreeAndNil(_ALLogQueue);
 

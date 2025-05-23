@@ -15,6 +15,9 @@ unit Alcinoe.HTTP.Client.WinInet;
 
 interface
 
+{$I Alcinoe.inc}
+{$SCOPEDENUMS OFF}
+
 uses
   Winapi.Windows,
   System.Classes,
