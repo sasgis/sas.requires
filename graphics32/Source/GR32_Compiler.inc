@@ -119,40 +119,6 @@
 
 
 (*
-  Symbol INLININGSUPPORTED:
-  -------------------------
-
-    In modern Delphi versions procedures and functions that do not contain
-    assembler code can be inlined. This can be extremely useful for calls
-    to a small portion of code in a loop. However, depending on the instruction
-    cache size, this may or may not result in a performance boost compared to a
-    call of assembler optimized code.
-*)
-// Note: Inlining is supported by all supported compilers; This define will be deprecated.
-{$if not defined(MEDIOCRE_COMPILER)}
-{$define INLININGSUPPORTED}
-{$ifend}
-
-
-(*
-  Symbol: NO_GENERIC_METACLASS_LISTS
-  -------------------------------
-
-     The C++ Builder linker has problems resolving ambiguities caused by
-     metaclass types because they all get mangled as TClass. As a result
-     of this the compiled object files end up containing duplicate
-     symbols, which in turn causes a LIB266 linker error.
-     Specifically we get into problems with TCustomClassList<T> where "T"
-     is a metaclass.
-     To work around the problem we define the NO_GENERIC_METACLASS_LISTS
-     for C++ Builder which causes us to use TClassList for all class types.
-*)
-{$if defined(BCB)}
-{$define NO_GENERIC_METACLASS_LISTS}
-{$ifend}
-
-
-(*
   Symbol TARGET_* :
   -----------------
 
@@ -293,6 +259,23 @@
 
 
 (*
+  Symbol INLININGSUPPORTED:
+  -------------------------
+
+    In modern Delphi versions procedures and functions that do not contain
+    assembler code can be inlined. This can be extremely useful for calls
+    to a small portion of code in a loop. However, depending on the instruction
+    cache size, this may or may not result in a performance boost compared to a
+    call of assembler optimized code.
+*)
+// Note: Inlining is supported by all supported compilers; This define will be deprecated.
+{$if not defined(MEDIOCRE_COMPILER)}
+{$define INLININGSUPPORTED}
+{$ifend}
+
+
+
+(*
   Symbol: LOADFROMSTREAM
   ----------------------
 
@@ -322,11 +305,18 @@
   The TPointF and TRectF types exists in Delphi XE2 and later, and in FPC.
   However, the FPC implementation of TRectF is pretty pathetic so we'll use our
   own there.
+  Additionally, it seems that the first Delphi implementations of TPointF and
+  TRectF lacks the TPoint and TRect conversion operators so we'll use our own
+  there too.
 *)
-{$define HAS_TPOINTF}
-{$ifndef FPC}
-{$define HAS_TRECTF}
-{$endif}
+{$if defined(FPC) or (CompilerVersion > 25.0)} // XE4
+  {$define HAS_TPOINTF}
+{$ifend}
+
+{$if (not defined(FPC)) and (CompilerVersion > 25.0)} // XE4
+  {$define HAS_TRECTF}
+{$ifend}
+
 
 
 (*
@@ -351,6 +341,173 @@
 *)
 {$if defined(FPC) or (CompilerVersion >= 33.0)}
 {$define CLOSURE_CAPTURES_CONST}
+{$ifend}
+
+
+
+(*
+  Symbol: DynArrayOps
+  -------------------------------
+
+    Supports dynamic array constructors and operators.
+
+  If this symbol is defined, the compiler is assumed to support dynamic
+  array operators such as + and construction with [...].
+
+    procedure Test;
+    var
+      SomeArray: array of string;
+      SomeArrayArray: array of array of string;
+    begin
+      SomeArray := ['foo', 'bar'];
+      SomeArrayArray := [SomeArray];
+      SomeArray := ['foo'] + ['bar'];
+    end;
+
+  The symbol is defined for Delphi XE7 and later, and for FPC.
+*)
+{$if defined(FPC) or (CompilerVersion >= 28.0)}
+{$define DynArrayOps}
+{$ifend}
+
+
+
+(*
+  Symbol: ClientToScreenRect
+  -------------------------------
+
+    The TControl.ClientToScreen(TRect) overload exists.
+
+  If this symbol is defined, TControl implements the ClientToScreen(TRect)
+  overload. Otherwise only TControl.ClientToScreen(TPoint) is implemented.
+
+  The symbol is defined for Delphi XE5 and later, and for FPC.
+  The exact version of Delphi that introduced the overload is unknown at this
+  time.
+*)
+{$if defined(FPC) or (CompilerVersion > 25.0)}
+{$define ClientToScreenRect}
+{$ifend}
+
+
+
+(*
+  Symbol: StaticOperators
+  -------------------------------
+
+    class operators must be declared with the 'static' keyword.
+
+  If this symbol is defined, class operators must be declarted as static:
+
+    class operator Equal(const Left, Right: TComplex): boolean; static;
+
+
+  The symbol is defined for Delphi XE7 and later.
+  The exact version of Delphi that introduced the requirement is unknown at
+  this time.
+*)
+{$if (not defined(FPC)) and (CompilerVersion >= 28.0)}
+{$define StaticOperators}
+{$ifend}
+
+
+
+(*
+  Symbol: FloatCast
+  -------------------------------
+
+    Floating point type casts converts value.
+
+  If this symbol is defined, a floating point type cast performs a value
+  conversion. Otherwise it is assumed to do a hard type cast.
+
+    var a: integer;
+    var n: Single;
+    n := Single(a)
+
+  The symbol is defined for Delphi 10.0 and later.
+  The exact version of Delphi that introduced the feature is unknown at
+  this time.
+*)
+{$if (not defined(FPC)) and (CompilerVersion >= 30.0)}
+{$define FloatCast}
+{$ifend}
+
+
+
+(*
+  Symbol: GenericMethods
+  -------------------------------
+
+    Generic methods are supported.
+
+  If this symbol is defined, the compiler supports declaration of
+  generic methods in non-generic classes.
+
+  The symbol is defined for Delphi 10 and later, and for FPC.
+*)
+{$if defined(FPC) or (CompilerVersion >= 30.0)} // Delphi 10 or later
+  {$define GenericMethods}
+{$ifend}
+
+
+
+(*
+  Symbol: NeedImageList
+  -------------------------------
+
+    ImageList stuff requires the ImageList unit.
+
+  When (and not because) this symbol is defined, the ImageList unit
+  will be included by the IDE when the form contains an TImageList -
+  regardless of it being already included or not. Not much we can do
+  about it.
+
+  The symbol is defined for Delphi XE8 and later.
+*)
+{$if defined(FRAMEWORK_VCL) and (CompilerVersion >= 29.0)} // XE8
+  {$define NeedImageList}
+{$ifend}
+
+
+
+(*
+  Symbol: NO_GENERIC_METACLASS_LISTS
+  -------------------------------
+
+     The C++ Builder linker has problems resolving ambiguities caused by
+     metaclass types because they all get mangled as TClass. As a result
+     of this the compiled object files end up containing duplicate
+     symbols, which in turn causes a LIB266 linker error.
+     Specifically we get into problems with TCustomClassList<T> where "T"
+     is a metaclass.
+     To work around the problem we define the NO_GENERIC_METACLASS_LISTS
+     for C++ Builder which causes us to use TClassList for all class types.
+*)
+{$if defined(BCB)}
+{$define NO_GENERIC_METACLASS_LISTS}
+{$ifend}
+
+
+
+(*
+  Symbol: GENERIC_POINTERS
+  -------------------------------
+
+    Typed pointers to generic types are supported.
+
+  Older Delphi versions cannot resolve a pointer to a generic type correctly
+  and therefore must use plan untyped pointers instead.
+  Exact Delphi version is unknown but XE4 doesn't work and Delphi 10 does.
+
+  The symbol is defined for XE5 and later, and for FPC.
+  The exact version of Delphi that supports the feature is unknown at this
+  time.
+*)
+{$if defined(FPC)}
+  {$define GENERIC_POINTERS}
+{$elseif (CompilerVersion > 25.0)}
+  {$define GENERIC_POINTERS}
 {$ifend}
 
 

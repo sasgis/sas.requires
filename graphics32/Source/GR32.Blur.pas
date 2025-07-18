@@ -245,7 +245,11 @@ begin
         Filler.OffsetX := Bounds.Left;
         Filler.OffsetY := Bounds.Top;
 
+{$if defined(DynArrayOps)} // XE7
         Points := [Region];
+{$else}
+        Points := PolyPolygon(Region);
+{$ifend}
         PolyPolygonFS(Bitmap, Points, Filler);
       finally
         Filler.Free;
@@ -261,7 +265,11 @@ begin
       try
         Filler.Pattern := Dest;
 
+{$if defined(DynArrayOps)} // XE7
         Points := [Region];
+{$else}
+        Points := PolyPolygon(Region);
+{$ifend}
         PolyPolygonFS(Bitmap, Points, Filler);
       finally
         Filler.Free;

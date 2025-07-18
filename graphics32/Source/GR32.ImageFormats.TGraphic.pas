@@ -109,7 +109,13 @@ type
     // IImageFormatWriter
     procedure SaveToStream(ASource: TCustomBitmap32; AStream: TStream); virtual;
   public
+{$if defined(DynArrayOps)}
     constructor Create(AGraphicClass: TGraphicClass; const ADescription: string; const AFileTypes: TFileTypes = nil);
+    constructor CreateEx(AGraphicClass: TGraphicClass; const ADescription: string; const AFileTypes: array of string); deprecated 'Use Create with dynamic array';
+{$else}
+    constructor CreateEx(AGraphicClass: TGraphicClass; const ADescription: string; const AFileTypes: TFileTypes = nil);
+    constructor Create(AGraphicClass: TGraphicClass; const ADescription: string; const AFileTypes: array of string);
+{$ifend}
   end;
 
   TImageFormatReaderWriterTGraphic = class(TImageFormatReaderTGraphic, IImageFormatWriter)
@@ -298,8 +304,13 @@ end;
 //      TImageFormatReaderTGraphic
 //
 //------------------------------------------------------------------------------
+{$if defined(DynArrayOps)}
 constructor TImageFormatReaderTGraphic.Create(AGraphicClass: TGraphicClass;
   const ADescription: string; const AFileTypes: TFileTypes);
+{$else}
+constructor TImageFormatReaderTGraphic.CreateEx(AGraphicClass: TGraphicClass;
+  const ADescription: string; const AFileTypes: TFileTypes);
+{$ifend}
 var
   FileType: string;
 begin
@@ -317,6 +328,27 @@ begin
       FFileTypes[0] := FileType;
     end;
   end;
+end;
+
+{$if (not defined(DynArrayOps))}
+constructor TImageFormatReaderTGraphic.Create(AGraphicClass: TGraphicClass;
+  const ADescription: string; const AFileTypes: array of string);
+{$else}
+constructor TImageFormatReaderTGraphic.CreateEx(AGraphicClass: TGraphicClass;
+  const ADescription: string; const AFileTypes: array of string);
+{$ifend}
+var
+  FileTypes: TFileTypes;
+  i: integer;
+begin
+  SetLength(FileTypes, Length(AFileTypes));
+  for i := 0 to High(AFileTypes) do
+    FileTypes[i] := AFileTypes[i];
+{$if defined(DynArrayOps)}
+  Create(AGraphicClass, ADescription, FileTypes);
+{$else}
+  CreateEx(AGraphicClass, ADescription, FileTypes);
+{$ifend}
 end;
 
 //------------------------------------------------------------------------------

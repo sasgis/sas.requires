@@ -405,7 +405,11 @@ end;
 
 function TImageFormatAdapterPSD.ImageFormatFileTypes: TFileTypes;
 begin
+{$if defined(DynArrayOps)}
   Result := ['psd'];
+{$else}
+  MakeFileTypes(['psd']);
+{$ifend}
 end;
 
 resourcestring

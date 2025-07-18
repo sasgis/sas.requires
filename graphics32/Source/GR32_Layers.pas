@@ -32,7 +32,7 @@ unit GR32_Layers;
 
 interface
 
-{$INCLUDE GR32.inc}
+{$include GR32.inc}
 
 uses
 {$if defined(FRAMEWORK_VCL)}
@@ -205,7 +205,7 @@ type
 
     function Add(ItemClass: TLayerClass): TCustomLayer; overload;
     function Insert(Index: Integer; ItemClass: TLayerClass): TCustomLayer; overload;
-{$if defined(FPC) or (CompilerVersion > 29.0)} // Delphi 10 or later
+{$if defined(GenericMethods)}
     function Add<T: TCustomLayer>: T; overload;
     function Insert<T: TCustomLayer>(Index: Integer): T; overload;
 {$ifend}
@@ -636,7 +636,8 @@ type
     FQuantizeShiftToggle: TLayerShiftState;
     FPassMouse: TRubberbandPassMouse;
     FHitTest: ILayerHitTest;
-    procedure SetFrameStipple(const Value: TArrayOfColor32);
+    procedure SetFrameStipple(const Value: array of TColor32); // Needed for pre-Delphi XE7
+    procedure SetFrameStipplePattern(const Value: TArrayOfColor32);
     procedure SetFrameStippleStep(const Value: TFloat);
     procedure SetFrameStippleCounter(const Value: TFloat);
     procedure SetChildLayer(Value: TPositionedLayer);
@@ -715,7 +716,7 @@ type
     // HandleFrameSize: Width of handle frame/outline
     property HandleFrameSize: TFloat read FHandleFrameSize write SetHandleFrameSize;
 
-    property FrameStipple: TArrayOfColor32 read FFrameStipplePattern write SetFrameStipple;
+    property FrameStipple: TArrayOfColor32 read FFrameStipplePattern write SetFrameStipplePattern;
     property FrameStippleStep: TFloat read FFrameStippleStep write SetFrameStippleStep;
     property FrameStippleCounter: TFloat read FFrameStippleCounter write SetFrameStippleCounter;
 
@@ -900,7 +901,7 @@ begin
   Notify(lnLayerAdded, Result, Result.Index);
 end;
 
-{$if defined(FPC) or (CompilerVersion > 29.0)}
+{$if defined(GenericMethods)}
 function TLayerCollection.Add<T>: T;
 begin
   Result := T(Add(T));
@@ -1061,7 +1062,7 @@ begin
   end;
 end;
 
-{$if defined(FPC) or (CompilerVersion > 29.0)}
+{$if defined(GenericMethods)}
 function TLayerCollection.Insert<T>(Index: Integer): T;
 begin
   Result := T(Insert(Index, T));
@@ -3409,7 +3410,18 @@ begin
   end;
 end;
 
-procedure TCustomRubberBandLayer.SetFrameStipple(const Value: TArrayOfColor32);
+procedure TCustomRubberBandLayer.SetFrameStipple(const Value: array of TColor32);
+var
+  L: Integer;
+begin
+  L := Length(Value);
+  SetLength(FFrameStipplePattern, L);
+  MoveLongword(Value[0], FFrameStipplePattern[0], L);
+  FFrameStippleCounter := Wrap(FFrameStippleCounter, Length(FFrameStipplePattern));
+  UpdateFrame;
+end;
+
+procedure TCustomRubberBandLayer.SetFrameStipplePattern(const Value: TArrayOfColor32);
 begin
   FFrameStipplePattern := Copy(Value);
   FFrameStippleCounter := Wrap(FFrameStippleCounter, Length(FFrameStipplePattern));

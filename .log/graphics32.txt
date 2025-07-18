@@ -1,3 +1,138 @@
+commit e1d7038d7a32ff78bb5b61e9583137d7de4be86b
+Merge: 4b056ece f92bfdb3
+Author: zed <starmen@tut.by>
+Date:   2025-07-18 16:56:33 +0300
+
+    Merge branch 'master' into sasgis
+
+commit f92bfdb3b44d49b20c517cf310b16d7568ad06d2
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-18 15:45:36 +0200
+
+    Minor tweak to work around XE4 unit resolution bug.
+
+commit 9cb6d6a10697ec31b2dbc064b74a724d858d73cf
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-18 15:45:00 +0200
+
+    Tweaked TDoubleLinked<T> to get it to compile with Delphi XE4.
+
+commit ff4c2b8694356354000d5fdc7ec97969ccad0614
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-18 15:05:39 +0200
+
+    Refactored TFontFace32 to make FKerningComparer a global singleton.
+    
+    Changed type of return var passed to TArray.BinarySearch for Delphi 10 compatibility.
+    Fixes #368
+
+commit 4b056ecec7726b37f694df3e836ac6af58bd259b
+Merge: 56ac3802 ea67e4e9
+Author: zed <starmen@tut.by>
+Date:   2025-07-18 10:19:29 +0300
+
+    Merge branch 'master' into sasgis
+
+commit ea67e4e998ae465d8b76bdb46486df1ddba95fb3
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-12 21:42:16 +0200
+
+    Partial revert of "Minor refactoring of PNG stream handling" for FPC support
+    
+    This reverts commit 7e8b1ffe2bc345bc3f18ceafbb5000b8715d9c15.
+    Refs #366
+
+commit 61a85146e13b7f198f2af89715ac94463e230bac
+Merge: 1178d6d6 6588cd77
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-12 21:22:52 +0200
+
+    Merge branch 'TextToPath-cache'
+    
+    Fixes #66
+
+commit 1178d6d6d8233564a68be975622451ab0e78388e
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-08 12:52:35 +0200
+
+    The file signatures used by CheckFileSignature are now dynamic or open arrays of byte in order to avoid AnsiString encoding issues.
+    
+    Fixes #367
+
+commit bcbabc3154a40946897d3758baab094934bfe66f
+Merge: 7e85c02c 7e8b1ffe
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-01 17:31:59 +0200
+
+    Merge branch 'RelativeStream'
+
+commit 7e8b1ffe2bc345bc3f18ceafbb5000b8715d9c15
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-01 16:30:38 +0200
+
+    Minor refactoring of PNG stream handling
+    
+    Updated PNG unit test to validate relative stream load/save. Refs #366
+
+commit d6f4ee17ec4ce251d6e5b1a975ff54c2e2fedec5
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-01 16:28:44 +0200
+
+    Updated unit test to verify #366
+
+commit 126e0c21b9d05d3c948a2c3338bc226e39f4d93c
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-01 16:28:08 +0200
+
+    Fix for BMP load/save unable to handle relative stream position.
+    
+    Fixes #366
+
+commit 7e85c02c71192281e01128a0c8f93dc640484f5b
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-06-01 15:26:45 +0200
+
+    Enforce minimum steps=2 for the Circle function
+    
+    Fixes #365
+
+commit f9c3b3669669338de8a383a3a5e081c2f0d17deb
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-05-29 15:47:42 +0200
+
+    Updated for FPC; Test against symbolic feature flags instead of CompilerVersion
+    
+    Fixes #364
+
+commit 47b51c8cda7b1b80bb4d7aea0cb446a969083125
+Merge: 65fc23a7 8c383c2f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-05-28 17:28:20 +0200
+
+    Merge branch 'Fixes-for-XE4'
+
+commit 8c383c2fd1dfa92b980de40319ff4bee234fe85f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-05-28 13:57:11 +0200
+
+    Updated package files
+
+commit 2f992bf4e5905d74a81c71f608c2f0cd1d800bc2
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-05-28 13:38:41 +0200
+
+    Changes for Delphi XE4
+    
+    Fixes #362
+
+commit c6a7289e1654156791f9a75abb2415ac4bca953b
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-05-27 15:37:54 +0200
+
+    Fixes for Delphi XE4
+    
+    Fixes #362
+
 commit 56ac380294c4fb73fd7889bfb26adf893cc9a62e
 Merge: 6763afb8 65fc23a7
 Author: zed <starmen@tut.by>
@@ -35,6 +170,29 @@ Date:   2025-05-03 22:14:59 +0200
     
     Fixes #360
 
+commit 6588cd7784866bc15bc7ef6678392f1347869ea0
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-04-03 00:20:27 +0200
+
+    Added some illustrative comments about OpenType metrics
+
+commit bf846f0d0efaebf701f5912a293636edd21d6a19
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-04-02 13:05:36 +0200
+
+    RenderText example: The display of reference lines is now optional.
+    
+    Added some hints to explain the options.
+
+commit 33564478e7baa96727ee01945a1a24f18390e824
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-04-02 03:34:04 +0200
+
+    GetGlyphOutline now retrieves bezier data in full EM size and then scales it down before flattening.
+    
+    This is mainly done in order to completely disable any ill-advised hinting or grid fitting done by Windows. We need the data unmolested since we will be scaling it to the desired sizes ourselves.
+    Added some more comments so I can figure out what the hell I was thinking 6 months later.
+
 commit 4fbc8d2a3083e42a00ca776eaa52af7cab2de34a
 Merge: b95767cf d6a79098
 Author: Anders Melander <anders@melander.dk>
@@ -50,6 +208,42 @@ Date:   2025-04-01 02:00:26 +0200
     
     Refs #357
 
+commit a44e8c6501a69c98a63e181c6aa77c53da5d489f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-31 02:53:57 +0200
+
+    Added Quadratic Bezier curve flattening using Raph Levien's  subdivision algorithm
+    
+    This is now the default Bezier curve flattening algorithm used by TCustomPath.ConicTo and thus most font rendering. Benchmarks shows a text rendering performance improvement around 25%. Woohoo!
+
+commit 8361ca015f291e23cc35374f67e1c58c85a7ccbe
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-30 15:25:00 +0200
+
+    Glyph cache: Minor performance improvements
+    
+    The cache now also works with FPC.
+
+commit 026cc818c3eaa6a32e5574bc8982491fd17dab3a
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-30 23:25:39 +0200
+
+    Fix for compilation error with inlining disabled.
+
+commit 140a996e20900fb962fb1150ddc23a3bda41d509
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-30 17:14:21 +0200
+
+    TextVPR example: Tweaked the explicit line spacing a bit for nicer layout
+
+commit bf27ba11f0ceb6ad02ba75dc1394c8c80695829b
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-30 17:13:14 +0200
+
+    5% performance gain by eliminating a single TPointF.Multiply
+    
+    Why the hell aren't those operators declared inline?
+
 commit b95767cf8290194ab1c09af21bfdccff569bef9a
 Author: Anders Melander <anders@melander.dk>
 Date:   2025-03-30 15:31:19 +0200
@@ -57,6 +251,81 @@ Date:   2025-03-30 15:31:19 +0200
     Fix for infinite recursion in TBarycentricGradientPolygonFiller leading to stack overflow when a TColorPickerGTK is dropped on a form
     
     Fixes #356
+
+commit 03487a2354f2d6ee5717a8dba402fa16473677e3
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-29 03:54:48 +0100
+
+    Minor optimization of the recursion in CubicBezierCurve and QuadraticBezierCurve
+
+commit 8491bf12327475a646b6f4cf1784c320e7c43fd3
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-28 22:54:22 +0100
+
+    Minor optimization of TBitmap32.RenderText
+    
+    Temporary bitmap was too big
+
+commit a45b89a485b8a0c196b27a9f57d7693c266ea692
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-27 17:40:37 +0100
+
+    Minor fix for Lazarus ansi/unicode nonsense
+
+commit 4fcfdae113d15f4d69188c4728b939a5802477fc
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-19 03:33:28 +0100
+
+    Updated RenderText and TextVPR examples to demonstrate new layout and text output features
+
+commit f8b9d6eaae65aa9fe7595582dfc6e5fe6afad02a
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-24 18:34:14 +0100
+
+    Text layout has been completely rewritten from scratch and replaced with a new platform independent layout engine.
+    
+    Font faces are now synthesized from the fonts full design size.
+    Hinting is now deprecated.
+    Windows font layer caches Device Contexts and Font handles internally.
+    Refs #66
+
+commit 7797ff54332673b666d874310e6cd58b2fdadd2b
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-29 03:53:53 +0100
+
+    Removed the deprecated TCustomCanvas.Path property.
+
+commit 59e4d6182ef35e83df6d1b7494b4913f745cd52f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-29 03:57:13 +0100
+
+    Added missing MakeRect(TFloat, TFloat, TFloat, TFloat, TRectRounding) overload
+
+commit 0dc81b6ceba8604f657112f2294462b7fe631f48
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-19 03:32:46 +0100
+
+    Added platform independent glyph API and Windows implementation of same
+
+commit 162935d90e997a555e3f8cf938c9e5a3f63ef571
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-17 16:31:03 +0100
+
+    Added profiler mode to Benchmark example.
+    
+    In profiler mode the benchmark performs a fixed amount of work instead of running a fixed amount of time. This allows us to compare the performance of different runs directly.
+
+commit 4f6a620c01ded310e230f9ca9d168d880e214985
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-17 14:50:43 +0100
+
+    Updated RenderText example with command line switch for profiling
+
+commit e977c46e9b3f40fac2ce868bdaa363584b8a60b7
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-17 14:43:01 +0100
+
+    Reintegrated TextToPath cache and moved to GR32.Text.Cache
 
 commit 803c4e6ac065c9356b999d1315a04142b055ab3c
 Author: Anders Melander <anders@melander.dk>

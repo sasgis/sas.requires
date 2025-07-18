@@ -2,10 +2,15 @@ unit PNGExplorerMain;
 
 interface
 
+{$include GR32.inc}
+
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Menus, ComCtrls, StdCtrls, ExtCtrls, ToolWin, ActnList, StdActns,
-  ImgList, System.ImageList, System.Actions,
+  ImgList, System.Actions,
+{$if defined(NeedImageList)}
+  System.ImageList,
+{$ifend}
   GR32,
   GR32_PortableNetworkGraphic,
   GR32_PNG,

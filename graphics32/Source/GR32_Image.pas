@@ -3817,11 +3817,11 @@ end;
 procedure TCustomImage32.Scroll(Dx, Dy: Integer);
 begin
   if (Dx <> 0) or (Dy <> 0) then
-{$ifndef FPC} // FPC chokes on the float conversion with an exception
+{$if defined(FloatCast)}
     Scroll(Single(Dx), Single(Dy));
-{$else FPC}
+{$else}
     Scroll(Dx * 1.0, Dy * 1.0);
-{$endif FPC}
+{$ifend}
 end;
 
 procedure TCustomImage32.ScrollToCenter(X, Y: Integer);
