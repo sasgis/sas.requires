@@ -1,3 +1,132 @@
+commit 089ae1489cf76ee91e9b44b64f4ce076101d10f0
+Merge: e1d7038d 726843eb
+Author: zed <starmen@tut.by>
+Date:   2025-07-31 15:23:57 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 726843ebcde182431ddd4086d09c3cf04a98e5c8
+Merge: f22efa2b 75baaa35
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-28 11:57:49 +0200
+
+    Merge branch 'MeasureTextFixes'
+
+commit 75baaa35b374e3ee0fe229bf866f776d9c23fbb1
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-28 11:57:27 +0200
+
+    RenderText and MeasureText  now allows empty output rectangle when centering text
+
+commit 42ac89392031e54052785281a899c1bc9e744af0
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-28 02:10:04 +0200
+
+    Fixed MeasureText's handling of horizontal alignment
+    
+    RenderText and MeasureText now requires a valid output rectangle.
+
+commit 61b6ac56671ea9348614285aae45c9499eda10ca
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-28 00:32:35 +0200
+
+    Tweaked RenderText example to enable experiments with MeasureText and horizontal alignment
+    
+    Minor cleanup in TextVPR example
+
+commit 55c8ef35e359c55bc4e8ca0d953d2124240d068a
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-27 18:39:06 +0200
+
+    Text bounding box calculation now excludes RSB of rightmost character
+
+commit 83b0ea5da83832d50993e3d3346fecf940d6ae43
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-27 18:37:54 +0200
+
+    Handle fonts with negative typographic metric line gap.
+    
+    Fix for incorrect field used for Windows metric line gap.
+
+commit 3e2a3edb4c1ed8b55dfb0c00977f40e480b816ce
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-25 21:15:09 +0200
+
+    RenderText example can now optionally display text bounding box
+    
+    Improved display of vertices.
+
+commit dca87bafae62bf988609b04c1080f6c508b8996f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-25 20:48:19 +0200
+
+    Fix for incorrectly calculated Windows font metrics: Descent and Linegap
+
+commit 6b18bcad9017212a0c6571d4d63e07e02be8fc50
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-25 20:46:33 +0200
+
+    Fix for TGDIBackend.MeasureText not returning result
+
+commit cac5f00c901d678e584917fc1b3e9acb1a55499a
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-25 20:40:04 +0200
+
+    Fix for last character not included in text width.
+    
+    Fixes #374
+
+commit f22efa2b85e4dc64711c88055f549be2ea3cb3c8
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-23 14:29:31 +0200
+
+    Added new GR32.Text.* units to run-time packages
+
+commit dea65ff65532e8b5c28b415b2b5889839f6d2eae
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-23 02:24:27 +0200
+
+    Fix sporadic division by zero with rasterization of some fonts
+
+commit 6c712de2de8c2f5fb6f8fe34ded0a1d012763281
+Merge: 79858ddd 8524601b
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-23 01:30:53 +0200
+
+    Merge branch 'ImgView32_Scrollbar_TabStop'
+
+commit 8524601b62a0c27cc89d41f3046342b7defbdf7b
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-22 16:24:28 +0200
+
+    The TabStop property of TImageView32's scrollbars now follow that of the container control TabStop.
+    
+    Moved scrollbar construction to a virtual method.
+    Fixes #370
+
+commit 79858dddd7be63431cdb82c0df2a6f2fc3098e65
+Merge: 432d2262 c1370b4c
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-22 13:34:29 +0200
+
+    Merge branch 'TextFontHandle'
+
+commit c1370b4cf4f999f0542eba90e605123ccaa3a3f0
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-21 17:10:33 +0200
+
+    Replaced TFont with HFont in GR32.Text.Win
+    
+    Fixes #369
+
+commit 432d226231238daf45a1c99459bc0b504b8061a2
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-07-18 20:29:25 +0200
+
+    Micro-optimization of VPR IntegrateSegment; Avoid Single <-> Double conversion
+    
+    10-30% faster on 64-bit.
+
 commit e1d7038d7a32ff78bb5b61e9583137d7de4be86b
 Merge: 4b056ece f92bfdb3
 Author: zed <starmen@tut.by>
