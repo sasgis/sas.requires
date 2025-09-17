@@ -1,3 +1,39 @@
+commit 78581d341019b081e0aac17fcfb3007320999fcb
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-09-06 15:02:12 +0200
+
+    Cherry pick into stable: Add support for command links, possible since Seattle at least.
+
+commit 8ccfdbf63707a0756ee86f714e6cb9f4643bbdb7
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-06-21 20:31:24 +0200
+
+    Cherry pick into stable: Make previous commit compatible with Delphi 12.1 by using a simple {$WARNINGS OFF}, like it already does in a few other places.
+
+commit 345a694d876ac84b38d1c10a8cc8adc6ffcd1525
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-06-11 20:55:44 +0200
+
+    Cherry pick into stable: 'Fix' warning on Delphi 12.3 (and probably on 12.2 as well).
+
+commit 2b9cfe4b11e11e55244b7ba69502386211dc576a
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-01-22 16:26:08 +0100
+
+    Cherry pick into stable: TForm ShowModal is virtual, at least on Seattle and newer.
+
+commit d24d6d0a11bb80ac15229239600227cf6ad9c0db
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-12-28 14:48:32 +0100
+
+    Cherry pick into stable: Add TCustomForm's PopupMode and PopupParent. Docs say Seattle has this and links of earlier docs don't seem to work anymore.
+
+commit c4edfd87f078d235192ee1860fcd3742e149cfc9
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2024-08-14 11:17:03 +0200
+
+    Chery pick into stable: Don't know since when exactly but at least in Sydney TStream.CopyFrom has a third parameter.
+
 commit 2f8fa960b0939789dfeb2e7b14a8ab28e90fe26f
 Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
 Date:   2024-06-28 10:20:38 +0200
