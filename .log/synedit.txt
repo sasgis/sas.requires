@@ -1,3 +1,9 @@
+commit f764eb9cc002c4ba40067af970bd1d9208853853
+Author: zed <starmen@tut.by>
+Date:   2025-09-16 20:03:04 +0300
+
+    fix for Delphi 13.x support
+
 commit 033425b04eb5e6fba4d05e53a9e41155b236fa15
 Author: zed <starmen@tut.by>
 Date:   2024-05-24 17:03:13 +0300

@@ -1,3 +1,9 @@
+commit 08701bc655f5984b1b88e79eb869a13a5381e9aa
+Author: zed <starmen@tut.by>
+Date:   2025-09-17 11:25:53 +0300
+
+    Delphi 13.x fix
+
 commit 2565ea0bc68cda05330b55647b84f8a6dcc7f9b0
 Author: zed <starmen@tut.by>
 Date:   2024-05-24 16:13:33 +0300

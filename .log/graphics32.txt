@@ -1,3 +1,176 @@
+commit 25991c033dea9d73151ef4ffc8c4c0eb3d3a6646
+Merge: 089ae148 285093e4
+Author: zed <starmen@tut.by>
+Date:   2025-09-16 19:13:20 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 285093e48db03ae9bf09298c2dc69290843fb69c
+Merge: 13d650b7 e5cbd8c6
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-09-10 21:19:01 +0200
+
+    Merge branch 'Delphi13'
+
+commit e5cbd8c6eaf782d1616fcff1133facfc75cdda3e
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-09-10 21:16:44 +0200
+
+    Updated for Delphi 13
+    
+    Eliminated a few hints
+
+commit 13d650b76c0775e2cf43d085921d4c7713db174f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-28 01:01:55 +0200
+
+    Updated packages with new PNG units
+
+commit b25a821a242d5f00b8dbf03de86b3859329a8f73
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-28 00:56:56 +0200
+
+    Renamed TPngChunkPixelCalibrator.UnitName to Unit_Name to avoid clash with TObject.UnitName
+
+commit 25e176eb45ee9674bc74f36612c341c3991a8c21
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-28 00:38:19 +0200
+
+    PNG fixes for FPC/Lazarus
+    
+    Reimplemented chunk lists to work around FPC generics limitations
+
+commit 9fbb4240ef04014a4714c4c249203f3854ad3381
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-28 00:26:52 +0200
+
+    PNG chunk fix for old Delphi versions that doesn't support class generic functions
+
+commit a388ccf6f427ac6461ea49857f2c5bc3a99f7940
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-27 22:28:51 +0200
+
+    Added a comment explaining the need for TabStop=True with MouseWheel events.
+    
+    Fixes #379
+
+commit 9983a04c1f5a48244ee0d7abf37a0239c147e822
+Merge: a9704ddd 273e6d30
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-26 22:37:05 +0200
+
+    Merge branch 'PNG_refactoring'
+
+commit 273e6d30a41b1ba010d9b1509ffdc46ee936998d
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-26 22:30:43 +0200
+
+    Replaced AssignTo with Assign in PNG chunk classes.
+    
+    Added unit test for TPortableNetworkGraphic.Assign.
+    Eliminated "with".
+    Fixed missing calls to HeaderChanged
+
+commit a9704ddd13cc9735ba3487318f0d27b8271854be
+Merge: 4dbb7528 91f8e1c1
+Author: Anders Melander <github@melander.dk>
+Date:   2025-08-22 10:28:46 +0200
+
+    Merge pull request #378 from TommiPrami/TypoFixes
+    
+    Minor typo fix
+
+commit 91f8e1c17bfc732dc051d02d3bee39208e1dd4d1
+Author: TommiPrami <tommi.prami@gmail.com>
+Date:   2025-08-22 08:49:08 +0300
+
+    Minor typo fix
+
+commit 720d9152c5787794c5b2ff8ae4fefb5893d3527e
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-19 12:18:35 +0200
+
+    Minor TPortableNetworkGraphic refactoring
+
+commit d28e062359fca37272697b780660a1d47fcac515
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-19 11:44:54 +0200
+
+    Added enumerator for TPortableNetworkGraphic.Chunks list
+
+commit 02d9d590894edd04768559eb53e40fd910b110a0
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-19 11:40:51 +0200
+
+    PNG Explorer example cleaned up
+
+commit fac10f11f5af9ce78e22a275a87a613742777103
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-18 23:34:50 +0200
+
+    Another round of extensive PNG refactoring
+
+commit b682ffbfab5443e986a8fe537206b804122e8979
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-18 15:26:20 +0200
+
+    Minor refactoring
+
+commit 381ae1bd9f8a8dae4d563adbee8bbbb3a08234e8
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-18 13:58:23 +0200
+
+    PNG Explorer example largely rewritten, added hex view
+
+commit 29da22265e236d72730f1ad2c0503c940183a52a
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-18 00:14:16 +0200
+
+    Massive refactoring of PNG chunk handling to expose a unified chunk list
+    
+    Fixes #377
+
+commit 47be736f16eb01065574f2f1450477ad164f4499
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-17 16:22:53 +0200
+
+    Renamed to PNG chunk classes from TChunkPng* to TPngChunk*
+
+commit 4dbb75280cc081a2fa26b5b0cbac58e4dc3f0402
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-15 20:40:52 +0200
+
+    Minor include file tweak for Delphi 13+
+
+commit 47c858981657e7169aa1781f23299844ed1bd27f
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-15 17:23:06 +0200
+
+    Minor fix for design time bitmap editor not refreshing after load.
+
+commit d2d825d286620b23f56e8a1a1e05fcc764ecbb72
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-15 17:06:14 +0200
+
+    The TCustomImage32.BackgroundOptions property logic has been simplified
+    
+    More often than not, the logic got in the way and was just confusing.
+    Background paint code has been updated to match.
+
+commit d143d6c590285e838822ee6701d25a84d48ce1e6
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-15 16:40:14 +0200
+
+    Added some comments to the PNG Image32 example to explain why we're using the load/save methods we do
+    
+    refs #376
+
+commit 26dc623294bde070a5d3b882affe3b1c7173e959
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-08-04 13:57:44 +0200
+
+    Extended Benchmark example command line parameters for use in profiling
+
 commit 089ae1489cf76ee91e9b44b64f4ce076101d10f0
 Merge: e1d7038d 726843eb
 Author: zed <starmen@tut.by>
