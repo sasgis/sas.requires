@@ -35,6 +35,7 @@
 
     Name                   CompilerVersion
     -------------------------------------------
+    Delphi 13 Florence          37.0
     Delphi 12 Yukon             36.0
     Delphi 11 Alexandria        35.0
     Delphi 10.4 Sydney          34.0
@@ -106,9 +107,10 @@
 
   {$Message Fatal 'Graphics32 only supports Delphi/BCB XE2 (or higher) or Free Pascal / Lazarus'}
 
-{$elseif (CompilerVersion > 36.0)} // Newer than this file but we'll take it
+{$elseif (CompilerVersion > 37.0)} // Newer than this file but we'll take it
 
   {$Message Hint 'Unknown compiler version. Assuming compatible with last known version.'}
+  {$LEGACYIFEND ON}
 
 {$else} // Delphi XE3 and later
 
@@ -488,6 +490,36 @@
 {$define NO_GENERIC_METACLASS_LISTS}
 {$ifend}
 
+
+(*
+  Symbol: GENERIC_FUNCTION_CLASS
+  -------------------------------
+
+     Old versions of Delphi had problem dealing with generic functions
+     where the generic type was a class.
+     For example:
+
+       function FooBar<T: TSomeClass>: T;
+
+     For these older versions we instead have to use a regular function
+     like this:
+
+       function FooBar(SomeClass: TSomeClass>: TSomeClass;
+
+     and cast the return value to the concrete type.
+
+     The exact version of Delphi where this got fixed is unknown. Somewhere
+     between Delphi XE4 and Delphi 10.
+
+     I'm assuming that it doesn't work for C++ Builder either.
+     Let me know if I'm wrong.
+
+     FPC doesn't support a generic function inside a generic class, which is
+     the concrete case we use, so no cigar there.
+*)
+{$if (not defined(BCB)) and (not defined(FPC)) and (CompilerVersion >= 30.0)}
+{$define GENERIC_FUNCTION_CLASS}
+{$ifend}
 
 
 (*
