@@ -1,3 +1,9 @@
+commit a89458e1aa06bb8c9eab7e2b793d201c200ff76c
+Author: zed <starmen@tut.by>
+Date:   2025-09-23 13:00:36 +0300
+
+    Cherry pick into stable: Delphi 13 support
+
 commit 78581d341019b081e0aac17fcfb3007320999fcb
 Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
 Date:   2025-09-06 15:02:12 +0200
