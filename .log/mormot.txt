@@ -1,3 +1,9 @@
+commit 7e03acb5a0f02e2462ed0bbaec65cd71cd8a5a05
+Author: zed <starmen@tut.by>
+Date:   2025-09-23 12:56:01 +0300
+
+    fix Delphi 13 compilation
+
 commit 11326f5bd07c95e8d2a0eed040b92e69ef42484f
 Author: Arnaud Bouchez <ab@synopse.info>
 Date:   2025-04-23 10:38:46 +0200
