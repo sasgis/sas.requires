@@ -1,3 +1,25 @@
+commit d5df06aacbb2e9cfac1f4c4d4bc25f987a1ab7b8
+Merge: 25991c03 cebb926b
+Author: zed <starmen@tut.by>
+Date:   2025-09-24 15:15:46 +0300
+
+    Merge branch 'master' into sasgis
+
+commit cebb926b0a37a843267b4efb315a4756ca6d2142
+Merge: 285093e4 0c35f927
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-09-24 11:48:47 +0200
+
+    Merge branch 'UnbalancedMouseUpDown'
+
+commit 0c35f927f48220b394b60b93adc465eb6a37c6a9
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-09-24 11:03:35 +0200
+
+    Fix for unbalanced TImage32.OnMouseDown/OnMouseUp events
+    
+    Fixes #381
+
 commit 25991c033dea9d73151ef4ffc8c4c0eb3d3a6646
 Merge: 089ae148 285093e4
 Author: zed <starmen@tut.by>
