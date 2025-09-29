@@ -1,8 +1,22 @@
-commit 7e03acb5a0f02e2462ed0bbaec65cd71cd8a5a05
-Author: zed <starmen@tut.by>
-Date:   2025-09-23 12:56:01 +0300
+commit dd07162b67601716b204131dbdb938a85c87f6bb
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2025-09-29 09:54:52 +0200
 
-    fix Delphi 13 compilation
+    fixed Mustache tests
+    - some new tests should be disabled
+
+commit 7bca86974cfdccf9a76b1edff26fa5e089a03bbe
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2025-09-29 09:54:07 +0200
+
+    updated README description
+    - mainly to notify about fossil repository removal
+
+commit 99e5dd30bb89e9648b069e186c6c953447358e9f
+Author: Arnaud Bouchez <ab@synopse.info>
+Date:   2025-09-29 09:42:13 +0200
+
+    properly recognize Delphi 13
 
 commit 11326f5bd07c95e8d2a0eed040b92e69ef42484f
 Author: Arnaud Bouchez <ab@synopse.info>
