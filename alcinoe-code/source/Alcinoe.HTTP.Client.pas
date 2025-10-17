@@ -4,15 +4,12 @@ interface
 
 {$I Alcinoe.inc}
 
-{$IFNDEF ALCompilerVersionSupported123}
-  {$MESSAGE WARN 'Check if Web.HTTPApp was not updated and adjust the IFDEF'}
-{$ENDIF}
-
 uses
   System.SysUtils,
   {$IFDEF MSWINDOWS}
   Winapi.Wininet,
   {$ENDIF}
+  Alcinoe.Localization,
   Alcinoe.StringList,
   Alcinoe.MultiPartParser,
   System.Classes;
@@ -426,6 +423,9 @@ type
     property  OnRedirect: TAlHTTPClientRedirectEvent read FOnRedirect write SetOnRedirect;
   end;
 
+function ALUrlEncode(const AStr: AnsiString; Const ASpacesAsPlus: Boolean = True): AnsiString;
+function ALUrlDecode(const AStr: AnsiString; const APlusAsSpaces: Boolean = True): AnsiString;
+
 procedure ALHTTPEncodeParamNameValues(const ParamValues: TALStringsA);
 procedure ALExtractHTTPFields(
             Separators,
@@ -558,6 +558,19 @@ uses
   Alcinoe.Common,
   Alcinoe.StringUtils;
 
+{********************************************************************************************}
+function ALUrlEncode(const AStr: AnsiString; Const ASpacesAsPlus: Boolean = True): AnsiString;
+begin
+  // https://datatracker.ietf.org/doc/html/rfc3986#section-2.3
+  Result := ALPercentEncode(AStr, ['A'..'Z','a'..'z','0'..'9','-','.','_','~'], ASpacesAsPlus);
+end;
+
+{********************************************************************************************}
+function ALUrlDecode(const AStr: AnsiString; const APlusAsSpaces: Boolean = True): AnsiString;
+begin
+  Result := ALPercentDecode(AStr, APlusAsSpaces);
+end;
+
 {************************************************************************************}
 function _AlStringFetch(var AInput: AnsiString; const ADelim: AnsiString): AnsiString;
 var
@@ -608,7 +621,7 @@ end;
 {************************************************}
 function TALHTTPCookie.GetHeaderValue: AnsiString;
 begin
-  Result := ALFormatA('%s=%s; ', [ALHTTPEncode(FName), ALHTTPEncode(FValue)]);
+  Result := ALFormatA('%s=%s; ', [ALUrlEncode(FName), ALUrlEncode(FValue)]);
   if Domain <> '' then Result := Result + ALFormatA('domain=%s; ', [Domain]);
   if Path <> '' then Result := Result + ALFormatA('path=%s; ', [Path]);
   if Expires <> ALNullDate then
@@ -1066,7 +1079,7 @@ begin
   for I := 0 to ParamValues.Count - 1 do begin
     LStr := ParamValues[I];
     LPos := ALPosA(ParamValues.NameValueSeparator, LStr);
-    if LPos > 0 then ParamValues[I] := ALHTTPEncode(AlCopyStr(LStr, 1, LPos-1)) + '=' + ALHTTPEncode(AlCopyStr(LStr, LPos+1, MAXINT));
+    if LPos > 0 then ParamValues[I] := ALUrlEncode(AlCopyStr(LStr, 1, LPos-1)) + '=' + ALUrlEncode(AlCopyStr(LStr, LPos+1, MAXINT));
   end;
 end;
 
@@ -2177,8 +2190,8 @@ begin
     Str := aRequestFields[i];
     P := ALPosA(aRequestFields.NameValueSeparator, Str);
     if aEncodeRequestFields then begin
-      if P > 0 then Query := Query + ALHTTPEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALHTTPEncode(AlCopyStr(Str, P+1, MAXINT)) + ALIfThenA(i < aRequestFields.Count - 1, '&')
-      else Query := Query + ALHTTPEncode(Str) + ALIfThenA(i < aRequestFields.Count - 1, '&')
+      if P > 0 then Query := Query + ALUrlEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALUrlEncode(AlCopyStr(Str, P+1, MAXINT)) + ALIfThenA(i < aRequestFields.Count - 1, '&')
+      else Query := Query + ALUrlEncode(Str) + ALIfThenA(i < aRequestFields.Count - 1, '&')
     end
     else begin
       if P > 0 then Query := Query + AlCopyStr(Str, 1, P-1) + '=' + AlCopyStr(Str, P+1, MAXINT) + ALIfThenA(i < aRequestFields.Count - 1, '&')
@@ -2347,8 +2360,8 @@ begin
       for i := 0 to aRequestFields.Count - 1 do begin
         Str := aRequestFields[i];
         P := ALPosA(aRequestFields.NameValueSeparator, Str);
-        if P > 0 then Str := ALHTTPEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALHTTPEncode(AlCopyStr(Str, P+1, MAXINT))
-        else Str := ALHTTPEncode(Str);
+        if P > 0 then Str := ALUrlEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALUrlEncode(AlCopyStr(Str, P+1, MAXINT))
+        else Str := ALUrlEncode(Str);
         If i < aRequestFields.Count - 1 then LURLEncodedContentStream.WriteString(Str + '&')
         else LURLEncodedContentStream.WriteString(Str);
       end;
@@ -2393,8 +2406,8 @@ begin
       for i := 0 to aRequestFields.Count - 1 do begin
         Str := aRequestFields[i];
         P := ALPosA(aRequestFields.NameValueSeparator, Str);
-        if P > 0 then Str := ALHTTPEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALHTTPEncode(AlCopyStr(Str, P+1, MAXINT))
-        else Str := ALHTTPEncode(Str);
+        if P > 0 then Str := ALUrlEncode(AlCopyStr(Str, 1, P-1)) + '=' + ALUrlEncode(AlCopyStr(Str, P+1, MAXINT))
+        else Str := ALUrlEncode(Str);
         If i < aRequestFields.Count - 1 then LURLEncodedContentStream.WriteString(Str + '&')
         else LURLEncodedContentStream.WriteString(Str);
       end;

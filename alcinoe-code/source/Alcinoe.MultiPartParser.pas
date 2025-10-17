@@ -18,6 +18,7 @@ interface
 Uses
   System.Classes,
   System.Contnrs,
+  Alcinoe.Localization,
   Alcinoe.StringList;
 
 type
@@ -396,7 +397,7 @@ Uses
   System.Types, // to expand the inline function
   System.AnsiStrings,
   Alcinoe.StringUtils,
-  Alcinoe.Mime;
+  Alcinoe.Mime.ContentTypes;
 
 {*****************************************************************************************************************}
 Function ALMultipartExtractValueFromHeaderLine(const aHeaderLine: AnsiString; const aName: AnsiString): AnsiString;

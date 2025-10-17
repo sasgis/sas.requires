@@ -55,83 +55,17 @@ uses
   System.SysUtils,
   System.Classes,
   System.Contnrs,
+  System.Masks,
   {$IFDEF MACOS}
   Macapi.CoreFoundation,
   {$ENDIF MACOS}
+  Alcinoe.Localization,
   Alcinoe.StringList,
   Alcinoe.Common;
 
 resourcestring
   SALInvalidFormat = 'Format ''%s'' invalid or incompatible with argument';
   SALArgumentMissing = 'No argument for format ''%s''';
-
-type
-
-  {$IFNDEF ALCompilerVersionSupported123}
-    {$MESSAGE WARN 'Check if System.SysUtils.TFormatSettings is still the same and adjust the IFDEF'}
-  {$ENDIF}
-
-  pALFormatSettingsA = ^TALFormatSettingsA;
-  TALFormatSettingsA = record
-  public
-    type
-      TEraInfo = record
-        EraName: ansiString;
-        EraOffset: Integer;
-        EraStart: TDate;
-        EraEnd: TDate;
-      end;
-  public
-    // Important: Do not change the order of these declarations, they must
-    // match the declaration order of the corresponding globals variables exactly!
-    CurrencyString: AnsiString;
-    CurrencyFormat: Byte;
-    CurrencyDecimals: Byte;
-    DateSeparator: AnsiChar;
-    TimeSeparator: AnsiChar;
-    ListSeparator: AnsiString;
-    ShortDateFormat: AnsiString;
-    LongDateFormat: AnsiString;
-    TimeAMString: AnsiString;
-    TimePMString: AnsiString;
-    ShortTimeFormat: AnsiString;
-    LongTimeFormat: AnsiString;
-    ShortMonthNames: array[1..12] of AnsiString;
-    LongMonthNames: array[1..12] of AnsiString;
-    ShortDayNames: array[1..7] of AnsiString;
-    LongDayNames: array[1..7] of AnsiString;
-    EraInfo: array of TEraInfo;
-    ThousandSeparator: AnsiString;
-    DecimalSeparator: AnsiChar;
-    TwoDigitYearCenturyWindow: Word;
-    NegCurrFormat: Byte;
-    // Creates a TALFormatSettingsA record with current default values provided
-    // by the operating system.
-    class function Create: TALFormatSettingsA; overload; static; inline;
-    // Creates a TALFormatSettingsA record with values provided by the operating
-    // system for the specified locale. The locale is an LCID on Windows
-    // platforms, or a locale_t on Posix platforms.
-    {$IF defined(MSWINDOWS)}
-    class function Create(Locale: LCID): TALFormatSettingsA; overload; platform; static;
-    {$ENDIF}
-    // Creates a TALFormatSettingsA record with values provided by the operating
-    // system for the specified locale name in the "Language-Country" format.
-    // Example: 'en-US' for U.S. English settings or 'en-UK' for UK English settings.
-    class function Create(const LocaleName: AnsiString): TALFormatSettingsA; overload; static;
-    function GetEraYearOffset(const Name: ansistring): Integer;
-  end;
-
-  pALFormatSettingsW = ^TALFormatSettingsW;
-  TALFormatSettingsW = TFormatSettings;
-
-  function ALGetFormatSettingsID(const aFormatSettings: TALFormatSettingsA): AnsiString;
-  {$IF defined(MSWINDOWS)}
-  procedure ALGetLocaleFormatSettings(Locale: LCID; var AFormatSettings: TALFormatSettingsA); platform;
-  {$ENDIF}
-
-var
-  ALDefaultFormatSettingsA: TALformatSettingsA;
-  ALDefaultFormatSettingsW: TALformatSettingsW;
 
 Const
   cAlUTF8Bom = ansiString(#$EF) + ansiString(#$BB) + ansiString(#$BF);
@@ -146,21 +80,26 @@ type
   private
     FDataString: AnsiString;
     FPosition: Integer;
+    procedure SetDataString(const AValue: AnsiString);
   protected
+    function GetSize: Int64; override;
     procedure SetSize(NewSize: Longint); override;
+    procedure SetSize(const NewSize: Int64); override;
   public
     constructor Create(const AString: AnsiString);
+    procedure LoadFromStream(Stream: TStream);
+    procedure LoadFromFile(const FileName: string);
     function Read(var Buffer; Count: Longint): Longint; override;
     function ReadString(Count: Longint): AnsiString;
     function Seek(Offset: Longint; Origin: Word): Longint; override;
     function Write(const Buffer; Count: Longint): Longint; override;
     procedure WriteString(const AString: AnsiString);
-    property DataString: AnsiString read FDataString;
+    property DataString: AnsiString read FDataString write SetDataString;
   end;
   TALStringStreamW = class(TStringStream);
 
   {*************************************}
-  {$IFNDEF ALCompilerVersionSupported123}
+  {$IFNDEF ALCompilerVersionSupported130}
     {$MESSAGE WARN 'Check if System.Masks.pas is still the same and adjust the IFDEF'}
   {$ENDIF}
 
@@ -169,33 +108,114 @@ type
   TALMaskA = class
   private type
     // WideChar Reduced to ByteChar in set expressions.
-    TMaskSet = set of ansiChar;
+    TMaskSet = set of AnsiChar;
     PMaskSet = ^TMaskSet;
-    TMaskStates = (msLiteral, msAny, msSet, msMBCSLiteral);
+    TMaskStates = (msLiteral, msLiteralCS, msAny, msSet, msSetCS, msMBCSLiteral);
     TMaskState = record
       SkipTo: Boolean;
       case State: TMaskStates of
-        TMaskStates.msLiteral: (Literal: ansiChar);
+        TMaskStates.msLiteral,
+        TMaskStates.msLiteralCS: (Literal: AnsiChar);
         TMaskStates.msAny: ();
         TMaskStates.msSet: (
           Negate: Boolean;
           CharSet: PMaskSet);
-        TMaskStates.msMBCSLiteral: (LeadByte, TrailByte: ansiChar);
+       TMaskStates.msMBCSLiteral: (LeadByte, TrailByte: AnsiChar);
     end;
+    PMaskState = ^TMaskState;
   private
+    FCaseSensitive: Boolean;
     FMaskStates: array of TMaskState;
   protected
-    function InitMaskStates(const Mask: ansistring): Integer;
+    function InitMaskStates(const Mask: AnsiString): Integer;
     procedure DoneMaskStates;
-    function MatchesMaskStates(const Filename: ansistring): Boolean;
+    function MatchesMaskStates(const Filename: AnsiString): Boolean;
   public
-    constructor Create(const MaskValue: ansistring);
+    constructor Create(const MaskValue: AnsiString; CaseSensitive: Boolean = False);
     destructor Destroy; override;
-    function Matches(const Filename: ansistring): Boolean;
+    function Matches(const Filename: AnsiString): Boolean;
   end;
 
-function  ALMatchesMaskA(const Filename, Mask: AnsiString): Boolean;
-function  ALMatchesMaskW(const Filename, Mask: String): Boolean; inline;
+function ALMatchesMaskA(const Filename, Mask: AnsiString; CaseSensitive: Boolean): Boolean; overload;
+function ALMatchesMaskA(const Filename, Mask: AnsiString): Boolean; overload; inline;
+function ALMatchesMaskW(const Filename, Mask: String; CaseSensitive: Boolean): Boolean; overload; inline;
+function ALMatchesMaskW(const Filename, Mask: String): Boolean; overload inline;
+
+type
+
+  TALStringBuilderA = class
+  private const
+    DefaultCapacity = $10;
+    LineBreak: AnsiString = sLineBreak;
+  private
+    function GetCapacity: Integer; inline;
+    procedure SetCapacity(const AValue: Integer);
+    function GetLength: Integer; inline;
+    procedure SetLength(const AValue: Integer);
+    function GetMaxCapacity: Integer; inline;
+    procedure ExpandCapacity;
+  protected
+    FMaxCapacity: Integer;
+    FLength: Integer;
+    FData: AnsiString;
+  public
+    constructor Create; overload;
+    constructor Create(const ACapacity: Integer); overload;
+    constructor Create(const AValue: AnsiString); overload;
+    constructor Create(const ACapacity: Integer; const AMaxCapacity: Integer); overload;
+    constructor Create(const AValue: AnsiString; const ACapacity: Integer); overload;
+    constructor Create(const AValue: AnsiString; const AStartIndex: Integer; const ALength: Integer; const ACapacity: Integer); overload;
+    procedure Clear;
+    function EnsureCapacity(const ACapacity: Integer): Integer;
+    function Append(const AValue: AnsiChar): TALStringBuilderA; overload;
+    function Append(const AValue: AnsiString): TALStringBuilderA; overload;
+    function Append(const AValue: AnsiChar; const ARepeatCount: Integer): TALStringBuilderA; overload;
+    function Append(const AValue: AnsiString; const AStartIndex: Integer; const ACount: Integer): TALStringBuilderA; overload;
+    function AppendLine: TALStringBuilderA; overload; inline;
+    function AppendLine(const AValue: AnsiString): TALStringBuilderA; overload;
+    function ToString: AnsiString; reintroduce; overload;
+    function ToString(const AUpdateCapacity: Boolean): AnsiString; reintroduce; overload;
+    property Capacity: Integer read GetCapacity write SetCapacity;
+    property Length: Integer read GetLength write SetLength;
+    property MaxCapacity: Integer read GetMaxCapacity;
+  end;
+
+  TALStringBuilderW = class
+  private const
+    DefaultCapacity = $10;
+    LineBreak: string = sLineBreak;
+  private
+    function GetCapacity: Integer; inline;
+    procedure SetCapacity(const AValue: Integer);
+    function GetLength: Integer; inline;
+    procedure SetLength(const AValue: Integer);
+    function GetMaxCapacity: Integer; inline;
+    procedure ExpandCapacity;
+  protected
+    FMaxCapacity: Integer;
+    FLength: Integer;
+    FData: string;
+  public
+    constructor Create; overload;
+    constructor Create(const ACapacity: Integer); overload;
+    constructor Create(const AValue: string); overload;
+    constructor Create(const ACapacity: Integer; const AMaxCapacity: Integer); overload;
+    constructor Create(const AValue: string; const ACapacity: Integer); overload;
+    constructor Create(const AValue: string; const AStartIndex: Integer; const ALength: Integer; const ACapacity: Integer); overload;
+    procedure Clear;
+    function EnsureCapacity(const ACapacity: Integer): Integer;
+    function Append(const AValue: Char): TALStringBuilderW; overload;
+    function Append(const AValue: string): TALStringBuilderW; overload;
+    function Append(const AValue: Char; const ARepeatCount: Integer): TALStringBuilderW; overload;
+    function Append(const AValue: string; const AStartIndex: Integer; const ACount: Integer): TALStringBuilderW; overload;
+    function AppendLine: TALStringBuilderW; overload; inline;
+    function AppendLine(const AValue: string): TALStringBuilderW; overload;
+    function ToString: string; overload; override;
+    function ToString(const AUpdateCapacity: Boolean): string; reintroduce; overload;
+    property Capacity: Integer read GetCapacity write SetCapacity;
+    property Length: Integer read GetLength write SetLength;
+    property MaxCapacity: Integer read GetMaxCapacity;
+  end;
 
 Function  ALNewGUIDBytes: TBytes;
 function  ALGUIDToByteString(const Guid: TGUID): Ansistring;
@@ -204,14 +224,14 @@ function  ALGUIDToStringA(const Guid: TGUID; const WithoutBracket: boolean = fal
 function  ALGUIDToStringW(const Guid: TGUID; const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): string;
 Function  ALNewGUIDStringA(const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): AnsiString;
 Function  ALNewGUIDStringW(const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): String;
-function  ALFormatA(const Format: AnsiString; const Args: array of const): AnsiString; overload;
-procedure ALFormatA(const Format: AnsiString; const Args: array of const; var Result: ansiString); overload;
 function  ALFormatA(const Format: AnsiString; const Args: array of const; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
 procedure ALFormatA(const Format: AnsiString; const Args: array of const; const AFormatSettings: TALFormatSettingsA; var Result: ansiString); overload;
-function  ALFormatW(const Format: String; const Args: array of const): String; overload;
-procedure ALFormatW(const Format: String; const Args: array of const; var Result: String); overload;
+function  ALFormatA(const Format: AnsiString; const Args: array of const): AnsiString; overload;
+procedure ALFormatA(const Format: AnsiString; const Args: array of const; var Result: ansiString); overload;
 function  ALFormatW(const Format: String; const Args: array of const; const AFormatSettings: TALFormatSettingsW): String; overload;
 procedure ALFormatW(const Format: String; const Args: array of const; const AFormatSettings: TALFormatSettingsW; var Result: String); overload;
+function  ALFormatW(const Format: String; const Args: array of const): String; overload;
+procedure ALFormatW(const Format: String; const Args: array of const; var Result: String); overload;
 function  ALTryStrToBool(const S: Ansistring; out Value: Boolean): Boolean; overload;
 function  ALTryStrToBool(const S: String; out Value: Boolean): Boolean; overload;
 Function  AlStrToBool(Value:AnsiString):Boolean; overload;
@@ -220,28 +240,50 @@ function  ALBoolToStrA(B: Boolean; const trueStr: ansistring='1'; const falseStr
 procedure ALBoolToStrA(var s: ansiString; B: Boolean; const trueStr: ansistring='1'; const falseStr: ansistring='0'); overload;
 function  ALBoolToStrW(B: Boolean; const trueStr: String='1'; const falseStr: String='0'): String; overload;
 procedure ALBoolToStrW(var s: String; B: Boolean; const trueStr: String='1'; const falseStr: String='0'); overload;
-function  ALDateToStrA(const DateTime: TDateTime; const AFormatSettings: TALFormatSettingsA): AnsiString;
-function  ALDateToStrW(const DateTime: TDateTime; const AFormatSettings: TALFormatSettingsW): string; inline;
-function  ALTimeToStrA(const DateTime: TDateTime; const AFormatSettings: TALFormatSettingsA): AnsiString;
-function  ALTimeToStrW(const DateTime: TDateTime; const AFormatSettings: TALFormatSettingsW): string; inline;
+function  ALDateToStrA(const DateTime: TDateTime; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
+function  ALDateToStrA(const DateTime: TDateTime): AnsiString; overload; inline;
+function  ALDateToStrW(const DateTime: TDateTime; const AFormatSettings: TALFormatSettingsW): string; overload; inline;
+function  ALDateToStrW(const DateTime: TDateTime): string; overload; inline;
+function  ALTimeToStrA(const DateTime: TDateTime; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
+function  ALTimeToStrA(const DateTime: TDateTime): AnsiString; overload; inline;
+function  ALTimeToStrW(const DateTime: TDateTime; const AFormatSettings: TALFormatSettingsW): string; overload; inline;
+function  ALTimeToStrW(const DateTime: TDateTime): string; overload; inline;
 function  ALDateTimeToStrA(const DateTime: TDateTime; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
 procedure ALDateTimeToStrA(const DateTime: TDateTime; var s: ansiString; const AFormatSettings: TALFormatSettingsA); overload;
+function  ALDateTimeToStrA(const DateTime: TDateTime): AnsiString; overload; inline;
+procedure ALDateTimeToStrA(const DateTime: TDateTime; var s: ansiString); overload; inline;
 function  ALDateTimeToStrW(const DateTime: TDateTime; const AFormatSettings: TALFormatSettingsW): String; overload; inline;
 procedure ALDateTimeToStrW(const DateTime: TDateTime; var s: String; const AFormatSettings: TALFormatSettingsW); overload; inline;
-function  ALFormatDateTimeA(const Format: AnsiString; DateTime: TDateTime; const AFormatSettings: TALFormatSettingsA): AnsiString;
-function  ALFormatDateTimeW(const Format: string; DateTime: TDateTime; const AFormatSettings: TALFormatSettingsW): string; inline;
+function  ALDateTimeToStrW(const DateTime: TDateTime): String; overload; inline;
+procedure ALDateTimeToStrW(const DateTime: TDateTime; var s: String); overload; inline;
+function  ALFormatDateTimeA(const Format: AnsiString; DateTime: TDateTime; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
+function  ALFormatDateTimeA(const Format: AnsiString; DateTime: TDateTime): AnsiString; overload; inline;
+function  ALFormatDateTimeW(const Format: string; DateTime: TDateTime; const AFormatSettings: TALFormatSettingsW): string; overload; inline;
+function  ALFormatDateTimeW(const Format: string; DateTime: TDateTime): string; overload; inline;
 function  ALTryStrToDate(const S: AnsiString; out Value: TDateTime; const AFormatSettings: TALFormatSettingsA): Boolean; overload;
+function  ALTryStrToDate(const S: AnsiString; out Value: TDateTime): Boolean; overload; inline;
 function  ALTryStrToDate(const S: string; out Value: TDateTime; const AFormatSettings: TALFormatSettingsW): Boolean; overload; inline;
+function  ALTryStrToDate(const S: string; out Value: TDateTime): Boolean; overload; inline;
 function  ALStrToDate(const S: AnsiString; const AFormatSettings: TALFormatSettingsA): TDateTime; overload;
+function  ALStrToDate(const S: AnsiString): TDateTime; overload; inline;
 function  ALStrToDate(const S: string; const AFormatSettings: TALFormatSettingsW): TDateTime; overload; inline;
+function  ALStrToDate(const S: string): TDateTime; overload; inline;
 function  ALTryStrToTime(const S: AnsiString; out Value: TDateTime; const AFormatSettings: TALFormatSettingsA): Boolean; overload;
+function  ALTryStrToTime(const S: AnsiString; out Value: TDateTime): Boolean; overload; inline;
 function  ALTryStrToTime(const S: string; out Value: TDateTime; const AFormatSettings: TALFormatSettingsW): Boolean; overload; inline;
+function  ALTryStrToTime(const S: string; out Value: TDateTime): Boolean; overload; inline;
 function  ALStrToTime(const S: AnsiString; const AFormatSettings: TALFormatSettingsA): TDateTime; overload;
+function  ALStrToTime(const S: AnsiString): TDateTime; overload; inline;
 function  ALStrToTime(const S: string; const AFormatSettings: TALFormatSettingsW): TDateTime; overload; inline;
+function  ALStrToTime(const S: string): TDateTime; overload; inline;
 function  ALTryStrToDateTime(const S: AnsiString; out Value: TDateTime; const AFormatSettings: TALFormatSettingsA): Boolean; overload;
+function  ALTryStrToDateTime(const S: AnsiString; out Value: TDateTime): Boolean; overload; inline;
 function  ALTryStrToDateTime(const S: string; out Value: TDateTime; const AFormatSettings: TALFormatSettingsW): Boolean; overload; inline;
+function  ALTryStrToDateTime(const S: string; out Value: TDateTime): Boolean; overload; inline;
 function  ALStrToDateTime(const S: AnsiString; const AFormatSettings: TALFormatSettingsA): TDateTime; overload;
+function  ALStrToDateTime(const S: AnsiString): TDateTime; overload; inline;
 function  ALStrToDateTime(const S: string; const AFormatSettings: TALFormatSettingsW): TDateTime; overload; inline;
+function  ALStrToDateTime(const S: string): TDateTime; overload; inline;
 function  ALTryStrToInt(const S: AnsiString; out Value: Integer): Boolean; overload;
 function  ALTryStrToInt(const S: string; out Value: Integer): Boolean; overload; inline;
 function  ALStrToInt(const S: AnsiString): Integer; overload;
@@ -298,8 +340,6 @@ Function  ALHexToBin(const aHex: AnsiString): AnsiString; overload;
 Function  ALHexToBin(const aHex: String): Tbytes; overload;
 function  ALIntToBitA(value: Integer; digits: integer): ansistring;
 function  AlBitToInt(Value: ansiString): Integer;
-function  AlInt2BaseN(NumIn: UInt64; const charset: array of ansiChar): ansistring;
-function  AlBaseN2Int(const Str: ansiString; const charset: array of ansiChar): UInt64;
 function  ALBase64EncodeString(const P: PansiChar; const ln: Integer): AnsiString; overload;
 function  ALBase64EncodeString(const S: AnsiString): AnsiString; overload;
 Function  ALBase64EncodeString(const S: String; const AEncoding: TEncoding = nil): String; overload;
@@ -313,8 +353,12 @@ function  ALURLBase64DecodeString(const S: AnsiString; const aDoOnlyUrlDecode: b
 Function  ALBase64EncodeBytesW(const Bytes: Tbytes): String; overload;
 Function  ALBase64EncodeBytesW(const Bytes: pointer; const Size: Integer): String; overload;
 Function  ALBase64DecodeBytes(const S: String): Tbytes;
-function  ALIsDecimal(const S: AnsiString; const RejectPlusMinusSign: boolean = False): boolean; overload;
-function  ALIsDecimal(const S: String; const RejectPlusMinusSign: boolean = False): boolean; overload;
+function  ALIsAlphaString(const S: AnsiString): Boolean; overload;
+function  ALIsAlphaString(const S: string): Boolean; overload;
+function  ALIsAlphaNumeric(const S: AnsiString): Boolean; overload;
+function  ALIsAlphaNumeric(const S: string): Boolean; overload;
+function  ALIsNumeric(const S: AnsiString; const RejectPlusMinusSign: boolean = False): boolean; overload;
+function  ALIsNumeric(const S: String; const RejectPlusMinusSign: boolean = False): boolean; overload;
 Function  ALIsInteger(const S: AnsiString): Boolean; overload;
 Function  ALIsInteger(const S: String): Boolean; overload;
 Function  ALIsInt64(const S: AnsiString): Boolean; overload;
@@ -322,37 +366,65 @@ Function  ALIsInt64(const S: String): Boolean; overload;
 Function  ALIsSmallInt(const S: AnsiString): Boolean; overload;
 Function  ALIsSmallInt(const S: String): Boolean; overload;
 Function  ALIsFloat(const S: AnsiString; const AFormatSettings: TALFormatSettingsA): Boolean; overload;
+Function  ALIsFloat(const S: AnsiString): Boolean; overload; inline;
 Function  ALIsFloat(const S: String; const AFormatSettings: TALFormatSettingsW): Boolean; overload;
+Function  ALIsFloat(const S: String): Boolean; overload; inline;
 function  ALFloatToStrA(Value: Extended; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
 procedure ALFloatToStrA(Value: Extended; var S: ansiString; const AFormatSettings: TALFormatSettingsA); overload;
+function  ALFloatToStrA(Value: Extended): AnsiString; overload; inline;
+procedure ALFloatToStrA(Value: Extended; var S: ansiString); overload; inline;
 function  ALFloatToStrW(Value: Extended; const AFormatSettings: TALFormatSettingsW): String; overload; inline;
 procedure ALFloatToStrW(Value: Extended; var S: String; const AFormatSettings: TALFormatSettingsW); overload; inline;
-function  ALFloatToStrFA(Value: Extended; Format: TFloatFormat; Precision, Digits: Integer; const AFormatSettings: TALFormatSettingsA): AnsiString;
-function  ALFloatToStrFW(Value: Extended; Format: TFloatFormat; Precision, Digits: Integer; const AFormatSettings: TALFormatSettingsW): String; inline;
-function  ALCurrToStrA(Value: Currency; const AFormatSettings: TALFormatSettingsA): AnsiString;
-function  ALCurrToStrW(Value: Currency; const AFormatSettings: TALFormatSettingsW): string; inline;
-function  ALFormatFloatA(const Format: AnsiString; Value: Extended; const AFormatSettings: TALFormatSettingsA): AnsiString;
+function  ALFloatToStrW(Value: Extended): String; overload; inline;
+procedure ALFloatToStrW(Value: Extended; var S: String); overload; inline;
+function  ALFloatToStrFA(Value: Extended; Format: TFloatFormat; Precision, Digits: Integer; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
+function  ALFloatToStrFA(Value: Extended; Format: TFloatFormat; Precision, Digits: Integer): AnsiString; overload; inline;
+function  ALFloatToStrFW(Value: Extended; Format: TFloatFormat; Precision, Digits: Integer; const AFormatSettings: TALFormatSettingsW): String; overload; inline;
+function  ALFloatToStrFW(Value: Extended; Format: TFloatFormat; Precision, Digits: Integer): String; overload; inline;
+function  ALCurrToStrA(Value: Currency; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
+function  ALCurrToStrA(Value: Currency): AnsiString; overload; inline;
+function  ALCurrToStrW(Value: Currency; const AFormatSettings: TALFormatSettingsW): string; overload; inline;
+function  ALCurrToStrW(Value: Currency): string; overload; inline;
+function  ALFormatFloatA(const Format: AnsiString; Value: Extended; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
+function  ALFormatFloatA(const Format: AnsiString; Value: Extended): AnsiString; overload; inline;
 function  ALFormatFloatW(const Format: string; Value: Extended; const AFormatSettings: TALFormatSettingsW): string; overload; inline;
 function  ALFormatFloatW(const Format: string; Value: Extended): string; overload; inline;
-function  ALFormatCurrA(const Format: AnsiString; Value: Currency; const AFormatSettings: TALFormatSettingsA): AnsiString;
+function  ALFormatCurrA(const Format: AnsiString; Value: Currency; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
+function  ALFormatCurrA(const Format: AnsiString; Value: Currency): AnsiString; overload; inline;
 function  ALFormatCurrW(const Format: string; Value: Currency; const AFormatSettings: TALFormatSettingsW): string; overload; inline;
 function  ALFormatCurrW(const Format: string; Value: Currency): string; overload; inline;
 function  ALStrToFloat(const S: AnsiString; const AFormatSettings: TALFormatSettingsA): Extended; overload;
+function  ALStrToFloat(const S: AnsiString): Extended; overload; inline;
 function  ALStrToFloat(const S: string; const AFormatSettings: TALFormatSettingsW): Extended; overload; inline;
+function  ALStrToFloat(const S: string): Extended; overload; inline;
 function  ALStrToFloatDef(const S: AnsiString; const Default: Extended; const AFormatSettings: TALFormatSettingsA): Extended; overload;
+function  ALStrToFloatDef(const S: AnsiString; const Default: Extended): Extended; overload; inline;
 function  ALStrToFloatDef(const S: string; const Default: Extended; const AFormatSettings: TALFormatSettingsW): Extended; overload; inline;
+function  ALStrToFloatDef(const S: string; const Default: Extended): Extended; overload; inline;
 function  ALTryStrToFloat(const S: AnsiString; out Value: Extended; const AFormatSettings: TALFormatSettingsA): Boolean; overload;
+function  ALTryStrToFloat(const S: AnsiString; out Value: Extended): Boolean; overload; inline;
 function  ALTryStrToFloat(const S: String; out Value: Extended; const AFormatSettings: TALFormatSettingsW): Boolean; overload; inline;
+function  ALTryStrToFloat(const S: String; out Value: Extended): Boolean; overload; inline;
 function  ALTryStrToFloat(const S: AnsiString; out Value: Double; const AFormatSettings: TALFormatSettingsA): Boolean; overload;
+function  ALTryStrToFloat(const S: AnsiString; out Value: Double): Boolean; overload; inline;
 function  ALTryStrToFloat(const S: String; out Value: Double; const AFormatSettings: TALFormatSettingsW): Boolean; overload; inline;
+function  ALTryStrToFloat(const S: String; out Value: Double): Boolean; overload; inline;
 function  ALTryStrToFloat(const S: AnsiString; out Value: Single; const AFormatSettings: TALFormatSettingsA): Boolean; overload;
+function  ALTryStrToFloat(const S: AnsiString; out Value: Single): Boolean; overload; inline;
 function  ALTryStrToFloat(const S: String; out Value: Single; const AFormatSettings: TALFormatSettingsW): Boolean; overload; inline;
+function  ALTryStrToFloat(const S: String; out Value: Single): Boolean; overload; inline;
 function  ALStrToCurr(const S: AnsiString; const AFormatSettings: TALFormatSettingsA): Currency; overload;
+function  ALStrToCurr(const S: AnsiString): Currency; overload; inline;
 function  ALStrToCurr(const S: string; const AFormatSettings: TALFormatSettingsW): Currency; overload; inline;
+function  ALStrToCurr(const S: string): Currency; overload; inline;
 function  ALStrToCurrDef(const S: AnsiString; const Default: Currency; const AFormatSettings: TALFormatSettingsA): Currency; overload;
+function  ALStrToCurrDef(const S: AnsiString; const Default: Currency): Currency; overload; inline;
 function  ALStrToCurrDef(const S: string; const Default: Currency; const AFormatSettings: TALFormatSettingsW): Currency; overload; inline;
+function  ALStrToCurrDef(const S: string; const Default: Currency): Currency; overload; inline;
 function  ALTryStrToCurr(const S: AnsiString; out Value: Currency; const AFormatSettings: TALFormatSettingsA): Boolean; overload;
+function  ALTryStrToCurr(const S: AnsiString; out Value: Currency): Boolean; overload; inline;
 function  ALTryStrToCurr(const S: string; out Value: Currency; const AFormatSettings: TALFormatSettingsW): Boolean; overload; inline;
+function  ALTryStrToCurr(const S: string; out Value: Currency): Boolean; overload; inline;
 function  ALPosA(const SubStr, Str: AnsiString; const Offset: Integer = 1): Integer; inline;
 function  ALPosW(const SubStr, Str: String; const Offset: Integer = 1): Integer; inline;
 function  ALPosIgnoreCaseA(const SubStr, S: Ansistring; const Offset: Integer = 1): Integer;
@@ -472,7 +544,7 @@ function  AlUpperCase(const S: AnsiString): AnsiString; overload; inline;
 function  AlUpperCase(const S: string): string; overload; inline;
 function  AlLowerCase(const S: AnsiString): AnsiString; overload; inline;
 function  AlLowerCase(const S: string): string; overload; inline;
-function  AlUpCase(const Ch: AnsiChar): AnsiChar; overload;
+function  AlUpCase(const Ch: AnsiChar): AnsiChar; overload; inline;
 function  AlUpCase(Ch: Char): Char; overload; inline;
 function  AlLoCase(const Ch: AnsiChar): AnsiChar; overload;
 function  AlLoCase(Ch: Char): Char; overload;
@@ -519,43 +591,32 @@ Function  ALGetCodePageFromCharSetName(Acharset:AnsiString): Word;
 {$IF defined(MSWINDOWS)}
 Function  ALGetCodePageFromLCID(const aLCID:Integer): Word;
 {$ENDIF}
-function  ALExtractExpressionA(
-            const S: AnsiString;
-            const OpenChar, CloseChar: AnsiChar; // ex: '(' and ')'
-            Const QuoteChars: Array of ansiChar; // ex: ['''', '"']
-            Const EscapeQuoteChar: ansiChar; // ex: '\' or #0 to ignore
-            var StartPos: integer;
-            var EndPos: integer): boolean;
-function  ALHTTPEncode(const AStr: AnsiString): AnsiString; overload;
-function  ALHTTPEncode(const AStr: String): String; overload;
-function  ALHTTPDecode(const AStr: AnsiString): AnsiString; overload;
-function  ALHTTPDecode(const AStr: String): String; overload;
+function  ALPercentEncode(const AStr: AnsiString; const ASafeChars: TSysCharSet; Const ASpacesAsPlus: Boolean = False): AnsiString; overload;
+function  ALPercentEncode(const AStr: String; const ASafeChars: TSysCharSet; Const ASpacesAsPlus: Boolean = False): String; overload;
+function  ALPercentDecode(const AStr: AnsiString; const APlusAsSpaces: Boolean = False): AnsiString; overload;
+function  ALPercentDecode(const AStr: String; const APlusAsSpaces: Boolean = False): String; overload;
+procedure ALPercentDecodeInPlace(var AStr: AnsiString; const APlusAsSpaces: Boolean = False); overload;
+procedure ALPercentDecodeInPlace(var AStr: String; const APlusAsSpaces: Boolean = False); overload;
 procedure ALExtractHeaderFields(
-            Separators,
-            WhiteSpace,
-            Quotes: TSysCharSet;
-            Content: PAnsiChar;
-            Strings: TALStringsA;
-            HttpDecode: Boolean;
-            StripQuotes: Boolean = False);
-procedure ALExtractHeaderFieldsWithQuoteEscaped(
-            Separators,
-            WhiteSpace,
-            Quotes: TSysCharSet;
-            Content: PAnsiChar;
-            Strings: TALStringsA;
-            HttpDecode: Boolean;
-            StripQuotes: Boolean = False); overload;
-{$WARN SYMBOL_DEPRECATED OFF}
-procedure ALExtractHeaderFieldsWithQuoteEscaped(
-            Separators,
-            WhiteSpace,
-            Quotes: TSysCharSet;
-            Content: PChar;
-            Strings: TALStringsW;
-            HttpDecode: Boolean;
-            StripQuotes: Boolean = False); overload;
-{$WARN SYMBOL_DEPRECATED ON}
+            const ASeparators: TSysCharSet;
+            const AWhiteSpace: TSysCharSet;
+            const AQuoteChars: TSysCharSet;
+            const AContent: PAnsiChar;
+            const AStrings: TALStringsA;
+            const AStripQuotes: Boolean = False;
+            const AQuoteDoublingEscape: Boolean = False;
+            const AEscapeChar: AnsiChar = #0;
+            const ANameValueSeparator: AnsiChar = '='); overload;
+procedure ALExtractHeaderFields(
+            const ASeparators: TSysCharSet;
+            const AWhiteSpace: TSysCharSet;
+            const AQuoteChars: TSysCharSet;
+            const AContent: PChar;
+            const AStrings: TALStringsW;
+            const AStripQuotes: Boolean = False;
+            const AQuoteDoublingEscape: Boolean = False;
+            const AEscapeChar: Char = #0;
+            const ANameValueSeparator: Char = '='); overload;
 
 type
 
@@ -605,7 +666,6 @@ type
 function ALFastTagReplacePrecompileA(
            Const SourceString, TagStart, TagEnd: AnsiString;
            PrecompileProc: TALHandleTagPrecompileFunctA;
-           StripParamQuotes: Boolean;
            Context: Pointer;
            TagsContainer: TObjectList;
            Const flags: TReplaceFlags=[]): AnsiString; // rfreplaceall is ignored here, only rfIgnoreCase is matter
@@ -613,7 +673,6 @@ function ALFastTagReplaceA(
            Const SourceString, TagStart, TagEnd: AnsiString;
            ReplaceProc: TALHandleTagFunctA;
            ReplaceExtendedProc: TALHandleTagExtendedfunctA;
-           StripParamQuotes: Boolean;
            Flags: TReplaceFlags;
            Context: Pointer;
            TagParamsClass: TALTagParamsClassA;
@@ -621,14 +680,12 @@ function ALFastTagReplaceA(
 function  ALFastTagReplaceA(
             const SourceString, TagStart, TagEnd: AnsiString;
             ReplaceProc: TALHandleTagFunctA;
-            StripParamQuotes: Boolean;
             Context: Pointer;
             Const flags: TReplaceFlags=[rfreplaceall];
             const TagReplaceProcResult: Boolean = False): AnsiString; overload;
 function  ALFastTagReplaceA(
             const SourceString, TagStart, TagEnd: AnsiString;
             ReplaceExtendedProc: TALHandleTagExtendedfunctA;
-            StripParamQuotes: Boolean;
             Context: Pointer;
             Const flags: TReplaceFlags=[rfreplaceall];
             const TagReplaceProcResult: Boolean = False): AnsiString; overload;
@@ -638,7 +695,6 @@ function  ALFastTagReplaceA(
             const Flags: TReplaceFlags=[rfreplaceall]): AnsiString; overload;
 function  ALExtractTagParamsA(
             Const SourceString, TagStart, TagEnd: AnsiString;
-            StripParamQuotes: Boolean;
             TagParams: TALStringsA;
             IgnoreCase: Boolean): Boolean;
 Procedure ALSplitTextAndTagA(
@@ -652,7 +708,6 @@ uses
   System.SysConst,
   System.RTLConsts,
   System.StrUtils,
-  System.Masks,
   System.IOUtils,
   system.netencoding,
   System.Ansistrings,
@@ -664,6 +719,34 @@ constructor TALStringStreamA.Create(const AString: AnsiString);
 begin
   inherited Create;
   FDataString := AString;
+end;
+
+{*********************************************************}
+procedure TALStringStreamA.LoadFromStream(Stream: TStream);
+begin
+  Stream.Position := 0;
+  var LCount := Stream.Size;
+  SetSize(LCount);
+  if LCount <> 0 then
+    Stream.ReadBuffer(PAnsiChar(FDataString)^, LCount);
+end;
+
+{**************************************************************}
+procedure TALStringStreamA.LoadFromFile(const FileName: string);
+begin
+  var LFileStream := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
+  try
+    LoadFromStream(LFileStream);
+  finally
+    ALFreeAndNil(LFileStream);
+  end;
+end;
+
+{*****************************************************************}
+procedure TALStringStreamA.SetDataString(const AValue: AnsiString);
+begin
+  FDataString := AValue;
+  FPosition := 0;
 end;
 
 {******************************************************************}
@@ -726,151 +809,24 @@ begin
   Write(PAnsiChar(AString)^, Length(AString));
 end;
 
+{***************************************}
+function TALStringStreamA.GetSize: Int64;
+begin
+  Result := length(FDataString);
+end;
+
 {***************************************************}
 procedure TALStringStreamA.SetSize(NewSize: Longint);
+begin
+  SetSize(Int64(NewSize));
+end;
+
+{*******************************************************}
+procedure TALStringStreamA.SetSize(const NewSize: Int64);
 begin
   SetLength(FDataString, NewSize);
   if FPosition > NewSize then FPosition := NewSize;
 end;
-
-{**********************}
-{$IF defined(MSWINDOWS)}
-class function TALFormatSettingsA.Create(Locale: LCID): TALFormatSettingsA;
-var LFormatSettings: TformatSettings;
-    I: integer;
-begin
-  {$WARN SYMBOL_PLATFORM OFF}
-  LFormatSettings:= TformatSettings.Create(Locale);
-  {$WARN SYMBOL_PLATFORM ON}
-  with result do begin
-    CurrencyString := AnsiString(LFormatSettings.CurrencyString);
-    CurrencyFormat := LFormatSettings.CurrencyFormat;
-    CurrencyDecimals := LFormatSettings.CurrencyDecimals;
-    DateSeparator := AnsiChar(LFormatSettings.DateSeparator);
-    TimeSeparator := AnsiChar(LFormatSettings.TimeSeparator);
-    ListSeparator := AnsiString(LFormatSettings.ListSeparator);
-    ShortDateFormat := AnsiString(LFormatSettings.ShortDateFormat);
-    LongDateFormat := AnsiString(LFormatSettings.LongDateFormat);
-    TimeAMString := AnsiString(LFormatSettings.TimeAMString);
-    TimePMString := AnsiString(LFormatSettings.TimePMString);
-    ShortTimeFormat := AnsiString(LFormatSettings.ShortTimeFormat);
-    LongTimeFormat := AnsiString(LFormatSettings.LongTimeFormat);
-    for I := Low(ShortMonthNames) to High(ShortMonthNames) do
-      ShortMonthNames[i] := AnsiString(LFormatSettings.ShortMonthNames[i]);
-    for I := Low(LongMonthNames) to High(LongMonthNames) do
-      LongMonthNames[i] := AnsiString(LFormatSettings.LongMonthNames[i]);
-    for I := Low(ShortDayNames) to High(ShortDayNames) do
-      ShortDayNames[i] := AnsiString(LFormatSettings.ShortDayNames[i]);
-    for I := Low(LongDayNames) to High(LongDayNames) do
-      LongDayNames[i] := AnsiString(LFormatSettings.LongDayNames[i]);
-    setlength(EraInfo, length(LFormatSettings.EraInfo));
-    for I := Low(LFormatSettings.EraInfo) to High(LFormatSettings.EraInfo) do begin
-      EraInfo[i].EraName := ansiString(LFormatSettings.EraInfo[i].EraName);
-      EraInfo[i].EraOffset := LFormatSettings.EraInfo[i].EraOffset;
-      EraInfo[i].EraStart := LFormatSettings.EraInfo[i].EraStart;
-      EraInfo[i].EraEnd := LFormatSettings.EraInfo[i].EraEnd;
-    end;
-    ThousandSeparator := AnsiString(LFormatSettings.ThousandSeparator);
-    DecimalSeparator := AnsiChar(LFormatSettings.DecimalSeparator);
-    TwoDigitYearCenturyWindow := LFormatSettings.TwoDigitYearCenturyWindow;
-    NegCurrFormat := LFormatSettings.NegCurrFormat;
-  end;
-end;
-{$ENDIF}
-
-{*****************************************************************************************}
-class function TALFormatSettingsA.Create(const LocaleName: AnsiString): TALFormatSettingsA;
-var LFormatSettings: TformatSettings;
-    I: integer;
-begin
-  LFormatSettings:= TformatSettings.Create(String(LocaleName));
-  with result do begin
-    CurrencyString := AnsiString(LFormatSettings.CurrencyString);
-    CurrencyFormat := LFormatSettings.CurrencyFormat;
-    CurrencyDecimals := LFormatSettings.CurrencyDecimals;
-    DateSeparator := AnsiChar(LFormatSettings.DateSeparator);
-    TimeSeparator := AnsiChar(LFormatSettings.TimeSeparator);
-    ListSeparator := AnsiString(LFormatSettings.ListSeparator);
-    ShortDateFormat := AnsiString(LFormatSettings.ShortDateFormat);
-    LongDateFormat := AnsiString(LFormatSettings.LongDateFormat);
-    TimeAMString := AnsiString(LFormatSettings.TimeAMString);
-    TimePMString := AnsiString(LFormatSettings.TimePMString);
-    ShortTimeFormat := AnsiString(LFormatSettings.ShortTimeFormat);
-    LongTimeFormat := AnsiString(LFormatSettings.LongTimeFormat);
-    for I := Low(ShortMonthNames) to High(ShortMonthNames) do
-      ShortMonthNames[i] := AnsiString(LFormatSettings.ShortMonthNames[i]);
-    for I := Low(LongMonthNames) to High(LongMonthNames) do
-      LongMonthNames[i] := AnsiString(LFormatSettings.LongMonthNames[i]);
-    for I := Low(ShortDayNames) to High(ShortDayNames) do
-      ShortDayNames[i] := AnsiString(LFormatSettings.ShortDayNames[i]);
-    for I := Low(LongDayNames) to High(LongDayNames) do
-      LongDayNames[i] := AnsiString(LFormatSettings.LongDayNames[i]);
-    setlength(EraInfo, length(LFormatSettings.EraInfo));
-    for I := Low(LFormatSettings.EraInfo) to High(LFormatSettings.EraInfo) do begin
-      EraInfo[i].EraName := ansiString(LFormatSettings.EraInfo[i].EraName);
-      EraInfo[i].EraOffset := LFormatSettings.EraInfo[i].EraOffset;
-      EraInfo[i].EraStart := LFormatSettings.EraInfo[i].EraStart;
-      EraInfo[i].EraEnd := LFormatSettings.EraInfo[i].EraEnd;
-    end;
-    ThousandSeparator := AnsiString(LFormatSettings.ThousandSeparator);
-    DecimalSeparator := AnsiChar(LFormatSettings.DecimalSeparator);
-    TwoDigitYearCenturyWindow := LFormatSettings.TwoDigitYearCenturyWindow;
-    NegCurrFormat := LFormatSettings.NegCurrFormat;
-  end;
-end;
-
-{$IFNDEF ALCompilerVersionSupported123}
-  {$MESSAGE WARN 'Check if System.SysUtils.TFormatSettings.GetEraYearOffset is still the same and adjust the IFDEF'}
-{$ENDIF}
-function TALFormatSettingsA.GetEraYearOffset(const Name: ansistring): Integer;
-var
-  I: Integer;
-begin
-  Result := -MaxInt;
-  for I := High(EraInfo) downto Low(EraInfo) do
-  begin
-    if EraInfo[I].EraName = '' then Break;
-    if ALPosA(EraInfo[I].EraName, Name) > 0 then
-    begin
-      Result := EraInfo[I].EraOffset - 1;
-      Exit;
-    end;
-  end;
-end;
-
-{***********************************************************}
-class function TALFormatSettingsA.Create: TALFormatSettingsA;
-begin
-  Result := TALFormatSettingsA.Create('');
-end;
-
-{************************************************************************************}
-function ALGetFormatSettingsID(const aFormatSettings: TALFormatSettingsA): AnsiString;
-begin
-  With aFormatSettings do begin
-    Result := ALIntToStrA(CurrencyFormat) + '#' +
-              ALIntToStrA(CurrencyDecimals) + '#' +
-              DateSeparator + '#' +
-              TimeSeparator + '#' +
-              ListSeparator + '#' +
-              ShortDateFormat + '#' +
-              LongDateFormat + '#' +
-              ShortTimeFormat + '#' +
-              LongTimeFormat + '#' +
-              ThousandSeparator + '#' +
-              DecimalSeparator + '#' +
-              ALIntToStrA(TwoDigitYearCenturyWindow) + '#' +
-              ALIntToStrA(NegCurrFormat);
-  end;
-end;
-
-{**********************}
-{$IF defined(MSWINDOWS)}
-procedure ALGetLocaleFormatSettings(Locale: LCID; var AFormatSettings: TALFormatSettingsA);
-begin
-  AFormatSettings := TALFormatSettingsA.Create(Locale);
-end;
-{$ENDIF}
 
 {*******************************}
 Function  ALNewGUIDBytes: TBytes;
@@ -990,22 +946,21 @@ Begin
   Result := ALGUIDToStringW(LGUID, WithoutBracket, WithoutHyphen);
 End;
 
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if System.Masks.pas is still the same and adjust the IFDEF'}
 {$ENDIF}
 
-{***}
 const
   _MaxCards = 30;
 
 {****************************************************************}
-function TALMaskA.InitMaskStates(const Mask: ansistring): Integer;
+function TALMaskA.InitMaskStates(const Mask: AnsiString): Integer;
 var
   I: Integer;
   SkipTo: Boolean;
-  Literal: ansiChar;
-  LeadByte, TrailByte: ansiChar;
-  P: PansiChar;
+  Literal: AnsiChar;
+  LeadByte, TrailByte: AnsiChar;
+  P: PAnsiChar;
   Negate: Boolean;
   CharSet: TMaskSet;
   Cards: Integer;
@@ -1015,7 +970,7 @@ var
   begin
     raise EALMaskException.CreateResFmt(
             @SInvalidMask,
-            [Mask, P - PansiChar(Mask) + 1]);
+            [Mask, P - PAnsiChar(Mask) + 1]);
   end;
 
   {~~~~~~~~~~~~~~}
@@ -1028,6 +983,8 @@ var
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
   procedure WriteScan(MaskState: TMaskStates);
+  var
+    pState: PMaskState;
   begin
     if I <= High(FMaskStates) then
     begin
@@ -1036,20 +993,24 @@ var
         Inc(Cards);
         if Cards > _MaxCards then InvalidMask;
       end;
-      FMaskStates[I].SkipTo := SkipTo;
-      FMaskStates[I].State := MaskState;
+      pState := @FMaskStates[I];
+      pState^.SkipTo := SkipTo;
+      pState^.State := MaskState;
       case MaskState of
-        TMaskStates.msLiteral: FMaskStates[I].Literal := UpCase(Literal);
+        TMaskStates.msLiteral:
+          pState^.Literal := ALUpCase(Literal);
+        TMaskStates.msLiteralCS:
+          pState^.Literal := Literal;
         TMaskStates.msSet:
           begin
-            FMaskStates[I].Negate := Negate;
-            New(FMaskStates[I].CharSet);
-            FMaskStates[I].CharSet^ := CharSet;
+            pState^.Negate := Negate;
+            New(pState^.CharSet);
+            pState^.CharSet^ := CharSet;
           end;
         TMaskStates.msMBCSLiteral:
           begin
-            FMaskStates[I].LeadByte := LeadByte;
-            FMaskStates[I].TrailByte := TrailByte;
+            pState^.LeadByte := LeadByte;
+            pState^.TrailByte := TrailByte;
           end;
       end;
     end;
@@ -1060,8 +1021,9 @@ var
   {~~~~~~~~~~~~~~~~}
   procedure ScanSet;
   var
-    LastChar: ansiChar;
-    C: ansiChar;
+    LastChar,
+    HighChar: AnsiChar;
+    C: AnsiChar;
   begin
     Inc(P);
     if P^ = '!' then
@@ -1072,7 +1034,7 @@ var
     LastChar := #0;
     while not (P^ in [#0, ']']) do
     begin
-      // MBCS characters not supported in msSet!
+      // MBCS characters not supported in TMaskStates.msSet!
       //if IsLeadChar(P^) then
       //   Inc(P)
       //else
@@ -1082,11 +1044,18 @@ var
           else
           begin
             Inc(P);
-            for C := LastChar to UpCase(P^) do
+            if FCaseSensitive then
+              HighChar := P^
+            else
+              HighChar := ALUpCase(P^);
+            for C := LastChar to HighChar do
               CharSet := CharSet + [C];
           end;
       else
-        LastChar := UpCase(P^);
+        if FCaseSensitive then
+          LastChar := P^
+        else
+          LastChar := ALUpCase(P^);
         CharSet := CharSet + [LastChar];
       end;
       Inc(P);
@@ -1096,7 +1065,7 @@ var
   end;
 
 begin
-  P := PansiChar(Mask);
+  P := PAnsiChar(Mask);
   I := 0;
   Cards := 0;
   Reset;
@@ -1105,43 +1074,46 @@ begin
     case P^ of
       '*': SkipTo := True;
       '?': if not SkipTo then WriteScan(TMaskStates.msAny);
-      '[':  ScanSet;
+      '[': ScanSet;
     else
       //if IsLeadChar(P^) then
       //begin
       //  LeadByte := P^;
       //  Inc(P);
       //  TrailByte := P^;
-      //  WriteScan(msMBCSLiteral);
+      //  WriteScan(TMaskStates.msMBCSLiteral);
       //end
       //else
       begin
         Literal := P^;
-        WriteScan(TMaskStates.msLiteral);
+        if FCaseSensitive then
+          WriteScan(TMaskStates.msLiteralCS)
+        else
+          WriteScan(TMaskStates.msLiteral);
       end;
     end;
     Inc(P);
   end;
   Literal := #0;
-  WriteScan(TMaskStates.msLiteral);
+  WriteScan(TMaskStates.msLiteralCS);
   Result := I;
 end;
 
 {***********************************************************************}
-function TALMaskA.MatchesMaskStates(const Filename: ansistring): Boolean;
+function TALMaskA.MatchesMaskStates(const Filename: AnsiString): Boolean;
 type
   TStackRec = record
-    sP: PansiChar;
+    sP: PAnsiChar;
     sI: Integer;
   end;
 var
   T: Integer;
   S: array of TStackRec;
   I: Integer;
-  P: PansiChar;
+  P: PAnsiChar;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  procedure Push(P: PansiChar; I: Integer);
+  procedure Push(P: PAnsiChar; I: Integer);
   begin
     S[T].sP := P;
     S[T].sI := I;
@@ -1149,7 +1121,7 @@ var
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  function Pop(var P: PansiChar; var I: Integer): Boolean;
+  function Pop(var P: PAnsiChar; var I: Integer): Boolean;
   begin
     if T = 0 then
       Result := False
@@ -1163,28 +1135,34 @@ var
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  function Matches(P: PansiChar; Start: Integer): Boolean;
+  function Matches(P: PAnsiChar; Start: Integer): Boolean;
   var
     I: Integer;
+    pState: PMaskState;
   begin
     Result := False;
     for I := Start to High(FMaskStates) do
     begin
-      if FMaskStates[I].SkipTo then
+      pState := @FMaskStates[I];
+      if pState^.SkipTo then
       begin
-        case FMaskStates[I].State of
+        case pState^.State of
           TMaskStates.msLiteral:
-            while (P^ <> #0) and (UpCase(P^) <> FMaskStates[I].Literal) do Inc(P);
+            while (P^ <> #0) and (ALUpCase(P^) <> pState^.Literal) do Inc(P);
+          TMaskStates.msLiteralCS:
+            while (P^ <> #0) and (P^ <> pState^.Literal) do Inc(P);
           TMaskStates.msSet:
-            while (P^ <> #0) and not (FMaskStates[I].Negate xor (UpCase(P^) in FMaskStates[I].CharSet^)) do Inc(P);
+            while (P^ <> #0) and not (pState^.Negate xor (ALUpCase(P^) in pState^.CharSet^)) do Inc(P);
+          TMaskStates.msSetCS:
+            while (P^ <> #0) and not (pState^.Negate xor (P^ in pState^.CharSet^)) do Inc(P);
           TMaskStates.msMBCSLiteral:
             while (P^ <> #0) do
             begin
-              if (P^ <> FMaskStates[I].LeadByte) then Inc(P, 2)
+              if (P^ <> pState^.LeadByte) then Inc(P, 2)
               else
               begin
                 Inc(P);
-                if (P^ = FMaskStates[I].TrailByte) then Break;
+                if (P^ = pState^.TrailByte) then Break;
                 Inc(P);
               end;
             end;
@@ -1192,14 +1170,20 @@ var
         if P^ <> #0 then
           Push(@P[1], I);
       end;
-      case FMaskStates[I].State of
-        TMaskStates.msLiteral: if UpCase(P^) <> FMaskStates[I].Literal then Exit;
-        TMaskStates.msSet: if not (FMaskStates[I].Negate xor (UpCase(P^) in FMaskStates[I].CharSet^)) then Exit;
+      case pState^.State of
+        TMaskStates.msLiteral:
+          if ALUpCase(P^) <> pState^.Literal then Exit;
+        TMaskStates.msLiteralCS:
+          if P^ <> pState^.Literal then Exit;
+        TMaskStates.msSet:
+          if not (pState^.Negate xor (ALUpCase(P^) in pState^.CharSet^)) then Exit;
+        TMaskStates.msSetCS:
+          if not (pState^.Negate xor (P^ in pState^.CharSet^)) then Exit;
         TMaskStates.msMBCSLiteral:
           begin
-            if P^ <> FMaskStates[I].LeadByte then Exit;
+            if P^ <> pState^.LeadByte then Exit;
             Inc(P);
-            if P^ <> FMaskStates[I].TrailByte then Exit;
+            if P^ <> pState^.TrailByte then Exit;
           end;
         TMaskStates.msAny:
           if P^ = #0 then
@@ -1217,7 +1201,7 @@ begin
   SetLength(S, _MaxCards);
   Result := True;
   T := 0;
-  P := PansiChar(Filename);
+  P := PAnsiChar(Filename);
   I := Low(FMaskStates);
   repeat
     if Matches(P, I) then Exit;
@@ -1234,12 +1218,13 @@ begin
     if FMaskStates[I].State = TMaskStates.msSet then Dispose(FMaskStates[I].CharSet);
 end;
 
-{*******************************************************}
-constructor TALMaskA.Create(const MaskValue: ansistring);
+{***************************************************************************************}
+constructor TALMaskA.Create(const MaskValue: AnsiString; CaseSensitive: Boolean = False);
 var
   Size: Integer;
 begin
   inherited Create;
+  FCaseSensitive := CaseSensitive;
   SetLength(FMaskStates, 1);
   Size := InitMaskStates(MaskValue);
   DoneMaskStates;
@@ -1257,22 +1242,34 @@ begin
 end;
 
 {*************************************************************}
-function TALMaskA.Matches(const Filename: ansistring): Boolean;
+function TALMaskA.Matches(const Filename: AnsiString): Boolean;
 begin
   Result := MatchesMaskStates(Filename);
 end;
 
-{*****************************************************************}
-function ALMatchesMaskA(const Filename, Mask: ansistring): Boolean;
+{*****************************************************************************************}
+function ALMatchesMaskA(const Filename, Mask: AnsiString; CaseSensitive: Boolean): Boolean;
 var
   CMask: TALMaskA;
 begin
-  CMask := TALMaskA.Create(Mask);
+  CMask := TALMaskA.Create(Mask, CaseSensitive);
   try
     Result := CMask.Matches(Filename);
   finally
     CMask.Free;
   end;
+end;
+
+{*****************************************************************}
+function ALMatchesMaskA(const Filename, Mask: AnsiString): Boolean;
+begin
+  Result := ALMatchesMaskA(Filename, Mask, False);
+end;
+
+{*************************************************************************************}
+function ALMatchesMaskW(const Filename, Mask: String; CaseSensitive: Boolean): Boolean;
+begin
+  result := System.Masks.MatchesMask(Filename, Mask {$IF CompilerVersion >= 37.0},CaseSensitive{$IFEND});
 end;
 
 {*************************************************************}
@@ -1281,26 +1278,482 @@ begin
   result := System.Masks.MatchesMask(Filename, Mask);
 end;
 
+{***********************************}
+constructor TALStringBuilderA.Create;
+begin
+  inherited Create;
+  FMaxCapacity := MaxInt;
+  FLength := 0;
+  Capacity := DefaultCapacity;
+end;
+
+{*************************************************************}
+constructor TALStringBuilderA.Create(const ACapacity: Integer);
+begin
+  inherited Create;
+  FMaxCapacity := MaxInt;
+  FLength := 0;
+  Capacity := ACapacity;
+end;
+
+{*************************************************************}
+constructor TALStringBuilderA.Create(const AValue: AnsiString);
+begin
+  Create;
+  Append(AValue);
+end;
+
+{******************************************************************************************}
+constructor TALStringBuilderA.Create(const ACapacity: Integer; const AMaxCapacity: Integer);
+begin
+  if AMaxCapacity <= 0 then
+    raise ERangeError.CreateRes(@SRangeError);
+  if ACapacity > AMaxCapacity then
+    raise ERangeError.CreateResFmt(@SListCapacityError, [ACapacity]);
+  Create(ACapacity);
+  FMaxCapacity := AMaxCapacity;
+end;
+
+{***************************************************************************************}
+constructor TALStringBuilderA.Create(const AValue: AnsiString; const ACapacity: Integer);
+begin
+  inherited Create;
+  FMaxCapacity := MaxInt;
+  FLength := 0;
+  Capacity := ACapacity;
+  Append(AValue);
+end;
+
+{*******************************************************************************************************************************************}
+constructor TALStringBuilderA.Create(const AValue: AnsiString; const AStartIndex: Integer; const ALength: Integer; const ACapacity: Integer);
+begin
+  Create(ALCopyStr(AValue, AStartIndex, Alength), ACapacity);
+end;
+
+{**********************************************}
+function TALStringBuilderA.GetCapacity: Integer;
+begin
+  Result := System.Length(FData);
+end;
+
+{*************************************************************}
+procedure TALStringBuilderA.SetCapacity(const AValue: Integer);
+begin
+  if (AValue < Length) or (AValue > FMaxCapacity) then
+    raise ERangeError.CreateResFmt(@SListCapacityError, [AValue]);
+  System.SetLength(FData, AValue);
+end;
+
+{********************************************}
+function TALStringBuilderA.GetLength: Integer;
+begin
+  Result := FLength;
+end;
+
+{***********************************************************}
+procedure TALStringBuilderA.SetLength(const AValue: Integer);
+begin
+  if AValue < 0 then
+    raise ERangeError.CreateResFmt(@SParamIsNegative, ['AValue']); // DO NOT LOCALIZE
+  if AValue > MaxCapacity then
+    raise ERangeError.CreateResFmt(@SListCapacityError, [AValue]);
+
+  var LOldLength := FLength;
+  try
+    FLength := AValue;
+    if FLength > Capacity then
+      ExpandCapacity;
+  except
+    on E: EOutOfMemory do begin
+      FLength := LOldLength;
+      raise;
+    end;
+  end;
+end;
+
+{*************************************************}
+function TALStringBuilderA.GetMaxCapacity: Integer;
+begin
+  Result := FMaxCapacity;
+end;
+
+{*****************************************}
+procedure TALStringBuilderA.ExpandCapacity;
+begin
+  var LNewCapacity := (Capacity * 3) div 2;
+  if Length > LNewCapacity then
+    LNewCapacity := Length * 2; // this line may overflow NewCapacity to a negative value
+  if LNewCapacity > MaxCapacity then
+    LNewCapacity := MaxCapacity;
+  if LNewCapacity < 0 then // if NewCapacity has been overflowed
+    LNewCapacity := Length;
+  Capacity := LNewCapacity;
+end;
+
+{********************************}
+procedure TALStringBuilderA.Clear;
+begin
+  Length := 0;
+  Capacity := DefaultCapacity;
+end;
+
+{***************************************************************************}
+function TALStringBuilderA.EnsureCapacity(const ACapacity: Integer): Integer;
+begin
+  if ACapacity < 0 then
+    raise ERangeError.CreateResFmt(@SParamIsNegative, ['ACapacity']); // DO NOT LOCALIZE
+  if ACapacity > MaxCapacity then
+    raise ERangeError.CreateResFmt(@SListCapacityError, [ACapacity]);
+
+  if Capacity < ACapacity then
+    Capacity := ACapacity;
+
+  Result := Capacity;
+end;
+
+{*********************}
+{$ZEROBASEDSTRINGS OFF}
+function TALStringBuilderA.Append(const AValue: AnsiChar): TALStringBuilderA;
+begin
+  FLength := Length + 1;
+  if Length > Capacity then
+    ExpandCapacity;
+  FData[Length] := AValue;
+  Result := Self;
+end;
+{$IF defined(ALZEROBASEDSTRINGSON)}
+  {$ZEROBASEDSTRINGS ON}
+{$ENDIF}
+
+{*****************************************************************************}
+function TALStringBuilderA.Append(const AValue: AnsiString): TALStringBuilderA;
+begin
+  var LDelta := System.Length(AValue);
+  if LDelta <> 0 then begin
+    var LOldLength := Length;
+    FLength := Length + LDelta;
+    if Length > Capacity then
+      ExpandCapacity;
+    ALMove(Pointer(AValue)^, (PAnsiChar(Pointer(FData)) + LOldLength)^, LDelta * SizeOf(AnsiChar));
+  end;
+  Result := self;
+end;
+
+{********************************************************************************************************}
+function TALStringBuilderA.Append(const AValue: AnsiChar; const ARepeatCount: Integer): TALStringBuilderA;
+begin
+  if ARepeatCount > 0 then begin
+    FLength := Length + ARepeatCount;
+    if Length > Capacity then
+      ExpandCapacity;
+    var P: PAnsiChar := PAnsiChar(Pointer(FData)) + Length - ARepeatCount;
+    for var I := 1 to ARepeatCount do begin
+      P^ := AValue;
+      Inc(P);
+    end;
+  end;
+  Result := Self;
+end;
+
+{*********************}
+{$ZEROBASEDSTRINGS OFF}
+function TALStringBuilderA.Append(const AValue: AnsiString; const AStartIndex: Integer; const ACount: Integer): TALStringBuilderA;
+begin
+  if (AStartIndex < low(AValue)) or (AStartIndex > high(AValue)) then
+    raise ERangeError.CreateFmt(SByteIndexOutOfBounds, [AStartIndex]); // DO NOT LOCALIZE
+  var LCount := Min(ACount, System.Length(AValue) - AStartIndex + 1);
+  if LCount > 0 then begin
+    var LOldLength := Length;
+    Length := Length + LCount;
+    ALMove(AValue[AStartIndex], FData[LOldLength + 1], LCount * SizeOf(AnsiChar));
+  end;
+  Result := Self;
+end;
+{$IF defined(ALZEROBASEDSTRINGSON)}
+  {$ZEROBASEDSTRINGS ON}
+{$ENDIF}
+
+{*******************************************************}
+function TALStringBuilderA.AppendLine: TALStringBuilderA;
+begin
+  Result := Append(LineBreak);
+end;
+
+{*********************************************************************************}
+function TALStringBuilderA.AppendLine(const AValue: AnsiString): TALStringBuilderA;
+begin
+  Result := Append(AValue).AppendLine;
+end;
+
+{**********************************************}
+function TALStringBuilderA.ToString: AnsiString;
+begin
+  Result := ToString(False);
+end;
+
+{******************************************************************************}
+function TALStringBuilderA.ToString(const AUpdateCapacity: Boolean): AnsiString;
+begin
+  if Length = Capacity then begin
+    Result := FData;
+    UniqueString(Result);
+  end
+  else if AUpdateCapacity then begin
+    System.SetLength(FData, Length);
+    Result := FData;
+  end
+  else
+    Result := ALCopyStr(FData, 1, Length);
+end;
+
+{***********************************}
+constructor TALStringBuilderW.Create;
+begin
+  inherited Create;
+  FMaxCapacity := MaxInt;
+  FLength := 0;
+  Capacity := DefaultCapacity;
+end;
+
+{*************************************************************}
+constructor TALStringBuilderW.Create(const ACapacity: Integer);
+begin
+  inherited Create;
+  FMaxCapacity := MaxInt;
+  FLength := 0;
+  Capacity := ACapacity;
+end;
+
+{*********************************************************}
+constructor TALStringBuilderW.Create(const AValue: string);
+begin
+  Create;
+  Append(AValue);
+end;
+
+{******************************************************************************************}
+constructor TALStringBuilderW.Create(const ACapacity: Integer; const AMaxCapacity: Integer);
+begin
+  if AMaxCapacity <= 0 then
+    raise ERangeError.CreateRes(@SRangeError);
+  if ACapacity > AMaxCapacity then
+    raise ERangeError.CreateResFmt(@SListCapacityError, [ACapacity]);
+  Create(ACapacity);
+  FMaxCapacity := AMaxCapacity;
+end;
+
+{***********************************************************************************}
+constructor TALStringBuilderW.Create(const AValue: string; const ACapacity: Integer);
+begin
+  inherited Create;
+  FMaxCapacity := MaxInt;
+  FLength := 0;
+  Capacity := ACapacity;
+  Append(AValue);
+end;
+
+{***************************************************************************************************************************************}
+constructor TALStringBuilderW.Create(const AValue: string; const AStartIndex: Integer; const ALength: Integer; const ACapacity: Integer);
+begin
+  Create(ALCopyStr(AValue, AStartIndex, Alength), ACapacity);
+end;
+
+{**********************************************}
+function TALStringBuilderW.GetCapacity: Integer;
+begin
+  Result := System.Length(FData);
+end;
+
+{*************************************************************}
+procedure TALStringBuilderW.SetCapacity(const AValue: Integer);
+begin
+  if (AValue < Length) or (AValue > FMaxCapacity) then
+    raise ERangeError.CreateResFmt(@SListCapacityError, [AValue]);
+  System.SetLength(FData, AValue);
+end;
+
+{********************************************}
+function TALStringBuilderW.GetLength: Integer;
+begin
+  Result := FLength;
+end;
+
+{***********************************************************}
+procedure TALStringBuilderW.SetLength(const AValue: Integer);
+begin
+  if AValue < 0 then
+    raise ERangeError.CreateResFmt(@SParamIsNegative, ['AValue']); // DO NOT LOCALIZE
+  if AValue > MaxCapacity then
+    raise ERangeError.CreateResFmt(@SListCapacityError, [AValue]);
+
+  var LOldLength := FLength;
+  try
+    FLength := AValue;
+    if FLength > Capacity then
+      ExpandCapacity;
+  except
+    on E: EOutOfMemory do begin
+      FLength := LOldLength;
+      raise;
+    end;
+  end;
+end;
+
+{*************************************************}
+function TALStringBuilderW.GetMaxCapacity: Integer;
+begin
+  Result := FMaxCapacity;
+end;
+
+{*****************************************}
+procedure TALStringBuilderW.ExpandCapacity;
+begin
+  var LNewCapacity := (Capacity * 3) div 2;
+  if Length > LNewCapacity then
+    LNewCapacity := Length * 2; // this line may overflow NewCapacity to a negative value
+  if LNewCapacity > MaxCapacity then
+    LNewCapacity := MaxCapacity;
+  if LNewCapacity < 0 then // if NewCapacity has been overflowed
+    LNewCapacity := Length;
+  Capacity := LNewCapacity;
+end;
+
+{********************************}
+procedure TALStringBuilderW.Clear;
+begin
+  Length := 0;
+  Capacity := DefaultCapacity;
+end;
+
+{***************************************************************************}
+function TALStringBuilderW.EnsureCapacity(const ACapacity: Integer): Integer;
+begin
+  if ACapacity < 0 then
+    raise ERangeError.CreateResFmt(@SParamIsNegative, ['ACapacity']); // DO NOT LOCALIZE
+  if ACapacity > MaxCapacity then
+    raise ERangeError.CreateResFmt(@SListCapacityError, [ACapacity]);
+
+  if Capacity < ACapacity then
+    Capacity := ACapacity;
+
+  Result := Capacity;
+end;
+
+{*********************}
+{$ZEROBASEDSTRINGS OFF}
+function TALStringBuilderW.Append(const AValue: Char): TALStringBuilderW;
+begin
+  FLength := Length + 1;
+  if Length > Capacity then
+    ExpandCapacity;
+  FData[Length] := AValue;
+  Result := Self;
+end;
+{$IF defined(ALZeroBasedStringsON)}
+  {$ZEROBASEDSTRINGS ON}
+{$ENDIF}
+
+{*************************************************************************}
+function TALStringBuilderW.Append(const AValue: string): TALStringBuilderW;
+begin
+  var LDelta := System.Length(AValue);
+  if LDelta <> 0 then begin
+    var LOldLength := Length;
+    FLength := Length + LDelta;
+    if Length > Capacity then
+      ExpandCapacity;
+    ALMove(Pointer(AValue)^, (PChar(Pointer(FData)) + LOldLength)^, LDelta * SizeOf(Char));
+  end;
+  Result := self;
+end;
+
+{****************************************************************************************************}
+function TALStringBuilderW.Append(const AValue: Char; const ARepeatCount: Integer): TALStringBuilderW;
+begin
+  if ARepeatCount > 0 then begin
+    FLength := Length + ARepeatCount;
+    if Length > Capacity then
+      ExpandCapacity;
+    var P: PChar := PChar(Pointer(FData)) + Length - ARepeatCount;
+    for var I := 1 to ARepeatCount do begin
+      P^ := AValue;
+      Inc(P);
+    end;
+  end;
+  Result := Self;
+end;
+
+{*********************}
+{$ZEROBASEDSTRINGS OFF}
+function TALStringBuilderW.Append(const AValue: string; const AStartIndex: Integer; const ACount: Integer): TALStringBuilderW;
+begin
+  if (AStartIndex < low(AValue)) or (AStartIndex > high(AValue)) then
+    raise ERangeError.CreateFmt(SByteIndexOutOfBounds, [AStartIndex]); // DO NOT LOCALIZE
+  var LCount := Min(ACount, System.Length(AValue) - AStartIndex + 1);
+  if LCount > 0 then begin
+    var LOldLength := Length;
+    Length := Length + LCount;
+    ALMove(AValue[AStartIndex], FData[LOldLength + 1], LCount * SizeOf(Char));
+  end;
+  Result := Self;
+end;
+{$IF defined(ALZeroBasedStringsON)}
+  {$ZEROBASEDSTRINGS ON}
+{$ENDIF}
+
+{*******************************************************}
+function TALStringBuilderW.AppendLine: TALStringBuilderW;
+begin
+  Result := Append(LineBreak);
+end;
+
+{*****************************************************************************}
+function TALStringBuilderW.AppendLine(const AValue: string): TALStringBuilderW;
+begin
+  Result := Append(AValue).AppendLine;
+end;
+
+{******************************************}
+function TALStringBuilderW.ToString: string;
+begin
+  Result := ToString(False);
+end;
+
+{**************************************************************************}
+function TALStringBuilderW.ToString(const AUpdateCapacity: Boolean): string;
+begin
+  if Length = Capacity then begin
+    Result := FData;
+    UniqueString(Result);
+  end
+  else if AUpdateCapacity then begin
+    System.SetLength(FData, Length);
+    Result := FData;
+  end
+  else
+    Result := ALCopyStr(FData, 1, Length);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if System.SysUtils.ConvertErrorFmt is still the same and adjust the IFDEF'}
 {$ENDIF}
-procedure ALConvertErrorFmt(ResString: PResStringRec; const Args: array of const);
+procedure ALConvertErrorFmt(ResString: PResStringRec; const Args: array of const); {$IF CompilerVersion >= 37.0} noreturn; {$IFEND}
 begin
   raise EConvertError.CreateResFmt(ResString, Args) at ReturnAddress;
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if System.SysUtils.ConvertError is still the same and adjust the IFDEF'}
 {$ENDIF}
-procedure ALConvertError(ResString: PResStringRec);
+procedure ALConvertError(ResString: PResStringRec); {$IF CompilerVersion >= 37.0} noreturn; {$IFEND}
 begin
   raise EConvertError.CreateRes(ResString) at ReturnAddress;
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if System.SysUtils.FormatError is still the same and adjust the IFDEF'}
 {$ENDIF}
 procedure ALFormatError(ErrorCode: Integer; Format: PChar; FmtLen: Cardinal);
@@ -1319,7 +1772,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if System.SysUtils.AnsiFormatError is still the same and adjust the IFDEF'}
 {$ENDIF}
 procedure ALAnsiFormatError(ErrorCode: Integer; Format: PAnsiChar; FmtLen: Cardinal);
@@ -1331,7 +1784,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if System.SysUtils.InternalFloatToText is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$R-} {Range-Checking}
@@ -1732,7 +2185,7 @@ end;
 {$ENDIF}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if System.AnsiStrings.FormatBuf is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALFormatBuf(
@@ -2163,7 +2616,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if System.AnsiStrings.FmtStr is still the same and adjust the IFDEF'}
 {$ENDIF}
 procedure ALFmtStr(
@@ -2200,18 +2653,6 @@ begin
     SetString(Result, Buffer, Len);
 end;
 
-{***********************************************************************************}
-function ALFormatA(const Format: AnsiString; const Args: array of const): AnsiString;
-begin
-  Result := ALFormatA(Format, Args, ALDefaultFormatSettingsA);
-end;
-
-{************************************************************************************************}
-procedure ALFormatA(const Format: AnsiString; const Args: array of const; var Result: ansiString);
-begin
-  Result := ALFormatA(Format, Args, ALDefaultFormatSettingsA);
-end;
-
 {******************************************************************************************************************************}
 function ALFormatA(const Format: AnsiString; const Args: array of const; const AFormatSettings: TALFormatSettingsA): AnsiString;
 begin
@@ -2224,16 +2665,16 @@ begin
   ALFmtStr(Result, Format, Args, AFormatSettings);
 end;
 
-{***************************************************************************}
-function ALFormatW(const Format: String; const Args: array of const): String;
+{***********************************************************************************}
+function ALFormatA(const Format: AnsiString; const Args: array of const): AnsiString;
 begin
-  Result := ALFormatW(Format, Args, ALDefaultFormatSettingsW);
+  Result := ALFormatA(Format, Args, ALDefaultFormatSettingsA);
 end;
 
-{****************************************************************************************}
-procedure ALFormatW(const Format: String; const Args: array of const; var Result: String);
+{************************************************************************************************}
+procedure ALFormatA(const Format: AnsiString; const Args: array of const; var Result: ansiString);
 begin
-  Result := ALFormatW(Format, Args, ALDefaultFormatSettingsW);
+  Result := ALFormatA(Format, Args, ALDefaultFormatSettingsA);
 end;
 
 {**********************************************************************************************************************}
@@ -2246,6 +2687,18 @@ end;
 procedure ALFormatW(const Format: String; const Args: array of const; const AFormatSettings: TALFormatSettingsW; var Result: String);
 begin
   Result := System.SysUtils.Format(Format, Args, AFormatSettings);
+end;
+
+{***************************************************************************}
+function ALFormatW(const Format: String; const Args: array of const): String;
+begin
+  Result := ALFormatW(Format, Args, ALDefaultFormatSettingsW);
+end;
+
+{****************************************************************************************}
+procedure ALFormatW(const Format: String; const Args: array of const; var Result: String);
+begin
+  Result := ALFormatW(Format, Args, ALDefaultFormatSettingsW);
 end;
 
 {************************************************************************}
@@ -2334,7 +2787,7 @@ begin
   else s := falseStr;
 end;
 
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.TCFString is still the same and adjust the IFDEF'}
 {$ENDIF}
 
@@ -2419,7 +2872,7 @@ end;
 {$ENDIF MACOS}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.DateTimeToString is still the same and adjust the IFDEF'}
 {$ENDIF}
 procedure ALDateTimeToString(
@@ -2960,12 +3413,24 @@ begin
     AFormatSettings);
 end;
 
+{***********************************************************}
+function ALDateToStrA(const DateTime: TDateTime): AnsiString;
+begin
+  Result := ALDateToStrA(DateTime, ALDefaultFormatSettingsA);
+end;
+
 {********************}
 function ALDateToStrW(
            const DateTime: TDateTime;
            const AFormatSettings: TALFormatSettingsW): string;
 begin
   result := system.sysutils.DateToStr(DateTime, AFormatSettings);
+end;
+
+{*******************************************************}
+function ALDateToStrW(const DateTime: TDateTime): string;
+begin
+  Result := ALDateToStrW(DateTime, ALDefaultFormatSettingsW);
 end;
 
 {********************}
@@ -2978,12 +3443,24 @@ begin
     AFormatSettings);
 end;
 
+{***********************************************************}
+function ALTimeToStrA(const DateTime: TDateTime): AnsiString;
+begin
+  Result := ALTimeToStrA(DateTime, ALDefaultFormatSettingsA);
+end;
+
 {********************}
 function ALTimeToStrW(
            const DateTime: TDateTime;
            const AFormatSettings: TALFormatSettingsW): string;
 begin
   result := system.sysutils.TimeToStr(DateTime, AFormatSettings);
+end;
+
+{*******************************************************}
+function ALTimeToStrW(const DateTime: TDateTime): string;
+begin
+  Result := ALTimeToStrW(DateTime, ALDefaultFormatSettingsW);
 end;
 
 {************************}
@@ -3000,6 +3477,18 @@ begin
   ALDateTimeToString(s, '', DateTime, AFormatSettings);
 end;
 
+{***************************************************************}
+function ALDateTimeToStrA(const DateTime: TDateTime): AnsiString;
+begin
+  Result := ALDateTimeToStrA(DateTime, ALDefaultFormatSettingsA);
+end;
+
+{***********************************************************************}
+procedure ALDateTimeToStrA(const DateTime: TDateTime; var s: ansiString);
+begin
+  ALDateTimeToStrA(DateTime, s, ALDefaultFormatSettingsA);
+end;
+
 {************************}
 function ALDateTimeToStrW(
            const DateTime: TDateTime;
@@ -3014,6 +3503,18 @@ begin
   s := system.sysutils.DateTimeToStr(DateTime, AFormatSettings);
 end;
 
+{***********************************************************}
+function ALDateTimeToStrW(const DateTime: TDateTime): String;
+begin
+  Result := ALDateTimeToStrW(DateTime, ALDefaultFormatSettingsW);
+end;
+
+{*******************************************************************}
+procedure ALDateTimeToStrW(const DateTime: TDateTime; var s: String);
+begin
+  ALDateTimeToStrW(DateTime, s, ALDefaultFormatSettingsW);
+end;
+
 {*************************}
 function ALFormatDateTimeA(
            const Format: AnsiString;
@@ -3021,6 +3522,12 @@ function ALFormatDateTimeA(
            const AFormatSettings: TALFormatSettingsA): AnsiString;
 begin
   ALDateTimeToString(Result, Format, DateTime, AFormatSettings);
+end;
+
+{************************************************************************************}
+function ALFormatDateTimeA(const Format: AnsiString; DateTime: TDateTime): AnsiString;
+begin
+  Result := ALFormatDateTimeA(Format, DateTime, ALDefaultFormatSettingsA);
 end;
 
 {*************************}
@@ -3032,8 +3539,14 @@ begin
   result := system.sysutils.FormatDateTime(Format, DateTime, AFormatSettings);
 end;
 
+{****************************************************************************}
+function ALFormatDateTimeW(const Format: string; DateTime: TDateTime): string;
+begin
+  Result := ALFormatDateTimeW(Format, DateTime, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.TDatePart/TDateItem/TDateSeq are still the same and adjust the IFDEF'}
 {$ENDIF}
 type
@@ -3049,10 +3562,10 @@ type
   TALDateSeq = array [1 .. 64] of TALDateItem;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ParseDateTimeFormat is still the same and adjust the IFDEF'}
 {$ENDIF}
-function ALParseDateTimeFormat(const Format: AnsiString; WithTime: Boolean): TALDateSeq;
+function ALParseDateTimeFormat(const Format: AnsiString; DateSeparator: AnsiChar; WithTime: Boolean): TALDateSeq;
 var
   I: Integer;
   PrevChar, Ch: AnsiChar;
@@ -3108,8 +3621,12 @@ begin
           Part := TALDatePart.dpQuote;
           InDoubleQuote := not InDoubleQuote;
         end;
-      ':':      if WithTime then Part := TALDatePart.dpTSep else Part := TALDatePart.dpChar;
-      '.':      if WithTime then Part := TALDatePart.dpMSSep else Part := TALDatePart.dpChar;
+      ':':      if WithTime then Part := TALDatePart.dpTSep
+                else if PrevChar = DateSeparator then Part := TALDatePart.dpDSep
+                else Part := TALDatePart.dpChar;
+      '.':      if WithTime then Part := TALDatePart.dpMSSep
+                else if PrevChar = DateSeparator then Part := TALDatePart.dpDSep
+                else Part := TALDatePart.dpChar;
       'H', 'h': if WithTime then Part := TALDatePart.dpHour else Part := TALDatePart.dpChar;
       'N', 'n': if WithTime then Part := TALDatePart.dpMin else Part := TALDatePart.dpChar;
       'S', 's': if WithTime then Part := TALDatePart.dpSec else Part := TALDatePart.dpChar;
@@ -3140,7 +3657,10 @@ begin
       'T', 't': if WithTime then Part := TALDatePart.dpTF else Part := TALDatePart.dpChar;
       'C', 'c': if WithTime then Part := TALDatePart.dpCur else Part := TALDatePart.dpChar;
       else
-        Part := TALDatePart.dpChar;
+        if PrevChar = DateSeparator then
+          Part := TALDatePart.dpDSep
+        else
+          Part := TALDatePart.dpChar;
       end;
       if (Part <> TALDatePart.dpQuote) and (InQuote or InDoubleQuote) then
         Part := TALDatePart.dpChar;
@@ -3182,7 +3702,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanBlanks is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanBlanks(const S: AnsiString; var Pos: Integer): Boolean;
@@ -3196,7 +3716,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanNumber is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanNumber(const S: AnsiString; var Pos: Integer; var Number: Word; MaxChars: Integer): Integer;
@@ -3225,7 +3745,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanFractional is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanFractional(const S: AnsiString; var Pos: Integer; var Number: Word; BaseDigits, MaxChars: Integer): Integer;
@@ -3260,7 +3780,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanString is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanString(const S: AnsiString; var Pos: Integer; const Symbol: AnsiString{; AUseAnsi: Boolean}): Boolean;
@@ -3283,7 +3803,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanChar is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanChar(const S: AnsiString; var Pos: Integer; Ch: AnsiChar): Boolean;
@@ -3309,7 +3829,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanToNumber is still the same and adjust the IFDEF'}
 {$ENDIF}
 procedure ALScanToNumber(const S: AnsiString; var Pos: Integer);
@@ -3324,7 +3844,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanName is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanName(const S: AnsiString; var Pos: Integer; var Name: AnsiString; AnAbbr: Boolean): Boolean;
@@ -3365,7 +3885,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanDate is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanDate(
@@ -3428,7 +3948,10 @@ var
   end;
 
 begin
-  DateSeq := ALParseDateTimeFormat(AFormatSettings.ShortDateFormat, False);
+  DateSeq := ALParseDateTimeFormat(
+               AFormatSettings.ShortDateFormat,
+               AFormatSettings.DateSeparator,
+               False);
   EraYearOffset := 0;
   Y := 0;
   M := 0;
@@ -3642,7 +4165,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanTimeRegular is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanTimeRegular(
@@ -3692,7 +4215,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanTimeUsingShortTimeFormat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanTimeUsingShortTimeFormat(
@@ -3708,7 +4231,7 @@ var
   Was: TSpecifiedParts;
 begin
   BaseHour := -1;
-  DateSeq := ALParseDateTimeFormat(AFormatSettings.ShortTimeFormat, True);
+  DateSeq := ALParseDateTimeFormat(AFormatSettings.ShortTimeFormat, #0, True);
   Hour := 0;
   Min := 0;
   Sec := 0;
@@ -3805,7 +4328,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanTime is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanTime(
@@ -3826,7 +4349,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.TryStrToDate is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALTryStrToDate(
@@ -3840,6 +4363,12 @@ begin
   Result := ALScanDate(S, Pos, Value, AFormatSettings) and (Pos > High(S));
 end;
 
+{**************************************************************************}
+function ALTryStrToDate(const S: AnsiString; out Value: TDateTime): Boolean;
+begin
+  Result := ALTryStrToDate(S, Value, ALDefaultFormatSettingsA);
+end;
+
 {**********************}
 function ALTryStrToDate(
            const S: string;
@@ -3849,8 +4378,14 @@ begin
   result := system.sysutils.TryStrToDate(S, Value, AFormatSettings);
 end;
 
+{**********************************************************************}
+function ALTryStrToDate(const S: string; out Value: TDateTime): Boolean;
+begin
+  Result := ALTryStrToDate(S, Value, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.StrToDate is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALStrToDate(
@@ -3861,6 +4396,12 @@ begin
     ALConvertErrorFmt(@System.SysConst.SInvalidDate, [S]);
 end;
 
+{***************************************************}
+function ALStrToDate(const S: AnsiString): TDateTime;
+begin
+  Result := ALStrToDate(S, ALDefaultFormatSettingsA);
+end;
+
 {*******************}
 function ALStrToDate(
            const S: string;
@@ -3869,8 +4410,14 @@ begin
   result := system.sysutils.StrToDate(S, AFormatSettings);
 end;
 
+{***********************************************}
+function ALStrToDate(const S: string): TDateTime;
+begin
+  Result := ALStrToDate(S, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.TryStrToTime is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALTryStrToTime(
@@ -3884,6 +4431,12 @@ begin
   Result := ALScanTime(S, Pos, Value, AFormatSettings) and (Pos > High(S));
 end;
 
+{**************************************************************************}
+function ALTryStrToTime(const S: AnsiString; out Value: TDateTime): Boolean;
+begin
+  Result := ALTryStrToTime(S, Value, ALDefaultFormatSettingsA);
+end;
+
 {***********************}
 function  ALTryStrToTime(
             const S: string;
@@ -3893,8 +4446,14 @@ begin
   result := system.sysutils.TryStrToTime(S, Value, AFormatSettings);
 end;
 
+{**********************************************************************}
+function ALTryStrToTime(const S: string; out Value: TDateTime): Boolean;
+begin
+  Result := ALTryStrToTime(S, Value, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.StrToTime is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALStrToTime(
@@ -3905,6 +4464,12 @@ begin
     ALConvertErrorFmt(@System.SysConst.SInvalidTime, [S]);
 end;
 
+{***************************************************}
+function ALStrToTime(const S: AnsiString): TDateTime;
+begin
+  Result := ALStrToTime(S, ALDefaultFormatSettingsA);
+end;
+
 {*******************}
 function ALStrToTime(
            const S: string;
@@ -3913,8 +4478,14 @@ begin
   result := system.sysutils.StrToTime(S, AFormatSettings);
 end;
 
+{***********************************************}
+function ALStrToTime(const S: string): TDateTime;
+begin
+  Result := ALStrToTime(S, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.TryStrToDateTime is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$R-} {Range-Checking}
@@ -4013,6 +4584,12 @@ end;
   {$R+} {Range-Checking}
 {$ENDIF}
 
+{******************************************************************************}
+function ALTryStrToDateTime(const S: AnsiString; out Value: TDateTime): Boolean;
+begin
+  Result := ALTryStrToDateTime(S, Value, ALDefaultFormatSettingsA);
+end;
+
 {**************************}
 function ALTryStrToDateTime(
            const S: string;
@@ -4022,8 +4599,14 @@ begin
   result := system.sysutils.TryStrToDateTime(S, Value, AFormatSettings);
 end;
 
+{**************************************************************************}
+function ALTryStrToDateTime(const S: string; out Value: TDateTime): Boolean;
+begin
+  Result := ALTryStrToDateTime(S, Value, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.StrToDateTime is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALStrToDateTime(
@@ -4034,6 +4617,12 @@ begin
     ALConvertErrorFmt(@System.SysConst.SInvalidDateTime, [S]);
 end;
 
+{*******************************************************}
+function ALStrToDateTime(const S: AnsiString): TDateTime;
+begin
+  Result := ALStrToDateTime(S, ALDefaultFormatSettingsA);
+end;
+
 {************************}
 function  ALStrToDateTime(
             const S: string;
@@ -4042,8 +4631,14 @@ begin
   Result := system.sysutils.StrToDateTime(S, AFormatSettings);
 end;
 
+{***************************************************}
+function ALStrToDateTime(const S: string): TDateTime;
+begin
+  Result := ALStrToDateTime(S, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system._ValLong is still the same and adjust the IFDEF'}
 {$ENDIF}
 // Hex : ( '$' | 'X' | 'x' | '0X' | '0x' ) [0-9A-Fa-f]*
@@ -4139,7 +4734,7 @@ end;
 {$ENDIF}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system._ValInt64 is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$R-} {Range-Checking}
@@ -4233,7 +4828,7 @@ end;
 {$ENDIF}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system._ValUInt64 is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$R-} {Range-Checking}
@@ -4264,8 +4859,8 @@ begin
   else if s[i] =  ansiChar('+') then
     Inc(i);
   empty := True;
-  if (s[i] =  ansiChar('$')) or (Upcase(s[i]) =  ansiChar('X'))
-    or ((s[i] =  ansiChar('0')) and (I < High(S)) and (Upcase(s[i+1]) =  ansiChar('X'))) then
+  if (s[i] =  ansiChar('$')) or (ALUpcase(s[i]) =  ansiChar('X'))
+    or ((s[i] =  ansiChar('0')) and (I < High(S)) and (ALUpcase(s[i+1]) =  ansiChar('X'))) then
   begin
     if s[i] =  ansiChar('0') then
       Inc(i);
@@ -4509,7 +5104,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.TwoDigitLookup is still the same and adjust the IFDEF'}
 {$ENDIF}
 const
@@ -4526,7 +5121,7 @@ const
      '90','91','92','93','94','95','96','97','98','99');
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils._IntToStr32 is still the same and adjust the IFDEF'}
 {$ENDIF}
 function _ALIntToStr32(Value: Cardinal; Negative: Boolean): AnsiString;
@@ -4566,7 +5161,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils._IntToStr64 is still the same and adjust the IFDEF'}
 {$ENDIF}
 function _ALIntToStr64(Value: UInt64; Negative: Boolean): AnsiString;
@@ -4663,7 +5258,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.IntToStr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALIntToStrA(Value: Integer): AnsiString;
@@ -4678,7 +5273,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.IntToStr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALIntToStrA(Value: Int64): AnsiString;
@@ -4717,7 +5312,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.UIntToStr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALUIntToStrA(Value: Cardinal): AnsiString;
@@ -4726,7 +5321,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.UIntToStr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALUIntToStrA(Value: UInt64): AnsiString;
@@ -5019,75 +5614,6 @@ begin
 
 end;
 
-{********************************************************************************}
-function AlInt2BaseN(NumIn: UInt64; const charset: array of ansiChar): ansistring;
-var Remainder: UInt64;
-    BaseOut: integer;
-begin
-
-  //ex convert 1544745455 to base26
-  //                                               |
-  //1544745455 / 26 = 59413286, reste  19 -> T     |      26 / 26 = 1, reste 0 -> A
-  //59413286 / 26 = 2285126, reste 10 -> K         |      1 -> B
-  //2285126 / 26 = 87889, reste 12 -> M            |
-  //87889 / 26 = 3380, reste 9 -> J                |      26 = BA
-  //3380 / 26 = 130, reste 0 -> A                  |
-  //130 / 26 = 5, reste 0 -> A                     |
-  //5 -> G                                         |
-  //                                               |
-  //1544745455 = GAAJMKT
-
-  if length(charset) = 0 then raise Exception.Create('Charset must not be empty');
-
-  result := '';
-  BaseOut := length(charset);
-  while NumIn >= BaseOut do begin
-    DivMod(NumIn{Dividend}, BaseOut{Divisor}, NumIn{Result}, Remainder{Remainder});
-    Result := charset[Remainder] + Result;
-  end;
-  Result := charset[NumIn] + Result;
-
-end;
-
-{************************************************************************************}
-function AlBaseN2Int(const Str: ansiString; const charset: array of ansiChar): UInt64;
-var BaseIn: Byte;
-    Lst: TALStringListA;
-    I,j: integer;
-    P: UInt64;
-begin
-
-  //
-  //ex convert ABCD to int
-  //
-  // ABCD = (26*26*26) * 0 + (26*26) * 1 + (26) * 2 + 3 = 731
-  //                     A             B          C   D
-
-  Lst := TALStringListA.Create;
-  try
-
-    Lst.CaseSensitive := True;
-    Lst.Duplicates := DupError;
-    for I := Low(charset) to High(charset) do
-      Lst.addObject(charset[i],pointer(i));
-    Lst.Sorted := True;
-
-    result := 0;
-    P := 1;
-    BaseIn := length(charset);
-    for I := length(Str) downto 1 do begin
-      J := Lst.IndexOf(Str[I]);
-      if J < 0 then raise EALException.CreateFmt('Character (%s) not found in charset', [Str[I]]);
-      result := result + (Uint64(Lst.Objects[J]) * P);
-      P := P * BaseIn;
-    end;
-
-  finally
-    Lst.Free;
-  end;
-
-end;
-
 ////////////////////
 ////// Base64 //////
 ////////////////////
@@ -5115,7 +5641,7 @@ begin
   Result := _Base64Encoding;
 end;
 
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if https://github.com/synopse/mORMot.git SynCommons.pas was not updated from References\mORMot\SynCommons.pas and adjust the IFDEF'}
 {$ENDIF}
 
@@ -5453,8 +5979,52 @@ begin
   result := _GetBase64Encoding.DecodeStringToBytes(S);
 end;
 
+{******************************************************}
+function  ALIsAlphaString(const S: AnsiString): Boolean;
+begin
+  if S = '' then Exit(False);
+  for var I := low(S) to High(S) do begin
+    var C := S[I];
+    if not ((C in ['A'..'Z']) or (C in ['a'..'z'])) then Exit(False);
+  end;
+  Result := True;
+end;
+
+{**************************************************}
+function  ALIsAlphaString(const S: string): Boolean;
+begin
+  if S = '' then Exit(False);
+  for var I := low(S) to High(S) do begin
+    var C := S[I];
+    if not (CharInSet(C, ['A'..'Z']) or CharInSet(C, ['a'..'z'])) then Exit(False);
+  end;
+  Result := True;
+end;
+
+{*******************************************************}
+function  ALIsAlphaNumeric(const S: AnsiString): Boolean;
+begin
+  if S = '' then Exit(False);
+  for var I := low(S) to High(S) do begin
+    var C := S[I];
+    if not ((C in ['A'..'Z']) or (C in ['a'..'z']) or (C in ['0'..'9'])) then Exit(False);
+  end;
+  Result := True;
+end;
+
+{***************************************************}
+function  ALIsAlphaNumeric(const S: string): Boolean;
+begin
+  if S = '' then Exit(False);
+  for var I := low(S) to High(S) do begin
+    var C := S[I];
+    if not (CharInSet(C, ['A'..'Z']) or CharInSet(C, ['a'..'z']) or CharInSet(C, ['0'..'9'])) then Exit(False);
+  end;
+  Result := True;
+end;
+
 {*********************************************************************************************}
-function ALIsDecimal(const S: AnsiString; const RejectPlusMinusSign: boolean = False): boolean;
+function ALIsNumeric(const S: AnsiString; const RejectPlusMinusSign: boolean = False): boolean;
 var i: integer;
 begin
   result := true;
@@ -5473,9 +6043,8 @@ begin
   end;
 end;
 
-{***************************}
-{$WARN SYMBOL_DEPRECATED OFF}
-function ALIsDecimal(const S: String; const RejectPlusMinusSign: boolean = False): boolean;
+{*****************************************************************************************}
+function ALIsNumeric(const S: String; const RejectPlusMinusSign: boolean = False): boolean;
 var I: integer;
 begin
   result := true;
@@ -5493,48 +6062,47 @@ begin
     end;
   end;
 end;
-{$WARN SYMBOL_DEPRECATED ON}
 
 {*************************************************}
 Function ALIsInteger(const S: AnsiString): Boolean;
 var i: integer;
 Begin
-  result := ALIsDecimal(S) and ALTryStrToInt(S, i);
+  result := ALIsNumeric(S) and ALTryStrToInt(S, i);
 End;
 
 {*********************************************}
 Function ALIsInteger(const S: String): Boolean;
 var I: integer;
 Begin
-  result := ALIsDecimal(S) and ALTryStrToInt(S, i);
+  result := ALIsNumeric(S) and ALTryStrToInt(S, i);
 End;
 
 {***********************************************}
 Function ALIsInt64(const S: AnsiString): Boolean;
 var i : int64;
 Begin
-  Result := ALIsDecimal(S) and ALTryStrToInt64(S, I);
+  Result := ALIsNumeric(S) and ALTryStrToInt64(S, I);
 End;
 
 {*******************************************}
 Function ALIsInt64(const S: String): Boolean;
 var I : int64;
 Begin
-  Result := ALIsDecimal(S) and ALTryStrToInt64(S, I);
+  Result := ALIsNumeric(S) and ALTryStrToInt64(S, I);
 End;
 
 {**************************************************}
 Function ALIsSmallInt(const S: AnsiString): Boolean;
 var i : Integer;
 Begin
-  Result := ALIsDecimal(S) and ALTryStrToInt(S, I) and (i <= 32767) and (I >= -32768);
+  Result := ALIsNumeric(S) and ALTryStrToInt(S, I) and (i <= 32767) and (I >= -32768);
 End;
 
 {**********************************************}
 Function ALIsSmallInt(const S: String): Boolean;
 var I : Integer;
 Begin
-  Result := ALIsDecimal(S) and ALTryStrToInt(S, I) and (i <= 32767) and (I >= -32768);
+  Result := ALIsNumeric(S) and ALTryStrToInt(S, I) and (i <= 32767) and (I >= -32768);
 End;
 
 {********************************************************************************************}
@@ -5552,8 +6120,13 @@ begin
   result := ALTryStrToFloat(s,LDouble,AFormatSettings);
 end;
 
-{***************************}
-{$WARN SYMBOL_DEPRECATED OFF}
+{***********************************************}
+Function ALIsFloat(const S: AnsiString): Boolean;
+begin
+  Result := ALIsFloat(S, ALDefaultFormatSettingsA);
+end;
+
+{***************************************************************************************}
 Function  ALIsFloat(const S: String; const AFormatSettings: TALFormatSettingsW): Boolean;
 var I: integer;
     LDouble: Double;
@@ -5567,7 +6140,12 @@ begin
   end;
   result := ALTryStrToFloat(s,LDouble,AFormatSettings);
 end;
-{$WARN SYMBOL_DEPRECATED ON}
+
+{*******************************************}
+Function ALIsFloat(const S: String): Boolean;
+begin
+  Result := ALIsFloat(S, ALDefaultFormatSettingsW);
+end;
 
 {*********************************************************************************************}
 function ALFloatToStrA(Value: Extended; const AFormatSettings: TALFormatSettingsA): AnsiString;
@@ -5605,6 +6183,18 @@ begin
       AFormatSettings));
 end;
 
+{**************************************************}
+function ALFloatToStrA(Value: Extended): AnsiString;
+begin
+  Result := ALFloatToStrA(Value, ALDefaultFormatSettingsA);
+end;
+
+{**********************************************************}
+procedure ALFloatToStrA(Value: Extended; var S: ansiString);
+begin
+  ALFloatToStrA(Value, S, ALDefaultFormatSettingsA);
+end;
+
 {*****************************************************************************************}
 function ALFloatToStrW(Value: Extended; const AFormatSettings: TALFormatSettingsW): String;
 begin
@@ -5615,6 +6205,18 @@ end;
 procedure ALFloatToStrW(Value: Extended; var S: String; const AFormatSettings: TALFormatSettingsW);
 begin
   S := FloatToStr(Value, AFormatSettings);
+end;
+
+{**********************************************}
+function ALFloatToStrW(Value: Extended): String;
+begin
+  Result := ALFloatToStrW(Value, ALDefaultFormatSettingsW);
+end;
+
+{******************************************************}
+procedure ALFloatToStrW(Value: Extended; var S: String);
+begin
+  ALFloatToStrW(Value, S, ALDefaultFormatSettingsW);
 end;
 
 {**********************}
@@ -5639,6 +6241,12 @@ begin
       AFormatSettings));
 end;
 
+{*****************************************************************************************************}
+function ALFloatToStrFA(Value: Extended; Format: TFloatFormat; Precision, Digits: Integer): AnsiString;
+begin
+  Result := ALFloatToStrFA(Value, Format, Precision, Digits, ALDefaultFormatSettingsA);
+end;
+
 {**********************}
 function ALFloatToStrFW(
            Value: Extended;
@@ -5647,6 +6255,12 @@ function ALFloatToStrFW(
            const AFormatSettings: TALFormatSettingsW): String;
 begin
   result := System.sysUtils.FloatToStrF(Value, Format, Precision, Digits, AFormatSettings);
+end;
+
+{*************************************************************************************************}
+function ALFloatToStrFW(Value: Extended; Format: TFloatFormat; Precision, Digits: Integer): String;
+begin
+  Result := ALFloatToStrFW(Value, Format, Precision, Digits, ALDefaultFormatSettingsW);
 end;
 
 {*********************************************************************************************}
@@ -5667,14 +6281,26 @@ begin
       AFormatSettings));
 end;
 
+{*************************************************}
+function ALCurrToStrA(Value: Currency): AnsiString;
+begin
+  Result := ALCurrToStrA(Value, ALDefaultFormatSettingsA);
+end;
+
 {*****************************************************************************************}
 function  ALCurrToStrW(Value: Currency; const AFormatSettings: TALFormatSettingsW): string;
 begin
   result := system.sysutils.CurrToStr(Value, AFormatSettings);
 end;
 
+{*********************************************}
+function ALCurrToStrW(Value: Currency): string;
+begin
+  Result := ALCurrToStrW(Value, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if declaration below in system.Sysutils is still the same and adjust the IFDEF'}
 {$ENDIF}
 const
@@ -5710,7 +6336,7 @@ const
 {$ENDIF CPUX64}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.TestAndClearFPUExceptions is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$IFDEF CPUX86}
@@ -5734,7 +6360,7 @@ end;
 {$ENDIF CPUX86}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.TestAndClearSSEExceptions is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$WARN SYMBOL_PLATFORM OFF}
@@ -5752,7 +6378,7 @@ end;
 
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.GetSpecialValueAC is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALGetSpecialValueAC(Buffer: PAnsiChar; var Value; ValueType: TFloatValue): Boolean;
@@ -5779,7 +6405,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.InternalTextToExtended is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$WARN SYMBOL_PLATFORM OFF}
@@ -6031,7 +6657,7 @@ end;
 {$WARN SYMBOL_PLATFORM ON}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.InternalTextToCurrency is still the same and adjust the IFDEF'}
 {$ENDIF}
 //this function is not threadsafe because of Set8087CW / SetMXCSR
@@ -6400,7 +7026,7 @@ end;
 {$ENDIF !EXTENDEDHAS10BYTES}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.TextToFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALTextToFloat(
@@ -6414,7 +7040,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.SysUtils.InternalFloatToTextFmt is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALInternalFloatToTextFmt(
@@ -6907,7 +7533,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.sysUtils.FormatFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALFormatFloatA(
@@ -6930,6 +7556,12 @@ begin
       {, False}));
 end;
 
+{*****************************************************************************}
+function ALFormatFloatA(const Format: AnsiString; Value: Extended): AnsiString;
+begin
+  Result := ALFormatFloatA(Format, Value, ALDefaultFormatSettingsA);
+end;
+
 {***********************}
 function  ALFormatFloatW(
             const Format: string;
@@ -6939,16 +7571,14 @@ begin
   result := system.sysutils.FormatFloat(Format, Value, AFormatSettings);
 end;
 
-{***********************}
-function  ALFormatFloatW(
-            const Format: string;
-            Value: Extended): string;
+{*********************************************************************}
+function ALFormatFloatW(const Format: string; Value: Extended): string;
 begin
-  result := system.sysutils.FormatFloat(Format, Value);
+  Result := ALFormatFloatW(Format, Value, ALDefaultFormatSettingsW);
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.sysUtils.FormatCurr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALFormatCurrA(
@@ -6971,6 +7601,12 @@ begin
       {, False}));
 end;
 
+{****************************************************************************}
+function ALFormatCurrA(const Format: AnsiString; Value: Currency): AnsiString;
+begin
+  Result := ALFormatCurrA(Format, Value, ALDefaultFormatSettingsA);
+end;
+
 {**********************}
 function  ALFormatCurrW(
             const Format: string;
@@ -6980,16 +7616,14 @@ begin
   result := system.sysutils.FormatCurr(Format, Value, AFormatSettings);
 end;
 
-{**********************}
-function  ALFormatCurrW(
-            const Format: string;
-            Value: Currency): string;
+{********************************************************************}
+function ALFormatCurrW(const Format: string; Value: Currency): string;
 begin
-  result := system.sysutils.FormatCurr(Format, Value);
+  Result := ALFormatCurrW(Format, Value, ALDefaultFormatSettingsW);
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.sysUtils.StrToFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALStrToFloat(const S: AnsiString; const AFormatSettings: TALFormatSettingsA): Extended;
@@ -6998,14 +7632,26 @@ begin
     ALConvertErrorFmt(@SInvalidFloat, [S]);
 end;
 
+{***************************************************}
+function ALStrToFloat(const S: AnsiString): Extended;
+begin
+  Result := ALStrToFloat(S, ALDefaultFormatSettingsA);
+end;
+
 {*******************************************************************************************}
 function  ALStrToFloat(const S: string; const AFormatSettings: TALFormatSettingsW): Extended;
 begin
   result := system.sysutils.StrToFloat(S, AFormatSettings);
 end;
 
+{***********************************************}
+function ALStrToFloat(const S: string): Extended;
+begin
+  Result := ALStrToFloat(S, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.sysUtils.StrToFloatDef is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALStrToFloatDef(const S: AnsiString; const Default: Extended; const AFormatSettings: TALFormatSettingsA): Extended;
@@ -7014,19 +7660,37 @@ begin
     Result := Default;
 end;
 
+{*******************************************************************************}
+function ALStrToFloatDef(const S: AnsiString; const Default: Extended): Extended;
+begin
+  Result := ALStrToFloatDef(S, Default, ALDefaultFormatSettingsA);
+end;
+
 {***********************************************************************************************************************}
 function  ALStrToFloatDef(const S: string; const Default: Extended; const AFormatSettings: TALFormatSettingsW): Extended;
 begin
   result := system.sysutils.StrToFloatDef(S, Default, AFormatSettings);
 end;
 
+{***************************************************************************}
+function ALStrToFloatDef(const S: string; const Default: Extended): Extended;
+begin
+  Result := ALStrToFloatDef(S, Default, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.sysUtils.TryStrToFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALTryStrToFloat(const S: AnsiString; out Value: Extended; const AFormatSettings: TALFormatSettingsA): Boolean;
 begin
   Result := ALTextToFloat(PansiChar(S), Value, fvExtended, AFormatSettings);
+end;
+
+{**************************************************************************}
+function ALTryStrToFloat(const S: AnsiString; out Value: Extended): Boolean;
+begin
+  Result := ALTryStrToFloat(S, Value, ALDefaultFormatSettingsA);
 end;
 
 {******************************************************************************************************************}
@@ -7035,8 +7699,14 @@ begin
   Result := System.sysutils.TryStrToFloat(S, Value, AFormatSettings);
 end;
 
+{**********************************************************************}
+function ALTryStrToFloat(const S: String; out Value: Extended): Boolean;
+begin
+  Result := ALTryStrToFloat(S, Value, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.sysUtils.TryStrToFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALTryStrToFloat(const S: AnsiString; out Value: Double; const AFormatSettings: TALFormatSettingsA): Boolean;
@@ -7052,14 +7722,26 @@ begin
     Value := LValue;
 end;
 
+{************************************************************************}
+function ALTryStrToFloat(const S: AnsiString; out Value: Double): Boolean;
+begin
+  Result := ALTryStrToFloat(S, Value, ALDefaultFormatSettingsA);
+end;
+
 {****************************************************************************************************************}
 function  ALTryStrToFloat(const S: String; out Value: Double; const AFormatSettings: TALFormatSettingsW): Boolean;
 begin
   Result := System.sysutils.TryStrToFloat(S, Value, AFormatSettings);
 end;
 
+{********************************************************************}
+function ALTryStrToFloat(const S: String; out Value: Double): Boolean;
+begin
+  Result := ALTryStrToFloat(S, Value, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.sysUtils.TryStrToFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALTryStrToFloat(const S: AnsiString; out Value: Single; const AFormatSettings: TALFormatSettingsA): Boolean;
@@ -7075,14 +7757,26 @@ begin
     Value := LValue;
 end;
 
+{************************************************************************}
+function ALTryStrToFloat(const S: AnsiString; out Value: Single): Boolean;
+begin
+  Result := ALTryStrToFloat(S, Value, ALDefaultFormatSettingsA);
+end;
+
 {****************************************************************************************************************}
 function  ALTryStrToFloat(const S: String; out Value: Single; const AFormatSettings: TALFormatSettingsW): Boolean;
 begin
   Result := System.sysutils.TryStrToFloat(S, Value, AFormatSettings);
 end;
 
+{********************************************************************}
+function ALTryStrToFloat(const S: String; out Value: Single): Boolean;
+begin
+  Result := ALTryStrToFloat(S, Value, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.sysUtils.StrToCurr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALStrToCurr(const S: AnsiString; const AFormatSettings: TALFormatSettingsA): Currency;
@@ -7091,14 +7785,26 @@ begin
     ALConvertErrorFmt(@SInvalidFloat, [S]);
 end;
 
+{**************************************************}
+function ALStrToCurr(const S: AnsiString): Currency;
+begin
+  Result := ALStrToCurr(S, ALDefaultFormatSettingsA);
+end;
+
 {******************************************************************************************}
 function  ALStrToCurr(const S: string; const AFormatSettings: TALFormatSettingsW): Currency;
 begin
   result := system.sysutils.StrToCurr(S, AFormatSettings);
 end;
 
+{**********************************************}
+function ALStrToCurr(const S: string): Currency;
+begin
+  Result := ALStrToCurr(S, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.sysUtils.StrToCurrDef is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALStrToCurrDef(const S: AnsiString; const Default: Currency; const AFormatSettings: TALFormatSettingsA): Currency;
@@ -7107,14 +7813,26 @@ begin
     Result := Default;
 end;
 
+{******************************************************************************}
+function ALStrToCurrDef(const S: AnsiString; const Default: Currency): Currency;
+begin
+  Result := ALStrToCurrDef(S, Default, ALDefaultFormatSettingsA);
+end;
+
 {**********************************************************************************************************************}
 function  ALStrToCurrDef(const S: string; const Default: Currency; const AFormatSettings: TALFormatSettingsW): Currency;
 begin
   result := system.sysutils.StrToCurrDef(S, Default, AFormatSettings);
 end;
 
+{**************************************************************************}
+function ALStrToCurrDef(const S: string; const Default: Currency): Currency;
+begin
+  Result := ALStrToCurrDef(S, Default, ALDefaultFormatSettingsW);
+end;
+
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if system.sysUtils.TryStrToCurr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALTryStrToCurr(const S: AnsiString; out Value: Currency; const AFormatSettings: TALFormatSettingsA): Boolean;
@@ -7122,10 +7840,22 @@ begin
   Result := ALTextToFloat(PAnsiChar(S), Value, fvCurrency, AFormatSettings);
 end;
 
+{*************************************************************************}
+function ALTryStrToCurr(const S: AnsiString; out Value: Currency): Boolean;
+begin
+  Result := ALTryStrToCurr(S, Value, ALDefaultFormatSettingsA);
+end;
+
 {*****************************************************************************************************************}
 function  ALTryStrToCurr(const S: string; out Value: Currency; const AFormatSettings: TALFormatSettingsW): Boolean;
 begin
   result := system.sysutils.TryStrToCurr(S, Value, AFormatSettings);
+end;
+
+{*********************************************************************}
+function ALTryStrToCurr(const S: string; out Value: Currency): Boolean;
+begin
+  Result := ALTryStrToCurr(S, Value, ALDefaultFormatSettingsW);
 end;
 
 {**********************************************************************************}
@@ -7670,7 +8400,7 @@ begin
     Exit;
   end;
 
-  if aLength > LSourceStringLn - (aStart - 1) then aLength := LSourceStringLn - (aStart-1);
+  aLength := Min(aLength, LSourceStringLn - (aStart - 1));
 
   SetLength(Result,aLength); //  To guarantee that the string is unique, call the SetLength, SetString, or UniqueString procedures
   ALMove(Pbyte(aSourceString)[aStart-1], pointer(Result)^, aLength); // pointer(Result)^ to not jump inside uniqueString (aDestString is already unique thanks to previous SetLength))
@@ -7690,7 +8420,7 @@ begin
     Exit;
   end;
 
-  if aLength > LSourceStringLn - (aStart - 1) then aLength := LSourceStringLn - (aStart-1);
+  aLength := Min(aLength, LSourceStringLn - (aStart - 1));
 
   SetLength(Result,aLength); //  To guarantee that the string is unique, call the SetLength, SetString, or UniqueString procedures
   ALMove(PChar(aSourceString)[aStart-1], pointer(Result)^, aLength*SizeOf(Char)); // pointer(Result)^ to not jump inside uniqueString (aDestString is already unique thanks to previous SetLength))
@@ -7710,7 +8440,7 @@ begin
     Exit;
   end;
 
-  if aLength > LSourceStringLn - (aStart - 1) then aLength := LSourceStringLn - (aStart-1);
+  aLength := Min(aLength, LSourceStringLn - (aStart - 1));
 
   SetLength(aDestString,aLength); //  To guarantee that the string is unique, call the SetLength, SetString, or UniqueString procedures
   ALMove(Pbyte(aSourceString)[aStart-1], pointer(aDestString)^, aLength);  // pointer(aDestString)^ to not jump inside uniqueString (aDestString is already unique thanks to previous SetLength))
@@ -7730,7 +8460,7 @@ begin
     Exit;
   end;
 
-  if aLength > LSourceStringLn - (aStart - 1) then aLength := LSourceStringLn - (aStart-1);
+  aLength := Min(aLength, LSourceStringLn - (aStart - 1));
 
   SetLength(aDestString,aLength); //  To guarantee that the string is unique, call the SetLength, SetString, or UniqueString procedures
   ALMove(PChar(aSourceString)[aStart-1], pointer(aDestString)^, aLength*SizeOf(Char));  // pointer(aDestString)^ to not jump inside uniqueString (aDestString is already unique thanks to previous SetLength))
@@ -8388,7 +9118,10 @@ begin
   result := system.sysutils.LowerCase(S);
 end;
 
-{***********************************************}
+{*************************************}
+{$IFNDEF ALCompilerVersionSupported130}
+  {$MESSAGE WARN 'Check if system.UpCase(ch: _AnsiChr): _AnsiChr; is still the same and adjust the IFDEF'}
+{$ENDIF}
 function  AlUpCase(const Ch: AnsiChar): AnsiChar;
 begin
   Result := Ch;
@@ -9266,544 +9999,540 @@ begin
 end;
 {$ENDIF}
 
-{****************************}
-function ALExtractExpressionA(
-           const S: AnsiString;
-           const OpenChar, CloseChar: AnsiChar; // ex: '(' and ')'
-           Const QuoteChars: Array of ansiChar; // ex: ['''', '"']
-           Const EscapeQuoteChar: ansiChar; // ex: '\' or #0 to ignore
-           var StartPos: integer;
-           var EndPos: integer): boolean;
+{********************************************************************************************************************************}
+function ALPercentEncode(const AStr: AnsiString; const ASafeChars: TSysCharSet; Const ASpacesAsPlus: Boolean = False): AnsiString;
 
-  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  function _IsQuote(aChar: ansiChar): Boolean;
-  var i: integer;
-  begin
-    result := False;
-    for I := Low(QuoteChars) to High(QuoteChars) do
-      if aChar = QuoteChars[i] then begin
-        result := true;
-        break;
-      end;
-    if (result) and
-       (EscapeQuoteChar <> #0) and
-       (S[EndPos - 1] = EscapeQuoteChar) then result := False;
-  end;
-
-var
-  LCurInQuote: boolean;
-  LCurQuoteChar: AnsiChar;
-  LOpenCount: integer;
-
-begin
-  result := false;
-  if StartPos <= 0 then StartPos := 1;
-  while (StartPos <= length(S)) and
-        (s[StartPos] <> OpenChar) do inc(StartPos);
-  if StartPos > length(S) then exit;
-  LOpenCount := 1;
-  LCurInQuote := False;
-  LCurQuoteChar := #0;
-  EndPos := StartPos + 1;
-  while (EndPos <= length(S)) and
-        (LOpenCount > 0) do begin
-    if _IsQuote(s[EndPos]) then begin
-      if LCurInQuote then begin
-        if (s[EndPos] = LCurQuoteChar) then LCurInQuote := False
-      end
-      else begin
-        LCurInQuote := True;
-        LCurQuoteChar := s[EndPos];
-      end;
-    end
-    else if not LCurInQuote then begin
-      if s[EndPos] = OpenChar then inc(LOpenCount)
-      else if s[EndPos] = CloseChar then dec(LOpenCount);
-    end;
-    if LOpenCount <> 0 then inc(EndPos);
-  end;
-  result := EndPos <= length(S);
-end;
-
-{*********************************************************}
-function  ALHTTPEncode(const AStr: AnsiString): AnsiString;
-// The NoConversion set contains characters as specificed in RFC 1738 and
-// should not be modified unless the standard changes.
-const
-  NoConversion = ['A'..'Z','a'..'z','*','@','.','_','-',
-                  '0'..'9','$','!','''','(',')'];
 var
   Sp, Rp: PAnsiChar;
-begin
-  SetLength(Result, Length(AStr) * 3);
-  Sp := PAnsiChar(AStr);
-  Rp := PAnsiChar(Result);
-  while Sp^ <> #0 do
-  begin
-    if Sp^ in NoConversion then
-      Rp^ := Sp^
-    else
-      if Sp^ = ' ' then
-        Rp^ := '+'
-      else
-      begin
-        System.AnsiStrings.FormatBuf(Rp^, 3, AnsiString('%%%.2x'), 6, [Ord(Sp^)]);
-        Inc(Rp,2);
-      end;
-    Inc(Rp);
-    Inc(Sp);
-  end;
-  SetLength(Result, Rp - PAnsiChar(Result));
-end;
+  IsUniqueString: Boolean;
 
-{*************************************************}
-function  ALHTTPEncode(const AStr: String): String;
-// The NoConversion set contains characters as specificed in RFC 1738 and
-// should not be modified unless the standard changes.
+    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+    procedure _GenerateUniqueString;
+    begin
+      SetLength(Result, Length(AStr) * 3);
+      Rp := PAnsiChar(Result);
+      var Start := PAnsiChar(AStr);
+      var Prefix := Sp - Start;
+      if Prefix > 0 then begin
+        ALStrMove(Start, Rp, Prefix);
+        Inc(Rp, Prefix);
+      end;
+      IsUniqueString := true;
+    end;
+
 const
-  NoConversion = [Ord('A')..Ord('Z'),Ord('a')..Ord('z'),Ord('*'),Ord('@'),Ord('.'),Ord('_'),Ord('-'),
-                  Ord('0')..Ord('9'),Ord('$'),Ord('!'),Ord(''''),Ord('('),Ord(')')];
-var
-  Sb: Tbytes;
-  Rp: PChar;
-  ln: integer;
-  i: integer;
-begin
-  Sb := Tencoding.UTF8.GetBytes(aStr);
-  ln := length(Sb);
-  SetLength(Result, ln * 3);
-  Rp := PChar(Result);
-  i := 0;
-  while i <= ln - 1 do
-  begin
-    if Sb[i] in NoConversion then
-      Rp^ := Char(Sb[i])
-    else
-      if Sb[i] = Ord(' ') then
-        Rp^ := '+'
-      else
-      begin
-        FormatBuf(Rp, 3, String('%%%.2x'), 6, [Sb[i]]);
-        Inc(Rp,2);
-      end;
-    Inc(Rp);
-    Inc(i);
-  end;
-  SetLength(Result, Rp - PChar(Result));
-end;
+  Hex: array[0..15] of AnsiChar = ('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
 
-{************************************************************}
-//the difference between this function and the delphi function
-//HttpApp.HttpDecode is that this function will not raise any
-//error (EConvertError) when the url will contain % that
-//are not encoded
-function ALHTTPDecode(const AStr: AnsiString): AnsiString;
-var Sp, Rp, Cp, Tp: PAnsiChar;
-    int: integer;
-    S: AnsiString;
 begin
-  SetLength(Result, Length(AStr));
+  IsUniqueString := False;
   Sp := PAnsiChar(AStr);
-  Rp := PAnsiChar(Result);
-  while Sp^ <> #0 do begin
-    case Sp^ of
-      '+': Rp^ := ' ';
-      '%': begin
-             Tp := Sp;
-             Inc(Sp);
-
-             //escaped % (%%)
-             if Sp^ = '%' then Rp^ := '%'
-
-             // %<hex> encoded character
-             else begin
-               Cp := Sp;
-               Inc(Sp);
-               if (Cp^ <> #0) and (Sp^ <> #0) then begin
-                 S := AnsiChar('$') + AnsiChar(Cp^) + AnsiChar(Sp^);
-                 if ALTryStrToInt(s,int) then Rp^ := ansiChar(int)
-                 else begin
-                   Rp^ := '%';
-                   Sp := Tp;
-                 end;
-               end
-               else begin
-                 Rp^ := '%';
-                 Sp := Tp;
-               end;
-             end;
-           end;
-      else Rp^ := Sp^;
+  for var I := 1 to Length(AStr) do begin
+    if Sp^ in ASafeChars then begin
+      if IsUniqueString then begin
+        Rp^ := Sp^;
+        Inc(Rp);
+      end;
+    end
+    else begin
+      if not IsUniqueString then _GenerateUniqueString;
+      if (Sp^=' ') and ASpacesAsPlus then begin
+        Rp^ := '+';
+        Inc(Rp);
+      end
+      else begin
+        Rp^ := '%'; Inc(Rp);
+        Rp^ := Hex[Byte(Sp^) shr 4]; Inc(Rp);
+        Rp^ := Hex[Byte(Sp^) and $0F]; Inc(Rp);
+      end;
     end;
-    Inc(Rp);
     Inc(Sp);
   end;
-  SetLength(Result, Rp - PAnsiChar(Result));
+  if IsUniqueString then
+    SetLength(Result, Rp - PAnsiChar(Result))
+  else
+    Result := AStr;
 end;
 
-{************************************************************}
-//the difference between this function and the delphi function
-//HttpApp.HttpDecode is that this function will not raise any
-//error (EConvertError) when the url will contain % that
-//are not encoded
-function ALHTTPDecode(const AStr: String): String;
-var Rb: Tbytes;
-    Sp, Cp, Tp: PChar;
-    int: integer;
-    S: String;
-    i: integer;
+{**************************}
+{$WARN WIDECHAR_REDUCED OFF}
+function ALPercentEncode(const AStr: String; const ASafeChars: TSysCharSet; Const ASpacesAsPlus: Boolean = False): String;
+const
+  Hex: array[0..15] of Char = ('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
 begin
-  SetLength(Rb, Length(AStr));
-  Sp := PChar(AStr);
-  i := 0;
-  while Sp^ <> #0 do begin
-    case Sp^ of
-      '+': Rb[i] := ord(' ');
-      '%': begin
-             Tp := Sp;
-             Inc(Sp);
-
-             //escaped % (%%)
-             if Sp^ = '%' then Rb[i] := ord('%')
-
-             // %<hex> encoded character
-             else begin
-               Cp := Sp;
-               Inc(Sp);
-               if (Cp^ <> #0) and (Sp^ <> #0) then begin
-                 S := Char('$') + Char(Cp^) + Char(Sp^);
-                 if ALTryStrToInt(s,int) then Rb[i] := int
-                 else begin
-                   Rb[i] := ord('%');
-                   Sp := Tp;
-                 end;
-               end
-               else begin
-                 Rb[i] := ord('%');
-                 Sp := Tp;
-               end;
-             end;
-           end;
-      else Rb[i] := ord(Sp^);
-    end;
-    Inc(i);
+  var Start := PChar(AStr);
+  var Sp := Start;
+  for var I := 1 to Length(AStr) do begin
+    if not (Sp^ in ASafeChars) then break;
     Inc(Sp);
   end;
-  result := Tencoding.Utf8.GetString(Rb, 0{ByteIndex}, i{ByteCount});
-end;
 
-{********************************************************}
-{Parses a multi-valued string into its constituent fields.
- ExtractHeaderFields is a general utility to parse multi-valued HTTP header strings into separate substrings.
- * Separators is a set of characters that are used to separate individual values within the multi-valued string.
- * WhiteSpace is a set of characters that are to be ignored when parsing the string.
- * Content is the multi-valued string to be parsed.
- * Strings is the TStrings object that receives the individual values that are parsed from Content.
- * StripQuotes determines whether the surrounding quotes are removed from the resulting items. When StripQuotes is true, surrounding quotes are removed
-   before substrings are added to Strings.
- Note:	Characters contained in Separators or WhiteSpace are treated as part of a value substring if the substring is surrounded by single or double quote
- marks. HTTP escape characters are converted using the ALHTTPDecode function.}
-procedure ALExtractHeaderFields(
-            Separators,
-            WhiteSpace,
-            Quotes: TSysCharSet;
-            Content: PAnsiChar;
-            Strings: TALStringsA;
-            HttpDecode: Boolean;
-            StripQuotes: Boolean = False);
+  If Sp - Start = Length(AStr) then
+    Exit(AStr);
 
-var Head, Tail: PAnsiChar;
-    EOS, InQuote: Boolean;
-    QuoteChar: AnsiChar;
-    ExtractedField: AnsiString;
-    SeparatorsWithQuotesAndNulChar: TSysCharSet;
-    QuotesWithNulChar: TSysCharSet;
-
-  {-------------------------------------------------------}
-  //as i don't want to add the parameter namevalueseparator
-  //to the function, we will stripquote only if the string end
-  //with the quote or start with the quote
-  //ex: "name"="value"  =>  name=value
-  //ex: "name"=value    =>  name=value
-  //ex: name="value"    =>  name=value
-  function DoStripQuotes(const S: AnsiString): AnsiString;
-  var I: Integer;
-      StripQuoteChar: AnsiChar;
-      canStripQuotesOnLeftSide: boolean;
-  begin
-    Result := S;
-    if StripQuotes then begin
-
-      canStripQuotesOnLeftSide := True;
-      if (length(result) > 0) and (result[length(result)] in quotes) then begin
-        StripQuoteChar := result[length(result)];
-        Delete(Result, length(result), 1);
-        i := Length(Result);
-        while i > 0 do begin
-          if (Result[I] = StripQuoteChar) then begin
-            Delete(Result, I, 1);
-            canStripQuotesOnLeftSide := i > 1;
-            break;
-          end;
-          dec(i);
-        end;
-      end;
-
-      if (canStripQuotesOnLeftSide) and (length(result) > 0) and (result[1] in quotes) then begin
-        StripQuoteChar := result[1];
-        Delete(Result, 1, 1);
-        i := 1;
-        while i <= Length(Result) do begin
-          if (Result[I] = StripQuoteChar) then begin
-            Delete(Result, I, 1);
-            break;
-          end;
-          inc(i);
-        end;
-      end;
-
-    end;
+  var Sb := Tencoding.UTF8.GetBytes(aStr);
+  SetLength(Result, length(Sb) * 3);
+  var Rp := PChar(Result);
+  var Prefix := Sp - Start;
+  if Prefix > 0 then begin
+    ALStrMove(Start, Rp, Prefix);
+    Inc(Rp, Prefix);
   end;
 
-Begin
-  if (Content = nil) or (Content^ = #0) then Exit;
-  SeparatorsWithQuotesAndNulChar := Separators + Quotes + [#0];
-  QuotesWithNulChar := Quotes + [#0];
-  Tail := Content;
-  QuoteChar := #0;
-  repeat
-    while Tail^ in WhiteSpace do Inc(Tail);
-    Head := Tail;
-    InQuote := False;
-    while True do begin
-      while (InQuote and not (Tail^ in QuotesWithNulChar)) or not (Tail^ in SeparatorsWithQuotesAndNulChar) do Inc(Tail);
-      if Tail^ in Quotes then begin
-        if (QuoteChar <> #0) and (QuoteChar = Tail^) then QuoteChar := #0
-        else If QuoteChar = #0 then QuoteChar := Tail^;
-        InQuote := QuoteChar <> #0;
-        Inc(Tail);
+  for var I := Prefix to Length(Sb) - 1 do begin
+    if AnsiChar(Sb[i]) in ASafeChars then begin
+      Rp^ := Char(Sb[i]);
+      Inc(Rp);
+    end
+    else begin
+      if (Sb[i]=Ord(' ')) and ASpacesAsPlus then begin
+        Rp^ := '+';
+        Inc(Rp);
       end
-      else Break;
-    end;
-    EOS := Tail^ = #0;
-    if Head^ <> #0 then begin
-      SetString(ExtractedField, Head, Tail-Head);
-      if HttpDecode then Strings.Add(ALHTTPDecode(DoStripQuotes(ExtractedField)))
-      else Strings.Add(DoStripQuotes(ExtractedField));
-    end;
-    Inc(Tail);
-  until EOS;
-end;
-
-{**************************************************************************************}
-{same as ALExtractHeaderFields except the it take care or escaped quote (like '' or "")}
-procedure ALExtractHeaderFieldsWithQuoteEscaped(
-            Separators,
-            WhiteSpace,
-            Quotes: TSysCharSet;
-            Content: PAnsiChar;
-            Strings: TALStringsA;
-            HttpDecode: Boolean;
-            StripQuotes: Boolean = False);
-
-var Head, Tail, NextTail: PAnsiChar;
-    EOS, InQuote: Boolean;
-    QuoteChar: AnsiChar;
-    ExtractedField: AnsiString;
-    SeparatorsWithQuotesAndNulChar: TSysCharSet;
-    QuotesWithNulChar: TSysCharSet;
-
-  {-------------------------------------------------------}
-  //as i don't want to add the parameter namevalueseparator
-  //to the function, we will stripquote only if the string end
-  //with the quote or start with the quote
-  //ex: "name"="value"  =>  name=value
-  //ex: "name"=value    =>  name=value
-  //ex: name="value"    =>  name=value
-  function DoStripQuotes(const S: AnsiString): AnsiString;
-  var I: Integer;
-      StripQuoteChar: AnsiChar;
-      canStripQuotesOnLeftSide: boolean;
-  begin
-    Result := S;
-    if StripQuotes then begin
-
-      canStripQuotesOnLeftSide := True;
-      if (length(result) > 0) and (result[length(result)] in quotes) then begin
-        StripQuoteChar := result[length(result)];
-        Delete(Result, length(result), 1);
-        i := Length(Result);
-        while i > 0 do begin
-          if (Result[I] = StripQuoteChar) then begin
-            Delete(Result, I, 1);
-            if (i > 1) and (Result[I-1] = StripQuoteChar) then dec(i)
-            else begin
-              canStripQuotesOnLeftSide := i > 1;
-              break;
-            end;
-          end;
-          dec(i);
-        end;
+      else begin
+        Rp^ := '%'; Inc(Rp);
+        Rp^ := Hex[Sb[i] shr 4]; Inc(Rp);
+        Rp^ := Hex[Sb[i] and $0F]; Inc(Rp);
       end;
-
-      if (canStripQuotesOnLeftSide) and (length(result) > 0) and (result[1] in quotes) then begin
-        StripQuoteChar := result[1];
-        Delete(Result, 1, 1);
-        i := 1;
-        while i <= Length(Result) do begin
-          if (Result[I] = StripQuoteChar) then begin
-            Delete(Result, I, 1);
-            if (i < Length(Result)) and (Result[I+1] = StripQuoteChar) then inc(i)
-            else break;
-          end;
-          inc(i);
-        end;
-      end;
-
     end;
   end;
-
-Begin
-  if (Content = nil) or (Content^ = #0) then Exit;
-  SeparatorsWithQuotesAndNulChar := Separators + Quotes + [#0];
-  QuotesWithNulChar := Quotes + [#0];
-  Tail := Content;
-  QuoteChar := #0;
-  repeat
-    while Tail^ in WhiteSpace do Inc(Tail);
-    Head := Tail;
-    InQuote := False;
-    while True do begin
-      while (InQuote and not (Tail^ in QuotesWithNulChar)) or not (Tail^ in SeparatorsWithQuotesAndNulChar) do Inc(Tail);
-      if Tail^ in Quotes then begin
-        if (QuoteChar <> #0) and (QuoteChar = Tail^) then begin
-          NextTail := Tail + 1;
-          if NextTail^ = Tail^ then inc(tail)
-          else QuoteChar := #0;
-        end
-        else If QuoteChar = #0 then QuoteChar := Tail^;
-        InQuote := QuoteChar <> #0;
-        Inc(Tail);
-      end
-      else Break;
-    end;
-    EOS := Tail^ = #0;
-    if Head^ <> #0 then begin
-      SetString(ExtractedField, Head, Tail-Head);
-      if HttpDecode then Strings.Add(ALHTTPDecode(DoStripQuotes(ExtractedField)))
-      else Strings.Add(DoStripQuotes(ExtractedField));
-    end;
-    Inc(Tail);
-  until EOS;
+  SetLength(Result, Rp - PChar(Result))
 end;
+{$WARN WIDECHAR_REDUCED ON}
 
-{**************************************************************************************}
-{same as ALExtractHeaderFields except the it take care or escaped quote (like '' or "")}
+{*********************}
 {$ZEROBASEDSTRINGS OFF}
-{$WARN SYMBOL_DEPRECATED OFF}
-procedure ALExtractHeaderFieldsWithQuoteEscaped(
-            Separators,
-            WhiteSpace,
-            Quotes: TSysCharSet;
-            Content: PChar;
-            Strings: TALStringsW;
-            HttpDecode: Boolean;
-            StripQuotes: Boolean = False);
+procedure ALPercentDecodeInPlace(var AStr: AnsiString; const APlusAsSpaces: Boolean = False);
 
-var Head, Tail, NextTail: PChar;
-    EOS, InQuote: Boolean;
-    QuoteChar: Char;
-    ExtractedField: String;
-    SeparatorsWithQuotesAndNulChar: TSysCharSet;
-    QuotesWithNulChar: TSysCharSet;
+var
+  CurrPos: Integer;
+  PResHead: PAnsiChar;
+  PResTail: PAnsiChar;
+  IsUniqueString: boolean;
 
-  {-------------------------------------------------------}
-  //as i don't want to add the parameter namevalueseparator
-  //to the function, we will stripquote only if the string end
-  //with the quote or start with the quote
-  //ex: "name"="value"  =>  name=value
-  //ex: "name"=value    =>  name=value
-  //ex: name="value"    =>  name=value
-  function DoStripQuotes(const S: String): String;
-  var I: Integer;
-      StripQuoteChar: Char;
-      canStripQuotesOnLeftSide: boolean;
-  begin
-    Result := S;
-    if StripQuotes then begin
-
-      canStripQuotesOnLeftSide := True;
-      if (length(result) > 0) and charInSet(result[length(result)], quotes) then begin
-        StripQuoteChar := result[length(result)];
-        Delete(Result, length(result), 1);
-        i := Length(Result);
-        while i > 0 do begin
-          if (Result[I] = StripQuoteChar) then begin
-            Delete(Result, I, 1);
-            if (i > 1) and (Result[I-1] = StripQuoteChar) then dec(i)
-            else begin
-              canStripQuotesOnLeftSide := i > 1;
-              break;
-            end;
-          end;
-          dec(i);
-        end;
-      end;
-
-      if (canStripQuotesOnLeftSide) and (length(result) > 0) and charInSet(result[1], quotes) then begin
-        StripQuoteChar := result[1];
-        Delete(Result, 1, 1);
-        i := 1;
-        while i <= Length(Result) do begin
-          if (Result[I] = StripQuoteChar) then begin
-            Delete(Result, I, 1);
-            if (i < Length(Result)) and (Result[I+1] = StripQuoteChar) then inc(i)
-            else break;
-          end;
-          inc(i);
-        end;
-      end;
-
+    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+    procedure _GenerateUniqueString;
+    begin
+      var Padding := PResTail - PResHead;
+      UniqueString(AStr);
+      PResHead := PAnsiChar(AStr);
+      PResTail := PResHead + Padding;
+      IsUniqueString := true;
     end;
+
+    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+    function _HexToInt(I: Cardinal; Ch: AnsiChar): Cardinal;
+    begin
+      case Ch of
+        '0'..'9': Result := I * 16 + Ord(Ch) - Ord('0');
+        'a'..'f': Result := I * 16 + Ord(Ch) - Ord('a') + 10;
+        'A'..'F': Result := I * 16 + Ord(Ch) - Ord('A') + 10;
+        // Should be unreachable because the caller pre-validates hex digits
+        else raise EALException.Create('Wrong HEX-character found');
+      end;
+    end;
+
+    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+    procedure _CopyCurrPosCharToResult;
+    begin
+      if IsUniqueString then PResTail^ := AStr[CurrPos];
+      Inc(PResTail);
+      Inc(CurrPos);
+    end;
+
+    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+    procedure _CopyAnsiCharToResult(ACharInt: Byte; ANewCurrPos: Integer);
+    begin
+      if not IsUniqueString then _GenerateUniqueString;
+      PResTail^ := AnsiChar(ACharInt);
+      Inc(PResTail);
+      CurrPos := ANewCurrPos;
+    end;
+
+    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+    procedure _CopyHexadecimalEntityToResult;
+    begin
+      var Res: Cardinal := 0;
+      for var i := CurrPos+1 to CurrPos + 2 do  // CurrPos+1 because AStr[CurrPos] = %
+        Res := _HexToInt(Res, AStr[i]);
+      _CopyAnsiCharToResult(Res, CurrPos + 3); // ...%C9...
+                                               //    ^CurrPos
+                                               // =>
+                                               // ...%C9...
+                                               //       ^CurrPos
+    end;
+
+begin
+
+  {Init var}
+  CurrPos := low(AStr);
+  var Ln := High(AStr);
+  IsUniqueString := false;
+  PResHead := PAnsiChar(AStr);
+  PResTail := PResHead;
+
+  {Start loop}
+  while CurrPos <= Ln do begin
+
+    {plus char detected}
+    if AStr[CurrPos] = '+' then begin
+      If APlusAsSpaces then
+        _CopyAnsiCharToResult(32, CurrPos + 1)
+      else
+        _CopyCurrPosCharToResult;
+    end
+
+    {Percent char detected}
+    else if AStr[CurrPos] = '%' then begin
+
+      // AStr[CurrPos+1] and AStr[CurrPos+2] of entity should be in this case in 0..9,a..f,A..F
+      if (CurrPos <= ln - 2) and
+         (AStr[CurrPos+1]  in ['A'..'F', 'a'..'f', '0'..'9']) and
+         (AStr[CurrPos+2]  in ['A'..'F', 'a'..'f', '0'..'9']) then _CopyHexadecimalEntityToResult
+      else _CopyCurrPosCharToResult;
+
+    end
+    else _CopyCurrPosCharToResult;
+
   end;
 
-Begin
-  if (Content = nil) or (Content^ = #0) then Exit;
-  SeparatorsWithQuotesAndNulChar := Separators + Quotes + [#0];
-  QuotesWithNulChar := Quotes + [#0];
-  Tail := Content;
-  QuoteChar := #0;
-  repeat
-    while charInSet(Tail^, WhiteSpace) do Inc(Tail);
-    Head := Tail;
-    InQuote := False;
-    while True do begin
-      while (InQuote and not charInSet(Tail^, QuotesWithNulChar)) or not charInSet(Tail^, SeparatorsWithQuotesAndNulChar) do Inc(Tail);
-      if charInSet(Tail^, Quotes) then begin
-        if (QuoteChar <> #0) and (QuoteChar = Tail^) then begin
-          NextTail := Tail + 1;
-          if NextTail^ = Tail^ then inc(tail)
-          else QuoteChar := #0;
-        end
-        else If QuoteChar = #0 then QuoteChar := Tail^;
-        InQuote := QuoteChar <> #0;
-        Inc(Tail);
-      end
-      else Break;
-    end;
-    EOS := Tail^ = #0;
-    if Head^ <> #0 then begin
-      SetString(ExtractedField, Head, Tail-Head);
-      if HttpDecode then Strings.Add(ALHTTPDecode(DoStripQuotes(ExtractedField)))
-      else Strings.Add(DoStripQuotes(ExtractedField));
-    end;
-    Inc(Tail);
-  until EOS;
+  {Change the length the string only if some modifications was done.
+   Else we don't need to do anything.}
+  if PResTail - PResHead <> length(AStr) then
+    SetLength(AStr, PResTail - PResHead);
+
 end;
-{$WARN SYMBOL_DEPRECATED ON}
 {$IF defined(ALZeroBasedStringsON)}
   {$ZEROBASEDSTRINGS ON}
 {$ENDIF}
+
+{*********************}
+{$ZEROBASEDSTRINGS OFF}
+procedure ALPercentDecodeInPlace(var AStr: String; const APlusAsSpaces: Boolean = False);
+begin
+
+  var Start := PChar(AStr);
+  var Sp := Start;
+  for var I := 1 to Length(AStr) do begin
+    if (Sp^ = '+') then begin
+      if APlusAsSpaces then
+        Break;
+    end
+    else if (Sp^ = '%') then break;
+    Inc(Sp);
+  end;
+
+  If Sp - Start = Length(AStr) then
+    Exit;
+
+  var LAnsiString := AnsiString(AStr);
+  ALPercentDecodeInPlace(LAnsiString, APlusAsSpaces);
+  AStr := String(LAnsiString);
+
+end;
+{$IF defined(ALZeroBasedStringsON)}
+  {$ZEROBASEDSTRINGS ON}
+{$ENDIF}
+
+{*****************************************************************}
+// Unlike Delphi’s HttpApp.HttpDecode, this function never raises
+// EConvertError if the URL contains stray '%' characters that are
+// not followed by a valid escape sequence.
+function ALPercentDecode(const AStr: AnsiString; const APlusAsSpaces: Boolean = False): AnsiString;
+begin
+  result := AStr;
+  ALPercentDecodeInPlace(result, APlusAsSpaces);
+end;
+
+{*****************************************************************}
+// Unlike Delphi’s HttpApp.HttpDecode, this function never raises
+// EConvertError if the URL contains stray '%' characters that are
+// not followed by a valid escape sequence.
+function ALPercentDecode(const AStr: String; const APlusAsSpaces: Boolean = False): String;
+begin
+  result := AStr;
+  ALPercentDecodeInPlace(result, APlusAsSpaces);
+end;
+
+{***********}
+/// <summary>
+///   Parse an HTTP-style header parameter list into a name/value collection.
+///   Typical inputs look like:
+///     - 'k=v; x="y z"; flag; q=1'
+///     - 'charset=UTF-8; boundary="---123"'
+///     - 'a:b; c:d'
+///   The function tokenizes on ASeparators, splits each token on the first
+///   ANameValueSeparator (if any), trims whitespace you define in AWhiteSpace
+///   around separators and the name/value separator, and (optionally) removes
+///   paired quotes and unescapes content inside quoted tokens.
+/// </summary>
+procedure ALExtractHeaderFields(
+            const ASeparators: TSysCharSet;
+            const AWhiteSpace: TSysCharSet;
+            const AQuoteChars: TSysCharSet;
+            const AContent: PAnsiChar;
+            const AStrings: TALStringsA;
+            const AStripQuotes: Boolean = False;
+            const AQuoteDoublingEscape: Boolean = False;
+            const AEscapeChar: AnsiChar = #0;
+            const ANameValueSeparator: AnsiChar = '=');
+
+var
+  LHead: PAnsiChar;
+  LTail: PAnsiChar;
+
+    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+    procedure _ExtractToken(var AToken: AnsiString; Const AIsNameToken: Boolean);
+    begin
+
+      // Init LQuoteChar
+      var LQuoteChar: AnsiChar := #0;
+
+      // Remove left white spaces
+      while LTail^ in AWhiteSpace do Inc(LTail);
+      LHead := LTail;
+
+      // We are on a quote char
+      if LTail^ in AQuoteChars then begin
+        LQuoteChar := LTail^;
+        inc(LTail);
+        While true do begin
+          if (LTail^ = LQuoteChar) or (LTail^ = #0) then begin
+            if AQuoteDoublingEscape and (LTail^ = LQuoteChar) and ((LTail+1)^ = LQuoteChar) then begin
+              inc(LTail, 2);
+              continue;
+            end;
+            if LTail^ = LQuoteChar then inc(LTail)
+            else LQuoteChar := #0;
+            break;
+          end
+          //--
+          else if (LTail^ = AEscapeChar) then begin
+            inc(LTail);
+            if LTail^ <> #0 then inc(LTail);
+            continue;
+          end
+          //--
+          else
+            Inc(LTail);
+        end;
+      end;
+
+      // Loop still the end of token
+      while true do begin
+
+        // We are at the end of token
+        if (AIsNameToken and (LTail^ = ANameValueSeparator)) or (LTail^ in ASeparators) or (LTail^ = #0) then begin
+          var LTailNoWhiteSpaces := LTail;
+          While (LTailNoWhiteSpaces > LHead) and
+                ((LTailNoWhiteSpaces-1)^ in AWhiteSpace) do dec(LTailNoWhiteSpaces);
+          if (not AStripQuotes) or (LQuoteChar = #0) then SetString(AToken, LHead, LTailNoWhiteSpaces-LHead)
+          else begin
+            var LLength := LTailNoWhiteSpaces - LHead - 2; // Exclude quotes
+            if LLength <= 0 then SetLength(AToken, 0)
+            else begin
+              Setlength(AToken, LLength);
+              var LTokenPtr := PAnsiChar(AToken);
+              var LContentPtr := LHead + 1;
+              while LContentPtr < LTailNoWhiteSpaces - 1 do begin
+                if (AQuoteDoublingEscape and (LContentPtr < LTailNoWhiteSpaces - 2) and (LContentPtr^ = LQuoteChar) and ((LContentPtr+1)^ = LQuoteChar)) or
+                   ((AEscapeChar <> #0) and (LContentPtr < LTailNoWhiteSpaces - 2) and (LContentPtr^ = AEscapeChar)) then
+                  inc(LContentPtr);
+                LTokenPtr^ := LContentPtr^;
+                inc(LTokenPtr);
+                inc(LContentPtr);
+              end;
+              SetLength(AToken, LTokenPtr-PAnsiChar(AToken));
+            end;
+          end;
+          // Remove right White spaces
+          while LTail^ in AWhiteSpace do Inc(LTail);
+          // Remove right Separators
+          while LTail^ in ASeparators do Inc(LTail);
+          LHead := LTail;
+          break;
+        end
+
+        // We are inside token
+        else begin
+          If (LQuoteChar <> #0) and (not (LTail^ in AWhiteSpace)) then
+            LQuoteChar := #0;
+          inc(LTail);
+        end;
+
+      end;
+    end;
+
+
+Begin
+  {$IF defined(DEBUG)}
+  Assert((AEscapeChar = #0) or (not (AEscapeChar in AQuoteChars)), 'AEscapeChar must not be in AQuoteChars');
+  Assert(not (ansiChar(#0) in ASeparators), '#0 must not be in ASeparators');
+  Assert(not (ansiChar(#0) in AWhiteSpace), '#0 must not be in AWhiteSpace');
+  Assert(not (ansiChar(#0) in AQuoteChars), '#0 must not be in AQuoteChars');
+  {$ENDIF}
+
+  AStrings.Clear;
+
+  if (AContent = nil) or (AContent^ = #0) then Exit;
+
+  LHead := AContent;
+  LTail := LHead;
+  var LName: AnsiString;
+  var LValue: AnsiString;
+
+  while LTail^ <> #0 do begin
+    _ExtractToken(LName, true{AIsNameToken});
+    if (ANameValueSeparator <> #0) and (LTail^ = ANameValueSeparator) then begin
+      inc(LTail);
+      LHead := LTail;
+      _ExtractToken(LValue, False{AIsNameToken});
+      AStrings.AddNameValue(LName, LValue);
+    end
+    else if LName <> '' then
+      AStrings.Add(LName);
+  end;
+end;
+
+{**************************}
+{$WARN WIDECHAR_REDUCED OFF}
+/// <summary>
+///   Parse an HTTP-style header parameter list into a name/value collection.
+///   Typical inputs look like:
+///     - 'k=v; x="y z"; flag; q=1'
+///     - 'charset=UTF-8; boundary="---123"'
+///     - 'a:b; c:d'
+///   The function tokenizes on ASeparators, splits each token on the first
+///   ANameValueSeparator (if any), trims whitespace you define in AWhiteSpace
+///   around separators and the name/value separator, and (optionally) removes
+///   paired quotes and unescapes content inside quoted tokens.
+/// </summary>
+procedure ALExtractHeaderFields(
+            const ASeparators: TSysCharSet;
+            const AWhiteSpace: TSysCharSet;
+            const AQuoteChars: TSysCharSet;
+            const AContent: PChar;
+            const AStrings: TALStringsW;
+            const AStripQuotes: Boolean = False;
+            const AQuoteDoublingEscape: Boolean = False;
+            const AEscapeChar: Char = #0;
+            const ANameValueSeparator: Char = '='); overload;
+ var
+  LHead: PChar;
+  LTail: PChar;
+
+    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+    procedure _ExtractToken(var AToken: String; Const AIsNameToken: Boolean);
+    begin
+
+      // Init LQuoteChar
+      var LQuoteChar: Char := #0;
+
+      // Remove left white spaces
+      while LTail^ in AWhiteSpace do Inc(LTail);
+      LHead := LTail;
+
+      // We are on a quote char
+      if LTail^ in AQuoteChars then begin
+        LQuoteChar := LTail^;
+        inc(LTail);
+        While true do begin
+          if (LTail^ = LQuoteChar) or (LTail^ = #0) then begin
+            if AQuoteDoublingEscape and (LTail^ = LQuoteChar) and ((LTail+1)^ = LQuoteChar) then begin
+              inc(LTail, 2);
+              continue;
+            end;
+            if LTail^ = LQuoteChar then inc(LTail)
+            else LQuoteChar := #0;
+            break;
+          end
+          //--
+          else if (LTail^ = AEscapeChar) then begin
+            inc(LTail);
+            if LTail^ <> #0 then inc(LTail);
+            continue;
+          end
+          //--
+          else
+            Inc(LTail);
+        end;
+      end;
+
+      // Loop still the end of token
+      while true do begin
+
+        // We are at the end of token
+        if (AIsNameToken and (LTail^ = ANameValueSeparator)) or (LTail^ in ASeparators) or (LTail^ = #0) then begin
+          var LTailNoWhiteSpaces := LTail;
+          While (LTailNoWhiteSpaces > LHead) and
+                ((LTailNoWhiteSpaces-1)^ in AWhiteSpace) do dec(LTailNoWhiteSpaces);
+          if (not AStripQuotes) or (LQuoteChar = #0) then SetString(AToken, LHead, LTailNoWhiteSpaces-LHead)
+          else begin
+            var LLength := LTailNoWhiteSpaces - LHead - 2; // Exclude quotes
+            if LLength <= 0 then SetLength(AToken, 0)
+            else begin
+              Setlength(AToken, LLength);
+              var LTokenPtr := PChar(AToken);
+              var LContentPtr := LHead + 1;
+              while LContentPtr < LTailNoWhiteSpaces - 1 do begin
+                if (AQuoteDoublingEscape and (LContentPtr < LTailNoWhiteSpaces - 2) and (LContentPtr^ = LQuoteChar) and ((LContentPtr+1)^ = LQuoteChar)) or
+                   ((AEscapeChar <> #0) and (LContentPtr < LTailNoWhiteSpaces - 2) and (LContentPtr^ = AEscapeChar)) then
+                  inc(LContentPtr);
+                LTokenPtr^ := LContentPtr^;
+                inc(LTokenPtr);
+                inc(LContentPtr);
+              end;
+              SetLength(AToken, LTokenPtr-PChar(AToken));
+            end;
+          end;
+          // Remove right White spaces
+          while LTail^ in AWhiteSpace do Inc(LTail);
+          // Remove right Separators
+          while LTail^ in ASeparators do Inc(LTail);
+          LHead := LTail;
+          break;
+        end
+
+        // We are inside token
+        else begin
+          If (LQuoteChar <> #0) and (not (LTail^ in AWhiteSpace)) then
+            LQuoteChar := #0;
+          inc(LTail);
+        end;
+
+      end;
+    end;
+
+
+Begin
+  {$IF defined(DEBUG)}
+  Assert((AEscapeChar = #0) or (not (AEscapeChar in AQuoteChars)), 'AEscapeChar must not be in AQuoteChars');
+  Assert(not (Char(#0) in ASeparators), '#0 must not be in ASeparators');
+  Assert(not (Char(#0) in AWhiteSpace), '#0 must not be in AWhiteSpace');
+  Assert(not (Char(#0) in AQuoteChars), '#0 must not be in AQuoteChars');
+  {$ENDIF}
+
+  AStrings.Clear;
+
+  if (AContent = nil) or (AContent^ = #0) then Exit;
+
+  LHead := AContent;
+  LTail := LHead;
+  var LName: String;
+  var LValue: String;
+
+  while LTail^ <> #0 do begin
+    _ExtractToken(LName, true{AIsNameToken});
+    if (ANameValueSeparator <> #0) and (LTail^ = ANameValueSeparator) then begin
+      inc(LTail);
+      LHead := LTail;
+      _ExtractToken(LValue, False{AIsNameToken});
+      AStrings.AddNameValue(LName, LValue);
+    end
+    else if LName <> '' then
+      AStrings.Add(LName);
+  end;
+end;
+{$WARN WIDECHAR_REDUCED ON}
 
 {************************************}
 constructor TALPrecompiledTagA.Create;
@@ -9830,7 +10559,6 @@ end;
 function ALFastTagReplacePrecompileA(
            Const SourceString, TagStart, TagEnd: AnsiString;
            PrecompileProc: TALHandleTagPrecompileFunctA;
-           StripParamQuotes: Boolean; // useless if PrecompileProc is provided
            Context: Pointer;
            TagsContainer: TObjectList; // just a container where all the PrecompiledTag will be store. must free all the PrecompiledTag at the end of the application
            Const flags: TReplaceFlags=[]): AnsiString; // rfreplaceall is ignored here, only rfIgnoreCase is matter
@@ -9838,7 +10566,7 @@ function ALFastTagReplacePrecompileA(
 var ReplaceString: AnsiString;
     TagEndFirstChar, TagEndFirstCharLower, TagEndFirstCharUpper: AnsiChar;
     TokenStr, ParamStr: AnsiString;
-    ParamList: TALStringListA;
+    ParamList: TALNVStringListA;
     TagStartLength: integer;
     TagEndLength: integer;
     SourceStringLength: Integer;
@@ -9883,7 +10611,7 @@ Const ResultBuffSize: integer = 16384;
          (aLength < 1) or
          (aStart > LSourceStringLn) then Exit;
 
-      if aLength > LSourceStringLn - (aStart - 1) then aLength := LSourceStringLn - (aStart-1);
+      aLength := Min(aLength, LSourceStringLn - (aStart - 1));
 
       If aLength + ResultCurrentPos - 1 > ResultCurrentLength then begin
         ResultCurrentLength := ResultCurrentLength + aLength + ResultBuffSize;
@@ -9951,17 +10679,17 @@ begin
     If assigned(PrecompileProc) then begin
       TokenStr := _ExtractTokenStr;
       ParamStr := _ExtractParamsStr(TokenStr);
-      ParamList := TALStringListA.Create;
+      ParamList := TALNVStringListA.Create;
       try
         ParamList.Duplicates := dupIgnore;
-        ALExtractHeaderFieldsWithQuoteEscaped(
-          [' ', #9, #13, #10],
-          [' ', #9, #13, #10],
-          ['"', ''''],
-          PAnsiChar(ParamStr),
-          ParamList,
-          False,
-          StripParamQuotes);
+        ALExtractHeaderFields(
+          [' ', #9, #13, #10], // const ASeparators: TSysCharSet;
+          [' ', #9, #13, #10], // const AWhiteSpace: TSysCharSet;
+          ['"', ''''], // const AQuoteChars: TSysCharSet;
+          PAnsiChar(ParamStr), // const AContent: PAnsiChar;
+          ParamList, // const AStrings: TALStringsA;
+          True, // const AStripQuotes: Boolean = False;
+          True); // const AQuoteDoublingEscape: Boolean = False;
 
         T2 := T2 - T1;
         PrecompiledTag := PrecompileProc(TokenStr, ParamList, Context, SourceString, T1, T2);
@@ -9980,14 +10708,14 @@ begin
       try
         PrecompiledTag.TagString := _ExtractTokenStr;
         ParamStr := _ExtractParamsStr(PrecompiledTag.TagString);
-        ALExtractHeaderFieldsWithQuoteEscaped(
-          [' ', #9, #13, #10],
-          [' ', #9, #13, #10],
-          ['"', ''''],
-          PAnsiChar(ParamStr),
-          PrecompiledTag.TagParams,
-          False,
-          StripParamQuotes);
+        ALExtractHeaderFields(
+          [' ', #9, #13, #10], // const ASeparators: TSysCharSet;
+          [' ', #9, #13, #10], // const AWhiteSpace: TSysCharSet;
+          ['"', ''''], // const AQuoteChars: TSysCharSet;
+          PAnsiChar(ParamStr), // const AContent: PAnsiChar;
+          PrecompiledTag.TagParams, // const AStrings: TALStringsA;
+          True, // const AStripQuotes: Boolean = False;
+          True); // const AQuoteDoublingEscape: Boolean = False;
         TagsContainer.Add(PrecompiledTag);
         ReplaceString := TagStart + #2{start of text} + _ObjAddressToStr(PrecompiledTag) + #3{end of text} + TagEnd;
       except
@@ -10000,7 +10728,6 @@ begin
                                          TagStart,
                                          TagEnd,
                                          PrecompileProc,
-                                         StripParamQuotes,
                                          Context,
                                          TagsContainer,
                                          flags);
@@ -10009,7 +10736,6 @@ begin
                                     TagStart,
                                     TagEnd,
                                     PrecompileProc,
-                                    StripParamQuotes,
                                     Context,
                                     TagsContainer,
                                     flags);
@@ -10047,7 +10773,6 @@ function ALFastTagReplaceA(
            Const SourceString, TagStart, TagEnd: AnsiString;
            ReplaceProc: TALHandleTagFunctA;
            ReplaceExtendedProc: TALHandleTagExtendedfunctA;
-           StripParamQuotes: Boolean;
            Flags: TReplaceFlags;
            Context: Pointer;
            TagParamsClass: TALTagParamsClassA;
@@ -10103,7 +10828,7 @@ Const ResultBuffSize: integer = 16384;
          (aLength < 1) or
          (aStart > LSourceStringLn) then Exit;
 
-      if aLength > LSourceStringLn - (aStart - 1) then aLength := LSourceStringLn - (aStart-1);
+      aLength := Min(aLength, LSourceStringLn - (aStart - 1));
 
       If aLength + ResultCurrentPos - 1 > ResultCurrentLength then begin
         ResultCurrentLength := ResultCurrentLength + aLength + ResultBuffSize;
@@ -10211,14 +10936,14 @@ begin
       ParamStr := _ExtractParamsStr;
       ParamList := TagParamsClass.Create;
       try
-        ALExtractHeaderFieldsWithQuoteEscaped(
-          [' ', #9, #13, #10],
-          [' ', #9, #13, #10],
-          ['"', ''''],
-          PAnsiChar(ParamStr),
-          ParamList,
-          False,
-          StripParamQuotes);
+        ALExtractHeaderFields(
+          [' ', #9, #13, #10], // const ASeparators: TSysCharSet;
+          [' ', #9, #13, #10], // const AWhiteSpace: TSysCharSet;
+          ['"', ''''], // const AQuoteChars: TSysCharSet;
+          PAnsiChar(ParamStr), // const AContent: PAnsiChar;
+          ParamList, // const AStrings: TALStringsA;
+          True, // const AStripQuotes: Boolean = False;
+          True); // const AQuoteDoublingEscape: Boolean = False;
         if assigned(ReplaceExtendedProc) then begin
           T2 := T2 - T1;
           ReplaceString := ReplaceExtendedProc(TokenStr, ParamList, Context, TagHandled, SourceString, T1, T2);
@@ -10238,7 +10963,6 @@ begin
                                                        TagEnd,
                                                        ReplaceProc,
                                                        ReplaceExtendedProc,
-                                                       StripParamQuotes,
                                                        Flags,
                                                        Context,
                                                        TagParamsClass,
@@ -10297,7 +11021,6 @@ end;
 function ALFastTagReplaceA(
            const SourceString, TagStart, TagEnd: AnsiString;
            ReplaceProc: TALHandleTagFunctA;
-           StripParamQuotes: Boolean;
            Context: Pointer;
            Const flags: TReplaceFlags=[rfreplaceall];
            const TagReplaceProcResult: Boolean = False): AnsiString;
@@ -10308,7 +11031,6 @@ Begin
               TagEnd,
               ReplaceProc,
               nil,
-              StripParamQuotes,
               flags,
               Context,
               TALStringListA,
@@ -10319,7 +11041,6 @@ end;
 function ALFastTagReplaceA(
            const SourceString, TagStart, TagEnd: AnsiString;
            ReplaceExtendedProc: TALHandleTagExtendedfunctA;
-           StripParamQuotes: Boolean;
            Context: Pointer;
            Const flags: TReplaceFlags=[rfreplaceall];
            const TagReplaceProcResult: Boolean = False): AnsiString;
@@ -10330,7 +11051,6 @@ Begin
               TagEnd,
               nil,
               ReplaceExtendedProc,
-              StripParamQuotes,
               flags,
               Context,
               TALStringListA,
@@ -10360,7 +11080,6 @@ Begin
               TagEnd,
               ALFastTagReplaceWithFunc,
               nil,
-              True,
               flags,
               PAnsiChar(ReplaceWith),
               TALStringListA,
@@ -10375,7 +11094,6 @@ end;
 //because it's will extract the params of the <#mytagwww
 function ALExtractTagParamsA(
            Const SourceString, TagStart, TagEnd: AnsiString;
-           StripParamQuotes: Boolean;
            TagParams: TALStringsA;
            IgnoreCase: Boolean): Boolean;
 
@@ -10443,14 +11161,14 @@ begin
     ReplaceString := AlCopyStr(SourceString,T1 + TagStartLength,T2 - T1 - TagStartLength);
     TokenStr := _ExtractTokenStr;
     ParamStr := _ExtractParamsStr;
-    ALExtractHeaderFieldsWithQuoteEscaped(
-      [' ', #9, #13, #10],
-      [' ', #9, #13, #10],
-      ['"', ''''],
-      PAnsiChar(ParamStr),
-      TagParams,
-      False,
-      StripParamQuotes);
+    ALExtractHeaderFields(
+      [' ', #9, #13, #10], // const ASeparators: TSysCharSet;
+      [' ', #9, #13, #10], // const AWhiteSpace: TSysCharSet;
+      ['"', ''''], // const AQuoteChars: TSysCharSet;
+      PAnsiChar(ParamStr), // const AContent: PAnsiChar;
+      TagParams, // const AStrings: TALStringsA;
+      True, // const AStripQuotes: Boolean = False;
+      True); // const AQuoteDoublingEscape: Boolean = False;
     Result := True
   end;
 end;
@@ -10542,10 +11260,10 @@ begin
 
 end;
 
-{********************************}
-Procedure _ALStringInitialization;
-var I: integer;
-begin
+initialization
+  {$IF defined(DEBUG)}
+  //ALLog('Alcinoe.StringUtils','initialization');
+  {$ENDIF}
 
   //
   // Taken from https://github.com/synopse/mORMot.git
@@ -10555,141 +11273,23 @@ begin
 
   _Base64Encoding := nil;
 
-  {$IFNDEF ALCompilerVersionSupported123}
+  {$IFNDEF ALCompilerVersionSupported130}
     {$MESSAGE WARN 'Check if https://github.com/synopse/mORMot.git SynCommons.pas was not updated from References\mORMot\SynCommons.pas and adjust the IFDEF'}
   {$ENDIF}
 
   Fillchar(ConvertBase64ToBin,256,255); // invalid value set to -1
-  for i := 0 to high(b64enc) do
+  for var i := 0 to high(b64enc) do
     ConvertBase64ToBin[b64enc[i]] := i;
   ConvertBase64ToBin['='] := -2; // special value for '='
 
-  //https://stackoverflow.com/questions/50590627/tformatsettings-createen-us-returns-different-settings-on-different-platform
   ALPosIgnoreCaseInitialiseLookupTable;
-  ALDefaultFormatSettingsA := TALFormatSettingsA.Create('en-US'); // 1033 {en-US}
-  ALDefaultFormatSettingsA.CurrencyString := '$';
-  ALDefaultFormatSettingsA.CurrencyFormat := 0;
-  ALDefaultFormatSettingsA.CurrencyDecimals := 2;
-  ALDefaultFormatSettingsA.DateSeparator := '/';
-  ALDefaultFormatSettingsA.TimeSeparator := ':';
-  ALDefaultFormatSettingsA.ListSeparator := ';';
-  ALDefaultFormatSettingsA.ShortDateFormat := 'M/d/yyyy';
-  ALDefaultFormatSettingsA.LongDateFormat := 'dddd, MMMM d, yyyy';
-  ALDefaultFormatSettingsA.TimeAMString := 'AM';
-  ALDefaultFormatSettingsA.TimePMString := 'PM';
-  ALDefaultFormatSettingsA.ShortTimeFormat := 'h:mm AMPM';
-  ALDefaultFormatSettingsA.LongTimeFormat := 'h:mm:ss AMPM';
-  ALDefaultFormatSettingsA.ShortMonthNames[1] := 'Jan';
-  ALDefaultFormatSettingsA.LongMonthNames [1] := 'January';
-  ALDefaultFormatSettingsA.ShortMonthNames[2] := 'Feb';
-  ALDefaultFormatSettingsA.LongMonthNames [2] := 'February';
-  ALDefaultFormatSettingsA.ShortMonthNames[3] := 'Mar';
-  ALDefaultFormatSettingsA.LongMonthNames [3] := 'March';
-  ALDefaultFormatSettingsA.ShortMonthNames[4] := 'Apr';
-  ALDefaultFormatSettingsA.LongMonthNames [4] := 'April';
-  ALDefaultFormatSettingsA.ShortMonthNames[5] := 'May';
-  ALDefaultFormatSettingsA.LongMonthNames [5] := 'May';
-  ALDefaultFormatSettingsA.ShortMonthNames[6] := 'Jun';
-  ALDefaultFormatSettingsA.LongMonthNames [6] := 'June';
-  ALDefaultFormatSettingsA.ShortMonthNames[7] := 'Jul';
-  ALDefaultFormatSettingsA.LongMonthNames [7] := 'July';
-  ALDefaultFormatSettingsA.ShortMonthNames[8] := 'Aug';
-  ALDefaultFormatSettingsA.LongMonthNames [8] := 'August';
-  ALDefaultFormatSettingsA.ShortMonthNames[9] := 'Sep';
-  ALDefaultFormatSettingsA.LongMonthNames [9] := 'September';
-  ALDefaultFormatSettingsA.ShortMonthNames[10] := 'Oct';
-  ALDefaultFormatSettingsA.LongMonthNames [10] := 'October';
-  ALDefaultFormatSettingsA.ShortMonthNames[11] := 'Nov';
-  ALDefaultFormatSettingsA.LongMonthNames [11] := 'November';
-  ALDefaultFormatSettingsA.ShortMonthNames[12] := 'Dec';
-  ALDefaultFormatSettingsA.LongMonthNames [12] := 'December';
-  ALDefaultFormatSettingsA.ShortDayNames[1] := 'Sun';
-  ALDefaultFormatSettingsA.LongDayNames [1] := 'Sunday';
-  ALDefaultFormatSettingsA.ShortDayNames[2] := 'Mon';
-  ALDefaultFormatSettingsA.LongDayNames [2] := 'Monday';
-  ALDefaultFormatSettingsA.ShortDayNames[3] := 'Tue';
-  ALDefaultFormatSettingsA.LongDayNames [3] := 'Tuesday';
-  ALDefaultFormatSettingsA.ShortDayNames[4] := 'Wed';
-  ALDefaultFormatSettingsA.LongDayNames [4] := 'Wednesday';
-  ALDefaultFormatSettingsA.ShortDayNames[5] := 'Thu';
-  ALDefaultFormatSettingsA.LongDayNames [5] := 'Thursday';
-  ALDefaultFormatSettingsA.ShortDayNames[6] := 'Fri';
-  ALDefaultFormatSettingsA.LongDayNames [6] := 'Friday';
-  ALDefaultFormatSettingsA.ShortDayNames[7] := 'Sat';
-  ALDefaultFormatSettingsA.LongDayNames [7] := 'Saturday';
-  ALDefaultFormatSettingsA.ThousandSeparator := ',';
-  ALDefaultFormatSettingsA.DecimalSeparator := '.';
-  ALDefaultFormatSettingsA.TwoDigitYearCenturyWindow := 50;
-  ALDefaultFormatSettingsA.NegCurrFormat := 0;
 
-  ALDefaultFormatSettingsW := TALFormatSettingsW.Create('en-US'); // 1033 {en-US}
-  ALDefaultFormatSettingsW.CurrencyString := '$';
-  ALDefaultFormatSettingsW.CurrencyFormat := 0;
-  ALDefaultFormatSettingsW.CurrencyDecimals := 2;
-  ALDefaultFormatSettingsW.DateSeparator := '/';
-  ALDefaultFormatSettingsW.TimeSeparator := ':';
-  ALDefaultFormatSettingsW.ListSeparator := ';';
-  ALDefaultFormatSettingsW.ShortDateFormat := 'M/d/yyyy';
-  ALDefaultFormatSettingsW.LongDateFormat := 'dddd, MMMM d, yyyy';
-  ALDefaultFormatSettingsW.TimeAMString := 'AM';
-  ALDefaultFormatSettingsW.TimePMString := 'PM';
-  ALDefaultFormatSettingsW.ShortTimeFormat := 'h:mm AMPM';
-  ALDefaultFormatSettingsW.LongTimeFormat := 'h:mm:ss AMPM';
-  ALDefaultFormatSettingsW.ShortMonthNames[1] := 'Jan';
-  ALDefaultFormatSettingsW.LongMonthNames [1] := 'January';
-  ALDefaultFormatSettingsW.ShortMonthNames[2] := 'Feb';
-  ALDefaultFormatSettingsW.LongMonthNames [2] := 'February';
-  ALDefaultFormatSettingsW.ShortMonthNames[3] := 'Mar';
-  ALDefaultFormatSettingsW.LongMonthNames [3] := 'March';
-  ALDefaultFormatSettingsW.ShortMonthNames[4] := 'Apr';
-  ALDefaultFormatSettingsW.LongMonthNames [4] := 'April';
-  ALDefaultFormatSettingsW.ShortMonthNames[5] := 'May';
-  ALDefaultFormatSettingsW.LongMonthNames [5] := 'May';
-  ALDefaultFormatSettingsW.ShortMonthNames[6] := 'Jun';
-  ALDefaultFormatSettingsW.LongMonthNames [6] := 'June';
-  ALDefaultFormatSettingsW.ShortMonthNames[7] := 'Jul';
-  ALDefaultFormatSettingsW.LongMonthNames [7] := 'July';
-  ALDefaultFormatSettingsW.ShortMonthNames[8] := 'Aug';
-  ALDefaultFormatSettingsW.LongMonthNames [8] := 'August';
-  ALDefaultFormatSettingsW.ShortMonthNames[9] := 'Sep';
-  ALDefaultFormatSettingsW.LongMonthNames [9] := 'September';
-  ALDefaultFormatSettingsW.ShortMonthNames[10] := 'Oct';
-  ALDefaultFormatSettingsW.LongMonthNames [10] := 'October';
-  ALDefaultFormatSettingsW.ShortMonthNames[11] := 'Nov';
-  ALDefaultFormatSettingsW.LongMonthNames [11] := 'November';
-  ALDefaultFormatSettingsW.ShortMonthNames[12] := 'Dec';
-  ALDefaultFormatSettingsW.LongMonthNames [12] := 'December';
-  ALDefaultFormatSettingsW.ShortDayNames[1] := 'Sun';
-  ALDefaultFormatSettingsW.LongDayNames [1] := 'Sunday';
-  ALDefaultFormatSettingsW.ShortDayNames[2] := 'Mon';
-  ALDefaultFormatSettingsW.LongDayNames [2] := 'Monday';
-  ALDefaultFormatSettingsW.ShortDayNames[3] := 'Tue';
-  ALDefaultFormatSettingsW.LongDayNames [3] := 'Tuesday';
-  ALDefaultFormatSettingsW.ShortDayNames[4] := 'Wed';
-  ALDefaultFormatSettingsW.LongDayNames [4] := 'Wednesday';
-  ALDefaultFormatSettingsW.ShortDayNames[5] := 'Thu';
-  ALDefaultFormatSettingsW.LongDayNames [5] := 'Thursday';
-  ALDefaultFormatSettingsW.ShortDayNames[6] := 'Fri';
-  ALDefaultFormatSettingsW.LongDayNames [6] := 'Friday';
-  ALDefaultFormatSettingsW.ShortDayNames[7] := 'Sat';
-  ALDefaultFormatSettingsW.LongDayNames [7] := 'Saturday';
-  ALDefaultFormatSettingsW.ThousandSeparator := ',';
-  ALDefaultFormatSettingsW.DecimalSeparator := '.';
-  ALDefaultFormatSettingsW.TwoDigitYearCenturyWindow := 50;
-  ALDefaultFormatSettingsW.NegCurrFormat := 0;
-
-end;
-
-{******************************}
-Procedure _ALStringFinalization;
-begin
-  AlFreeAndNil(_Base64Encoding);
-end;
-
-initialization
-  _ALStringInitialization;
 
 finalization
-  _ALStringFinalization;
+  {$IF defined(DEBUG)}
+  //ALLog('Alcinoe.StringUtils','finalization');
+  {$ENDIF}
+
+  AlFreeAndNil(_Base64Encoding);
 
 end.

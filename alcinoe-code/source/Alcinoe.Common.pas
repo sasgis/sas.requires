@@ -21,6 +21,47 @@ uses
 
 type
 
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  TALPersistentObserver = class(TPersistent)
+  private
+    FUpdateCount: Integer; // 4 Bytes
+    FIsChanged: Boolean; // 1 Bytes
+    FOnChanged: TNotifyEvent; // 16 Bytes
+    FSavedStates: TObjectStack<TALPersistentObserver>; // 8 Bytes
+    procedure DoChanged; virtual;
+  protected
+    function CreateSavedState: TALPersistentObserver; virtual;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure Reset; virtual;
+    procedure BeginUpdate; virtual;
+    procedure EndUpdate; virtual;
+    procedure EndUpdateNoChanges; virtual;
+    procedure SaveState; virtual;
+    procedure RestoreState; virtual;
+    procedure RestoreStateNoChanges; virtual;
+    procedure Change; virtual;
+    property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
+    property IsChanged: Boolean read FIsChanged write FIsChanged;
+  end;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~}
+  TALTriplet<K,V,E> = record
+    Key: K;
+    Value: V;
+    Extra: E;
+    constructor Create(const AKey: K; const AValue: V; const AExtra: E);
+  end;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~}
+  TALNameValuePairA = record
+    Name: ansistring;
+    Value: ansistring;
+    constructor Create(const AName, AValue: ansistring);
+  end;
+  TALNameValueArrayA = Array of TALNameValuePairA;
+
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
   TALWorkerThreadRefProc = reference to procedure(var AContext: Tobject);
   TALWorkerThreadObjProc = procedure(var AContext: Tobject) of object;
@@ -170,6 +211,154 @@ type
     property PriorityDirection: TPriorityDirection read FPriorityDirection write FPriorityDirection;
   end;
 
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  // TALWorkerContext is an example of a context object
+  // that can be used with TALWorkerThread. However, using this
+  // specific class is not required—any object type can be used as a context.
+  TALWorkerContext = Class(TObject)
+  protected
+    // FLock is used to safely access FOwner members from a background thread.
+    // Since FOwner can only be set to nil while FLock is held,
+    // acquiring FLock guarantees that FOwner members remain valid during access.
+    FLock: TObject;
+    // If FManagedByWorkerThread is True (default), the instance's
+    // lifecycle is managed by the worker thread and will be automatically released.
+    // Otherwise, the initiator is responsible for releasing it.
+    FManagedByWorkerThread: Boolean;
+    // Reference to the object that initiated the task associated with this context.
+    FOwner: TObject;
+  public
+    constructor Create(const AOwner: TObject); virtual;
+    destructor Destroy; override;
+    property Lock: TObject read FLock;
+    property Owner: TObject read FOwner;
+  End;
+
+  // Below a sample of how to use a TALWorkerContext:
+  // ------------------------------------------------
+  // type
+  //   TMyMap = class
+  //   private
+  //     type
+  //       TDownloadMarkersContext = Class(TALWorkerContext)
+  //       private
+  //         function GetOwner: TMyMap;
+  //       public
+  //         MapID: Int64;
+  //         constructor Create(const AOwner: TMyMap); reintroduce; virtual;
+  //         Property Owner: TMyMap read GetOwner;
+  //       End;
+  //   private
+  //     FMapID: Int64;
+  //     FDownloadMarkersContext: TDownloadMarkersContext; // [MultiThread]
+  //     class procedure DownloadMarkersBackgroundProc(var AContext: Tobject); virtual; // [MultiThread]
+  //     procedure DownloadMarkers;
+  //     procedure CancelDownloadMarkers;
+  //   public
+  //     constructor Create(const AMapID: Int64);
+  //     procedure BeforeDestruction; override;
+  //     property MapID: Int64 read FMapID;
+  //   end;
+  //
+  // constructor TMyMap.TDownloadMarkersContext.Create(const AOwner: TMyMap);
+  // begin
+  //   inherited Create(AOwner);
+  //   MapID := AOwner.MapID;
+  // end;
+  //
+  // function TMyMap.TDownloadMarkersContext.GetOwner: TMyMap;
+  // begin
+  //   Result := TMyMap(FOwner);
+  // end;
+  //
+  // constructor TMyMap.Create(const AMapID: Int64);
+  // begin
+  //   inherited create;
+  //   FMapID := AMapID;
+  //   DownloadMarkers;
+  // end;
+  //
+  // procedure TMyMap.BeforeDestruction;
+  // begin
+  //   if BeforeDestructionExecuted then exit;
+  //   CancelDownloadMarkers;
+  //   inherited;
+  // end;
+  //
+  // procedure TMyMap.DownloadMarkers;
+  // begin
+  //   FDownloadMarkersContext := TDownloadMarkersContext.Create(Self);
+  //   Try
+  //     TALNetHttpClientPool.Instance.ExecuteProc(
+  //       DownloadMarkersBackgroundProc, // const AProc: TALWorkerThreadObjProc;
+  //       FDownloadMarkersContext); // const AContext: Tobject; // Context will be free by the worker thread
+  //   except
+  //     ALFreeAndNil(FDownloadMarkersContext);
+  //     Raise;
+  //   End;
+  // end;
+  //
+  // class procedure TMyMap.DownloadMarkersBackgroundProc(var AContext: Tobject);
+  // begin
+  //   var LContext := TDownloadMarkersContext(AContext);
+  //   if LContext.FOwner = nil then exit;
+  //
+  //   var LHtml: String := '';
+  //   try
+  //     var LNetHttpClient := ALCreateNetHTTPClient;
+  //     try
+  //       LHtml := LNetHttpClient.Get('...MapID...');
+  //     finally
+  //       ALFreeAndNil(LNetHttpClient);
+  //     end;
+  //   Except
+  //     On E: Exception do begin
+  //       ALLog('TMyMap.DownloadMarkersBackgroundProc', E);
+  //       LHtml := '';
+  //     end;
+  //   end;
+  //
+  //   if LContext.FOwner = nil then exit;
+  //   TThread.queue(nil,
+  //     procedure
+  //     begin
+  //       Try
+  //         if LContext.FOwner <> nil then begin
+  //           var LOwner := LContext.owner;
+  //           LOwner.FDownloadMarkersContext := nil;
+  //           // Success
+  //           if LHtml <> '' then ...
+  //           // Error
+  //           else ...
+  //         end;
+  //       finally
+  //         ALFreeAndNil(LContext);
+  //       End;
+  //     end);
+  //   AContext := nil; // AContext will be free by TThread.queue
+  // end;
+  //
+  // procedure TMyMap.CancelDownloadMarkers;
+  // begin
+  //   // The FDownloadMarkersContext pointer can only be
+  //   // updated in the main thread, so there is no need
+  //   // to lock its access for reading or updating.
+  //   if FDownloadMarkersContext <> nil then begin
+  //     var LContextToFree: TDownloadMarkersContext;
+  //     var LLock := FDownloadMarkersContext.FLock;
+  //     ALMonitorEnter(LLock{$IF defined(DEBUG)}, 'TMyMap.CancelDownloadMarkers'{$ENDIF});
+  //     try
+  //       if not FDownloadMarkersContext.FManagedByWorkerThread then LContextToFree := FDownloadMarkersContext
+  //       else LContextToFree := nil;
+  //       FDownloadMarkersContext.FOwner := nil;
+  //       FDownloadMarkersContext := nil;
+  //     Finally
+  //       ALMonitorExit(LLock);
+  //     End;
+  //     ALFreeAndNil(LContextToFree);
+  //   end;
+  // end;
+
 {$IF CompilerVersion <= 25} // xe4
 type
   THorzRectAlign = (Center, Left, Right);
@@ -268,7 +457,7 @@ type
   TALPointDType = array [0..1] of Double;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported123}
+  {$IFNDEF ALCompilerVersionSupported130}
     {$MESSAGE WARN 'Check if System.Types.TPointf still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   PALPointD = ^TALPointD;
@@ -344,7 +533,7 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported123}
+  {$IFNDEF ALCompilerVersionSupported130}
     {$MESSAGE WARN 'Check if System.Types.TSizef still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   PALSizeD = ^TALSizeD;
@@ -360,6 +549,9 @@ type
     class operator NotEqual(const Lhs, Rhs: TALSizeD): Boolean;
     class operator Add(const Lhs, Rhs: TALSizeD): TALSizeD;
     class operator Subtract(const Lhs, Rhs: TALSizeD): TALSizeD;
+
+    /// <summary> Zero size having values of (0, 0). </summary>
+    class function Zero: TALSizeD; inline; static;
 
     class operator Implicit(const Size: TALSizeD): TALPointD;
     class operator Implicit(const Point: TALPointD): TALSizeD;
@@ -384,7 +576,7 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported123}
+  {$IFNDEF ALCompilerVersionSupported130}
     {$MESSAGE WARN 'Check if System.Types.TRectf still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   PALRectD = ^TALRectD;
@@ -534,7 +726,7 @@ type
   end;
 
 {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if functions below implemented in System.Types still having the same implementation and adjust the IFDEF'}
 {$ENDIF}
 function ALRectWidth(const Rect: TRect): Integer; inline; overload;
@@ -633,6 +825,7 @@ function ALTryRGBAHexToAlphaColor(const aHexValue: String; out AAlphaColor: TAlp
 function ALRGBAHexToAlphaColor(const aHexValue: String): TAlphaColor;
 function ALTryARGBHexToAlphaColor(const aHexValue: String; out AAlphaColor: TAlphaColor): Boolean;
 function ALARGBHexToAlphaColor(const aHexValue: String): TAlphaColor;
+function ALAlphaColorToRGBHex(const aAlphaColor: TAlphaColor): String;
 function ALCeil(const X: Single; const Epsilon: Single = 0): Integer; overload;
 function ALCeil(const X: Double; const Epsilon: Double = 0): Integer; overload;
 function ALCeil(const X: Extended; const Epsilon: Extended = 0): Integer; overload;
@@ -664,10 +857,10 @@ function ALElapsedTimeSecondsAsDouble: Double;
 function ALElapsedTimeSecondsAsInt64: int64;
 
 function ALIsValidLatlng(const ALatitude, ALongitude: Double): Boolean;
-function ALGetDistanceBetween2Points(const ALatitude1, ALongitude1, ALatitude2, ALongitude2: Double): integer; // in meters
+function ALGetDistanceBetween2Points(const ALatitude1, ALongitude1, ALatitude2, ALongitude2: Double): Double{meters};
 
 {$IFDEF MSWINDOWS}
-{$IFNDEF ALCompilerVersionSupported123}
+{$IFNDEF ALCompilerVersionSupported130}
   {$MESSAGE WARN 'Check if EnumDynamicTimeZoneInformation/SystemTimeToTzSpecificLocalTimeEx/TzSpecificLocalTimeToSystemTimeEx are still not declared in Winapi.Windows and adjust the IFDEF'}
 {$ENDIF}
 {$WARNINGS OFF}
@@ -696,6 +889,8 @@ function ALDateTimeToUnixMs(const aValue: TDateTime): Int64;
 Function ALInc(var x: integer; Count: integer): Integer;
 procedure ALAssignError(Const ASource: TObject; const ADest: Tobject);
 procedure ALMove(const Source; var Dest; Count: NativeInt); inline;
+procedure ALMonitorEnter(const AObject: TObject {$IF defined(DEBUG)}; const ATag: string = ''{$ENDIF}); inline;
+procedure ALMonitorExit(const AObject: TObject {$IF defined(DEBUG)}; const ATag: string = ''{$ENDIF}); inline;
 {$IFDEF MSWINDOWS}
 type
   TALConsoleColor = (
@@ -782,7 +977,145 @@ uses
   system.DateUtils,
   System.UIConsts,
   System.Diagnostics,
+  Alcinoe.Localization,
   Alcinoe.StringUtils;
+
+{***************************************}
+constructor TALPersistentObserver.Create;
+begin
+  inherited create;
+  FUpdateCount := 0;
+  FIsChanged := False;
+  FOnChanged := nil;
+  FSavedStates := nil;
+end;
+
+{***************************************}
+destructor TALPersistentObserver.Destroy;
+begin
+  ALFreeAndNil(FSavedStates);
+  Inherited;
+end;
+
+{*********************************************************************}
+function TALPersistentObserver.CreateSavedState: TALPersistentObserver;
+begin
+  result := TALPersistentObserver(classtype.Create);
+end;
+
+{************************************}
+procedure TALPersistentObserver.Reset;
+begin
+  // Virtual
+end;
+
+{******************************************}
+procedure TALPersistentObserver.BeginUpdate;
+begin
+  Inc(FUpdateCount);
+end;
+
+{****************************************}
+procedure TALPersistentObserver.EndUpdate;
+begin
+  if FUpdateCount > 0 then
+  begin
+    Dec(FUpdateCount);
+    if (FUpdateCount = 0) and (FIsChanged) then
+      try
+        DoChanged;
+      finally
+        FIsChanged := False;
+      end;
+  end;
+end;
+
+{*************************************************}
+procedure TALPersistentObserver.EndUpdateNoChanges;
+begin
+  if FUpdateCount > 0 then
+  begin
+    Dec(FUpdateCount);
+    if (FUpdateCount = 0) and (FIsChanged) then
+      // If execution reaches this point, it means there was no previously unclosed
+      // beginUpdate since FUpdateCount is 0. Therefore, ignoring the doChanged
+      // call here will not affect any prior beginUpdate operations.
+      FIsChanged := False;
+  end;
+end;
+
+{****************************************}
+procedure TALPersistentObserver.SaveState;
+begin
+  if FSavedStates = nil then
+    FSavedStates := TObjectStack<TALPersistentObserver>.Create(True{AOwnsObjects});
+  var LSavedState := CreateSavedState;
+  if LSavedState.classtype <> classtype then
+    Raise Exception.create('The saved state type returned by "CreateSavedState" does not match the current object type');
+  LSavedState.Assign(self);
+  FSavedStates.Push(LSavedState);
+end;
+
+{*******************************************}
+procedure TALPersistentObserver.RestoreState;
+begin
+  if (FSavedStates = nil) or
+     (FSavedStates.Count = 0) then
+    raise Exception.Create('No saved state available');
+  var LSavedState := FSavedStates.extract;
+  try
+    Assign(LSavedState);
+  finally
+    ALFreeAndNil(LSavedState);
+  end;
+end;
+
+{****************************************************}
+procedure TALPersistentObserver.RestoreStateNoChanges;
+begin
+  BeginUpdate;
+  try
+    RestoreState;
+  finally
+    EndUpdateNoChanges;
+  end;
+end;
+
+{****************************************}
+procedure TALPersistentObserver.DoChanged;
+begin
+  if Assigned(OnChanged) then
+    OnChanged(Self);
+end;
+
+{*************************************}
+procedure TALPersistentObserver.Change;
+begin
+  FIsChanged := True;
+  if (FUpdateCount = 0) then
+  begin
+    try
+      DoChanged;
+    finally
+      FIsChanged := False;
+    end;
+  end;
+end;
+
+{************************************************************************************}
+constructor TALTriplet<K,V,E>.Create(const AKey: K; const AValue: V; const AExtra: E);
+begin
+  Key := AKey;
+  Value := AValue;
+  Extra := AExtra;
+end;
+
+{********************************************************************}
+constructor TALNameValuePairA.Create(const AName, AValue: ansiString);
+begin
+  Name := AName;
+  Value := AValue;
+end;
 
 {****************************************}
 constructor TALWorkerThreadRequest.Create(
@@ -1206,6 +1539,22 @@ begin
   ExecuteProc(AProc, nil{AContext}, 0{APriority}, GetPriorityStartingPointExt, AAsync);
 end;
 
+{*********************************************************}
+constructor TALWorkerContext.Create(const AOwner: TObject);
+begin
+  inherited Create;
+  FLock := TObject.Create;
+  FManagedByWorkerThread := True;
+  FOwner := AOwner;
+end;
+
+{**********************************}
+destructor TALWorkerContext.Destroy;
+begin
+  ALFreeAndNil(FLock);
+  inherited
+end;
+
 {**************************}
 procedure TALBitSet32.Clear;
 begin
@@ -1514,20 +1863,26 @@ begin
   Result.Right := Result.Right * Ratio;
 end;
 
-{***********************************************************************************************}
-//Resizes the current rectangle, preserving the current rectangle proportions, to best fit in the
-//bounds rectangle, and returns the scaled rectangle centered in bounds.
-//FitInto implements the following functionality:
-// * If any of the current rectangle dimensions is greater than the corresponding dimension of the bounds
-//   rectangle, then FitInto scales down the current rectangle to fit into bounds. The scaled rectangle is centered in
-//   the bounds rectangle at CenterAt and the obtained scaled and centered rectangle is returned.
-// * If both width and height of the current rectangle dimensions is smaller than the corresponding dimensions of the
-//   bounds rectangle, then FitInto stretches the current rectangle to best fit into bounds. The stretched
-//   rectangle is centered in the bounds rectangle at CenterAt and the obtained stretched and centered rectangle is returned.
-// * If any of the bounds dimensions is zero then FitInto returns the current rectangle and sets Ratio equals to 1.
-//Ratio is the implemented scaling ratio.
-//CenterAt is where we need to center the result in the bounds (ex: center the result on a face instead of the middle of the bounds)
-//if center contain negative value then it's indicate percentage
+{***********}
+/// <summary>
+///   Resizes the current rectangle, preserving its proportions, to best fit into the given bounds,
+///   and returns the scaled rectangle positioned inside the bounds.
+///
+///   Behavior:
+///   - If any dimension of the rectangle is larger than the corresponding dimension of the bounds,
+///     the rectangle is scaled down to fit.
+///   - If both dimensions are smaller, the rectangle is stretched up to best fit.
+///   - If any bound dimension is zero, the original rectangle is returned and Ratio is set to 1.
+///
+///   The scaled or stretched rectangle is centered in the bounds according to <c>CenterAt</c>.
+///   <c>CenterAt</c> is expressed in normalized coordinates [0..1]:
+///     • (0,0) = top-left
+///     • (0.5,0.5) = center
+///     • (1,1) = bottom-right
+///
+///   Example: to center the result on a face located in the upper third of the image, use
+///   <c>CenterAt.Y = 0.33</c>.
+/// </summary>
 function ALRectFitInto(const R: TRectf; const Bounds: TRectf; const CenterAt: TpointF; out Ratio: Single): TRectF;
 begin
 
@@ -1550,8 +1905,7 @@ begin
     Result := TRectF.Create(0, 0, R.Width / Ratio, R.Height / Ratio);
 
     system.types.OffsetRect(Result, -Result.Left, -Result.Top);
-    if (CenterAt.X < 0) or (CenterAt.y < 0) then system.types.OffsetRect(Result, max(0, (((Bounds.Width) / 100) * -CenterAt.x) - (Result.Width / 2)), max(0, (((Bounds.Height) / 100) * -CenterAt.Y) - (Result.height / 2)))
-    else system.types.OffsetRect(Result, max(0, CenterAt.x - (Result.Width / 2)), max(0, CenterAt.y - (Result.height / 2)));
+    system.types.OffsetRect(Result, max(0, (Bounds.Width * CenterAt.x) - (Result.Width / 2)), max(0, (Bounds.Height * CenterAt.Y) - (Result.height / 2)));
     system.types.OffsetRect(Result, -max(0, Result.Right - Bounds.Width), -max(0, Result.bottom - Bounds.height));
     system.types.OffsetRect(Result, Bounds.Left, Bounds.Top);
 
@@ -1600,19 +1954,27 @@ begin
   Result := ALRectFitInto(R, Bounds, Ratio);
 end;
 
-{**************************************************************************************************************}
-//If any dimension of the current rectangle is greater than the corresponding dimension of the Bounds rectangle,
-//then the current rectangle is scaled down to best fit the Bounds rectangle. The obtained rectangle is aligned in Bounds.
-//PlaceInto implements the following behavior:
-// * If the width or height of the current rectangle is greater than the corresponding dimension of Bounds.
-//   Then PlaceInto scales down the current rectangle (preserving the current rectangle proportions – the ratio between the width
-//   and height) to fit in the Bounds rectangle and centers the scaled rectangle in Bounds at CenterAt.
-// * Otherwise, PlaceInto just center the current rectangle in the Bounds rectangle according to CenterAt
-// * PlaceInto returns the current rectangle if any of the Bounds dimensions is zero.
+{***********}
+/// <summary>
+///   Places the current rectangle inside the given bounds, scaling it down if necessary to ensure it fits,
+///   and returns the resulting rectangle.
+///
+///   Behavior:
+///   - If the rectangle’s width or height is larger than the corresponding dimension of <c>Bounds</c>,
+///     the rectangle is scaled down (preserving aspect ratio) to fit inside <c>Bounds</c>.
+///   - Otherwise, the rectangle is not scaled and is simply placed inside <c>Bounds</c>.
+///   - If any bound dimension is zero, the original rectangle is returned and <c>Ratio</c> is set to 1.
+///
+///   The resulting rectangle is aligned within <c>Bounds</c> according to <c>CenterAt</c>.
+///   <c>CenterAt</c> is expressed in normalized coordinates [0..1]:
+///     • (0,0) = top-left
+///     • (0.5,0.5) = center
+///     • (1,1) = bottom-right
+/// </summary>
 function ALRectPlaceInto(
            const R: TRectf;
            const Bounds: TRectf;
-           const CenterAt: TpointF; // << this is used only when we need to fit the result
+           const CenterAt: TpointF;
            out Ratio: Single): TRectF;
 begin
 
@@ -1621,8 +1983,7 @@ begin
 
     Result := R;
     system.types.OffsetRect(Result, -Result.Left, -Result.Top);
-    if (CenterAt.X < 0) or (CenterAt.y < 0) then system.types.OffsetRect(Result, max(0, (((Bounds.Width) / 100) * -CenterAt.x) - (Result.Width / 2)), max(0, (((Bounds.Height) / 100) * -CenterAt.Y) - (Result.height / 2)))
-    else system.types.OffsetRect(Result, max(0, CenterAt.x - (Result.Width / 2)), max(0, CenterAt.y - (Result.height / 2)));
+    system.types.OffsetRect(Result, max(0, (Bounds.Width * CenterAt.x) - (Result.Width / 2)), max(0, (Bounds.Height * CenterAt.Y) - (Result.height / 2)));
     system.types.OffsetRect(Result, -max(0, Result.Right - Bounds.Width), -max(0, Result.bottom - Bounds.height));
     system.types.OffsetRect(Result, Bounds.Left, Bounds.Top);
 
@@ -2023,7 +2384,7 @@ end;
 {*************************************************************}
 function TALPointD.Reflect(const APoint: TALPointD): TALPointD;
 begin
-  Result := Self + APoint * (-2 * Self.DotProduct(APoint));
+  Result := -Self + APoint * (2 * Self.DotProduct(APoint) / APoint.DotProduct(APoint));
 end;
 
 {**************************************************************}
@@ -2657,6 +3018,13 @@ begin
   Result.cy := Trunc(cy);
 end;
 
+{*************************************}
+class function TALSizeD.Zero: TALSizeD;
+begin
+  Result.cx := 0;
+  Result.cy := 0;
+end;
+
 {************************************************************}
 class operator TALSizeD.Implicit(const Size: TSize): TALSizeD;
 begin
@@ -3032,6 +3400,15 @@ begin
     raise Exception.Create('Invalid ARGB hex color format');
 end;
 
+{********************************************************************}
+function ALAlphaColorToRGBHex(const aAlphaColor: TAlphaColor): String;
+begin
+  var R := TAlphaColorRec(aAlphaColor).R;
+  var G := TAlphaColorRec(aAlphaColor).G;
+  var B := TAlphaColorRec(aAlphaColor).B;
+  Result := Format('%.2x%.2x%.2x', [R, G, B]);
+end;
+
 {*******************************************************************}
 function ALCeil(const X: Single; const Epsilon: Single = 0): Integer;
 begin
@@ -3203,14 +3580,14 @@ begin
             (ALongitude >= -180) and (ALongitude <= 180);
 end;
 
-{*************************************************************************************************************************}
-function ALGetDistanceBetween2Points(const ALatitude1, ALongitude1, ALatitude2, ALongitude2: Double): integer; // in meters
+{*******************************************************************************************************************}
+function ALGetDistanceBetween2Points(const ALatitude1, ALongitude1, ALatitude2, ALongitude2: Double): Double{meters};
 begin
-  //http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates
-  var LCosAngle: Double := sin(aLatitude1 * (PI/180)) * sin(alatitude2 * (PI/180)) + cos(aLatitude1 * (PI/180)) * cos(alatitude2 * (PI/180)) *  cos((aLongitude2 * (PI/180)) - (aLongitude1 * (PI/180)));
-  if LCosAngle > 1 then LCosAngle := 1
-  else if LCosAngle < -1 then LCosAngle := -1;
-  result := round(6371 * arccos(LCosAngle) * 1000);
+  // Haversine formula
+  var dLat: Double := (ALatitude2 - ALatitude1) * (PI / 180); // Difference in latitude (radians)
+  var dLon: Double := (ALongitude2 - ALongitude1) * (PI / 180); // Difference in longitude (radians)
+  var a: Double := Sqr(Sin(dLat / 2)) + Cos(ALatitude1 * (PI / 180)) * Cos(ALatitude2 * (PI / 180)) * Sqr(Sin(dLon / 2));
+  Result := 2 * 6371{Earth's mean radius in km} * ArcTan2(Sqrt(a), Sqrt(1 - a)) * 1000; // Distance in meters
 end;
 
 {****************}
@@ -3332,7 +3709,9 @@ begin
                 LSystemTime.wSecond,
                 LSystemTime.wMilliseconds)
   else begin
+    {$IF CompilerVersion < 37.0}
     result := 0; // to hide a warning
+    {$IFEND}
     RaiseLastOsError;
   end;
 end;
@@ -3408,7 +3787,9 @@ begin
                 LLocalTime.wSecond,
                 LLocalTime.wMilliseconds)
   else begin
+    {$IF CompilerVersion < 37.0}
     result := 0; // to hide a warning
+    {$IFEND}
     RaiseLastOsError;
   end;
 end;
@@ -3456,6 +3837,29 @@ end;
 procedure ALMove(const Source; var Dest; Count: NativeInt);
 begin
   Move(Source, Dest, Count);
+end;
+
+{*****************************************************************************************************}
+procedure ALMonitorEnter(const AObject: TObject {$IF defined(DEBUG)}; const ATag: string = ''{$ENDIF});
+begin
+  {$IF defined(DEBUG)}
+  //ALLog('ALMonitorEnter', ATag, TALLogType.verbose);
+  if not TMonitor.Enter(AObject, 1{Timeout}) then begin
+    //ALLog(ATag, 'Lock contention detected', TALLogType.WARN);
+    TMonitor.Enter(AObject);
+  end;
+  {$ELSE}
+  TMonitor.Enter(AObject);
+  {$ENDIF}
+end;
+
+{****************************************************************************************************}
+procedure ALMonitorExit(const AObject: TObject {$IF defined(DEBUG)}; const ATag: string = ''{$ENDIF});
+begin
+  {$IF defined(DEBUG)}
+  //ALLog('ALMonitorExit', ATag, TALLogType.verbose);
+  {$ENDIF}
+  TMonitor.Exit(AObject);
 end;
 
 {******************************************************}
@@ -3723,6 +4127,9 @@ end;
 
 
 initialization
+  {$IF defined(DEBUG)}
+  //ALLog('Alcinoe.Common','initialization');
+  {$ENDIF}
   {$IF defined(MSWindows)}
   ALPerformanceFrequency := -1;
   {$ENDIF}
@@ -3732,5 +4139,8 @@ initialization
 finalization
   ALFreeAndNil(_ALLogHistory);
   ALFreeAndNil(_ALLogQueue);
+  {$IF defined(DEBUG)}
+  //ALLog('Alcinoe.Common','finalization');
+  {$ENDIF}
 
 end.
