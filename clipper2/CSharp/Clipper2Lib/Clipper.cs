@@ -1,6 +1,6 @@
 ﻿/*******************************************************************************
 * Author    :  Angus Johnson                                                   *
-* Date      :  5 March 2025                                                    *
+* Date      :  14 December 2025                                                *
 * Website   :  https://www.angusj.com                                          *
 * Copyright :  Angus Johnson 2010-2025                                         *
 * Purpose   :  This module contains simple functions that will likely cover    *
@@ -16,7 +16,11 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
+#if USINGZ
+namespace Clipper2ZLib
+#else
 namespace Clipper2Lib
+#endif
 {
 
   // PRE-COMPILER CONDITIONAL ...
@@ -1233,6 +1237,30 @@ namespace Clipper2Lib
     {
       Console.WriteLine("Polytree Root");
       foreach (PolyPathD child in polytree) { ShowPolyPathStructure(child, 1); }
+    }
+
+    public static TriangulateResult Triangulate(Paths64 pp, out Paths64 solution, bool useDelaunay = true)
+    {
+      Delaunay d = new Delaunay(useDelaunay);
+      return d.Execute(pp, out solution);
+    }
+
+    public static TriangulateResult Triangulate(PathsD pp, int decPlaces, out PathsD solution, bool useDelaunay = true)
+    {
+      double scale;
+      if (decPlaces <= 0) scale = 1.0;
+      else if (decPlaces > 8) scale = Math.Pow(10.0, 8.0);
+      else scale = Math.Pow(10.0, decPlaces);
+
+      Paths64 pp64 = Clipper.ScalePaths64(pp, scale);
+
+      Delaunay d = new Delaunay(useDelaunay);
+      TriangulateResult result = d.Execute(pp64, out Paths64 sol64);
+      if (result == TriangulateResult.success)
+        solution = Clipper.ScalePathsD(sol64, 1.0 / scale);
+      else
+        solution = new PathsD();
+      return result;
     }
 
   } // Clipper

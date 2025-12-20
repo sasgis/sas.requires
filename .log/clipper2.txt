@@ -1,3 +1,299 @@
+commit 21ebba05db8894f0c7217ad35ea518080f324946
+Author: angusj <angus@angusj.com>
+Date:   2025-12-20 08:37:45 +1000
+
+    clipper.export.h: added exported Triangulate functions
+    plus significant update to DLL test applications
+
+commit f39457d9b795beb936ca0c99c123dfaca5fb5f74
+Author: angusj <angus@angusj.com>
+Date:   2025-12-17 21:39:11 +1000
+
+    Nuget tweaks for CI testing (C#)
+
+commit 4a50900c1f8b25f614a7bed9d68da5cb0824d97f
+Author: angusj <angus@angusj.com>
+Date:   2025-12-17 21:28:37 +1000
+
+    Removed broken project reference in RectClipDemo (C#)
+
+commit 4d363dcb51c193c2f1883440962024b044f11953
+Author: angusj <angus@angusj.com>
+Date:   2025-12-17 21:22:35 +1000
+
+    Minor tweaks to C# Nuget
+
+commit 5e3bb1bec29221ffcaa714c1c57b4662923f3049
+Merge: fbc392c 4e74c93
+Author: angusj <angus@angusj.com>
+Date:   2025-12-17 21:05:33 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git
+
+commit fbc392c08d2cd1164e8874415e94f6d011999291
+Author: angusj <angus@angusj.com>
+Date:   2025-12-17 21:05:14 +1000
+
+    Release ver. 2.0.0 (with new triangulation module)
+    Includes additional C# folder rearrangement
+
+commit 4e74c9375bb7acc0fee622fd880674eb6c1cf03f
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2025-12-17 07:41:43 +1000
+
+    Update README.md
+
+commit acfc6f484360d332d5195f2e08691a16ce1c5821
+Author: angusj <angus@angusj.com>
+Date:   2025-12-16 22:27:51 +1000
+
+    Fixed bug introduced by removing Color module (C# only)
+
+commit 984688375035a6d3aa7a050b6db094d9beec1ffb
+Author: angusj <angus@angusj.com>
+Date:   2025-12-16 22:14:08 +1000
+
+    Removed unused Colors module (c#)
+
+commit f2858417acb276af034aa2b4d8c27f2c50610c3e
+Author: angusj <angus@angusj.com>
+Date:   2025-12-16 22:08:28 +1000
+
+    Fixed renaming of benchmark file (C# only)
+
+commit 19d4f1e6828ca62c19d3a591063a63418ce76654
+Merge: ab872b2 9040c3a
+Author: angusj <angus@angusj.com>
+Date:   2025-12-16 22:03:28 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git
+
+commit ab872b2899c3cce1dcb3816c92003f48be233475
+Author: angusj <angus@angusj.com>
+Date:   2025-12-16 22:03:02 +1000
+
+    Significant C# folder rearrangement
+
+commit 9040c3ad6864952dd27c949eccb82366b20a0212
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2025-12-16 14:34:56 +1000
+
+    Update README.md
+
+commit fa7add77364eb3877dd1b8caf9b3cbd5486347f6
+Merge: a0c8b61 578ca4d
+Author: angusj <angus@angusj.com>
+Date:   2025-12-16 14:09:55 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git
+
+commit a0c8b61d144e8cae75b89141e001e1e2fd1a9289
+Author: angusj <angus@angusj.com>
+Date:   2025-12-16 14:09:01 +1000
+
+    Significant rewrite of most sample apps
+
+commit 578ca4de97093e47474f4b5bf3abc9d0e9d967e9
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2025-12-13 22:05:33 +1000
+
+    Update README.md
+
+commit 0a9f445f0562695f516cd6efd1567d824b25c93d
+Merge: f7972b5 1a05520
+Author: angusj <angus@angusj.com>
+Date:   2025-12-13 22:03:42 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git
+
+commit f7972b5222e8b44cc676206f67e88363fa731e88
+Author: angusj <angus@angusj.com>
+Date:   2025-12-13 22:03:17 +1000
+
+    Minor tweak to Delphi triangulation demo
+
+commit 1a05520ea91ebb7f789804ba731e948ff99e2ca7
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2025-12-13 21:59:29 +1000
+
+    Update README.md
+
+commit 01bacc053aa335478b713ad988e7acbb5ac6a0c4
+Author: angusj <angus@angusj.com>
+Date:   2025-12-13 21:32:14 +1000
+
+    Removed Windows specific code in triangulation.cpp
+
+commit 60696ed4093d0cc9a587ae4ddfdedc92d2be4ae5
+Merge: b502a4c a12271a
+Author: angusj <angus@angusj.com>
+Date:   2025-12-13 21:26:22 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git
+
+commit b502a4c2607ba0e6b43dbb49bc8ffeb0ee583889
+Author: angusj <angus@angusj.com>
+Date:   2025-12-13 21:25:53 +1000
+
+    Updated Triangulation() to permit reversed path orientation (#1045).
+
+commit a12271a28a2fc1d81a6601bc9697a8d84f569a9a
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2025-12-12 22:09:47 +1000
+
+    Update README.md
+
+commit ed0881b10453b4538d6e74bcd63451b239835c4a
+Author: angusj <angus@angusj.com>
+Date:   2025-12-12 20:01:44 +1000
+
+    Wrong property case in clipper.core.cs (#1041)
+
+commit 9a872541fb5fb898133fe35a7bb68e280125093a
+Author: angusj <angus@angusj.com>
+Date:   2025-12-12 19:42:08 +1000
+
+    Added Triangulation module to CSharp code
+    Added triangulation CS demo
+    Improved Path<>.ToString methods (#1042)
+
+commit c535478fcede0a29e5f7a7c856ff53b8e55dd1b3
+Author: angusj <angus@angusj.com>
+Date:   2025-12-10 09:16:57 +1000
+
+    Fixed additional bugs in clipper.triangulation.cpp
+
+commit 150bbf9421d80f94bebe9844d90d31a797986f3c
+Author: angusj <angus@angusj.com>
+Date:   2025-12-10 09:09:11 +1000
+
+    Fixed bug in clipper.triangulation.cpp
+
+commit 6853e9479a37f1e236199707856ebafd685672de
+Author: angusj <angus@angusj.com>
+Date:   2025-12-10 09:05:07 +1000
+
+    Added C++ constrained delaunay triangulation module
+
+commit 386e77a06cb6b23a60e5308a12f29040c1154410
+Author: angusj <angus@angusj.com>
+Date:   2025-12-01 09:54:15 +1000
+
+    Added Delaunay triangulation (currently Delphi only)
+
+commit 9a869bad3825d0cd97430dabed047870abdf957a
+Merge: 925833b 7dd02fa
+Author: angusj <angus@angusj.com>
+Date:   2025-11-05 17:19:23 +1000
+
+    Merge branch 'main' of https://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@github.com/AngusJohnson/Clipper2.git
+
+commit 925833b0d28e54cf8e2457bdf1f2be6fe482bd8a
+Author: angusj <angus@angusj.com>
+Date:   2025-11-05 17:17:52 +1000
+
+    Clipper.Engine - fixed bug in ClipperBase.CheckSplitOwner. (#1029)
+
+commit 7dd02fa367e2101de7b5f9cefad299a9613bc60b
+Author: Marius Kintel <marius@kintel.net>
+Date:   2025-11-03 18:50:35 -0500
+
+    Add crash test (#1030)
+
+commit 6a4f414d9d9bdd95b6f1fc47c8aaf8bc9682b9b8
+Author: Angus Johnson <AngusJohnson@users.noreply.github.com>
+Date:   2025-11-04 09:49:03 +1000
+
+    Update README.md
+
+commit 618c05cb1e610adedda52889d08903a753c5bf95
+Author: angusj <angus@angusj.com>
+Date:   2025-10-12 08:24:36 +1000
+
+    clipper.core.h - updated documentation and minor bugfix
+
+commit 879e2e85041d2c29e0cbfa90d3ee0c5a87b3ddd8
+Author: angusj <angus@angusj.com>
+Date:   2025-10-11 21:24:31 +1000
+
+    Clipper.Core - renamed GetSegmentIntersectPt to GetLineIntersectPt
+
+commit c5fc0b0637da20321aa8c15df8a705772a065d76
+Author: angusj <angus@angusj.com>
+Date:   2025-10-11 12:38:44 +1000
+
+    Clipper.Core -
+      * fixed a (Delphi only) bug in CrossProductSign function.
+      * fixed a buggy (but currently unused) SegmentsIntersect function.
+
+commit 0846cb86dec54c1ce65495a3cd47e2f253215b2b
+Author: angusj <angus@angusj.com>
+Date:   2025-10-10 08:36:48 +1000
+
+    Clipper.Core.pas - fixed a bug in MultiplyUInt64 function
+
+commit 9831776d1ff315d20029acfe5b9a98f7b19f684f
+Author: SebastianDirks <68428517+SebastianDirks@users.noreply.github.com>
+Date:   2025-10-09 04:08:41 +0200
+
+    C# performance: further reduce allocations by pooling OutPt, OutRec, reusing Active and tracking OutPt count in outRec (#1024)
+    
+    * CSharp Performance: when reusing clipper objects, currently clipper sets the internal lists capacity, even if the capacity already sufficient. This causes C# to drop the currently allocated array and create a new, smaller one.
+    This changes check if the capacity is sufficient before setting it to reduces allocations.
+    
+    * Implement object pooling for vertex objects. This reduces allocations and improves performance if a clipper instance or Reusable data container is reused. To minimize impact on main clipping module, the pooling is implemented in a separate class VertexPoolList : PooledList<Vertex>. This collection is a List that pools objects added to it for reuse. Indexing, growing and enumeration implementation is identical to "System.Collections.Generic.List{T}. The pooled list reuses allocated reference objects. Operations are limited to read, add and clear.
+    
+    * Adding conditional compilation for C# Clipper2lib to change the namespace from Clipper2Lib to Clipper2ZLib when USINGZ. This prepares to allow both variants to be packaged and deployed via Nuget.
+    
+    * Reduced allocations by:
+    - tracking the number of OutPt per OutRec to allocate Path64 with correct capacity
+    - reusing OutPt objects by using new derived class OutPtPoolList
+    - reusing HorzJoin objects by using new derived class HorzJoinPoolList
+    - rounding up requested capacity to next power of 2 for all classes derived from abstract PooledList<T>
+    - eliminating boxing for PooledList<T>.GetEnumerator()
+    - reusing Active objects by putting them on a free stack
+
+commit 53915c050057855552e8e5736dfeef3f76e9a3d0
+Author: SebastianDirks <68428517+SebastianDirks@users.noreply.github.com>
+Date:   2025-10-09 01:45:28 +0200
+
+    Adding conditional compilation for C# Clipper2lib to change the namespace from Clipper2Lib to Clipper2ZLib when USINGZ. This prepares to allow both variants to be packaged and deployed via Nuget. (#1023)
+
+commit 945b8c2f18e81f0c98b3c71e126c469e1fed2738
+Author: angusj <angus@angusj.com>
+Date:   2025-10-07 16:12:54 +1000
+
+    Fixed CI code
+
+commit 0b0bf52db441ca1e47c91d8f132deca48a6e5d22
+Author: angusj <angus@angusj.com>
+Date:   2025-10-07 16:09:56 +1000
+
+    Clipper.Core - fixed residual issues with CrossProduct calcs (#1009)
+
+commit 5de1066860102f2f817bc15561e8f204da09dfb2
+Author: AmosEgel <amos.egel@gmail.com>
+Date:   2025-10-01 15:25:17 +0200
+
+    fix missing VertexPoolList issue for Clipper2LibZ C# project (#1018) (#1019)
+
+commit 97411032113572f620b513b9c23a455e7261583d
+Author: SebastianDirks <68428517+SebastianDirks@users.noreply.github.com>
+Date:   2025-09-18 09:33:04 +0200
+
+    C# performance: pool and reuse vertex objects to reduce allocations when using Clear() (#1010)
+    
+    * CSharp Performance: when reusing clipper objects, currently clipper sets the internal lists capacity, even if the capacity already sufficient. This causes C# to drop the currently allocated array and create a new, smaller one.
+    This changes check if the capacity is sufficient before setting it to reduces allocations.
+    
+    * Implement object pooling for vertex objects. This reduces allocations and improves performance if a clipper instance or Reusable data container is reused. To minimize impact on main clipping module, the pooling is implemented in a separate class VertexPoolList : PooledList<Vertex>. This collection is a List that pools objects added to it for reuse. Indexing, growing and enumeration implementation is identical to "System.Collections.Generic.List{T}. The pooled list reuses allocated reference objects. Operations are limited to read, add and clear.
+
+commit f1d49160ef4439d95dcaed19056e6f383df2da76
+Author: angusj <angus@angusj.com>
+Date:   2025-08-09 10:11:16 +1000
+
+    Minor tweak to CMakeLists.txt (#995)
+
 commit ee705be33ad9560861e859c50328a38e136b1d57
 Author: angusj <angus@angusj.com>
 Date:   2025-06-27 11:32:40 +1000

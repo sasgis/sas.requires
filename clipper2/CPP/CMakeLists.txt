@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(Clipper2 VERSION 1.5.4 LANGUAGES C CXX)
+project(Clipper2 VERSION 2.0.1 LANGUAGES C CXX)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if(NOT DEFINED CMAKE_CXX_STANDARD OR CMAKE_CXX_STANDARD LESS 17)
@@ -9,9 +9,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+##########################################################################
+##########################################################################
+
 # CLIPPER2_HI_PRECISION: See GetIntersectPoint() in clipper.core.h 
 option(CLIPPER2_HI_PRECISION "Caution: enabling this will compromise performance" OFF)
-
 option(CLIPPER2_UTILS "Build utilities" ON)
 option(CLIPPER2_EXAMPLES "Build examples" ON)
 option(CLIPPER2_TESTS "Build tests" ON)
@@ -19,10 +21,13 @@ option(USE_EXTERNAL_GTEST "Use system-wide installed GoogleTest" OFF)
 option(USE_EXTERNAL_GBENCHMARK "Use the googlebenchmark" OFF)
 option(BUILD_SHARED_LIBS "Build shared libs" OFF)
 set(CLIPPER2_USINGZ "ON" CACHE STRING "Build Clipper2Z, either \"ON\" or \"OFF\" or \"ONLY\"")
-
 # CLIPPER2_MAX_DECIMAL_PRECISION: maximum decimal precision when scaling PathsD to Paths64.
 # Caution: excessive scaling will increase the likelihood of integer overflow errors.
+# See https://www.angusj.com/clipper2/Docs/Overview.htm#coord_range for more info.
 set(CLIPPER2_MAX_DECIMAL_PRECISION 8 CACHE STRING "Maximum decimal precision range")
+
+##########################################################################
+##########################################################################
 
 
 if (APPLE)
@@ -43,12 +48,14 @@ set(CLIPPER2_INC
   ${CLIPPER2_INC_FOLDER}/clipper.minkowski.h
   ${CLIPPER2_INC_FOLDER}/clipper.offset.h
   ${CLIPPER2_INC_FOLDER}/clipper.rectclip.h
+  ${CLIPPER2_INC_FOLDER}/clipper.triangulation.h
 )
 
 set(CLIPPER2_SRC
   Clipper2Lib/src/clipper.engine.cpp
   Clipper2Lib/src/clipper.offset.cpp
   Clipper2Lib/src/clipper.rectclip.cpp
+  Clipper2Lib/src/clipper.triangulation.cpp
 )
 
 set(CLIPPER2_LIBS "") # one or both of Clipper2/Clipper2Z
@@ -156,12 +163,12 @@ if(CLIPPER2_UTILS OR CLIPPER2_TESTS OR CLIPPER2_EXAMPLES)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utils>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/clipper2/Utils>
     )
-    install(TARGETS ${lib}
-            EXPORT  Clipper2-targets
-            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/clipper2/Utils
-            ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            RUNTIME       DESTINATION ${CMAKE_INSTALL_BINDIR})
+#    install(TARGETS ${lib}
+#            EXPORT  Clipper2-targets
+#            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/clipper2/Utils
+#            ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#            LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#            RUNTIME       DESTINATION ${CMAKE_INSTALL_BINDIR})
   endforeach()
 
 endif()
@@ -183,6 +190,7 @@ if(CLIPPER2_EXAMPLES)
       RectClipping
       SimpleClipping
       VariableOffset
+      Triangulation
     )
 
     foreach(ex ${EXAMPLES})
@@ -191,6 +199,8 @@ if(CLIPPER2_EXAMPLES)
     endforeach()
 
     file(COPY Examples/Inflate/rabbit.svg DESTINATION ${CMAKE_BINARY_DIR} FILE_PERMISSIONS OWNER_READ GROUP_READ WORLD_READ )
+    file(COPY Examples/Triangulation/TriSamples DESTINATION ${CMAKE_BINARY_DIR} FILE_PERMISSIONS OWNER_READ GROUP_READ WORLD_READ )
+
     list(APPEND ALL_EXAMPLES ${EXAMPLES})
   endif()
 
@@ -219,19 +229,20 @@ if(CLIPPER2_TESTS)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
   endif()
   set(BUILD_GMOCK OFF)
-if(USE_EXTERNAL_GTEST)
-  find_package(GTest REQUIRED)
-else()
-  include(GoogleTest)
-  if(NOT EXISTS ${PROJECT_SOURCE_DIR}/Tests/googletest)
-    execute_process(
-      COMMAND "git" "clone" "https://github.com/google/googletest"
-      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Tests
-    )
+  
+  if(USE_EXTERNAL_GTEST)
+    find_package(GTest REQUIRED)
+  else()
+    include(GoogleTest)
+    if(NOT EXISTS ${PROJECT_SOURCE_DIR}/Tests/googletest)
+      execute_process(
+        COMMAND "git" "clone" "https://github.com/google/googletest"
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Tests
+      )
+    endif()
+    add_subdirectory("${PROJECT_SOURCE_DIR}/Tests/googletest/")
+    set_target_properties(gtest gtest_main PROPERTIES FOLDER GTest)
   endif()
-  add_subdirectory("${PROJECT_SOURCE_DIR}/Tests/googletest/")
-  set_target_properties(gtest gtest_main PROPERTIES FOLDER GTest)
-endif()
 
   if(TARGET gtest AND TARGET gtest_main)
     set(gtest_libs gtest gtest_main)
