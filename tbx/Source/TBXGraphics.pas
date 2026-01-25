@@ -788,11 +788,11 @@ begin
   Blend := Flags and PBR_OP_MASK = PBR_BLEND;
   if Blend then SetLength(Buffer, ClipW) else SetLength(Buffer, 0);
 
-  DstLine := PRGBQuadArray(Integer(DstData.Bits) + (DstClip.Left + DstClip.Top * DstData.RowStride) shl 2);
+  DstLine := PRGBQuadArray(IntPtr(DstData.Bits) + (DstClip.Left + DstClip.Top * DstData.RowStride) shl 2);
   for J := 0 to ClipH - 1 do
   begin
     ClusterY := MapY[J];
-    SrcLine := PRGBQuadArray(Integer(SrcData.Bits) + (SrcRect.Left + SrcRect.Top * SrcData.RowStride) shl 2);
+    SrcLine := PRGBQuadArray(IntPtr(SrcData.Bits) + (SrcRect.Left + SrcRect.Top * SrcData.RowStride) shl 2);
     for I := 0 to SrcW - 1 do
     begin
       Ca := 0; Cr := 0; Cg := 0; Cb := 0;
@@ -963,8 +963,8 @@ begin
   Blend := Flags and PBR_BLEND = PBR_BLEND;
   if Blend then SetLength(Buffer, ClipW) else SetLength(Buffer, 0);
 
-  DstLine := PRGBQuadArray(Integer(DstData.Bits) + (DstClip.Left + DstClip.Top * DstData.RowStride) shl 2);
-  SrcLine := PRGBQuadArray(Integer(SrcData.Bits) + (SrcRect.Top * SrcData.RowStride) shl 2);
+  DstLine := PRGBQuadArray(IntPtr(DstData.Bits) + (DstClip.Left + DstClip.Top * DstData.RowStride) shl 2);
+  SrcLine := PRGBQuadArray(IntPtr(SrcData.Bits) + (SrcRect.Top * SrcData.RowStride) shl 2);
 
   for Y := 0 to ClipH - 1 do
   begin
@@ -974,7 +974,7 @@ begin
     begin
       if MapVert <> nil then
       begin
-        SrcLine := PRGBQuadArray(Integer(SrcData.Bits) + (MapVert[Y] * SrcData.RowStride shl 2));
+        SrcLine := PRGBQuadArray(IntPtr(SrcData.Bits) + (MapVert[Y] * SrcData.RowStride shl 2));
         WY := BiasVert[Y];
         WY2 := 256 - WY;
       end
@@ -1130,7 +1130,7 @@ begin
     end
     else { not Interpolate }
     begin
-      if MapVert <> nil then SrcLine := PRGBQuadArray(Integer(SrcData.Bits) + (MapVert[Y] * SrcData.RowStride shl 2));
+      if MapVert <> nil then SrcLine := PRGBQuadArray(IntPtr(SrcData.Bits) + (MapVert[Y] * SrcData.RowStride shl 2));
       if MapHorz <> nil then for X := 0 to ClipW - 1 do Dst[X] := SrcLine[MapHorz[X]]
       else MoveLongWord(SrcLine[SrcRect.Left], Dst[0], ClipH);
     end;

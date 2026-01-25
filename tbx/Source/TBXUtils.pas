@@ -1679,7 +1679,7 @@ begin
   if FStyle <> ssLayered then Exit;
   Assert(Assigned(UpdateLayeredWindow));
 
-  SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or $00080000{WS_EX_LAYERED});
+  SetWindowLongPtr(Handle, GWL_EXSTYLE, GetWindowLongPtr(Handle, GWL_EXSTYLE) or WS_EX_LAYERED);
   DstDC := GetDC(0);
   try
     SrcPos := Point(0, 0);

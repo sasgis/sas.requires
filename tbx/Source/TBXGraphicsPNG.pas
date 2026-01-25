@@ -750,7 +750,7 @@ begin
     end;
 
     ZLibStatus := DecodeBuffer(FStreamRec, FCurrentSource, LocalBuffer,
-      FIDATSize - (Integer(FCurrentSource) - Integer(FRawBuffer)), PendingOutput);
+      FIDATSize - (IntPtr(FCurrentSource) - IntPtr(FRawBuffer)), PendingOutput);
 
     if ZLibStatus = Z_STREAM_END then
     begin
@@ -762,7 +762,7 @@ begin
     if ZLibStatus <> Z_OK then
       raise EStreamError.CreateRes(@SCompressionError);
 
-    PendingOutput := BytesPerRow - (Integer(LocalBuffer) - Integer(RowBuffer));
+    PendingOutput := BytesPerRow - (IntPtr(LocalBuffer) - IntPtr(RowBuffer));
   until PendingOutput = 0;
 end;
 
