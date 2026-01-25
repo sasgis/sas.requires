@@ -767,7 +767,7 @@ type
   end;
 
   { TCustomMap }
-  { An ancestor for bitmaps and similar 2D distributions wich have width and
+  { An ancestor for bitmaps and similar 2D distributions which have width and
     height properties }
   TCustomMap = class(TThreadPersistent)
   protected
@@ -946,9 +946,12 @@ type
     procedure SetPixelXS(X, Y: TFixed; Value: TColor32);
     procedure SetPixelXW(X, Y: TFixed; Value: TColor32);
   public
-    constructor Create(ABackendClass: TCustomBackendClass); reintroduce; overload; virtual;
-    constructor Create; reintroduce; overload; virtual;
-    constructor Create(Width, Height: Integer); reintroduce; overload; virtual;
+    // Create with specified backend
+    constructor Create(ABackendClass: TCustomBackendClass); overload; virtual;
+    // Create with platform default backend
+    constructor Create; overload; override;
+    // Create with platform default backend, and allocate bitmap of specified size
+    constructor Create(Width, Height: Integer); overload; virtual;
     destructor Destroy; override;
 
     class function GetPlatformBackendClass: TCustomBackendClass; virtual;
@@ -1304,7 +1307,7 @@ function GeneralRegistry: TFunctionRegistry;
 resourcestring
   RCStrUnmatchedReferenceCounting = 'Unmatched reference counting.';
   RCStrCannotSetSize = 'Can''t set size from ''%s''';
-  RCStrInpropriateBackend = 'Inappropriate Backend';
+  RCStrInappropriateBackend = 'Inappropriate Backend';
 
 implementation
 
@@ -2931,7 +2934,7 @@ end;
 
 constructor TCustomMap.Create(Width, Height: Integer);
 begin
-  inherited Create;
+  Create;
   SetSize(Width, Height);
 end;
 
@@ -3042,6 +3045,12 @@ end;
 constructor TCustomBitmap32.Create;
 begin
   Create(GetPlatformBackendClass);
+end;
+
+constructor TCustomBitmap32.Create(Width, Height: Integer);
+begin
+  Create;
+  SetSize(Width, Height);
 end;
 
 destructor TCustomBitmap32.Destroy;
@@ -3172,8 +3181,8 @@ end;
 
 procedure TCustomBitmap32.ChangeSize(var Width, Height: Integer; NewWidth, NewHeight: Integer);
 begin
-  if (Int64(Width) * Int64(Height) * SizeOf(DWORD) > MaxInt) then
-    raise EOutOfResources.CreateFmt('Unsupported bitmap size: %d x %d x 4 = %.8X', [Width, Height, Int64(Width) * Int64(Height) * SizeOf(DWORD)]);
+  if (Int64(NewWidth) * Int64(NewHeight) * SizeOf(DWORD) > MaxInt) then
+    raise EOutOfResources.CreateFmt('Unsupported bitmap size: %d x %d x 4 = $%.8X bytes', [NewWidth, NewHeight, Int64(NewWidth) * Int64(NewHeight) * SizeOf(DWORD)]);
   FBackend.ChangeSize(Width, Height, NewWidth, NewHeight);
 end;
 
@@ -3272,12 +3281,6 @@ begin
   Dst.ResamplerClassName := ResamplerClassName;
   if (Dst.Resampler <> nil) and (Resampler <> nil) then
     Dst.Resampler.Assign(Resampler);
-end;
-
-constructor TCustomBitmap32.Create(Width, Height: Integer);
-begin
-  Create;
-  SetSize(Width, Height);
 end;
 
 {$IFDEF BITS_GETTER}

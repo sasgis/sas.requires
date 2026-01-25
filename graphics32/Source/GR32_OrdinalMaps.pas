@@ -394,13 +394,17 @@ procedure TByteMap.Downsample(Dest: TByteMap; Factor: Byte);
   begin
     // clone destination and downsample inplace
     Temp := TByteMap.Create;
-    Temp.Assign(Self);
-    Temp.Downsample(Factor);
+    try
+      Temp.Assign(Self);
+      Temp.Downsample(Factor);
 
-    // copy downsampled result
-    Dest.SetSize(Width div Factor, Height div Factor);
-    for Y := 0 to Dest.Height - 1 do
-      Move(Temp.Scanline[Y]^, Dest.Scanline[Y]^, Dest.Width);
+      // copy downsampled result
+      Dest.SetSize(Width div Factor, Height div Factor);
+      for Y := 0 to Dest.Height - 1 do
+        Move(Temp.Scanline[Y]^, Dest.Scanline[Y]^, Dest.Width);
+    finally
+      Temp.Free;
+    end;
   end;
 
 begin
@@ -417,12 +421,14 @@ begin
         Dest.SetSize(Width div 2, Height div 2);
         DownsampleByteMap2x(Self, Dest);
       end;
+
     3:
       begin
         // downsample directly
         Dest.SetSize(Width div 3, Height div 3);
         DownsampleByteMap3x(Self, Dest);
       end;
+
     4:
       begin
         // downsample directly
@@ -687,33 +693,50 @@ end;
 
 procedure TByteMap.Rotate180(Dst: TByteMap);
 var
-  Src: PByteArray;
+  Count: NativeInt;
   S, D: PByte;
-  X, Y: Integer;
   T: Byte;
 begin
+  // Validate inputs
+  if (FBits = nil) or (Width = 0) or (Height = 0) then
+    Exit;
+
+  // Total number of pixels (bytes)
+  Count := Width * Height;
+  if (Count <= 1) then
+    Exit; // nothing to do for 0 or 1 pixels
+
   if (Dst = nil) or (Dst = Self) then
   begin
-    for Y := 0 to FHeight - 1 do
-    begin
-      Src := Scanline[Y];
-      for X := 0 to (FWidth div 2) - 1 do
-      begin
-        T := Src^[X];
-        Src^[X] := Src^[Width - 1 - X];
-        Src^[Width - 1 - X] := T;
-      end;
-    end;
-  end
-  else
-  begin
+    // Set pointers to the first and last byte and swap inwards
     S := PByte(FBits);
-    D := PByte(@Dst.Bits[FHeight * FWidth - 1]);
-    for X := 0 to FHeight * FWidth - 1 do
+    D := S + Count-1;
+
+    // Swap until pointers meet or cross
+    while (S < D) do
+    begin
+      T := S^;
+      S^ := D^;
+      D^ := T;
+
+      Inc(S); // move forward one byte
+      Dec(D); // move backward one byte
+    end;
+
+  end else
+  begin
+    Dst.SetSize(Width, Height);
+
+    S := PByte(FBits);
+    D := PByte(Dst.Bits) + Count-1;
+
+    while (Count > 0) do
     begin
       D^ := S^;
-      Dec(D);
+
       Inc(S);
+      Dec(D);
+      Dec(Count);
     end;
   end;
 end;

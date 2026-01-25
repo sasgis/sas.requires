@@ -1,3 +1,181 @@
+commit 484e44415a48f10fd53c6065c294dad944c04eaf
+Merge: d5df06aa dc2b11d4
+Author: zed <starmen@tut.by>
+Date:   2026-01-25 17:56:59 +0300
+
+    Merge branch 'master' into sasgis
+
+commit dc2b11d47fa34e5af6d044b119b9aae9b12db5a7
+Merge: 7c206caf 1d1c9bd0
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-23 21:35:14 +0100
+
+    Merge branch 'BugFixCatchup'
+
+commit 7c206caf1e4fd0cc23020acbb18365586b2b9e31
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-23 21:34:56 +0100
+
+    Cleanup; Unused vars.
+
+commit 2dac0ba5c6b3cea7ba03a2cbed2bb003c2c21786
+Merge: 00374b9d 5424bf28
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-23 21:27:44 +0100
+
+    Merge branch 'TByteMap.Rotate180'
+
+commit 5424bf287b6c31cf8406102c5b82f3adcac317fb
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-23 21:25:19 +0100
+
+    Inplace TByteMap.Rotate180 rewritten to actually rotate 180 degrees.
+    
+    Fixes #388
+    Added OrdinalMaps unit test.
+
+commit 1d1c9bd04a2e386204139a8fe024cd1ef18dc8c8
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-23 03:43:51 +0100
+
+    Fix: Typos
+
+commit 165aa2d70ff01ceccdd53893dd4cb59c1cedb7bc
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-22 11:57:36 +0100
+
+    Fix: Incorrect bit shift in ColorExclusion blend function (Pascal version)
+
+commit 5fe2930faa3dc5038eb18ff2a5de4fdd40d36424
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-22 11:40:32 +0100
+
+    Fix: Off-by-one causing buffer overflow in CheckFileSignatureComposite (deprecated function)
+
+commit 7a7df71135926b56426b5e9f6b35765d02abdf8a
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-22 11:37:01 +0100
+
+    Fix: TComplex.SinH implementation was just a copy of TComplex.CosH
+    
+    This bug indirectly affected all the other TComplex trigonometric functions.
+
+commit 17e50eb010cfc540bb8b26b8a952aad2ac21826e
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-22 11:28:28 +0100
+
+    Fix: Temporary bytemap was leaked in TByteMap.Downsample
+
+commit 52970e4894f59b0b3fe741c738baa95b752a4d24
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-22 11:03:51 +0100
+
+    Fix: TMMFBackend.CreateFileMapping
+    
+    - Incorrect use of INVALID_HANDLE_VALUE for file handle.
+    - Failure to set MapFileHandle when old file was closed.
+    - Size larger than 2^32 wasn't handled.
+    - File wasn't closed if file mapping failed.
+    - Mapping handle was leaked if file mapping was in page file.
+
+commit b5dc2c7608345f684dd25d7519e321c05ee5ffd5
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-22 10:41:40 +0100
+
+    Fix: Size check in TCustomBitmap32.ChangeSize validated old size instead of new
+
+commit 00374b9d50901aaf6ba12fb6e18bbaf55dc349f2
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-11-02 18:50:48 +0100
+
+    WaterEffect example realism and performance improvements
+    
+    - Replaced Reflect() with Mirror() for proper wave reflection.
+    - Fixed reflection not being performed on right and lower edges due to BufferOversize.
+    - Improved wave propagation algorithm. Less square, more round.
+    - Initial water drop distortion amplitude is now parabolic.
+    - Water drop calculation now takes advantage of circle symmetry.
+    - Improved and then disabled color dispersion.
+    - Various minor bug fixes.
+
+commit 02d539512cb697e7f1b5aa9051c26638a5f97c51
+Merge: a2db7643 e43e5a61
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-11-02 00:27:29 +0100
+
+    Merge branch 'WaterEffect'
+
+commit e43e5a61b2b6e16731f133c99ac46421ae83ce28
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-11-01 22:52:32 +0100
+
+    Added WaterEffect example
+
+commit a2db76432c74d16dbf426bf81c8bd419a2965577
+Merge: 88cdeadf 976f06bf
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-11-01 17:47:36 +0100
+
+    Merge branch 'PaintBoxDesignTimeDraw'
+
+commit 976f06bfde294fedcfc14c85827c347c7cad64ba
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-11-01 16:49:07 +0100
+
+    Paint a stippled frame around TPaintBox32 at design-time to make it more visible.
+    
+    Fixes #384
+
+commit 88cdeadf28ffd44d381727cfd0d8e0ae088b059c
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-10-28 18:13:43 +0100
+
+    Fix for color picker "select from screen" swapping R&B color channels and resetting alpha
+
+commit 18a91a3469720025d82a008abb95a74878c79a33
+Merge: 9810d1f4 8c3542b6
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-10-26 02:04:36 +0100
+
+    Merge branch 'LazarusCleanup'
+
+commit 8c3542b601d42e6aaee6fee2183ac42e1e925712
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-10-26 02:04:11 +0100
+
+    Periodic cleanup of FPC/Lazarus examples/packages
+    
+    ..and the usual f*ckups that goes with them
+
+commit 9810d1f4a582fe7fff20a6720ba760aea6aa1149
+Merge: ced3797a 55b8f3f7
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-10-24 22:39:55 +0200
+
+    Merge branch 'BCB_vtable_horrors'
+
+commit 55b8f3f7d42326f4439b2629a2b112880892419d
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-10-24 13:43:59 +0200
+
+    Cleaned up virtual constructor mess introduced in commit bd3ca0acb5e8b8f37de374f61a6feb7abf702e5a
+    
+    Fixes #383
+
+commit ced3797ae9e9040a888647c07f63d2d9d241dce8
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-10-23 23:56:08 +0200
+
+    Removed unused global from design-time code
+
+commit 9ddf4919fa2b51c4d7de1a8f77421ccf885dc734
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-10-08 13:52:04 +0200
+
+    Added IDE about box integration
+    
+    Refactored IDE splash integration
+
 commit d5df06aacbb2e9cfac1f4c4d4bc25f987a1ab7b8
 Merge: 25991c03 cebb926b
 Author: zed <starmen@tut.by>
