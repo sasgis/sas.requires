@@ -32,7 +32,7 @@ interface
 
 uses
   Windows, {$IFDEF JR_D17} Actions,{$ENDIF} SysUtils, Classes, Graphics, Controls, Dialogs, ActnList, ImgList,
-  {$IFDEF JR_D6} DesignIntf, DesignEditors, VCLEditors, {$ELSE} DsgnIntf, {$ENDIF}
+  {$IFDEF JR_D6} DesignIntf, DesignEditors, VCLEditors, {$ELSE} DsgnIntf, {$ENDIF} UITypes,
   TB2Toolbar, TB2ToolWindow, TB2Dock, TB2Item, TB2ExtItems, TB2MRU, TB2MDI,
   TB2DsgnItemEditor;
 

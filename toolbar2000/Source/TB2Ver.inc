@@ -62,7 +62,7 @@
     {$DEFINE JR_WIDESTR}  { defined if String type = WideString }
   {$IFEND}
   {$IF not Defined(CLR) and (SizeOf(Pointer) <> 4)}
-    {$MESSAGE WARN 'This version of Toolbar2000 has not been tested on 64-bit Delphi for Win32'}
+    {.$MESSAGE WARN 'This version of Toolbar2000 has not been tested on 64-bit Delphi for Win32'}
   {$IFEND}
 {$ENDIF}
 

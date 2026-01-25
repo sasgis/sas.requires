@@ -119,8 +119,8 @@ begin
     FRunning := False;
     if FBmpDC <> 0 then begin
       if FBlending then
-        SetWindowLong(FWnd, GWL_EXSTYLE,
-          GetWindowLong(FWnd, GWL_EXSTYLE) and not WS_EX_LAYERED)
+        SetWindowLongPtr(FWnd, GWL_EXSTYLE,
+          GetWindowLongPtr(FWnd, GWL_EXSTYLE) and not WS_EX_LAYERED)
       else
         SetWindowRgn(FWnd, 0, False);
       BitBlt(FWndDC, 0, 0, FSize.cx, FSize.cy, FBmpDC, 0, 0, SRCCOPY);
@@ -202,7 +202,7 @@ begin
         PRF_ERASEBKGND or PRF_CHILDREN);
       //GetBoundsRect
       if FBlending then begin
-        SetWindowLong(FWnd, GWL_EXSTYLE, GetWindowLong(FWnd, GWL_EXSTYLE) or WS_EX_LAYERED);
+        SetWindowLongPtr(FWnd, GWL_EXSTYLE, GetWindowLongPtr(FWnd, GWL_EXSTYLE) or WS_EX_LAYERED);
         FTime := 175;  { actually more like ~147 because FCurStep starts at 40 }
         FCurStep := 40;
         Blend.BlendOp := AC_SRC_OVER;

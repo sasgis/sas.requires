@@ -222,7 +222,7 @@ begin
   I := 0;
   while I < ItemClasses.Count do begin
     Info := TItemClassInfo(ItemClasses[I]);
-    if FindClassHInstance(Info.ItemClass) = AModule then begin
+    if FindClassHInstance(Info.ItemClass) = NativeUInt(AModule) then begin
       ItemClasses.Delete(I);
       Info.Free;
     end
@@ -426,7 +426,7 @@ begin
     Item := TTBItem.Create(Self);
     Item.Caption := Info.Caption;
     Item.ImageIndex := GetItemClassImage(Info.ItemClass);
-    Item.Tag := {$IFNDEF CLR}Integer{$ELSE}TTag{$ENDIF}(Info.ItemClass);
+    Item.Tag := {$IFNDEF CLR}NativeInt{$ELSE}TTag{$ENDIF}(Info.ItemClass);
     Item.OnClick := MoreItemClick;
     MoreMenu.Add(Item);
   end;

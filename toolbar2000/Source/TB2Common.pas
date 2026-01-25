@@ -168,8 +168,8 @@ begin
   {$ENDIF}
   begin
     { Skip window if it isn't a child/owned window of ParentWnd or isn't visible }
-    if (HWND(GetWindowLong(Wnd, GWL_HWNDPARENT)) <> ParentWnd) or
-       (GetWindowLong(Wnd, GWL_STYLE) and WS_VISIBLE = 0) then
+    if (HWND(GetWindowLongPtr(Wnd, GWL_HWNDPARENT)) <> ParentWnd) or
+       (GetWindowLongPtr(Wnd, GWL_STYLE) and WS_VISIBLE = 0) then
          { ^ don't use IsWindowVisible since it returns False if the window's
            parent window is not visible }
       Exit;

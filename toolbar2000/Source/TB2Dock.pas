@@ -717,7 +717,7 @@ end;
 
 procedure SetWindowOwner(const Wnd, NewOwnerWnd: HWND);
 begin
-  SetWindowLong(Wnd, GWL_HWNDPARENT,
+  SetWindowLongPtr(Wnd, GWL_HWNDPARENT,
     {$IFDEF JR_D11} LONG_PTR {$ELSE} Longint {$ENDIF} (NewOwnerWnd));
 end;
 
@@ -768,7 +768,7 @@ begin
                 *before* the form gets destroyed, otherwise Windows will destroy
                 the tool window's handle. }
               if Assigned(Parent) and Parent.HandleAllocated and
-                 (HWND(GetWindowLong(Parent.Handle, GWL_HWNDPARENT)) = Wnd) then
+                 (HWND(GetWindowLongPtr(Parent.Handle, GWL_HWNDPARENT)) = Wnd) then
                 SetWindowOwner(Parent.Handle, Application.Handle);
                 { ^ Restore GWL_HWNDPARENT back to Application.Handle }
           end;
@@ -801,7 +801,7 @@ begin
   {$ENDIF}
     if (Wnd <> TaskActiveWindow) and (Wnd <> Application.Handle) and
        IsWindowVisible(Wnd) and IsWindowEnabled(Wnd) then begin
-      if GetWindowLong(Wnd, GWL_EXSTYLE) and WS_EX_TOPMOST = 0 then begin
+      if GetWindowLongPtr(Wnd, GWL_EXSTYLE) and WS_EX_TOPMOST = 0 then begin
         if TaskFirstWindow = 0 then TaskFirstWindow := Wnd;
       end
       else begin
@@ -2804,7 +2804,7 @@ begin
     if not ApplicationIsActive then
       Inactive := True
     else if (FFloatingMode = fmOnTopOfParentForm) and
-       (HWND(GetWindowLong(Parent.Handle, GWL_HWNDPARENT)) <> Application.Handle) then begin
+       (HWND(GetWindowLongPtr(Parent.Handle, GWL_HWNDPARENT)) <> Application.Handle) then begin
       { Use inactive caption if the active window doesn't own the float parent
         (directly or indirectly). Note: For compatibility with browser-embedded
         TActiveForms, we use IsAncestorOfWindow instead of checking
@@ -2835,7 +2835,7 @@ function TTBCustomDockableWindow.GetShowingState: Boolean;
           Break;
         end;
         { Stop if we're at a top-level window (no need to check owner windows) }
-        if GetWindowLong(Wnd, GWL_STYLE) and WS_CHILD = 0 then
+        if GetWindowLongPtr(Wnd, GWL_STYLE) and WS_CHILD = 0 then
           Break;
         Wnd := GetParent(Wnd);
       until Wnd = 0;
@@ -2882,7 +2882,7 @@ end;
 
 function IsTopmost(const Wnd: HWND): Boolean;
 begin
-  Result := GetWindowLong(Wnd, GWL_EXSTYLE) and WS_EX_TOPMOST <> 0;
+  Result := GetWindowLongPtr(Wnd, GWL_EXSTYLE) and WS_EX_TOPMOST <> 0;
 end;
 
 procedure TTBCustomDockableWindow.UpdateTopmostFlag;
@@ -2895,7 +2895,7 @@ begin
     if FFloatingMode = fmOnTopOfAllForms then
       ShouldBeTopmost := True
     else
-      ShouldBeTopmost := IsTopmost(HWND(GetWindowLong(Parent.Handle, GWL_HWNDPARENT)));
+      ShouldBeTopmost := IsTopmost(HWND(GetWindowLongPtr(Parent.Handle, GWL_HWNDPARENT)));
     if ShouldBeTopmost <> IsTopmost(Parent.Handle) then
       { ^ it must check if it already was topmost or non-topmost or else
         it causes problems on Win95/98 for some reason }
@@ -2922,7 +2922,7 @@ procedure TTBCustomDockableWindow.CMShowingChanged(var Message: TMessage);
           Done := False;
           Break;
         end;
-        ParentWnd := HWND(GetWindowLong(ParentWnd, GWL_HWNDPARENT));
+        ParentWnd := HWND(GetWindowLongPtr(ParentWnd, GWL_HWNDPARENT));
         if ParentWnd = W then begin
           Done := False;
           Break;
@@ -2958,7 +2958,7 @@ begin
         if FFloatingMode = fmOnTopOfParentForm then begin
           Form := GetMDIParent(TBGetToolWindowParentForm(Self));
           if Assigned(Form) and Form.HandleAllocated and
-             (HWND(GetWindowLong(Parent.Handle, GWL_HWNDPARENT)) <> Form.Handle) then begin
+             (HWND(GetWindowLongPtr(Parent.Handle, GWL_HWNDPARENT)) <> Form.Handle) then begin
             SetWindowOwner(Parent.Handle, Form.Handle);
             { Following is necessarily to make it immediately realize the
               GWL_HWNDPARENT change }

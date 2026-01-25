@@ -1,3 +1,21 @@
+commit 7fb42d8697ed8343df9e66392a9208035800a974
+Author: zed <starmen@tut.by>
+Date:   2026-01-25 17:42:52 +0300
+
+    Prepare projects for 64-bit IDE
+
+commit 9732df44526917e16e9f2af233ea980a9f44796c
+Author: zed <starmen@tut.by>
+Date:   2026-01-25 17:36:03 +0300
+
+    Fix warnings
+
+commit 5c396c8947689f33cb8c99605c2c894ac82e58fd
+Author: zed <starmen@tut.by>
+Date:   2026-01-25 16:06:12 +0300
+
+    Fix Win64 support
+
 commit 0a2b98cbd93e051f47cb6b7ca715c8ac43f7dba8
 Merge: aa72898 cd85f55
 Author: zed <starmen@tut.by>

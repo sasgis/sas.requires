@@ -562,7 +562,7 @@ begin
   UpdateVisibleEnabled(TTBMDIHandler(Owner).FSystemMenuItem, True);
   UpdateVisibleEnabled(FSep1, True);
   UpdateVisibleEnabled(FMinimizeItem, (ActiveMDIChild = nil) or
-    (GetWindowLong(ActiveMDIChild.Handle, GWL_STYLE) and WS_MINIMIZEBOX <> 0));
+    (GetWindowLongPtr(ActiveMDIChild.Handle, GWL_STYLE) and WS_MINIMIZEBOX <> 0));
   UpdateVisibleEnabled(FRestoreItem, True);
   UpdateVisibleEnabled(FSep2, True);
   UpdateVisibleEnabled(FCloseItem, True);
