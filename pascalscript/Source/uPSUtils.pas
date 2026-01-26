@@ -23,7 +23,21 @@ const
 
   PSAddrNegativeStackStart = 1073741824;
 type
-  TbtString = {$IFDEF DELPHI2009UP}AnsiString{$ELSE}String{$ENDIF};
+  {$IFDEF FPC}
+    {$IFDEF FPC_UNICODE}
+    tbtString = AnsiString;
+    tbtPChar  = PAnsiChar;
+    tbtChar   = AnsiChar;
+    {$ELSE}
+    tbtString = string;
+    tbtPChar  = PChar;
+    tbtChar   = Char;
+    {$ENDIF}
+  {$ELSE}
+  tbtString = {$IFDEF DELPHI2009UP}AnsiString{$ELSE}string{$ENDIF};
+  tbtPChar  = {$IFDEF DELPHI2009UP}PAnsiChar{$ELSE}PChar{$ENDIF};
+  tbtChar   = {$IFDEF DELPHI4UP}AnsiChar{$ELSE}CHAR{$ENDIF};
+  {$ENDIF}
 
   TPSBaseType = Byte;
 
@@ -91,7 +105,11 @@ const
 
   btNotificationVariant = 27;
 
-  btUnicodeString = 28;
+  btUnicodeString   = 28;
+
+{$IFNDEF PS_NOINT64}
+  btU64             = 29;
+{$ENDIF}
 
   btType = 130;
 
@@ -295,7 +313,7 @@ type
 
   TbtSingle = Single;
 
-  TbtDouble = double;
+  TbtDouble = Double;
 
   TbtExtended = Extended;
 
@@ -304,24 +322,31 @@ type
 {$IFNDEF PS_NOINT64}
 
   tbts64 = int64;
+  tbtu64 = uint64;
 {$ENDIF}
 
-  tbtchar = {$IFDEF DELPHI4UP}AnsiChar{$ELSE}CHAR{$ENDIF};
+
 {$IFNDEF PS_NOWIDESTRING}
+  tbtWideString = WideString;
 
-  tbtwidestring = widestring;
-  tbtunicodestring = {$IFDEF DELPHI2009UP}UnicodeString{$ELSE}widestring{$ENDIF};
+  tbtUnicodeString =
+    {$IFDEF FPC}
+      UnicodeString
+    {$ELSE}
+      {$IFDEF UNICODE}UnicodeString{$ELSE}WideString{$ENDIF}
+    {$ENDIF};
 
-  tbtwidechar = widechar;
+  tbtWideChar = WideChar;
   tbtNativeString = {$IFDEF DELPHI2009UP}tbtUnicodeString{$ELSE}tbtString{$ENDIF};
 {$ENDIF}
 {$IFDEF FPC}
   IPointer = PtrUInt;
 {$ELSE}
-  {$IFDEF CPUX64}
-  IPointer = IntPtr;
+  {$IFDEF DELPHI2009UP}
+    IPointer = NativeUInt;
   {$ELSE}
-  {$IFDEF CPU64} IPointer = LongWord;{$ELSE}  IPointer = Cardinal;{$ENDIF}{$ENDIF}
+    IPointer = Cardinal;
+  {$ENDIF}
 {$ENDIF}
   TPSCallingConvention = (cdRegister, cdPascal, cdCdecl, cdStdCall, cdSafeCall);
 
@@ -599,6 +624,8 @@ type
 
 function FloatToStr(E: Extended): TbtString;
 
+function CurrToStr(C: Currency): TbtString;
+
 function FastLowerCase(const s: TbtString): TbtString;
 
 function Fw(const S: TbtString): TbtString;
@@ -733,16 +760,18 @@ var
   s: tbtstring;
 begin
   Str(i, s);
-  IntToStr := s;
+  Result := s;
 end;
 //-------------------------------------------------------------------
 
 function FloatToStr(E: Extended): TbtString;
-var
-  s: tbtstring;
 begin
-  Str(e:0:12, s);
-  result := s;
+  Result := TbtString(SysUtils.FloatToStr(E));
+end;
+
+function CurrToStr(C: Currency): TbtString;
+begin
+  Result := TbtString(SysUtils.CurrToStr(C));
 end;
 
 function StrToInt(const S: TbtString): LongInt;
@@ -1152,17 +1181,17 @@ var
   function CheckReserved(Const S: ShortString; var CurrTokenId: TPSPasToken): Boolean;
   var
     L, H, I: LongInt;
-    J: tbtChar;
+    J: SmallInt;
     SName: ShortString;
   begin
     L := 0;
-    J := S[0];
+    J := Length(S);
     H := KEYWORD_COUNT-1;
     while L <= H do
     begin
       I := (L + H) shr 1;
       SName := LookupTable[i].Name;
-      if J = SName[0] then
+      if J = Length(SName) then
       begin
         if S = SName then
         begin
@@ -1478,13 +1507,7 @@ var
               (FText[ci] <> #10) do begin
               Inc(ci);
             end;
-            if (FText[ci] = #0) then
-            begin
-              CurrTokenId := CSTIINT_Comment;
-            end else
-            begin
-              CurrTokenId := CSTIINT_Comment;
-            end;
+            CurrTokenId := CSTIINT_Comment;
             CurrTokenLen := ci - ct;
           end else
           begin
@@ -1728,5 +1751,6 @@ end;
 
 
 end.
+
 
 

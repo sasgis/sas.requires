@@ -55,6 +55,13 @@ begin
     RegisterProperty('Visible', 'Boolean', iptRW);
     RegisterProperty('Enabled', 'Boolean', iptrw);
     RegisterProperty('Cursor', 'TCursor', iptrw);
+  
+    {$IFDEF DELPHI23UP}
+    RegisterProperty('StyleElements', 'TStyleElements', iptrw);
+    {$ENDIF}
+    {$IFDEF DELPHI26UP}
+    RegisterProperty('StyleName', 'string', iptrw);
+    {$ENDIF}
 
     {$IFNDEF PS_MINIVCL}
     RegisterMethod('function Dragging: Boolean;');
@@ -66,7 +73,7 @@ begin
     RegisterMethod('function GetTextBuf(Buffer: PChar; BufSize: Integer): Integer');
     RegisterMethod('function GetTextLen: Integer');
     RegisterMethod('procedure SetTextBuf(Buffer: PChar)');
-    RegisterMethod('function Perform(Msg: Cardinal; WPARAM,LPARAM: LongInt): LongInt');
+    RegisterMethod('function Perform(Msg: Cardinal; WParam: NativeUInt; LParam: NativeInt): NativeInt');
     {$ENDIF}
     RegisterMethod('function ScreenToClient(Point: TPoint): TPoint');
     {$ENDIF}
@@ -84,7 +91,7 @@ begin
     end;
 
     {$IFNDEF CLX}
-    RegisterProperty('Handle', 'LongInt', iptR);
+    RegisterProperty('Handle', 'HWND', iptR);
     {$ENDIF}
     RegisterProperty('Showing', 'Boolean', iptR);
     RegisterProperty('TabOrder', 'Integer', iptRW);
@@ -105,7 +112,7 @@ begin
     RegisterMethod('procedure ScrollBy(DeltaX, DeltaY: Integer);');
     RegisterMethod('procedure SetFocus; virtual;');
     {$IFNDEF CLX}
-    RegisterMethod('procedure PaintTo(DC: LongInt; X,Y: Integer)');
+    RegisterMethod('procedure PaintTo(DC: HDC; X,Y: Integer)');
     {$ENDIF}
 
     RegisterMethod('function ContainsControl(Control: TControl): Boolean');
@@ -146,18 +153,32 @@ begin
   cl.AddTypeS('TKeyPressEvent', 'procedure(Sender: TObject; var Key: Char);');
   cl.AddTypeS('TDragOverEvent', 'procedure(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean)');
   cl.AddTypeS('TDragDropEvent', 'procedure(Sender, Source: TObject; X, Y: Integer)');
-  cl.AddTypeS('HWND', 'LongInt');
+  if cl.FindType('HWND') = nil then
+    cl.AddTypeS('HWND', 'NativeUInt');
+  if cl.FindType('HDC') = nil then
+    cl.AddTypeS('HDC', 'NativeUInt');
+  {$IFNDEF PS_MINIVCL}
+  {$IFNDEF FPC}
+  if cl.FindType('THandle') = nil then
+    cl.AddTypeS('THandle', 'NativeUInt');
+  {$ENDIF}
+  {$ENDIF}
 
   cl.AddTypeS('TEndDragEvent', 'procedure(Sender, Target: TObject; X, Y: Integer)');
 
   cl.addTypeS('TAlign', '(alNone, alTop, alBottom, alLeft, alRight, alClient)');
+
+  {$IFDEF DELPHI23UP}
+  cl.addTypeS('TStyleElement', '(seFont, seClient, seBorder)');
+  cl.addTypeS('TStyleElements', 'set of TStyleElement');
+  {$ENDIF}
 
   {$IFDEF DELPHI4UP}
   cl.addTypeS('TAnchorKind', '(akLeft, akTop, akRight, akBottom)');
   cl.addTypeS('TAnchors','set of TAnchorKind');
   {$ENDIF}
   {$IFDEF FPC}
-  cl.addTypeS('TAnchorKind', '(akLeft, akTop, akRight, akBottom)');
+  cl.addTypeS('TAnchorKind', '(akTop, akLeft, akRight, akBottom)');
   cl.addTypeS('TAnchors','set of TAnchorKind');
   {$ENDIF}
   cl.AddTypeS('TModalResult', 'Integer');
@@ -216,13 +237,13 @@ begin
 {$ENDIF}
 {$IFNDEF FPC}
     RegisterMethod('function GetName: string');
-    RegisterMethod('function Instance: LongInt');
+    RegisterMethod('function Instance: THandle');
 {$ENDIF}
     RegisterMethod('procedure HideDragImage');
     RegisterMethod('procedure ShowDragImage');
 {$IFDEF DELPHI4UP}
     RegisterProperty('Cancelling', 'Boolean', iptrw);
-    RegisterProperty('DragHandle', 'LongInt', iptrw);
+    RegisterProperty('DragHandle', 'HWND', iptrw);
     RegisterProperty('DragPos', 'TPoint', iptrw);
     RegisterProperty('DragTargetPos', 'TPoint', iptrw);
     RegisterProperty('MouseDeltaX', 'Double', iptr);

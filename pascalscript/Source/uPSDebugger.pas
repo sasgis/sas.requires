@@ -524,14 +524,14 @@ function TPSCustomDebugExec.GetCallStack(var Count: Cardinal): tbtString;
     I: Integer;
   begin
     Result := '';
-    if ParamList.Count > 0 then
-    for I := 0 to ParamList.Count do
+    for I := 0 to ParamList.Count-1 do
       if (ParamList.Items[I] = 'Result') or (ParamList.Items[I] = '') then
         Continue
       else
         Result:= Result + ParamList.Items[I] + ': ' +
                  PSVariantToString(NewTPSVariantIFC(FStack[Cardinal(Longint(StackBase) - Longint(I) - 1)], False), '') + '; ';
-    Result := tbtString(String(Result).Remove(Length(Result)-2));
+    if Result <> '' then
+      SetLength(Result, Length(Result)-2);
   end;
 
 var

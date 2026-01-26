@@ -1,3 +1,295 @@
+commit 74268aced4fd67e77e3a02816fd4994b45151914
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-25 20:53:27 +0100
+
+    Cherry pick into stable: Fix warning.
+
+commit b46e995ba1230fbfd64408014044df31141f9c00
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-24 13:42:58 +0100
+
+    Cherry pick into stable: add comment + fix and cleanup PSVariantToString.
+
+commit c454d233394be87b4d1d33047cee28f65b02ee07
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-16 11:32:39 +0100
+
+    Cherry pick into stable: Try to handle FPC not having TExtended80Rec available when CPU64 is defined.
+    
+    # Conflicts:
+    #       Source/PascalScript.inc
+
+commit 068a90f7fa0a8f5f16a8054d24c40136eb9a28fe
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-14 17:17:26 +0100
+
+    Cherry pick into stable: Revert unintended whitespace changes in previous commit.
+
+commit f68ea4af2b360aa491b7c6985a5407684d7dc25f
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-14 14:39:25 +0100
+
+    Cherry pick into stable: Add safecall support to x64.inc.
+
+commit 28a0a06732b7c751f7134e830b06490eed952063
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-13 09:26:00 +0100
+
+    Cherry pick into stable: Improve comment from a118e3a3 / #287.
+
+commit 1377f1ef446e71e07a2555210201fc880309b9f5
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-12 20:48:41 +0100
+
+    Cherry pick into stable: Fix wrong endif marker which claimed to belong to empty_methods_handler but belonged to CPU64 +  other clarifications.
+
+commit d73f1a60799682e4c0f6d7efa42f5ea0ee132511
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-12 20:29:52 +0100
+
+    Cherrypick into stable: Fix (U)Int64 parameters to events.
+
+commit 0ace4479ea5ecd9c7370b46942fef77b02db58da
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-12 20:29:38 +0100
+
+    Cherry pick into stable: Make MyAllMethodsHandler able to handle exceptions on 64-bit Delphi.
+    
+    # Conflicts:
+    #       Source/uPSRuntime.pas
+
+commit 80df0ea9bc571d0ef868106514f3f331c1843b37
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-08 07:44:21 +0100
+
+    Cherry pick into stable: Fix (MS)WINDOWS compile. See #197.
+
+commit 2b364a578bf8d6698719b3cbe542f64eb5207b11
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-07 13:09:48 +0100
+
+    Cherry pick into stable: Fix FPC+UNIX compile.
+
+commit 95db03b1d3aa4e1ffab8275f9c792bd6988c3875
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-07 09:01:25 +0100
+
+    Cherry pick into stable:
+    Fix FPC TAnchorKind. Closes #264.
+    Try to fix any non-WINDOWS compilation. Closes #197.
+    Fix ClassCallProcPropertyHelperName to be like ClassCallProcPropertyHelper. Closes #139. Not tested myself.
+
+commit e971e5cf9868d826a76f60f472e88c7ca94f038c
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-05 11:21:09 +0100
+
+    Cherry pick into stable: Add set support to PSVariantToString.
+
+commit 52a3a3540f26c8db6703f6310416d71f22e3fe15
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-05 09:53:34 +0100
+
+    Cherry pick into stable: Cleanup.
+
+commit e22452e56e33c464ff26202b61c1be31c342ee54
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-05 09:35:07 +0100
+
+    Cherry pick into stable: Make FloatToStr behave in a normal way.
+
+commit 7745e191af6924591f084ed81af10472d5612c7c
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-05 08:59:39 +0100
+
+    Cherry pick into stable: Since Ord() accepts (U)Int64 values, make sure it returns one also.
+
+commit 2cfecf6fc9ae178464ec39acb0df1e4fa0c1e6db
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-04 21:27:49 +0100
+
+    Cherry pick into stable: Allow Chr() to work on values > $FF by returning a widechar, if possible. Also add a missing btwidechar handler, not related to the above.
+
+commit 0d05ee9891723205df252f2e388b77efd024e76b
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-04 20:11:36 +0100
+
+    Cherry pick into stable: Fix TDrawItemEvent prototype.
+
+commit 8826b29641da181f08c1b82aa1e190ab573dd208
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-04 19:59:52 +0100
+
+    Cherry pick into stable: Fix TPSPascalCompiler.ReadString's ChrToStr wchar testing.
+
+commit aa3411fb13198bbb7abb47730fe02671c630c029
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-04 19:09:00 +0100
+
+    Cherry pick into stable: Fix assigning string to variant.
+
+commit fa0c591e3854d2732dbe5287f8212e6e06daa9fa
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-04 16:09:48 +0100
+
+    Cherry pick into stable: Add two missing PS_NOWIDESTRING checks + Add runtime optimization + x64 bug fix from #107.
+
+commit 8ff32070ba800613212124c5def9980c83b09dfd
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-04 15:26:16 +0100
+
+    Cherry pick into stable: Add new x64call asm version which can handle exceptions, active when Delphi is used.
+
+commit 0d597424d86980a97c84a3f0b16ed7d52b29da75
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-03 12:17:53 +0100
+
+    Cherry pick into stable: Fix compatibility between 32-bit compile and 64-bit exec, and vice versa, for the Extended type.
+
+commit 755b7a50978d0a045f0e00bc4481aa53da0c0745
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-03 12:17:28 +0100
+
+    Cherry pick into stable: Fix a missing PS_NOINT64 check + cleanup a few unused functions which are also not available from the interface.
+
+commit 14c9e026767fd7f3ee077f599e554367a30f138b
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-02 22:23:16 +0100
+
+    Cherry pick into stable: Fix float attribute value writing and reading.
+
+commit edacfaa0be3efcf5883715fcde1ea16fe2f6b1f2
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-30 10:41:58 +0100
+
+    Cherry pick into stable: Fix another property helper which breaks on 64-bit.
+    
+    # Conflicts:
+    #       Source/uPSR_classes.pas
+
+commit 5c333a902e813c6378e534656db2f47cf1b0210b
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-30 10:19:20 +0100
+
+    Cherry pick into stable: Fix 61af62db's run-time type mismatch bug + 64-bit bugs.
+    
+    # Conflicts:
+    #       Source/uPSRuntime.pas
+
+commit f946b567df1d2a67545663240e57e9a3cee8dcfd
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-29 08:53:21 +0100
+
+    Cherry pick into stable:
+    Fix some dependencies between uPSC files.
+    Fix TPSScriptDebugger.GetVarValue AV. Closes #269.
+
+commit d1e5e651cdc1c5e6b51b3b2e8ae9451002f0f6d6
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-27 10:15:05 +0100
+
+    Cherry pick into stable: Merge pull request #282 from DRKV333/CompileFix
+    
+    Fix compile below DELPHI23
+    # Conflicts:
+    #       Source/uPSR_controls.pas
+
+commit 9c1d619953f1d7a7ba4a0277e27c14bdbaf09c0a
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-26 21:23:12 +0100
+
+    Cherry pick into stable: Fix various bad type/proc registrations and property helpers which break on 64-bit. Not sure if it's all of them.
+    
+    # Conflicts:
+    #       Source/uPSR_controls.pas
+    #       Source/uPSR_forms.pas
+    #       Source/uPSR_graphics.pas
+
+commit 5545c3e4c5727af767e0d614e0916a3d03e82085
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-26 10:53:13 +0100
+
+    Cherry pick into stable: Add NativeInt and NativeUInt types, with a setting to control if they should be 64-bit or not.
+
+commit d89dcb7e1f83be996b3305d7905ca787583c466c
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-26 09:58:35 +0100
+
+    Cherry pick into stable: Add UInt64 support, based on existing Int64 support. Also fixes some missing PS_NOINT64 checks.
+    
+    # Conflicts:
+    #       Source/InvokeCall.inc
+
+commit e7dfdd36576130490cad3cae833cf83bae590ba9
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-24 11:02:46 +0100
+
+    Cherry pick warnings change into stable.
+    
+    # Conflicts:
+    #       Source/PascalScript.inc
+
+commit ff3635f223f49cb19e2c9a015a0cc08378fdfdb9
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-23 16:11:24 +0100
+
+    Cherry pick changes originating in a732050c and f68967d5, both titled: 'problems with x32/x64 call were fixed'.
+    
+    Fixes 64-bit handler register-call handling for floats and makes it match x64.inc + fixes a stack issue in the 32-bit handler.
+
+commit 398f4d521712f713f6821b7b2fbc92a8ac540b3b
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-23 12:45:47 +0100
+
+    Cherry pick out of range index error message update into stable.
+
+commit 79225e3682dc4dd3242d2e7a1893016e703fb9f4
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-23 11:56:17 +0100
+
+    Cherry pick into stable: Fix out-of-bounds loop in TPSCustomDebugExec.GetCallStack.
+
+commit 7175a3a041c57d7d336f9f955ed9354d9b32e379
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-23 11:36:14 +0100
+
+    Cherry pick various safe changes from master into stable.
+
+commit d88b271e240cb17a4dffe814affba1ac236f32f2
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-23 10:29:35 +0100
+
+    Cherry pick into stable: Fix TCustomLinkLabel.OnLinkClick. It's property helper doesn't work, at least not in 64-bit with PS_USECLASSICINVOKE. Just register it for TLinkLabel, which has it as published property, so doesnt need the helper.
+
+commit 521b742e5e4ea026bb778a86f85d0fd6aad71001
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-20 11:25:07 +0100
+
+    Partial cherry pick of 51a015cbc503de619283fd412b72223ea0820d8d:
+    1) fix of OPENARRAYOFU16 and OPENARRAYOFS16 declarations (#205)
+
+commit 5926391e800438be7c44611084b8c9031f39fbc1
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-12-20 11:17:57 +0100
+
+    Cherry pick into stable: Fix Int64->Integer cast issue/typo.
+
+commit d6e25439080c37e15af23badb48c39760a2b8d4d
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-11-22 15:21:49 +0100
+
+    Charry pick into stable: Add missing VNGetObject and VNSetObject.
+
+commit 2f64441c6befe97b4368012765d84f525dd0638e
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2025-09-30 11:12:22 +0200
+
+    Cherry pick into stable: Add support for TControl.StyleElements (possible since Seattle at least) and support for TContro.StyleName (ossible since Sydney). Add it in the simple way like other unpublished TControl properties such as Visible, so not as Anchors was done once.
+    
+    # Conflicts:
+    #       Source/uPSR_controls.pas
+    
+    The conflict is due to f5da3452 missing in stable. Don't know if it's safe to cherry pick or not.
+
 commit 3da96acd4db695c5d858d224800c8d2ee8894424
 Author: evgeny-k <git@evgenysoft.com>
 Date:   2025-09-18 12:06:10 +0300
