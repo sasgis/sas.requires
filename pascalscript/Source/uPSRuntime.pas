@@ -1194,6 +1194,7 @@ type
     CurrProc: TPSInternalProcRec;
     BasePtr, StackSize: Cardinal;
     FinallyOffset, ExceptOffset, Finally2Offset, EndOfBlock: Cardinal;
+    ExitPoint: Cardinal;
     ExceptionData: TPSError;
     ExceptionObject: TObject;
     ExceptionParam: tbtString;
@@ -1550,6 +1551,9 @@ begin
       tkInteger: begin Result := IntToStr(GetOrdProp(Instance, pp)); exit; end;
       tkChar: begin Result := '#'+IntToStr(GetOrdProp(Instance, pp)); exit; end;
       tkEnumeration: begin Result := tbtstring(GetEnumName(pp^.PropType{$IFNDEF FPC}{$IFDEF DELPHI3UP}^{$ENDIF}{$ENDIF}, GetOrdProp(Instance, pp))); exit; end;
+      {$IFNDEF PS_NOINT64}
+      tkInt64: begin Result := IntToStr(GetInt64Prop(Instance, pp)); exit; end;
+     {$ENDIF}
       tkFloat: begin Result := FloatToStr(GetFloatProp(Instance, PP)); exit; end;
       tkString, tkLString: begin Result := ''''+tbtString(GetStrProp(Instance, PP))+''''; exit; end;
       tkSet: begin Result := '[Set]'; exit; end;
@@ -4761,7 +4765,12 @@ begin
           end else if (srctype.BaseType = btvariant) and VarIsArray(Variant(src^)) then
             Result := CreateArrayFromVariant(Self, dest, Variant(src^), desttype)
           else if (desttype <> srctype) and not ((desttype.BaseType = btarray) and (srctype.BaseType = btArray)
-            and (TPSTypeRec_Array(desttype).ArrayType = TPSTypeRec_Array(srctype).ArrayType)) then
+            and ((TPSTypeRec_Array(desttype).ArrayType.BaseType = TPSTypeRec_Array(srctype).ArrayType.BaseType) and
+                 not (TPSTypeRec_Array(desttype).ArrayType.BaseType in [btRecord, btSet, btStaticArray, btArray]))) then
+            { ^ Comparing BaseType is needed because the compiler doesn't merge open array types
+              and regular array types in ReadType (see the '!' check). Still it considers them
+              compatible in IsCompatibleType, so we should check ArrayType.BaseType instead of
+              only ArrayType. CopyArrayContents also doesn't require exact ArrayType match. }
             Result := False
           else
             CopyArrayContents(dest, src, 1, desttype);
@@ -7961,13 +7970,11 @@ var
   Cmd: Cardinal;
   I: Longint;
   pp: TPSExceptionHandler;
-  FExitPoint: Cardinal;
   FOldStatus: TPSStatus;
   Tmp: TObject;
   btemp: Boolean;
   CallRunline: TMyRunLine;
 begin
-  FExitPoint := InvalidVal;
   if FStatus = isLoaded then
   begin
     for i := FExceptionStack.Count -1 downto 0 do
@@ -8493,7 +8500,6 @@ begin
               { Script internal command: Ret<br>
                   Command: TPSCommand; <br>
               }
-              FExitPoint := FCurrentPosition -1;
               P2 := 0;
               if FExceptionStack.Count > 0 then
               begin
@@ -8508,12 +8514,14 @@ begin
                   FCurrStackBase := pp.BasePtr;
                   if pp.FinallyOffset <> InvalidVal then
                   begin
+                    pp.ExitPoint := FCurrentPosition -1;
                     FCurrentPosition := pp.FinallyOffset;
                     pp.FinallyOffset := InvalidVal;
                     p2 := 1;
                     break;
                   end else if pp.Finally2Offset <> InvalidVal then
                   begin
+                    pp.ExitPoint := FCurrentPosition -1;
                     FCurrentPosition := pp.Finally2Offset;
                     pp.Finally2Offset := InvalidVal;
                     p2 := 1;
@@ -8529,7 +8537,6 @@ begin
               end;
               if p2 = 0 then
               begin
-                FExitPoint := InvalidVal;
                 if FCurrStackBase = InvalidVal then
                 begin
                   FStatus := FOldStatus;
@@ -8689,6 +8696,7 @@ begin
               pp.CurrProc := FCurrProc;
               pp.BasePtr :=FCurrStackBase;
               pp.StackSize := FStack.Count;
+              pp.ExitPoint := InvalidVal;
               if not ReadLong(pp.FinallyOffset) then begin
                 CMD_Err(erOutOfRange);
                 pp.Free;
@@ -8765,15 +8773,13 @@ begin
                       FCurrentPosition := pp.Finally2Offset;
                       pp.Finally2Offset := InvalidVal;
                     end else begin
-                      p := pp.EndOfBlock;
+                      if pp.ExitPoint <> InvalidVal then
+                        p := pp.ExitPoint
+                      else
+                        p := pp.EndOfBlock;
                       pp.Free;
                       FExceptionStack.DeleteLast;
-                      if FExitPoint <> InvalidVal then
-                      begin
-                        FCurrentPosition := FExitPoint;
-                      end else begin
-                        FCurrentPosition := p;
-                      end;
+                      FCurrentPosition := p;
                     end;
                   end;
                 0:
@@ -8792,7 +8798,10 @@ begin
                        FCurrentPosition := pp.Finally2Offset;
                        pp.ExceptOffset := InvalidVal;
                     end else begin
-                      p := pp.EndOfBlock;
+                      if pp.ExitPoint <> InvalidVal then
+                        p := pp.ExitPoint
+                      else
+                        p := pp.EndOfBlock;
                       pp.Free;
                       FExceptionStack.DeleteLast;
                       if ExEx <> eNoError then
@@ -8801,12 +8810,7 @@ begin
                         ExObject := nil;
                         ExceptionProc(ExProc, ExPos, ExEx, ExParam, Tmp);
                       end else
-                      if FExitPoint <> InvalidVal then
-                      begin
-                        FCurrentPosition := FExitPoint;
-                      end else begin
                         FCurrentPosition := p;
-                      end;
                     end;
                   end;
                 1:
@@ -8830,7 +8834,10 @@ begin
                       FCurrentPosition := pp.Finally2Offset;
                       pp.Finally2Offset := InvalidVal;
                     end else begin
-                      p := pp.EndOfBlock;
+                      if pp.ExitPoint <> InvalidVal then
+                        p := pp.ExitPoint
+                      else
+                        p := pp.EndOfBlock;
                       pp.Free;
                       FExceptionStack.DeleteLast;
                       if (ExEx <> eNoError) and (p <> InvalidVal) then
@@ -8839,12 +8846,7 @@ begin
                         ExObject := nil;
                         ExceptionProc(ExProc, ExPos, ExEx, ExParam, Tmp);
                       end else
-                      if FExitPoint <> InvalidVal then
-                      begin
-                        FCurrentPosition := FExitPoint;
-                      end else begin
                         FCurrentPosition := p;
-                      end;
                     end;
                   end;
                 3:
@@ -8854,7 +8856,10 @@ begin
                       cmd_err(ErOutOfRange);
                       Break;
                     end;
-                    p := pp.EndOfBlock;
+                    if pp.ExitPoint <> InvalidVal then
+                      p := pp.ExitPoint
+                    else
+                      p := pp.EndOfBlock;
                     pp.Free;
                     FExceptionStack.DeleteLast;
                     if ExEx <> eNoError then
@@ -8863,12 +8868,7 @@ begin
                       ExObject := nil;
                       ExceptionProc(ExProc, ExPos, ExEx, ExParam, Tmp);
                     end else
-                    if FExitPoint <> InvalidVal then
-                    begin
-                      FCurrentPosition := FExitPoint;
-                    end else begin
                       FCurrentPosition := p;
-                    end;
                  end;
               end;
             end;
@@ -10099,6 +10099,9 @@ begin
     Result.Data := datap;
     exit;
   end;
+
+  { BaseType is btPointer, which means array of const }
+
   Result.FreeIt := True;
   Result.ElementSize := sizeof(TVarRec);
   GetMem(Result.Data, Result.ItemCount * Result.ElementSize);
@@ -10623,6 +10626,13 @@ begin
       Result.aType := nil;
       exit;
     end;
+
+    if TPSTypeRec_Array(Result.aType).ArrayType.BaseType = btPointer then begin
+      { See CreateOpenArray }
+      Result := PPSVariantIFC(IPointer(Result.Dta^) + IPointer(Fieldno) * 3 * SizeOf(Pointer))^;
+      exit;
+    end;
+
     Offs := TPSTypeRec_Array(Result.aType).ArrayType.RealSize * Cardinal(FieldNo);
         if Result.aType.BaseType = btStaticArray then
           Result.Dta := Pointer(IPointer(Result.dta) + Offs)
@@ -11166,6 +11176,10 @@ begin
         btS16: SetOrdProp(TObject(FSelf), PPropInfo(p.Ext1), tbts16(n.Dta^));
         btU32: SetOrdProp(TObject(FSelf), PPropInfo(p.Ext1), tbtu32(n.Dta^));
         btS32: SetOrdProp(TObject(FSelf), PPropInfo(p.Ext1), tbts32(n.Dta^));
+        {$IFNDEF PS_NOINT64}
+        btS64: SetInt64Prop(TObject(FSelf), PPropInfo(p.Ext1), tbts64(n.Dta^));
+        btU64: SetInt64Prop(TObject(FSelf), PPropInfo(p.Ext1), tbtu64(n.Dta^));
+        {$ENDIF}
         btSingle: SetFloatProp(TObject(FSelf), p.Ext1, tbtsingle(n.Dta^));
         btDouble: SetFloatProp(TObject(FSelf), p.Ext1, tbtdouble(n.Dta^));
         btExtended: SetFloatProp(TObject(FSelf), p.Ext1, tbtextended(n.Dta^));
@@ -11226,6 +11240,10 @@ begin
         btS16: tbts16(n.Dta^) := GetOrdProp(TObject(FSelf), p.Ext1);
         btU32: tbtu32(n.Dta^) := GetOrdProp(TObject(FSelf), p.Ext1);
         btS32: tbts32(n.Dta^) := GetOrdProp(TObject(FSelf), p.Ext1);
+        {$IFNDEF PS_NOINT64}
+        btS64: tbts64(n.Dta^) := GetInt64Prop(TObject(FSelf), p.Ext1);
+        btU64: tbtu64(n.Dta^) := GetInt64Prop(TObject(FSelf), p.Ext1);
+        {$ENDIF}
         btSingle: tbtsingle(n.Dta^) := GetFloatProp(TObject(FSelf), p.Ext1);
         btDouble: tbtdouble(n.Dta^) := GetFloatProp(TObject(FSelf), p.Ext1);
         btExtended: tbtextended(n.Dta^) := GetFloatProp(TObject(FSelf), p.Ext1);

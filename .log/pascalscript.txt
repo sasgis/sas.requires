@@ -1,3 +1,66 @@
+commit 23f10a72b16816bc2b91ef0057a6ee13ca34835b
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-02-04 17:45:40 +0100
+
+    Cherry pick into stable: Revert e0440567 and redo it.
+
+commit 0ac7e8e909551028f812e73735276c69ea4b1366
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-31 13:19:21 +0100
+
+    Cherry pick into stable: Revert 357e7728 because the true issue was fixed recently.
+
+commit 798fdbc43f86c1217d54d50c7e17ff3118fe4bbd
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-31 12:56:35 +0100
+
+    Cherry pick into stable: Fix run-time type mismatch in TPSExec.SetVariantValue.
+
+commit bc44164fb91ae86406d37b667da9595a0a594e4c
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-30 16:31:47 +0100
+
+    Cherry pick into stable: Add support for optional use of safecall in interface definitions + Add missing semicolon token check when parsing interface methods + eDefines.inc was updated.
+
+commit 9f4a2ba2c4ff62964bdcfc4114123af6d10fb016
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-27 14:54:48 +0100
+
+    Cherry pick into stable: Allow multiple statements in the else block of a case statement without requiring begin/end, like Delphi does.
+
+commit d5c1c2401b97c55861e66bd8b99e7f09b49253ed
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-27 13:41:52 +0100
+
+    Cherry pick improval of PSGetArrayField into stable.
+
+commit a19d3acc6556d11c6a7874c9ad3f5cf4ab6b142f
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-27 12:45:51 +0100
+
+    Cherry pick new comment into stable.
+
+commit 618028577a67581c1ada39843bfc06c7921ec2fb
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-27 11:31:17 +0100
+
+    Cherry pick into stable: Fix Exit in try/finally not working correctly when the finally block calls functions.
+    
+    # Conflicts:
+    #       Source/uPSRuntime.pas
+
+commit ce4be6d1e3554fe32c107957dae16cecba7a916d
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-26 16:50:48 +0100
+
+    Cherry pick into stable: Fix issues when comparing record fields from function results + a memory leak.
+
+commit 31e29c56c3d7585c38de9567fb2a371d2db48271
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-01-26 09:21:48 +0100
+
+    Cherry pick into stable: Fix missing support for Native(U)Int properties in a 64-bit build. Also fixes missing (U)Int64 support in PropertyToString.
+
 commit 74268aced4fd67e77e3a02816fd4994b45151914
 Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
 Date:   2026-01-25 20:53:27 +0100
