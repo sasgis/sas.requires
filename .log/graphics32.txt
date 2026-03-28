@@ -1,3 +1,72 @@
+commit 557186e822fcc6231152050bfffa0f6bc12268a3
+Merge: 6e91bf5f 88730a1b
+Author: zed <starmen@tut.by>
+Date:   2026-03-28 11:20:59 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 88730a1b19451a05f872e1d5d8dd51484bdc9231
+Merge: 6174effb e222906d
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-03-27 23:27:18 +0100
+
+    Merge branch 'TypoFixes'
+
+commit e222906d5a35a46c65359d7ad48befa1e75fb72e
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-03-27 23:27:00 +0100
+
+    Undo some typo fixes
+    
+    - DocProcessor is deprecated and not maintained.
+    - Clipper units are copies of externals.
+    - "Greyscale" isn't a typo.
+
+commit 6174effbde305949af53544501fc3c09ff416fb0
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-03-27 23:11:27 +0100
+
+    TCustomBitmap32.Clear now clears with 0 instead of $FF000000
+    
+    Fixes #394
+
+commit fb6d84341f81ae83c395a6d92822ff28fa81f08b
+Merge: 825123c7 b4af31af
+Author: TommiPrami <tommi.prami@gmail.com>
+Date:   2026-03-25 14:28:07 +0200
+
+    Merge remote-tracking branch 'upstream/master' into TypoFixes
+
+commit 6e91bf5f7d19759a0cb4dfef3e951a26ed9e26d8
+Merge: 484e4441 b4af31af
+Author: zed <starmen@tut.by>
+Date:   2026-03-24 21:37:30 +0300
+
+    Merge branch 'master' into sasgis
+
+commit b4af31afc96dc2bca5c92f49cf3814c0c1afd8bd
+Merge: dc2b11d4 c3a95798
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-03-19 17:28:38 +0100
+
+    Merge branch 'PhotoshopReader'
+
+commit 825123c79803c4ddc9cd2acd8866b6a286a09513
+Author: TommiPrami <tommi.prami@gmail.com>
+Date:   2026-03-10 08:47:26 +0200
+
+    Fixed couple of typos
+
+commit ecb7b164089c23a4b1fbbed7668026f177c1efb0
+Author: TommiPrami <tommi.prami@gmail.com>
+Date:   2026-03-09 08:46:14 +0200
+
+    Fixed couple typos
+    
+     hierarcy -> hierarchy
+    overrided -> overridden
+    desciption -> description
+
 commit 484e44415a48f10fd53c6065c294dad944c04eaf
 Merge: d5df06aa dc2b11d4
 Author: zed <starmen@tut.by>
@@ -83,6 +152,190 @@ Author: Anders Melander <anders@melander.dk>
 Date:   2026-01-22 10:41:40 +0100
 
     Fix: Size check in TCustomBitmap32.ChangeSize validated old size instead of new
+
+commit c3a95798b0efc1151ce11efeae737bf75f6ed729
+Author: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date:   2026-01-20 20:43:16 +0000
+
+    Added Additional Layer Information key constants
+    
+    ...and juggled things around a bit
+
+commit f5db99a11d7973699b6ac459c1141ee0edf7b191
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-18 18:07:29 +0100
+
+    The PSD TLayerProperties class is now a proper encapsulation
+    
+    Added TPhotoshopLayerPropertyUnicodeName to represent the 'luni' layer property.
+
+commit 76a75761a17cdf4bd7212aa0ea70caf575c59fae
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-18 17:34:26 +0100
+
+    PSD export: Added peIgnoreLayers option.
+    
+    Various fixes related to PSD background bitmap
+
+commit 8b43fc1cdba3d182872a8c66b320684c72ee4172
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-17 22:05:44 +0100
+
+    PSD: Fixes for FPC
+
+commit a10732f8651df4100fe0057eb883daf309fac853
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-17 22:04:58 +0100
+
+    Updated PSD examples
+    
+    Renamed the "PSD Export" to "PSD import export" since it now demonstrates both
+
+commit 0f5c0ea1999c64f5f6e0513fea50206c83cd4e3d
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-17 20:58:38 +0100
+
+    Fix: Do not use an abstract class as the default layer class
+
+commit aa956119ce56fd651135431aac7f138f611fee8c
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-17 18:46:37 +0100
+
+    PSD reader now support all color depths (1, 8, 16, and 32) and all color modes.
+    
+    The PSD background image is now read and decoded.
+    The behavior of the PSD export functions can now be controlled with an option set.
+
+commit 2e6beb69336b8388f7b6513ca8731b4c298e6fa5
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-17 18:35:12 +0100
+
+    Minor refactoring on scanline writers
+
+commit 91708cfa62ac42cbf59f6edc202b79232601db7f
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-17 18:32:10 +0100
+
+    The protected TCustomIndirectBitmapLayer.Bitmap property is now public, read-only.
+    
+    The value is supplied by the virtual GetBitmap method.
+
+commit ae3513833b910f98e66280b9b34f082d6a55dba1
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-17 18:30:10 +0100
+
+    Added TCustomImage32.FitToViewport
+
+commit beaa3358fa3d2560aafbc41be68d4bd32fa329fc
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-15 12:01:48 +0100
+
+    PSD reader: Added CIE L*a*b support
+    
+    Improved handling of PSD without alpha channel data.
+
+commit f912639a5ef85b37c83c1c3839df3d4c20192d27
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-15 10:18:24 +0100
+
+    PSD zip encoding: Width was used as row count
+
+commit 37f0784f825882ea6317320b986ae91e1af1f878
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-15 10:16:13 +0100
+
+    PSD reader: CMYK is now properly converted to RGB
+
+commit d7db60e9562389330b822f1ba14e5b21399ef7b7
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-15 10:15:34 +0100
+
+    PSD image resource section is now parsed by default since we need the transparency index for indexed mode
+
+commit 640058dbbbae3baa923363dc0aabb73a3e927c9b
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-13 21:55:55 +0100
+
+    PSD reader minor refactoring
+
+commit 0915cb0c32c7f1627582bbeaa28cfd5e4e1cb882
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-13 21:55:19 +0100
+
+    Fix RLE overrun in PSD compressor
+
+commit 38d4ec3512a5f3fecedf96555f88e596a1be4b49
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-13 12:58:26 +0100
+
+    Surface compression encountered when reading PSD
+
+commit 7fad58486966e422328811d82e4af325a4db03ec
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-13 12:28:39 +0100
+
+    Minor refactoring
+
+commit 54f67014750bcec73e92b2d5444d9dd9c4b784d6
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-13 11:24:00 +0100
+
+    PSD: Work around for channels saved in "unusual" order
+    
+    Works around a bug in Gimp's PSD reader; Only the channel order of the composite bitmap is fixed but Gimp also enforces this order on the layer bitmaps.
+    refs #240
+
+commit 84bbc222c826859cbe34c62700a166e4e9fe3eb0
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-13 00:28:05 +0100
+
+    Updated PSD Export example
+
+commit 8b3d576e9ef95662ee93afc1d6b3154e57acf31b
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-13 00:27:52 +0100
+
+    PSD: Added support for CMYK, grayscale, indexed color, B/W, and DuoTone modes.
+    
+    Added handling of any channel count.
+
+commit 36920d81832a49ca4d6a07215a995ee3c73c48a9
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-12 23:53:27 +0100
+
+    Added LoadImageFromPhotoshopDocument and LoadBitmapFromPhotoshopDocument.
+
+commit 8cde629bb72bce1d3ed74f3578736f10e6ae2817
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-12 23:51:34 +0100
+
+    *BREAKING CHANGE* The protected ChangeSize and the public SetSize virtual methods now take an optional ClearBuffer parameter.
+    
+    ClearBuffer (default True) specifies if the method clears the buffer.
+    Ditto for the SetSizeFrom method.
+
+commit a802c4a6e41ade4696cc07556f59079aca10fee7
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-12 00:05:25 +0100
+
+    Moved TPhotoshopDocument and friends from GR32.ImageFormats.PSD to GR32.ImageFormats.PSD.Model
+
+commit 65c4eadaf348e3dd6c30679cd97c6f9cba41e468
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-11 23:38:54 +0100
+
+    Updated the PSD Export example to also support loading PSD files.
+    
+    Also added a layer list control.
+
+commit fb4c58d0b7947a24f972d8457ae598bb234469ca
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-11 23:36:59 +0100
+
+    Added a basic reader for the PhotoShop PSD file format.
+    
+    The reader initially supports the same features as those of the PSD writer.
+    Refs #240
 
 commit 00374b9d50901aaf6ba12fb6e18bbaf55dc349f2
 Author: Anders Melander <anders@melander.dk>

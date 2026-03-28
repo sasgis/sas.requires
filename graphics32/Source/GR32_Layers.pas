@@ -72,7 +72,7 @@ const
   LOB_MOUSE_EVENTS      = $20000000; // 29-th bit: Specifies whether the layer responds to mouse messages.
   LOB_NO_UPDATE         = $10000000; // 28-th bit: Disables automatic repainting when the layer changes its location or other properties.
   LOB_NO_CAPTURE        = $08000000; // 27-th bit: Allows to override automatic capturing of mouse messages when the left mouse is pressed on top of the layer. This bit has no effect if LOB_MOUSE_EVENTS is not set.
-  LOB_INVALID           = $04000000; // 26-th bit: Used internall by repaint optimizer.
+  LOB_INVALID           = $04000000; // 26-th bit: Used internally by repaint optimizer.
   LOB_FORCE_UPDATE      = $02000000; // 25-th bit: Used internally to force a layer to update when it is being hidden.
   LOB_RESERVED_24       = $01000000; // 24-th bit
   LOB_RESERVED_MASK     = $FF000000;
@@ -461,22 +461,22 @@ type
     function GetContentSize: TPoint; override;
   protected
     procedure BitmapAreaChanged(Sender: TObject; const Area: TRect; const Info: Cardinal);
+    function GetBitmap: TCustomBitmap32; virtual;
     procedure SetBitmap(Value: TCustomBitmap32); virtual;
     procedure SetCropped(Value: Boolean);
-    property Bitmap: TCustomBitmap32 read FBitmap write SetBitmap;
   public
     constructor Create(ALayerCollection: TLayerCollection); overload; override;
     constructor Create(ALayerCollection: TLayerCollection; ABitmap: TCustomBitmap32); reintroduce; overload;
     destructor Destroy; override;
 
-
+    property Bitmap: TCustomBitmap32 read GetBitmap;
     property AlphaHit: Boolean read FAlphaHit write FAlphaHit;
     property Cropped: Boolean read FCropped write SetCropped;
   end;
 
   TIndirectBitmapLayer = class(TCustomIndirectBitmapLayer)
   public
-    property Bitmap;
+    property Bitmap: TCustomBitmap32 read GetBitmap write SetBitmap;
   end;
 
 
@@ -511,7 +511,7 @@ type
   TBitmapLayer = class(TCustomBitmapLayer)
   protected
     function GetBitmapClass: TCustomBitmap32Class; override;
-    function GetBitmap: TBitmap32;
+    function GetBitmap: TBitmap32; reintroduce;
     procedure SetBitmap(Value: TBitmap32); reintroduce;
   public
     property Bitmap: TBitmap32 read GetBitmap write SetBitmap;
@@ -1753,7 +1753,7 @@ begin
     LayerOptions := LayerOptions or LOB_VISIBLE
   else
     LayerOptions := LayerOptions and not LOB_VISIBLE;
-  end;
+end;
 
 procedure TCustomLayer.Update;
 begin
@@ -2281,6 +2281,11 @@ begin
     FBitmap.OnAreaChanged := BitmapAreaChanged;
 end;
 
+function TCustomIndirectBitmapLayer.GetBitmap: TCustomBitmap32;
+begin
+  Result := FBitmap;
+end;
+
 function TCustomIndirectBitmapLayer.GetContentSize: TPoint;
 begin
   Result.X := Bitmap.Width;
@@ -2352,7 +2357,7 @@ end;
 //------------------------------------------------------------------------------
 function TBitmapLayer.GetBitmap: TBitmap32;
 begin
-  Result := TBitmap32(inherited Bitmap);
+  Result := TBitmap32(inherited GetBitmap);
 end;
 
 procedure TBitmapLayer.SetBitmap(Value: TBitmap32);
@@ -2779,7 +2784,7 @@ begin
 
     DoHandleMove(-1, NewLocation.TopLeft);
 
-    // Set new loaction but keep old width/height
+    // Set new location but keep old width/height
     NewLocation.Right := NewLocation.Left + NewLocation.Width;
     NewLocation.Bottom := NewLocation.Top + NewLocation.Height;
 
@@ -3762,7 +3767,7 @@ begin
   end else
       NewLocation.TopLeft := StartLocation.TopLeft + Delta;
 
-    // Set new loaction but keep old width/height
+    // Set new location but keep old width/height
     NewLocation.Right := NewLocation.Left + StartLocation.Width;
     NewLocation.Bottom := NewLocation.Top + StartLocation.Height;
 

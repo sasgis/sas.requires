@@ -777,16 +777,17 @@ type
     FOnResize: TNotifyEvent;
     procedure SetHeight(NewHeight: Integer); virtual;
     procedure SetWidth(NewWidth: Integer); virtual;
-    procedure ChangeSize(var Width, Height: Integer; NewWidth, NewHeight: Integer); virtual;
+    procedure ChangeSize(var Width, Height: Integer; NewWidth, NewHeight: Integer; ClearBuffer: Boolean = True); virtual;
   public
     constructor Create(Width, Height: Integer); reintroduce; overload;
     destructor Destroy; override;
 
     procedure Delete; virtual;
     function  Empty: Boolean; virtual;
+    procedure Clear; virtual;
     procedure Resized; virtual;
-    function SetSizeFrom(Source: TPersistent): Boolean;
-    function SetSize(NewWidth, NewHeight: Integer): Boolean; virtual;
+    function SetSizeFrom(Source: TPersistent; ClearBuffer: Boolean = True): Boolean;
+    function SetSize(NewWidth, NewHeight: Integer; ClearBuffer: Boolean = True): Boolean; virtual;
 
     property Height: Integer read FHeight write SetHeight;
     property Width: Integer read FWidth write SetWidth;
@@ -882,7 +883,7 @@ type
     BlendProc: Pointer;
     RasterX, RasterY: Integer;
     RasterXF, RasterYF: TFixed;
-    procedure ChangeSize(var Width, Height: Integer; NewWidth, NewHeight: Integer); override;
+    procedure ChangeSize(var Width, Height: Integer; NewWidth, NewHeight: Integer; ClearBuffer: Boolean = True); override;
     function  Equal(B: TCustomBitmap32): Boolean;
     procedure ReadData(Stream: TStream); virtual;
     procedure WriteData(Stream: TStream); virtual;
@@ -963,8 +964,8 @@ type
     procedure Assign(Source: TPersistent); override;
     function  BoundsRect: TRect;
     function  Empty: Boolean; override;
-    procedure Clear; overload;
-    procedure Clear(FillColor: TColor32); overload;
+    procedure Clear; overload; override;
+    procedure Clear(FillColor: TColor32); reintroduce; overload;
     procedure Delete; override;
 
     procedure BeginMeasuring(const Callback: TAreaChangedEvent);
@@ -2944,7 +2945,7 @@ begin
   inherited;
 end;
 
-procedure TCustomMap.ChangeSize(var Width, Height: Integer; NewWidth, NewHeight: Integer);
+procedure TCustomMap.ChangeSize(var Width, Height: Integer; NewWidth, NewHeight: Integer; ClearBuffer: Boolean);
 begin
   Width := NewWidth;
   Height := NewHeight;
@@ -2952,7 +2953,11 @@ end;
 
 procedure TCustomMap.Delete;
 begin
-  SetSize(0, 0);
+  SetSize(0, 0, False);
+end;
+
+procedure TCustomMap.Clear;
+begin
 end;
 
 function TCustomMap.Empty: Boolean;
@@ -2971,7 +2976,7 @@ begin
   SetSize(Width, NewHeight);
 end;
 
-function TCustomMap.SetSize(NewWidth, NewHeight: Integer): Boolean;
+function TCustomMap.SetSize(NewWidth, NewHeight: Integer; ClearBuffer: Boolean): Boolean;
 begin
   if NewWidth < 0 then
     NewWidth := 0;
@@ -2984,34 +2989,36 @@ begin
   begin
     BeginUpdate;
     try
-      ChangeSize(FWidth, FHeight, NewWidth, NewHeight);
+      ChangeSize(FWidth, FHeight, NewWidth, NewHeight, ClearBuffer);
       Changed;
     finally
       EndUpdate;
     end;
     Resized;
-  end;
+  end else
+  if (ClearBuffer) then
+    Clear;
 end;
 
-function TCustomMap.SetSizeFrom(Source: TPersistent): Boolean;
+function TCustomMap.SetSizeFrom(Source: TPersistent; ClearBuffer: Boolean): Boolean;
 begin
   if Source is TCustomMap then
-    Result := SetSize(TCustomMap(Source).Width, TCustomMap(Source).Height)
+    Result := SetSize(TCustomMap(Source).Width, TCustomMap(Source).Height, ClearBuffer)
   else
 {$ifndef FRAMEWORK_FMX}
   if Source is TGraphic then
-    Result := SetSize(TGraphic(Source).Width, TGraphic(Source).Height)
+    Result := SetSize(TGraphic(Source).Width, TGraphic(Source).Height, ClearBuffer)
   else
 {$else}
   if Source is TBitmap then
-    Result := SetSize(TBitmap(Source).Width, TBitmap(Source).Height)
+    Result := SetSize(TBitmap(Source).Width, TBitmap(Source).Height, ClearBuffer)
   else
 {$endif}
   if Source is TControl then
-    Result := SetSize(TControl(Source).Width, TControl(Source).Height)
+    Result := SetSize(TControl(Source).Width, TControl(Source).Height, ClearBuffer)
   else
   if Source = nil then
-    Result := SetSize(0, 0)
+    Result := SetSize(0, 0, ClearBuffer)
   else
     raise Exception.CreateFmt(RCStrCannotSetSize, [Source.ClassName]);
 end;
@@ -3179,11 +3186,11 @@ begin
     Result := inherited QueryInterface(IID, Obj);
 end;
 
-procedure TCustomBitmap32.ChangeSize(var Width, Height: Integer; NewWidth, NewHeight: Integer);
+procedure TCustomBitmap32.ChangeSize(var Width, Height: Integer; NewWidth, NewHeight: Integer; ClearBuffer: Boolean);
 begin
   if (Int64(NewWidth) * Int64(NewHeight) * SizeOf(DWORD) > MaxInt) then
     raise EOutOfResources.CreateFmt('Unsupported bitmap size: %d x %d x 4 = $%.8X bytes', [NewWidth, NewHeight, Int64(NewWidth) * Int64(NewHeight) * SizeOf(DWORD)]);
-  FBackend.ChangeSize(Width, Height, NewWidth, NewHeight);
+  FBackend.ChangeSize(Width, Height, NewWidth, NewHeight, ClearBuffer);
 end;
 
 procedure TCustomBitmap32.BackendChangingHandler(Sender: TObject);
@@ -3204,7 +3211,7 @@ end;
 
 procedure TCustomBitmap32.Clear;
 begin
-  Clear(clBlack32);
+  Clear(0); // Clear to fully transparent. See issue #394
 end;
 
 procedure TCustomBitmap32.Clear(FillColor: TColor32);
@@ -3240,7 +3247,7 @@ begin
   try
 
     if (Source = nil) then
-      SetSize(0, 0)
+      Self.Delete
     else
     if (Source is TCustomBitmap32) then
     begin
@@ -3260,7 +3267,7 @@ procedure TCustomBitmap32.CopyMapTo(Dst: TCustomBitmap32);
 begin
   Dst.BeginUpdate;
   try
-    Dst.SetSize(Width, Height);
+    Dst.SetSize(Width, Height, False);
     if not Empty then
       MoveLongword(Bits[0], Dst.Bits[0], Width * Height);
 
@@ -3374,14 +3381,12 @@ end;
 
 procedure TCustomBitmap32.DrawTo(Dst: TCustomBitmap32);
 begin
-  BlockTransfer(Dst, 0, 0, Dst.ClipRect, Self, BoundsRect, DrawMode,
-    FOnPixelCombine);
+  BlockTransfer(Dst, 0, 0, Dst.ClipRect, Self, BoundsRect, DrawMode, FOnPixelCombine);
 end;
 
 procedure TCustomBitmap32.DrawTo(Dst: TCustomBitmap32; DstX, DstY: Integer);
 begin
-  BlockTransfer(Dst, DstX, DstY, Dst.ClipRect, Self, BoundsRect, DrawMode,
-    FOnPixelCombine);
+  BlockTransfer(Dst, DstX, DstY, Dst.ClipRect, Self, BoundsRect, DrawMode, FOnPixelCombine);
 end;
 
 procedure TCustomBitmap32.DrawTo(Dst: TCustomBitmap32; DstX, DstY: Integer;
@@ -6067,7 +6072,7 @@ function TCustomBitmap32.LoadFromDIBStream(Stream: TStream; Size: Int64): boolea
     // Since the alpha channel of this format isn't defined we can either assume
     // that all pixels have Alpha=255 or we can assume that the alpha is
     // specified in the source pixel data.
-    // Instead of just chosing one of these and hoping for the best we make a
+    // Instead of just choosing one of these and hoping for the best we make a
     // choice based on the actual alpha values: If the bitmap contains alpha
     // values then we leave it as is. If it doesn't contain alpha values then
     // we reset the alpha of the whole bitmap to 255.
