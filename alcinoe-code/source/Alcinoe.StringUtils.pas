@@ -59,6 +59,7 @@ uses
   {$IFDEF MACOS}
   Macapi.CoreFoundation,
   {$ENDIF MACOS}
+  Alcinoe.Backward,
   Alcinoe.Localization,
   Alcinoe.StringList,
   Alcinoe.Common;
@@ -76,30 +77,28 @@ Const
 
 type
 
-  TALStringStreamA = class(TStream)
+  {$IFNDEF ALCompilerVersionSupported131}
+    {$MESSAGE WARN 'Check if System.classes.TStringStream is still the same and adjust the IFDEF'}
+    {$MESSAGE WARN 'Check if System.classes.TBytesStream is still the same and adjust the IFDEF'}
+    {$MESSAGE WARN 'Check if System.classes.TMemoryStream is still the same and adjust the IFDEF'}
+    {$MESSAGE WARN 'Check if System.classes.TCustomMemoryStream is still the same and adjust the IFDEF'}
+  {$ENDIF}
+  TALStringStreamA = class(TMemoryStream)
   private
     FDataString: AnsiString;
-    FPosition: Integer;
     procedure SetDataString(const AValue: AnsiString);
   protected
-    function GetSize: Int64; override;
-    procedure SetSize(NewSize: Longint); override;
-    procedure SetSize(const NewSize: Int64); override;
+    function Realloc(var NewCapacity: {$IF CompilerVersion >= 36.0} NativeInt {$ELSE} Integer {$ENDIF}): Pointer; override;
   public
     constructor Create(const AString: AnsiString);
-    procedure LoadFromStream(Stream: TStream);
-    procedure LoadFromFile(const FileName: string);
-    function Read(var Buffer; Count: Longint): Longint; override;
     function ReadString(Count: Longint): AnsiString;
-    function Seek(Offset: Longint; Origin: Word): Longint; override;
-    function Write(const Buffer; Count: Longint): Longint; override;
     procedure WriteString(const AString: AnsiString);
     property DataString: AnsiString read FDataString write SetDataString;
   end;
   TALStringStreamW = class(TStringStream);
 
   {*************************************}
-  {$IFNDEF ALCompilerVersionSupported130}
+  {$IFNDEF ALCompilerVersionSupported131}
     {$MESSAGE WARN 'Check if System.Masks.pas is still the same and adjust the IFDEF'}
   {$ENDIF}
 
@@ -146,10 +145,12 @@ type
   TALStringBuilderA = class
   private const
     DefaultCapacity = $10;
-    LineBreak: AnsiString = sLineBreak;
+    LineBreak: AnsiString = #13#10;
   private
     function GetCapacity: Integer; inline;
     procedure SetCapacity(const AValue: Integer);
+    function GetChars(Index: Integer): AnsiChar;
+    procedure SetChars(Index: Integer; Value: AnsiChar);
     function GetLength: Integer; inline;
     procedure SetLength(const AValue: Integer);
     function GetMaxCapacity: Integer; inline;
@@ -176,6 +177,11 @@ type
     function ToString: AnsiString; reintroduce; overload;
     function ToString(const AUpdateCapacity: Boolean): AnsiString; reintroduce; overload;
     property Capacity: Integer read GetCapacity write SetCapacity;
+    /// <summary>
+    ///   Zero-based character access.
+    ///   Valid indices are 0..Length-1 (Chars[0] is the first character).
+    /// </summary>
+    property Chars[index: Integer]: AnsiChar read GetChars write SetChars; default;
     property Length: Integer read GetLength write SetLength;
     property MaxCapacity: Integer read GetMaxCapacity;
   end;
@@ -183,10 +189,12 @@ type
   TALStringBuilderW = class
   private const
     DefaultCapacity = $10;
-    LineBreak: string = sLineBreak;
+    LineBreak: string = #13#10;
   private
     function GetCapacity: Integer; inline;
     procedure SetCapacity(const AValue: Integer);
+    function GetChars(Index: Integer): Char;
+    procedure SetChars(Index: Integer; Value: Char);
     function GetLength: Integer; inline;
     procedure SetLength(const AValue: Integer);
     function GetMaxCapacity: Integer; inline;
@@ -213,10 +221,28 @@ type
     function ToString: string; overload; override;
     function ToString(const AUpdateCapacity: Boolean): string; reintroduce; overload;
     property Capacity: Integer read GetCapacity write SetCapacity;
+    /// <summary>
+    ///   Zero-based character access.
+    ///   Valid indices are 0..Length-1 (Chars[0] is the first character).
+    /// </summary>
+    property Chars[index: Integer]: Char read GetChars write SetChars; default;
     property Length: Integer read GetLength write SetLength;
     property MaxCapacity: Integer read GetMaxCapacity;
   end;
 
+/// <summary>
+///   Converts an AnsiString to a TBytes without copying the underlying data.
+///   The returned TBytes shares the same memory block as the source AnsiString.
+///   It must be treated as read-only, must not be modified or resized, and must
+///   later be reverted back to an AnsiString using ALRestoreBytesToString.
+///   WARNING: This function is not thread-safe. Do not use it if AStr may be
+///   accessed or shared by multiple threads at the same time, as it temporarily
+///   alters internal reference-counted structures and may lead to memory corruption.
+/// </summary>
+function  ALBorrowStringAsBytes(const AStr: AnsiString; out ACodePage: Word; out AElemSize: Word): TBytes;
+procedure ALRestoreBytesToString(var ABytes: TBytes; const ACodePage: Word; const AElemSize: Word);
+function  ALStringToBytes(const AStr: AnsiString): TBytes;
+function  ALBytesToString(const ABytes: TBytes): AnsiString;
 Function  ALNewGUIDBytes: TBytes;
 function  ALGUIDToByteString(const Guid: TGUID): Ansistring;
 function  ALNewGUIDByteString: Ansistring;
@@ -224,6 +250,8 @@ function  ALGUIDToStringA(const Guid: TGUID; const WithoutBracket: boolean = fal
 function  ALGUIDToStringW(const Guid: TGUID; const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): string;
 Function  ALNewGUIDStringA(const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): AnsiString;
 Function  ALNewGUIDStringW(const WithoutBracket: boolean = false; const WithoutHyphen: boolean = false): String;
+function  ALAdjustLineBreaks(const S: string; const Style: TTextLineBreakStyle = tlbsCRLF): string; inline; overload;
+function  ALAdjustLineBreaks(const S: Ansistring; const Style: TTextLineBreakStyle = tlbsCRLF): Ansistring; inline; overload;
 function  ALFormatA(const Format: AnsiString; const Args: array of const; const AFormatSettings: TALFormatSettingsA): AnsiString; overload;
 procedure ALFormatA(const Format: AnsiString; const Args: array of const; const AFormatSettings: TALFormatSettingsA; var Result: ansiString); overload;
 function  ALFormatA(const Format: AnsiString; const Args: array of const): AnsiString; overload;
@@ -326,18 +354,16 @@ function  ALIntToHexA(Value: UInt64; Digits: Integer): AnsiString; overload;
 function  ALIntToHexW(Value: Integer; Digits: Integer): String; inline; overload;
 function  ALIntToHexW(Value: Int64; Digits: Integer): String; inline; overload;
 function  ALIntToHexW(Value: UInt64; Digits: Integer): String; inline; overload;
-function  ALTryBinToHex(const aBin: AnsiString; out Value: AnsiString): boolean; overload;
-function  ALTryBinToHex(const aBin; aBinSize : Cardinal; out Value: AnsiString): boolean; overload;
-function  ALTryBinToHex(const aBin: Tbytes; out Value: String): boolean; overload;
-function  ALTryBinToHex(const aBin; aBinSize : Cardinal; out Value: String): boolean; overload;
 function  ALBinToHexA(const aBin: AnsiString): AnsiString; overload;
-Function  ALBinToHexA(const aBin; aBinSize : Cardinal): AnsiString; overload;
-Function  ALBinToHexW(const aBin: Tbytes): String; overload;
-Function  ALBinToHexW(const aBin; aBinSize : Cardinal): String; overload;
+function  ALBinToHexA(const aBin: TBytes): AnsiString; overload;
+Function  ALBinToHexA(const aBin; aBinSize: Integer): AnsiString; overload;
+Function  ALBinToHexW(const aBin: TBytes): String; overload;
+Function  ALBinToHexW(const aBin; aBinSize: Integer): String; overload;
 Function  ALTryHexToBin(const aHex: AnsiString; out Value: AnsiString): boolean; overload;
-Function  ALTryHexToBin(const aHex: String; out Value: Tbytes): boolean; overload;
-Function  ALHexToBin(const aHex: AnsiString): AnsiString; overload;
-Function  ALHexToBin(const aHex: String): Tbytes; overload;
+Function  ALTryHexToBin(const aHex: AnsiString; out Value: TBytes): boolean; overload;
+Function  ALTryHexToBin(const aHex: String; out Value: TBytes): boolean; overload;
+Function  ALHexToBin(const aHex: AnsiString): TBytes; overload;
+Function  ALHexToBin(const aHex: String): TBytes; overload;
 function  ALIntToBitA(value: Integer; digits: integer): ansistring;
 function  AlBitToInt(Value: ansiString): Integer;
 function  ALBase64EncodeString(const P: PansiChar; const ln: Integer): AnsiString; overload;
@@ -350,9 +376,12 @@ function  ALBase64EncodeStringMIME(const S: AnsiString): AnsiString;
 function  ALBase64DecodeStringMIME(const S: AnsiString): AnsiString;
 function  ALURLBase64EncodeString(const S: AnsiString; const aDoOnlyUrlEncode: boolean = false): AnsiString;
 function  ALURLBase64DecodeString(const S: AnsiString; const aDoOnlyUrlDecode: boolean = false): AnsiString;
-Function  ALBase64EncodeBytesW(const Bytes: Tbytes): String; overload;
+Function  ALBase64EncodeBytesA(const Bytes: TBytes): AnsiString; overload;
+Function  ALBase64EncodeBytesA(const Bytes: pointer; const Size: Integer): AnsiString; overload;
+Function  ALBase64EncodeBytesW(const Bytes: TBytes): String; overload;
 Function  ALBase64EncodeBytesW(const Bytes: pointer; const Size: Integer): String; overload;
-Function  ALBase64DecodeBytes(const S: String): Tbytes;
+Function  ALBase64DecodeBytes(const S: AnsiString): TBytes; overload;
+Function  ALBase64DecodeBytes(const S: String): TBytes; overload;
 function  ALIsAlphaString(const S: AnsiString): Boolean; overload;
 function  ALIsAlphaString(const S: string): Boolean; overload;
 function  ALIsAlphaNumeric(const S: AnsiString): Boolean; overload;
@@ -481,8 +510,16 @@ function  ALExcludeLeadingPathDelimiterA(const S: AnsiString; const PathDelimite
 function  ALExcludeLeadingPathDelimiterW(const S: String; const PathDelimiter: String = {$IFDEF MSWINDOWS} '\' {$ELSE} '/' {$ENDIF}): String; overload;
 procedure ALStrMove(const Source: PAnsiChar; var Dest: PAnsiChar; Count: NativeInt); overload; inline;
 procedure ALStrMove(const Source: PChar; var Dest: PChar; Count: NativeInt); overload; inline;
+/// <summary>
+///   AStart is zero-based.
+/// </summary>
+function  ALCopyStr(const aSourceString: TBytes; aStart, aLength: Integer): AnsiString; overload;
 function  ALCopyStr(const aSourceString: AnsiString; aStart, aLength: Integer): AnsiString; overload;
 function  ALCopyStr(const aSourceString: String; aStart, aLength: Integer): String; overload;
+/// <summary>
+///   AStart is zero-based.
+/// </summary>
+procedure ALCopyStr(const aSourceString: TBytes; var aDestString: ansiString; aStart, aLength: Integer); overload;
 procedure ALCopyStr(const aSourceString: AnsiString; var aDestString: ansiString; aStart, aLength: Integer); overload;
 procedure ALCopyStr(const aSourceString: String; var aDestString: String; aStart, aLength: Integer); overload;
 function  ALCopyStr(
@@ -497,19 +534,19 @@ function  ALCopyStr(
             const aEndStr: String;
             const aOffset: integer = 1;
             const aRaiseExceptionIfNotFound: Boolean = True): String; overload;
-function  ALStringReplaceA(const Source, OldPattern, NewPattern: AnsiString; Flags: TReplaceFlags): AnsiString; inline;
-function  ALStringReplaceW(const Source, OldPattern, NewPattern: string; Flags: TReplaceFlags): string; inline;
+function  ALStringReplaceA(const Source, OldPattern, NewPattern: AnsiString; const Flags: TReplaceFlags = [rfReplaceAll, rfIgnoreCase]): AnsiString; inline;
+function  ALStringReplaceW(const Source, OldPattern, NewPattern: string; const Flags: TReplaceFlags = [rfReplaceAll, rfIgnoreCase]): string; inline;
 function  ALRandomStrA(const aLength: Longint; const aCharset: Array of ansiChar): AnsiString; overload;
 function  ALRandomStrA(const aLength: Longint): AnsiString; overload;
 function  ALRandomStrW(const aLength: Longint; const aCharset: Array of Char): String; overload;
 function  ALRandomStrW(const aLength: Longint): String; overload;
 function  ALNEVExtractName(const S: AnsiString): AnsiString;
 function  ALNEVExtractValue(const s: AnsiString): AnsiString;
-function  ALGetBytesFromStream(const aStream : TStream): Tbytes;
-function  ALGetBytesFromFile(const filename: ansiString; const ShareMode: Word = fmShareDenyWrite): Tbytes; overload;
-function  ALGetBytesFromFile(const filename: String; const ShareMode: Word = fmShareDenyWrite): Tbytes; overload;
-function  ALGetStringFromBuffer(const buf : TBytes; const ADefaultEncoding: TEncoding): String;
-function  ALGetStringFromStream(const aStream : TStream; const ADefaultEncoding: TEncoding) : String;
+function  ALGetBytesFromStream(const aStream: TStream): TBytes;
+function  ALGetBytesFromFile(const filename: ansiString; const ShareMode: Word = fmShareDenyWrite): TBytes; overload;
+function  ALGetBytesFromFile(const filename: String; const ShareMode: Word = fmShareDenyWrite): TBytes; overload;
+function  ALGetStringFromBuffer(const buf: TBytes; const ADefaultEncoding: TEncoding): String;
+function  ALGetStringFromStream(const aStream: TStream; const ADefaultEncoding: TEncoding): String;
 function  ALGetStringFromFile(const filename: AnsiString; const ShareMode: Word = fmShareDenyWrite): AnsiString; overload;
 function  ALGetStringFromFile(const filename: String; const ShareMode: Word = fmShareDenyWrite): AnsiString; overload;
 function  ALGetStringFromFile(const filename: String; const ADefaultEncoding: TEncoding; const ShareMode: Word = fmShareDenyWrite): String; overload;
@@ -597,6 +634,8 @@ function  ALPercentDecode(const AStr: AnsiString; const APlusAsSpaces: Boolean =
 function  ALPercentDecode(const AStr: String; const APlusAsSpaces: Boolean = False): String; overload;
 procedure ALPercentDecodeInPlace(var AStr: AnsiString; const APlusAsSpaces: Boolean = False); overload;
 procedure ALPercentDecodeInPlace(var AStr: String; const APlusAsSpaces: Boolean = False); overload;
+function  ALExtractHeaderParamValue(const AHeaderValue: AnsiString; const AParamName: AnsiString): AnsiString; overload;
+function  ALExtractHeaderParamValue(const AHeaderValue: String; const AParamName: String): String; overload;
 procedure ALExtractHeaderFields(
             const ASeparators: TSysCharSet;
             const AWhiteSpace: TSysCharSet;
@@ -714,31 +753,61 @@ uses
   System.Character,
   System.Math;
 
+type
+
+  {$IFNDEF ALCompilerVersionSupported131}
+    {$MESSAGE WARN 'Check if System.StrRec is still the same and adjust the IFDEF'}
+  {$ENDIF}
+  PStrRec = ^StrRec;
+  StrRec = packed record
+  {$IF defined(CPU64BITS)}
+    _Padding: Integer; // Make 16 byte align for payload..
+  {$ENDIF}
+    codePage: Word;
+    elemSize: Word;
+    refCnt: Integer;
+    length: Integer;
+  end;
+
+  {$IFNDEF ALCompilerVersionSupported131}
+    {$MESSAGE WARN 'Check if System.TDynArrayRec is still the same and adjust the IFDEF'}
+  {$ENDIF}
+  PDynArrayRec = ^TDynArrayRec;
+  TDynArrayRec = packed record
+  {$IFDEF CPU64BITS}
+    _Padding: Integer; // Make 16 byte align for payload..
+  {$ENDIF}
+    RefCnt: Integer;
+    Length: NativeInt;
+  end;
+
+Type
+
+  {*************************************}
+  {$IFNDEF ALCompilerVersionSupported131}
+    {$MESSAGE WARN 'Check if System.classes.TMemoryStream is still the same and adjust the IFDEF'}
+  {$ENDIF}
+  _TALMemoryStreamPrivateAccess = class(TCustomMemoryStream)
+  public
+    FCapacity: NativeInt;
+  end;
+
 {*************************************************************}
 constructor TALStringStreamA.Create(const AString: AnsiString);
 begin
   inherited Create;
-  FDataString := AString;
+  SetDataString(AString);
 end;
 
-{*********************************************************}
-procedure TALStringStreamA.LoadFromStream(Stream: TStream);
+{*********************************************************************}
+function TALStringStreamA.Realloc(var NewCapacity: {$IF CompilerVersion >= 36.0} NativeInt {$ELSE} Integer {$ENDIF}): Pointer;
 begin
-  Stream.Position := 0;
-  var LCount := Stream.Size;
-  SetSize(LCount);
-  if LCount <> 0 then
-    Stream.ReadBuffer(PAnsiChar(FDataString)^, LCount);
-end;
-
-{**************************************************************}
-procedure TALStringStreamA.LoadFromFile(const FileName: string);
-begin
-  var LFileStream := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
-  try
-    LoadFromStream(LFileStream);
-  finally
-    ALFreeAndNil(LFileStream);
+  Result := Pointer(FDataString);
+  if NewCapacity <> Capacity then begin
+    SetLength(FDataString, NewCapacity);
+    Result := Pointer(FDataString);
+    if NewCapacity = 0 then Exit;
+    if Result = nil then raise EStreamError.CreateRes(@SMemoryStreamError);
   end;
 end;
 
@@ -746,86 +815,82 @@ end;
 procedure TALStringStreamA.SetDataString(const AValue: AnsiString);
 begin
   FDataString := AValue;
-  FPosition := 0;
-end;
-
-{******************************************************************}
-function TALStringStreamA.Read(var Buffer; Count: Longint): Longint;
-begin
-  Result := Length(FDataString) - FPosition;
-  if Result > Count then Result := Count;
-
-  // a little modification from the original TStringStream
-  // because in original we will have a call to uniqueString on FDataString :(
-  // https://forums.embarcadero.com/thread.jspa?threadID=119103
-  // ALMove(PAnsiChar(@FDataString[FPosition + SizeOf(AnsiChar)])^, Buffer, Result * SizeOf(AnsiChar));
-  ALMove(Pbyte(FDataString)[FPosition], Buffer, Result * SizeOf(AnsiChar));
-
-  Inc(FPosition, Result);
-end;
-
-{*********************************************************************}
-function TALStringStreamA.Write(const Buffer; Count: Longint): Longint;
-begin
-  Result := Count;
-
-  // a little modification from the original TStringStream
-  // because in original it's crazy we can not update part inside the datastring !!
-  // SetLength(FDataString, (FPosition + Result));
-  if FPosition + Result > length(FDataString) then SetLength(FDataString, (FPosition + Result));
-
-  ALMove(Buffer, PAnsiChar(@FDataString[FPosition + SizeOf(AnsiChar)])^, Result * SizeOf(AnsiChar));
-  Inc(FPosition, Result);
-end;
-
-{*********************************************************************}
-function TALStringStreamA.Seek(Offset: Longint; Origin: Word): Longint;
-begin
-  case Origin of
-    soFromBeginning: FPosition := Offset;
-    soFromCurrent: FPosition := FPosition + Offset;
-    soFromEnd: FPosition := Length(FDataString) - Offset;
-  end;
-  if FPosition > Length(FDataString) then
-    FPosition := Length(FDataString)
-  else if FPosition < 0 then FPosition := 0;
-  Result := FPosition;
+  SetPointer(Pointer(FDataString), Length(FDataString));
+  _TALMemoryStreamPrivateAccess(Self).FCapacity := length(FDataString){FSize};
+  Position := 0;
 end;
 
 {***************************************************************}
 function TALStringStreamA.ReadString(Count: Longint): AnsiString;
-var
-  Len: Integer;
 begin
-  Len := Length(FDataString) - FPosition;
-  if Len > Count then Len := Count;
-  SetString(Result, PAnsiChar(@FDataString[FPosition + SizeOf(AnsiChar)]), Len);
-  Inc(FPosition, Len);
+  var LPosition: int64 := Position;
+  if Count > Length(FDataString){Size} - LPosition then
+    Count := Length(FDataString){Size} - LPosition;
+  SetString(Result, PAnsiChar(@FDataString[LPosition + SizeOf(AnsiChar)]), Count);
+  Position := LPosition + Count;
 end;
 
 {****************************************************************}
 procedure TALStringStreamA.WriteString(const AString: AnsiString);
 begin
-  Write(PAnsiChar(AString)^, Length(AString));
+  Write(pointer(AString)^, Length(AString));
 end;
 
-{***************************************}
-function TALStringStreamA.GetSize: Int64;
+{********************************************************************************************************}
+function  ALBorrowStringAsBytes(const AStr: AnsiString; out ACodePage: Word; out AElemSize: Word): TBytes;
 begin
-  Result := length(FDataString);
+  if Pointer(AStr) = nil then begin
+    Result := nil;
+    Exit;
+  end;
+
+  var LStrRec: PStrRec := PStrRec(PByte(Pointer(AStr)) - SizeOf(StrRec));
+  var LLength: Integer := LStrRec.Length;
+  var LrefCnt: Integer := LStrRec.refCnt;
+  ACodePage := LStrRec.codePage;
+  AElemSize := LStrRec.elemSize;
+
+  var LDynArrayRec: PDynArrayRec := PDynArrayRec(PByte(Pointer(AStr)) - SizeOf(TDynArrayRec));
+  LDynArrayRec.Length := LLength;
+  LDynArrayRec.RefCnt := LrefCnt;
+
+  Pointer(Result) := Pointer(AStr);
 end;
 
-{***************************************************}
-procedure TALStringStreamA.SetSize(NewSize: Longint);
+{*************************************************************************************************}
+procedure ALRestoreBytesToString(var ABytes: TBytes; const ACodePage: Word; const AElemSize: Word);
 begin
-  SetSize(Int64(NewSize));
+  if Pointer(ABytes) = nil then exit;
+
+  var LDynArrayRec: PDynArrayRec := PDynArrayRec(PByte(Pointer(ABytes)) - SizeOf(TDynArrayRec));
+  var LLength: Integer := LDynArrayRec.Length;
+  var LrefCnt: Integer := LDynArrayRec.refCnt;
+
+  var LStrRec: PStrRec := PStrRec(PByte(Pointer(ABytes)) - SizeOf(StrRec));
+  LStrRec.Length := LLength;
+  LStrRec.refCnt := LrefCnt;
+  LStrRec.codePage := ACodePage;
+  LStrRec.elemSize := AElemSize;
+
+  Pointer(ABytes) := nil;
 end;
 
 {*******************************************************}
-procedure TALStringStreamA.SetSize(const NewSize: Int64);
+function ALStringToBytes(const AStr: AnsiString): TBytes;
 begin
-  SetLength(FDataString, NewSize);
-  if FPosition > NewSize then FPosition := NewSize;
+  var LLen := Length(AStr);
+  SetLength(Result, LLen);
+  if LLen > 0 then
+    ALMove(Pointer(AStr)^, Result[0], LLen);
+end;
+
+{*********************************************************}
+function ALBytesToString(const ABytes: TBytes): AnsiString;
+begin
+  var LLen := Length(ABytes);
+  Setlength(Result, LLen);
+  if LLen > 0 then
+    ALMove(ABytes[0], Pointer(Result)^, LLen);
 end;
 
 {*******************************}
@@ -946,7 +1011,19 @@ Begin
   Result := ALGUIDToStringW(LGUID, WithoutBracket, WithoutHyphen);
 End;
 
-{$IFNDEF ALCompilerVersionSupported130}
+{*************************************************************************************************}
+function  ALAdjustLineBreaks(const S: string; const Style: TTextLineBreakStyle = tlbsCRLF): string;
+begin
+  Result := AdjustLineBreaks(S, Style);
+end;
+
+{*********************************************************************************************************}
+function  ALAdjustLineBreaks(const S: Ansistring; const Style: TTextLineBreakStyle = tlbsCRLF): Ansistring;
+begin
+  Result := AdjustLineBreaks(S, Style);
+end;
+
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.Masks.pas is still the same and adjust the IFDEF'}
 {$ENDIF}
 
@@ -1001,7 +1078,8 @@ var
           pState^.Literal := ALUpCase(Literal);
         TMaskStates.msLiteralCS:
           pState^.Literal := Literal;
-        TMaskStates.msSet:
+        TMaskStates.msSet,
+        TMaskStates.msSetCS:
           begin
             pState^.Negate := Negate;
             New(pState^.CharSet);
@@ -1061,6 +1139,9 @@ var
       Inc(P);
     end;
     if (P^ <> ']') or (CharSet = []) then InvalidMask;
+    if FCaseSensitive then
+      WriteScan(TMaskStates.msSetCS)
+    else
     WriteScan(TMaskStates.msSet);
   end;
 
@@ -1215,7 +1296,7 @@ var
   I: Integer;
 begin
   for I := Low(FMaskStates) to High(FMaskStates) do
-    if FMaskStates[I].State = TMaskStates.msSet then Dispose(FMaskStates[I].CharSet);
+    if FMaskStates[I].State in [TMaskStates.msSet, TMaskStates.msSetCS] then Dispose(FMaskStates[I].CharSet);
 end;
 
 {***************************************************************************************}
@@ -1256,7 +1337,7 @@ begin
   try
     Result := CMask.Matches(Filename);
   finally
-    CMask.Free;
+    ALFreeAndNil(CMask);
   end;
 end;
 
@@ -1269,7 +1350,7 @@ end;
 {*************************************************************************************}
 function ALMatchesMaskW(const Filename, Mask: String; CaseSensitive: Boolean): Boolean;
 begin
-  result := System.Masks.MatchesMask(Filename, Mask {$IF CompilerVersion >= 37.0},CaseSensitive{$IFEND});
+  result := System.Masks.MatchesMask(Filename, Mask{, CaseSensitive});
 end;
 
 {*************************************************************}
@@ -1343,6 +1424,34 @@ begin
     raise ERangeError.CreateResFmt(@SListCapacityError, [AValue]);
   System.SetLength(FData, AValue);
 end;
+
+{*********************}
+{$ZEROBASEDSTRINGS OFF}
+function TALStringBuilderA.GetChars(Index: Integer): AnsiChar;
+begin
+  if Index < 0 then
+    raise ERangeError.CreateResFmt(@SParamIsNegative, ['Index']);
+  if Cardinal(Index) >= Cardinal(Length) then
+    RangeIndexError(Index, Length - 1, Self);
+  Result := FData[Index+1];
+end;
+{$IF defined(ALZeroBasedStringsON)}
+  {$ZEROBASEDSTRINGS ON}
+{$ENDIF}
+
+{*********************}
+{$ZEROBASEDSTRINGS OFF}
+procedure TALStringBuilderA.SetChars(Index: Integer; Value: AnsiChar);
+begin
+  if Index < 0 then
+    raise ERangeError.CreateResFmt(@SParamIsNegative, ['Index']);
+  if Cardinal(Index) >= Cardinal(Length) then
+    RangeIndexError(Index, Length - 1, Self);
+  FData[Index+1] := Value;
+end;
+{$IF defined(ALZeroBasedStringsON)}
+  {$ZEROBASEDSTRINGS ON}
+{$ENDIF}
 
 {********************************************}
 function TALStringBuilderA.GetLength: Integer;
@@ -1572,6 +1681,34 @@ begin
   System.SetLength(FData, AValue);
 end;
 
+{*********************}
+{$ZEROBASEDSTRINGS OFF}
+function TALStringBuilderW.GetChars(Index: Integer): Char;
+begin
+  if Index < 0 then
+    raise ERangeError.CreateResFmt(@SParamIsNegative, ['Index']);
+  if Cardinal(Index) >= Cardinal(Length) then
+    RangeIndexError(Index, Length - 1, Self);
+  Result := FData[Index+1];
+end;
+{$IF defined(ALZeroBasedStringsON)}
+  {$ZEROBASEDSTRINGS ON}
+{$ENDIF}
+
+{*********************}
+{$ZEROBASEDSTRINGS OFF}
+procedure TALStringBuilderW.SetChars(Index: Integer; Value: Char);
+begin
+  if Index < 0 then
+    raise ERangeError.CreateResFmt(@SParamIsNegative, ['Index']);
+  if Cardinal(Index) >= Cardinal(Length) then
+    RangeIndexError(Index, Length - 1, Self);
+  FData[Index+1] := Value;
+end;
+{$IF defined(ALZeroBasedStringsON)}
+  {$ZEROBASEDSTRINGS ON}
+{$ENDIF}
+
 {********************************************}
 function TALStringBuilderW.GetLength: Integer;
 begin
@@ -1735,25 +1872,25 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.SysUtils.ConvertErrorFmt is still the same and adjust the IFDEF'}
 {$ENDIF}
-procedure ALConvertErrorFmt(ResString: PResStringRec; const Args: array of const); {$IF CompilerVersion >= 37.0} noreturn; {$IFEND}
+procedure ALConvertErrorFmt(ResString: PResStringRec; const Args: array of const); {$IF CompilerVersion >= 37.0} noreturn; {$ENDIF}
 begin
   raise EConvertError.CreateResFmt(ResString, Args) at ReturnAddress;
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.SysUtils.ConvertError is still the same and adjust the IFDEF'}
 {$ENDIF}
-procedure ALConvertError(ResString: PResStringRec); {$IF CompilerVersion >= 37.0} noreturn; {$IFEND}
+procedure ALConvertError(ResString: PResStringRec); {$IF CompilerVersion >= 37.0} noreturn; {$ENDIF}
 begin
   raise EConvertError.CreateRes(ResString) at ReturnAddress;
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.SysUtils.FormatError is still the same and adjust the IFDEF'}
 {$ENDIF}
 procedure ALFormatError(ErrorCode: Integer; Format: PChar; FmtLen: Cardinal);
@@ -1772,7 +1909,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.SysUtils.AnsiFormatError is still the same and adjust the IFDEF'}
 {$ENDIF}
 procedure ALAnsiFormatError(ErrorCode: Integer; Format: PAnsiChar; FmtLen: Cardinal);
@@ -1784,7 +1921,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.SysUtils.InternalFloatToText is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$R-} {Range-Checking}
@@ -2185,7 +2322,7 @@ end;
 {$ENDIF}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.AnsiStrings.FormatBuf is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALFormatBuf(
@@ -2616,7 +2753,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.AnsiStrings.FmtStr is still the same and adjust the IFDEF'}
 {$ENDIF}
 procedure ALFmtStr(
@@ -2787,7 +2924,7 @@ begin
   else s := falseStr;
 end;
 
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.TCFString is still the same and adjust the IFDEF'}
 {$ENDIF}
 
@@ -2872,7 +3009,7 @@ end;
 {$ENDIF MACOS}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.DateTimeToString is still the same and adjust the IFDEF'}
 {$ENDIF}
 procedure ALDateTimeToString(
@@ -2975,7 +3112,7 @@ var
     end;
 
 {$IFDEF MSWINDOWS}
-    function ConvertEraString(const Count: Integer) : AnsiString;
+    function ConvertEraString(const Count: Integer): AnsiString;
     var
       FormatStr: AnsiString;
       SystemTime: TSystemTime;
@@ -3042,7 +3179,7 @@ var
     {$IFNDEF MACOS}
     function FindEra(Date: Integer): Integer;
     var
-      I : Integer;
+      I: Integer;
     begin
       Result := 0;
       for I := High(AFormatSettings.EraInfo) downto Low(AFormatSettings.EraInfo) do
@@ -3053,8 +3190,8 @@ var
     end;
     {$ENDIF !MACOS}
 
-    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-    function ConvertEraString(const Count: Integer) : AnsiString;
+    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+    function ConvertEraString(const Count: Integer): AnsiString;
     var
       {$IFDEF MACOS}
       Formatter: CFDateFormatterRef;
@@ -3064,7 +3201,7 @@ var
       DefaultTZ: CFTimeZoneRef;
       Locale: CFLocaleRef;
       {$ELSE !MACOS}
-      I : Integer;
+      I: Integer;
       {$ENDIF MACOS}
     begin
       Result := '';
@@ -3107,10 +3244,10 @@ var
       {$ENDIF MACOS}
     end;
 
-    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-    function ConvertYearString(const Count: Integer) : AnsiString;
+    {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+    function ConvertYearString(const Count: Integer): AnsiString;
     var
-      S : AnsiString;
+      S: AnsiString;
       function GetEraOffset: Integer;
       {$IFDEF MACOS}
       var
@@ -3546,7 +3683,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.TDatePart/TDateItem/TDateSeq are still the same and adjust the IFDEF'}
 {$ENDIF}
 type
@@ -3562,7 +3699,7 @@ type
   TALDateSeq = array [1 .. 64] of TALDateItem;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ParseDateTimeFormat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALParseDateTimeFormat(const Format: AnsiString; DateSeparator: AnsiChar; WithTime: Boolean): TALDateSeq;
@@ -3702,7 +3839,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanBlanks is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanBlanks(const S: AnsiString; var Pos: Integer): Boolean;
@@ -3716,7 +3853,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanNumber is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanNumber(const S: AnsiString; var Pos: Integer; var Number: Word; MaxChars: Integer): Integer;
@@ -3745,7 +3882,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanFractional is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanFractional(const S: AnsiString; var Pos: Integer; var Number: Word; BaseDigits, MaxChars: Integer): Integer;
@@ -3780,7 +3917,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanString is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanString(const S: AnsiString; var Pos: Integer; const Symbol: AnsiString{; AUseAnsi: Boolean}): Boolean;
@@ -3803,7 +3940,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanChar is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanChar(const S: AnsiString; var Pos: Integer; Ch: AnsiChar): Boolean;
@@ -3829,7 +3966,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanToNumber is still the same and adjust the IFDEF'}
 {$ENDIF}
 procedure ALScanToNumber(const S: AnsiString; var Pos: Integer);
@@ -3844,7 +3981,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanName is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanName(const S: AnsiString; var Pos: Integer; var Name: AnsiString; AnAbbr: Boolean): Boolean;
@@ -3885,7 +4022,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanDate is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanDate(
@@ -4165,7 +4302,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanTimeRegular is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanTimeRegular(
@@ -4215,7 +4352,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanTimeUsingShortTimeFormat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanTimeUsingShortTimeFormat(
@@ -4328,7 +4465,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.ScanTime is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALScanTime(
@@ -4349,7 +4486,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.TryStrToDate is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALTryStrToDate(
@@ -4385,7 +4522,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.StrToDate is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALStrToDate(
@@ -4417,7 +4554,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.TryStrToTime is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALTryStrToTime(
@@ -4453,7 +4590,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.StrToTime is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALStrToTime(
@@ -4485,7 +4622,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.TryStrToDateTime is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$R-} {Range-Checking}
@@ -4606,7 +4743,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.StrToDateTime is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALStrToDateTime(
@@ -4638,11 +4775,11 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system._ValLong is still the same and adjust the IFDEF'}
 {$ENDIF}
-// Hex : ( '$' | 'X' | 'x' | '0X' | '0x' ) [0-9A-Fa-f]*
-// Dec : ( '+' | '-' )? [0-9]*
+// Hex: ( '$' | 'X' | 'x' | '0X' | '0x' ) [0-9A-Fa-f]*
+// Dec: ( '+' | '-' )? [0-9]*
 {$R-} {Range-Checking}
 function _ALValLong(const S: ansiString; var Code: Integer): Integer;
 const
@@ -4734,7 +4871,7 @@ end;
 {$ENDIF}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system._ValInt64 is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$R-} {Range-Checking}
@@ -4828,7 +4965,7 @@ end;
 {$ENDIF}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system._ValUInt64 is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$R-} {Range-Checking}
@@ -5104,11 +5241,11 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.TwoDigitLookup is still the same and adjust the IFDEF'}
 {$ENDIF}
 const
-  ALTwoDigitLookup : packed array[0..99] of array[1..2] of AnsiChar =
+  ALTwoDigitLookup: packed array[0..99] of array[1..2] of AnsiChar =
     ('00','01','02','03','04','05','06','07','08','09',
      '10','11','12','13','14','15','16','17','18','19',
      '20','21','22','23','24','25','26','27','28','29',
@@ -5121,7 +5258,7 @@ const
      '90','91','92','93','94','95','96','97','98','99');
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils._IntToStr32 is still the same and adjust the IFDEF'}
 {$ENDIF}
 function _ALIntToStr32(Value: Cardinal; Negative: Boolean): AnsiString;
@@ -5161,15 +5298,15 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils._IntToStr64 is still the same and adjust the IFDEF'}
 {$ENDIF}
 function _ALIntToStr64(Value: UInt64; Negative: Boolean): AnsiString;
 var
-  I64, K64 : UInt64;
-  I32, K32 : Cardinal;
-  Digits   : Byte;
-  P        : PAnsiChar;
+  I64, K64: UInt64;
+  I32, K32: Cardinal;
+  Digits  : Byte;
+  P       : PAnsiChar;
 begin
   {Within Integer Range - Use Faster Integer Version}
   if (Int64Rec(Value).Hi = 0) then
@@ -5258,7 +5395,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.IntToStr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALIntToStrA(Value: Integer): AnsiString;
@@ -5273,7 +5410,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.IntToStr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALIntToStrA(Value: Int64): AnsiString;
@@ -5312,7 +5449,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.UIntToStr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALUIntToStrA(Value: Cardinal): AnsiString;
@@ -5321,7 +5458,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.UIntToStr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALUIntToStrA(Value: UInt64): AnsiString;
@@ -5343,7 +5480,7 @@ end;
 
 {***}
 const
-  ALTwoHexLookup : packed array[0..255] of array[1..2] of AnsiChar =
+  ALTwoHexLookup: packed array[0..255] of array[1..2] of AnsiChar =
   ('00','01','02','03','04','05','06','07','08','09','0A','0B','0C','0D','0E','0F',
    '10','11','12','13','14','15','16','17','18','19','1A','1B','1C','1D','1E','1F',
    '20','21','22','23','24','25','26','27','28','29','2A','2B','2C','2D','2E','2F',
@@ -5364,11 +5501,11 @@ const
 {***************************************************************}
 function _ALIntToHex(Value: UInt64; Digits: Integer): AnsiString;
 var
-  I32    : Integer;
-  I, J   : UInt64;
-  P      : Integer;
-  NewLen : Integer;
-  Sb     : TArray<ansiChar>;
+  I32   : Integer;
+  I, J  : UInt64;
+  P     : Integer;
+  NewLen: Integer;
+  Sb    : TArray<ansiChar>;
 begin
   NewLen := 1;
   I := Value shr 4;
@@ -5462,102 +5599,103 @@ begin
   end;
 end;
 
-{******************************************************************************}
-Function  ALTryBinToHex(const aBin: AnsiString; out Value: AnsiString): boolean;
-begin
-  if aBin = '' then exit(false);
-  setlength(Value,length(aBin) * 2);
-  _ALBinToHex(
-    PByte(@aBin[low(aBin)]),
-    PByte(@Value[low(Value)]),
-    length(aBin));
-  result := true;
-end;
-
-{***************************************************************************************}
-Function  ALTryBinToHex(const aBin; aBinSize : Cardinal; out Value: AnsiString): boolean;
-begin
-  if aBinSize = 0 then exit(false);
-  setlength(Value, aBinSize * 2);
-  _ALBinToHex(
-    PByte(@aBin),
-    PByte(@Value[low(Value)]),
-    aBinSize);
-  result := true;
-end;
-
-{**********************************************************************}
-Function  ALTryBinToHex(const aBin: TBytes; out Value: String): boolean;
-var bufOut: TBytes;
-begin
-  if length(aBin) = 0 then exit(false);
-  setlength(bufOut,length(aBin) * 2);
-  _ALBintoHex(
-    Pbyte(@aBin[0]), // Buffer: TBytes
-    Pbyte(@bufOut[0]), // Text: TBytes;
-    length(aBin)); // Count: Integer
-  Value := Tencoding.UTF8.GetString(bufOut); // UTF8 is good because bufOut must contain only low ascii chars
-  result := true;
-end;
-
-{***********************************************************************************}
-Function  ALTryBinToHex(const aBin; aBinSize : Cardinal; out Value: String): boolean;
-var bufOut: TBytes;
-begin
-  if aBinSize = 0 then exit(false);
-  setlength(bufOut,aBinSize * 2);
-  _ALBintoHex(
-    Pbyte(@aBin), // Buffer: TBytes
-    Pbyte(@bufOut[0]), // Text: TBytes;
-    aBinSize); // Count: Integer
-  Value := Tencoding.UTF8.GetString(bufOut); // UTF8 is good because bufOut must contain only low ascii chars
-  result := true;
-end;
-
 {********************************************************}
 Function  ALBinToHexA(const aBin: AnsiString): AnsiString;
 begin
-  if not ALTryBinToHex(aBin, Result) then
-    raise Exception.Create('Bad binary value');
+  var LBinSize := Length(aBin);
+  if LBinSize = 0 then exit('');
+  setlength(Result,LBinSize * 2);
+  _ALBinToHex(
+    PByte(@aBin[low(aBin)]),
+    PByte(@Result[low(Result)]),
+    LBinSize);
 end;
 
-{*****************************************************************}
-Function  ALBinToHexA(const aBin; aBinSize : Cardinal): AnsiString;
+{****************************************************}
+Function  ALBinToHexA(const aBin: TBytes): AnsiString;
 begin
-  if not ALTryBinToHex(aBin, aBinSize, Result) then
-    raise Exception.Create('Bad binary value');
+  var LBinSize := Length(aBin);
+  if LBinSize = 0 then exit('');
+  setlength(Result,LBinSize * 2);
+  _ALBinToHex(
+    PByte(@aBin[low(aBin)]),
+    PByte(@Result[low(Result)]),
+    LBinSize);
+end;
+
+{***************************************************************}
+Function  ALBinToHexA(const aBin; aBinSize: Integer): AnsiString;
+begin
+  if aBinSize = 0 then exit('');
+  setlength(Result, aBinSize * 2);
+  _ALBinToHex(
+    PByte(@aBin),
+    PByte(@Result[low(Result)]),
+    aBinSize);
 end;
 
 {************************************************}
 Function  ALBinToHexW(const aBin: TBytes): String;
 begin
-  if not ALTryBinToHex(aBin, Result) then
-    raise Exception.Create('Bad binary value');
+  var LBinSize := Length(aBin);
+  if LBinSize = 0 then exit('');
+  var LBufOut: TBytes;
+  setlength(LBufOut,LBinSize * 2);
+  _ALBintoHex(
+    Pbyte(@aBin[0]), // Buffer: TBytes
+    Pbyte(@LBufOut[0]), // Text: TBytes;
+    LBinSize); // Count: Integer
+  Result := Tencoding.UTF8.GetString(LBufOut); // UTF8 is good because LBufOut must contain only low ascii chars
 end;
 
-{*************************************************************}
-Function  ALBinToHexW(const aBin; aBinSize : Cardinal): String;
+{***********************************************************}
+Function  ALBinToHexW(const aBin; aBinSize: Integer): String;
 begin
-  if not ALTryBinToHex(aBin, aBinSize, Result) then
-    raise Exception.Create('Bad binary value');
+  if aBinSize = 0 then exit('');
+  var LBufOut: TBytes;
+  setlength(LBufOut,aBinSize * 2);
+  _ALBintoHex(
+    Pbyte(@aBin), // Buffer: TBytes
+    Pbyte(@LBufOut[0]), // Text: TBytes;
+    aBinSize); // Count: Integer
+  Result := Tencoding.UTF8.GetString(LBufOut); // UTF8 is good because LBufOut must contain only low ascii chars
 end;
 
 {******************************************************************************}
 Function  ALTryHexToBin(const aHex: AnsiString; out Value: AnsiString): boolean;
-var l: integer;
 begin
-  l := length(aHex);
-  if (l = 0) or (l mod 2 <> 0) then exit(False);
+  var l := length(aHex);
+  If L = 0 then begin
+    Value := '';
+    Exit(True);
+  end;
+  if (l mod 2 <> 0) then exit(False);
   setlength(Value,l div 2);
   result := HexToBin(PansiChar(aHex),pansiChar(Value),length(Value)) = l div 2;
 end;
 
+{**************************************************************************}
+Function  ALTryHexToBin(const aHex: AnsiString; out Value: TBytes): boolean;
+begin
+  var l := length(aHex);
+  If L = 0 then begin
+    Value := nil;
+    Exit(True);
+  end;
+  if (l mod 2 <> 0) then exit(False);
+  setlength(Value,l div 2);
+  result := HexToBin(PansiChar(aHex),pbyte(Value),length(Value)) = l div 2;
+end;
+
 {**********************************************************************}
 Function  ALTryHexToBin(const aHex: String; out Value: TBytes): boolean;
-var l: integer;
 begin
-  l := length(aHex);
-  if (l = 0) or (l mod 2 <> 0) then exit(False);
+  var l := length(aHex);
+  If L = 0 then begin
+    Value := nil;
+    Exit(True);
+  end;
+  if (l mod 2 <> 0) then exit(False);
   setlength(Value,l div 2);
   result := HexToBin(
               PChar(aHex), // Text
@@ -5567,8 +5705,8 @@ begin
               length(Value)) = l div 2;
 end;
 
-{*******************************************************}
-Function  ALHexToBin(const aHex: AnsiString): AnsiString;
+{***************************************************}
+Function  ALHexToBin(const aHex: AnsiString): TBytes;
 begin
   if not ALTryHexToBin(aHex, Result) then
     raise Exception.Create('Bad hex value');
@@ -5641,7 +5779,7 @@ begin
   Result := _Base64Encoding;
 end;
 
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if https://github.com/synopse/mORMot.git SynCommons.pas was not updated from References\mORMot\SynCommons.pas and adjust the IFDEF'}
 {$ENDIF}
 
@@ -5790,8 +5928,8 @@ begin
   result := (len shr 2)*3-result;
 end;
 
-{*************************************************************************************}
-function Base64ToBinSafe(sp: PAnsiChar; len: NativeInt; var data: AnsiString): boolean;
+{***********************************************************************************************}
+function Base64ToBinSafe(sp: PAnsiChar; len: NativeInt; var data: AnsiString): boolean; overload;
 var resultLen: NativeInt;
 begin
   resultLen := Base64ToBinLength(sp,len);
@@ -5807,6 +5945,26 @@ begin
   end else begin
     result := false;
     data := '';
+  end;
+end;
+
+{*******************************************************************************************}
+function Base64ToBinSafe(sp: PAnsiChar; len: NativeInt; var data: TBytes): boolean; overload;
+var resultLen: NativeInt;
+begin
+  resultLen := Base64ToBinLength(sp,len);
+  if resultLen<>0 then begin
+    Setlength(data,resultLen);
+    if ConvertBase64ToBin[sp[len-2]]>=0 then
+      if ConvertBase64ToBin[sp[len-1]]>=0 then else
+        dec(len) else
+        dec(len,2); // adjust for Base64AnyDecode() algorithm
+    result := Base64AnyDecode(ConvertBase64ToBin,sp,pointer(data),len);
+    if not result then
+      data := nil;
+  end else begin
+    result := false;
+    data := nil;
   end;
 end;
 
@@ -5961,8 +6119,30 @@ begin
   result := ALBase64DecodeString(result);
 end;
 
+{**************************************************************}
+Function  ALBase64EncodeBytesA(const Bytes: TBytes): AnsiString;
+var len: integer;
+begin
+  result := '';
+  len := length(Bytes);
+  if len=0 then
+    exit;
+  SetString(result,nil,BinToBase64Length(len));
+  Base64Encode(pointer(result),pointer(Bytes),len);
+end;
+
+{************************************************************************************}
+Function  ALBase64EncodeBytesA(const Bytes: pointer; const Size: Integer): AnsiString;
+begin
+  result := '';
+  if Size=0 then
+    exit;
+  SetString(result,nil,BinToBase64Length(Size));
+  Base64Encode(pointer(result),Bytes,Size);
+end;
+
 {**********************************************************}
-Function  ALBase64EncodeBytesW(const Bytes: Tbytes): String;
+Function  ALBase64EncodeBytesW(const Bytes: TBytes): String;
 begin
   result := _GetBase64Encoding.EncodeBytesToString(Bytes);
 end;
@@ -5973,8 +6153,16 @@ begin
   result := _GetBase64Encoding.EncodeBytesToString(Bytes, Size);
 end;
 
+{*********************************************************}
+Function  ALBase64DecodeBytes(const S: AnsiString): TBytes;
+begin
+  if S='' then exit(nil);
+  if not Base64ToBinSafe(pointer(s),length(s),result) then
+    raise Exception.Create(sInvalidbase64String);
+end;
+
 {*****************************************************}
-Function  ALBase64DecodeBytes(const S: String): Tbytes;
+Function  ALBase64DecodeBytes(const S: String): TBytes;
 begin
   result := _GetBase64Encoding.DecodeStringToBytes(S);
 end;
@@ -6079,28 +6267,28 @@ End;
 
 {***********************************************}
 Function ALIsInt64(const S: AnsiString): Boolean;
-var i : int64;
+var i: int64;
 Begin
   Result := ALIsNumeric(S) and ALTryStrToInt64(S, I);
 End;
 
 {*******************************************}
 Function ALIsInt64(const S: String): Boolean;
-var I : int64;
+var I: int64;
 Begin
   Result := ALIsNumeric(S) and ALTryStrToInt64(S, I);
 End;
 
 {**************************************************}
 Function ALIsSmallInt(const S: AnsiString): Boolean;
-var i : Integer;
+var i: Integer;
 Begin
   Result := ALIsNumeric(S) and ALTryStrToInt(S, I) and (i <= 32767) and (I >= -32768);
 End;
 
 {**********************************************}
 Function ALIsSmallInt(const S: String): Boolean;
-var I : Integer;
+var I: Integer;
 Begin
   Result := ALIsNumeric(S) and ALTryStrToInt(S, I) and (i <= 32767) and (I >= -32768);
 End;
@@ -6300,7 +6488,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if declaration below in system.Sysutils is still the same and adjust the IFDEF'}
 {$ENDIF}
 const
@@ -6336,7 +6524,7 @@ const
 {$ENDIF CPUX64}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.TestAndClearFPUExceptions is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$IFDEF CPUX86}
@@ -6360,7 +6548,7 @@ end;
 {$ENDIF CPUX86}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.TestAndClearSSEExceptions is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$WARN SYMBOL_PLATFORM OFF}
@@ -6378,7 +6566,7 @@ end;
 
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.GetSpecialValueAC is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALGetSpecialValueAC(Buffer: PAnsiChar; var Value; ValueType: TFloatValue): Boolean;
@@ -6405,7 +6593,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.InternalTextToExtended is still the same and adjust the IFDEF'}
 {$ENDIF}
 {$WARN SYMBOL_PLATFORM OFF}
@@ -6657,7 +6845,7 @@ end;
 {$WARN SYMBOL_PLATFORM ON}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.InternalTextToCurrency is still the same and adjust the IFDEF'}
 {$ENDIF}
 //this function is not threadsafe because of Set8087CW / SetMXCSR
@@ -7026,7 +7214,7 @@ end;
 {$ENDIF !EXTENDEDHAS10BYTES}
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.TextToFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALTextToFloat(
@@ -7040,7 +7228,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.SysUtils.InternalFloatToTextFmt is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALInternalFloatToTextFmt(
@@ -7533,7 +7721,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.sysUtils.FormatFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALFormatFloatA(
@@ -7578,7 +7766,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.sysUtils.FormatCurr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function ALFormatCurrA(
@@ -7623,7 +7811,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.sysUtils.StrToFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALStrToFloat(const S: AnsiString; const AFormatSettings: TALFormatSettingsA): Extended;
@@ -7651,7 +7839,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.sysUtils.StrToFloatDef is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALStrToFloatDef(const S: AnsiString; const Default: Extended; const AFormatSettings: TALFormatSettingsA): Extended;
@@ -7679,7 +7867,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.sysUtils.TryStrToFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALTryStrToFloat(const S: AnsiString; out Value: Extended; const AFormatSettings: TALFormatSettingsA): Boolean;
@@ -7706,7 +7894,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.sysUtils.TryStrToFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALTryStrToFloat(const S: AnsiString; out Value: Double; const AFormatSettings: TALFormatSettingsA): Boolean;
@@ -7741,7 +7929,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.sysUtils.TryStrToFloat is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALTryStrToFloat(const S: AnsiString; out Value: Single; const AFormatSettings: TALFormatSettingsA): Boolean;
@@ -7776,7 +7964,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.sysUtils.StrToCurr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALStrToCurr(const S: AnsiString; const AFormatSettings: TALFormatSettingsA): Currency;
@@ -7804,7 +7992,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.sysUtils.StrToCurrDef is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALStrToCurrDef(const S: AnsiString; const Default: Currency; const AFormatSettings: TALFormatSettingsA): Currency;
@@ -7832,7 +8020,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.sysUtils.TryStrToCurr is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  ALTryStrToCurr(const S: AnsiString; out Value: Currency; const AFormatSettings: TALFormatSettingsA): Boolean;
@@ -7988,14 +8176,56 @@ end;
 
 {******************************************************}
 function  ALSameStrA(const S1, S2: AnsiString): Boolean;
+label
+  BothStringsNonNil, FoundMismatch;
+var
+  Int: Integer;
+  LPtr, RPtr: PByte;
+  i: NativeInt;
 begin
-  result := System.Ansistrings.SameStr(S1, S2);
+  {$IFNDEF ALCompilerVersionSupported131}
+    {$MESSAGE WARN 'Check if system._UStrEqual is still the same and adjust the IFDEF'}
+    {$MESSAGE WARN 'Check if https://embt.atlassian.net/servicedesk/customer/portal/1/RSS-5052 have been implemented and adjust the IFDEF'}
+  {$ENDIF}
+  //result := System.Ansistrings.SameStr(S1, S2);
+
+  LPtr := Pointer(S1);
+  RPtr := Pointer(S2);
+  if LPtr <> RPtr then
+  begin
+    if NativeUInt(LPtr) and NativeUInt(RPtr) <> 0 then
+    begin
+BothStringsNonNil:
+      Int := PInteger(LPtr - 4)^;
+      if Int <> PInteger(RPtr - 4)^ then
+        goto FoundMismatch;
+      i := Int * -1;
+      LPtr := LPtr - i;
+      RPtr := RPtr - i;
+      Dec(i, (4 - (Int and 3)) and 3);
+      repeat
+        if PInteger(@LPtr[i])^ <> PInteger(@RPtr[i])^ then
+          goto FoundMismatch;
+        Inc(i, 4);
+      until i >= 0;
+    end
+    else if (LPtr <> nil) and (RPtr <> nil) then
+      goto BothStringsNonNil
+    else
+FoundMismatch:
+      Exit(False);
+  end;
+  Result := True;
 end;
 
 {**************************************************}
 function  ALSameStrW(const S1, S2: string): Boolean;
 begin
-  result := system.sysutils.SameStr(S1, S2);
+  {$IFNDEF ALCompilerVersionSupported131}
+    {$MESSAGE WARN 'Check if https://embt.atlassian.net/servicedesk/customer/portal/1/RSS-5052 have been implemented and adjust the IFDEF'}
+  {$ENDIF}
+  //result := system.sysutils.SameStr(S1, S2);
+  result := S1 = S2;
 end;
 
 {**********************************************************}
@@ -8125,7 +8355,10 @@ begin
   result := ALFormatW('%-'+ALIntToStrW(Width)+'s', [S]);
 end;
 
-{***********************************************************************************}
+{*************************************}
+{$IFNDEF ALCompilerVersionSupported131}
+  {$MESSAGE WARN 'Check if System.AnsiStrings.QuotedStr is still the same and adjust the IFDEF'}
+{$ENDIF}
 function  ALQuotedStr(const S: AnsiString; const Quote: AnsiChar = ''''): AnsiString;
 var
   I: Integer;
@@ -8136,14 +8369,17 @@ begin
   Result := Quote + Result + Quote;
 end;
 
-{***********************************************************************}
+{*************************************}
+{$IFNDEF ALCompilerVersionSupported131}
+  {$MESSAGE WARN 'Check if System.SysUtils.QuotedStr is still the same and adjust the IFDEF'}
+{$ENDIF}
 function  ALQuotedStr(const S: String; const Quote: Char = ''''): String;
 var
   I: Integer;
 begin
   Result := S;
-  for I := Result.Length - 1 downto 0 do
-    if Result.Chars[I] = Quote then Result := Result.Insert(I, Quote);
+  for I := Length(Result) downto 1 do
+    if Result[I] = Quote then Insert(Quote, Result, I);
   Result := Quote + Result + Quote;
 end;
 
@@ -8386,6 +8622,26 @@ begin
   ALMove(Source^, Dest^, Count * sizeOf(Char));
 end;
 
+{************************************************************************************}
+function ALCopyStr(const aSourceString: TBytes; aStart, aLength: Integer): AnsiString;
+var LSourceStringLn: Integer;
+begin
+  LSourceStringLn := Length(aSourceString);
+  If (aStart < 0) then aStart := 0;
+
+  if (LSourceStringLn=0) or
+     (aLength < 1) or
+     (aStart >= LSourceStringLn) then Begin
+    Result := '';
+    Exit;
+  end;
+
+  aLength := Min(aLength, LSourceStringLn - aStart);
+
+  SetLength(Result,aLength); //  To guarantee that the string is unique, call the SetLength, SetString, or UniqueString procedures
+  ALMove(Pbyte(aSourceString)[aStart], pointer(Result)^, aLength); // pointer(Result)^ to not jump inside uniqueString (aDestString is already unique thanks to previous SetLength))
+end;
+
 {****************************************************************************************}
 function ALCopyStr(const aSourceString: AnsiString; aStart, aLength: Integer): AnsiString;
 var LSourceStringLn: Integer;
@@ -8424,6 +8680,26 @@ begin
 
   SetLength(Result,aLength); //  To guarantee that the string is unique, call the SetLength, SetString, or UniqueString procedures
   ALMove(PChar(aSourceString)[aStart-1], pointer(Result)^, aLength*SizeOf(Char)); // pointer(Result)^ to not jump inside uniqueString (aDestString is already unique thanks to previous SetLength))
+end;
+
+{******************************************************************************************************}
+procedure ALCopyStr(const aSourceString: TBytes; var aDestString: ansiString; aStart, aLength: Integer);
+var LSourceStringLn: Integer;
+begin
+  LSourceStringLn := Length(aSourceString);
+  If (aStart < 0) then aStart := 0;
+
+  if (LSourceStringLn=0) or
+     (aLength < 1) or
+     (aStart >= LSourceStringLn) then Begin
+    aDestString := '';
+    Exit;
+  end;
+
+  aLength := Min(aLength, LSourceStringLn - aStart);
+
+  SetLength(aDestString,aLength); //  To guarantee that the string is unique, call the SetLength, SetString, or UniqueString procedures
+  ALMove(Pbyte(aSourceString)[aStart], pointer(aDestString)^, aLength);  // pointer(aDestString)^ to not jump inside uniqueString (aDestString is already unique thanks to previous SetLength))
 end;
 
 {**********************************************************************************************************}
@@ -8524,14 +8800,14 @@ begin
   result := ALCopyStr(aSourceString, P1, P2 - P1);
 end;
 
-{*************************************************************************************************************}
-function  ALStringReplaceA(const Source, OldPattern, NewPattern: AnsiString; Flags: TReplaceFlags): AnsiString;
+{**************************************************************************************************************************************************}
+function  ALStringReplaceA(const Source, OldPattern, NewPattern: AnsiString; const Flags: TReplaceFlags = [rfReplaceAll, rfIgnoreCase]): AnsiString;
 begin
   result := System.AnsiStrings.StringReplace(Source, OldPattern, NewPattern, Flags);
 end;
 
-{*****************************************************************************************************}
-function  ALStringReplaceW(const Source, OldPattern, NewPattern: string; Flags: TReplaceFlags): string;
+{******************************************************************************************************************************************}
+function  ALStringReplaceW(const Source, OldPattern, NewPattern: string; const Flags: TReplaceFlags = [rfReplaceAll, rfIgnoreCase]): string;
 begin
   result := system.sysutils.StringReplace(Source, OldPattern, NewPattern, Flags);
 end;
@@ -8592,18 +8868,17 @@ begin
   Result := AlCopyStr(s, Length(ALNEVExtractName(s)) + 2, MaxInt)
 end;
 
-{**************************************************************}
-function  ALGetBytesFromStream(const aStream : TStream): Tbytes;
-var l: Integer;
+{*************************************************************}
+function  ALGetBytesFromStream(const aStream: TStream): TBytes;
 begin
-   l:=aStream.Size-aStream.Position;
-   SetLength(result, l);
-   if L > 0 then
-     aStream.ReadBuffer(result[0], l);
+  AStream.Position := 0;
+  SetLength(result, AStream.Size);
+  if AStream.Size > 0 then
+   aStream.ReadBuffer(pointer(Result)^, AStream.Size);
 end;
 
 {********************************************************************************************************}
-function ALGetBytesFromFile(const filename: ansiString; const ShareMode: Word = fmShareDenyWrite): Tbytes;
+function ALGetBytesFromFile(const filename: ansiString; const ShareMode: Word = fmShareDenyWrite): TBytes;
 Var LFileStream: TfileStream;
 begin
   LFileStream := TFileStream.Create(string(filename),fmOpenRead or ShareMode);
@@ -8615,7 +8890,7 @@ begin
 end;
 
 {*****************************************************************************************************}
-function  ALGetBytesFromFile(const filename: String; const ShareMode: Word = fmShareDenyWrite): Tbytes;
+function  ALGetBytesFromFile(const filename: String; const ShareMode: Word = fmShareDenyWrite): TBytes;
 Var LFileStream: TfileStream;
 begin
   LFileStream := TFileStream.Create(filename,fmOpenRead or ShareMode);
@@ -8626,19 +8901,19 @@ begin
   end;
 end;
 
-{*********************************************************************************************}
-function  ALGetStringFromBuffer(const buf : TBytes; const ADefaultEncoding: TEncoding): String;
-var encoding : TEncoding;
-    n : Integer;
+{********************************************************************************************}
+function  ALGetStringFromBuffer(const buf: TBytes; const ADefaultEncoding: TEncoding): String;
+var encoding: TEncoding;
+    n: Integer;
 begin
   encoding:=nil;
   n:=TEncoding.GetBufferEncoding(buf, encoding, ADefaultEncoding);
   Result:=encoding.GetString(buf, n, Length(buf)-n);
 end;
 
-{**************************************************************************************************}
-function  ALGetStringFromStream(const aStream : TStream; const ADefaultEncoding: TEncoding): String;
-var buf: Tbytes;
+{*************************************************************************************************}
+function  ALGetStringFromStream(const aStream: TStream; const ADefaultEncoding: TEncoding): String;
+var buf: TBytes;
 begin
    Buf := ALGetBytesFromStream(aStream);
    Result:=ALGetStringFromBuffer(buf, ADefaultEncoding);
@@ -8664,7 +8939,7 @@ begin
     else Result := '';
 
   finally
-    LFileStream.Free;
+    ALFreeAndNil(LFileStream);
   end;
 end;
 
@@ -8715,7 +8990,7 @@ begin
     else Result := '';
 
   finally
-    LFileStream.Free;
+    ALFreeAndNil(LFileStream);
   end;
 end;
 
@@ -8735,7 +9010,7 @@ begin
     LFileStream.Position := LFileStream.Size;
     LFileStream.WriteBuffer(Pointer(Str)^, Length(Str));
   finally
-    LFileStream.Free;
+    ALFreeAndNil(LFileStream);
   end;
 end;
 
@@ -8754,7 +9029,7 @@ begin
   try
     LFileStream.WriteBuffer(Pointer(Str)^, Length(Str));
   finally
-    LFileStream.Free;
+    ALFreeAndNil(LFileStream);
   end;
 end;
 
@@ -8828,7 +9103,7 @@ Function  ALNormalize(
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
   {source: http://issues.apache.org/jira/browse/LUCENE-1343}
   Procedure _foldNonDiacriticChar(Var aStr: WideString);
-  Var I, J : integer;
+  Var I, J: integer;
   Begin
     for I := 1 to length(aStr) do begin
       j := ord(aStr[i]);
@@ -9119,7 +9394,7 @@ begin
 end;
 
 {*************************************}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if system.UpCase(ch: _AnsiChr): _AnsiChr; is still the same and adjust the IFDEF'}
 {$ENDIF}
 function  AlUpCase(const Ch: AnsiChar): AnsiChar;
@@ -9389,182 +9664,182 @@ Begin
   for I := 1 to length(LCyrillicWideStr) do begin
     J := ord(LCyrillicWideStr[i]);
     case J of
-      $0410 {А} : InternalAddCharsToResult([$0041]); {A}
-      $0430 {а} : InternalAddCharsToResult([$0061]); {a}
-      $04D0 {Ӑ} : InternalAddCharsToResult([$0102]); {Ă}
-      $04D1 {ӑ} : InternalAddCharsToResult([$0103]); {ă}
-      $04D2 {Ӓ} : InternalAddCharsToResult([$00C4]); {Ä}
-      $04D3 {ӓ} : InternalAddCharsToResult([$00E4]); {ä}
-      $04D8 {Ә} : InternalAddCharsToResult([$0041,$030B]); {A̋}
-      $04D9 {ә} : InternalAddCharsToResult([$0061,$030B]); {a̋}
-      $0411 {Б} : InternalAddCharsToResult([$0042]); {B}
-      $0431 {б} : InternalAddCharsToResult([$0062]); {b}
-      $0412 {В} : InternalAddCharsToResult([$0056]); {V}
-      $0432 {в} : InternalAddCharsToResult([$0076]); {v}
-      $0413 {Г} : InternalAddCharsToResult([$0047]); {G}
-      $0433 {г} : InternalAddCharsToResult([$0067]); {g}
-      $0490 {Ґ} : InternalAddCharsToResult([$0047,$0300]); {G̀}
-      $0491 {ґ} : InternalAddCharsToResult([$0067,$0300]); {g̀}
-      $0494 {Ҕ} : InternalAddCharsToResult([$011E]); {Ğ}
-      $0495 {ҕ} : InternalAddCharsToResult([$011F]); {ğ}
-      $0492 {Ғ} : InternalAddCharsToResult([$0120]); {Ġ}
-      $0493 {ғ} : InternalAddCharsToResult([$0121]); {ġ}
-      $0414 {Д} : InternalAddCharsToResult([$0044]); {D}
-      $0434 {д} : InternalAddCharsToResult([$0064]); {d}
-      $0402 {Ђ} : InternalAddCharsToResult([$0110]); {Đ}
-      $0452 {ђ} : InternalAddCharsToResult([$0111]); {đ}
-      $0403 {Ѓ} : InternalAddCharsToResult([$01F4]); {Ǵ}
-      $0453 {ѓ} : InternalAddCharsToResult([$01F5]); {ǵ}
-      $0415 {Е} : InternalAddCharsToResult([$0045]); {E}
-      $0435 {е} : InternalAddCharsToResult([$0065]); {e}
-      $0401 {Ё} : InternalAddCharsToResult([$00CB]); {Ë}
-      $0451 {ё} : InternalAddCharsToResult([$00EB]); {ë}
-      $04D6 {Ӗ} : InternalAddCharsToResult([$0114]); {Ĕ}
-      $04D7 {ӗ} : InternalAddCharsToResult([$0115]); {ĕ}
-      $0404 {Є} : InternalAddCharsToResult([$00CA]); {Ê}
-      $0454 {є} : InternalAddCharsToResult([$00EA]); {ê}
-      $04BC {Ҽ} : InternalAddCharsToResult([$0043,$0306]); {C̆}
-      $04BD {ҽ} : InternalAddCharsToResult([$0063,$0306]); {c̆}
-      $04BE {Ҿ} : InternalAddCharsToResult([$00C7,$0306]); {Ç̆}
-      $04BF {ҿ} : InternalAddCharsToResult([$00E7,$0306]); {ç̆}
-      $0416 {Ж} : InternalAddCharsToResult([$017D]); {Ž}
-      $0436 {ж} : InternalAddCharsToResult([$017E]); {ž}
-      $04C1 {Ӂ} : InternalAddCharsToResult([$005A,$0306]); {Z̆}
-      $04C2 {ӂ} : InternalAddCharsToResult([$007A,$0306]); {z̆}
-      $04DC {Ӝ} : InternalAddCharsToResult([$005A,$0304]); {Z̄}
-      $04DD {ӝ} : InternalAddCharsToResult([$007A,$0304]); {z̄}
-      $0496 {Җ} : InternalAddCharsToResult([$017D,$0326]); {Ž̦}
-      $0497 {җ} : InternalAddCharsToResult([$017E,$0327]); {ž̧}
-      $0417 {З} : InternalAddCharsToResult([$005A]); {Z}
-      $0437 {з} : InternalAddCharsToResult([$007A]); {z}
-      $04DE {Ӟ} : InternalAddCharsToResult([$005A,$0308]); {Z̈}
-      $04DF {ӟ} : InternalAddCharsToResult([$007A,$0308]); {z̈}
-      $0405 {Ѕ} : InternalAddCharsToResult([$1E90]); {Ẑ}
-      $0455 {ѕ} : InternalAddCharsToResult([$1E91]); {ẑ}
-      $04E0 {Ӡ} : InternalAddCharsToResult([$0179]); {Ź}
-      $04E1 {ӡ} : InternalAddCharsToResult([$017A]); {ź}
-      $0418 {И} : InternalAddCharsToResult([$0049]); {I}
-      $0438 {и} : InternalAddCharsToResult([$0069]); {i}
-      $04E4 {Ӥ} : InternalAddCharsToResult([$00CE]); {Î}
-      $04E5 {ӥ} : InternalAddCharsToResult([$00EE]); {î}
-      $0406 {І} : InternalAddCharsToResult([$00CC]); {Ì}
-      $0456 {і} : InternalAddCharsToResult([$00EC]); {ì}
-      $0407 {Ї} : InternalAddCharsToResult([$00CF]); {Ï}
-      $0457 {ї} : InternalAddCharsToResult([$00EF]); {ï}
-      $0419 {Й} : InternalAddCharsToResult([$004A]); {J}
-      $0439 {й} : InternalAddCharsToResult([$006A]); {j}
-      $0408 {Ј} : InternalAddCharsToResult([$004A,$030C]); {J̌}
-      $0458 {ј} : InternalAddCharsToResult([$01F0]); {ǰ}
-      $041A {К} : InternalAddCharsToResult([$004B]); {K}
-      $043A {к} : InternalAddCharsToResult([$006B]); {k}
-      $049A {Қ} : InternalAddCharsToResult([$0136]); {Ķ}
-      $049B {қ} : InternalAddCharsToResult([$0137]); {ķ}
-      $049E {Ҟ} : InternalAddCharsToResult([$004B,$0304]); {K̄}
-      $049F {ҟ} : InternalAddCharsToResult([$006B,$0304]); {k̄}
-      $041B {Л} : InternalAddCharsToResult([$004C]); {L}
-      $043B {л} : InternalAddCharsToResult([$006C]); {l}
-      $0409 {Љ} : InternalAddCharsToResult([$004C,$0302]); {L̂}
-      $0459 {љ} : InternalAddCharsToResult([$006C,$0302]); {l̂}
-      $041C {М} : InternalAddCharsToResult([$004D]); {M}
-      $043C {м} : InternalAddCharsToResult([$006D]); {m}
-      $041D {Н} : InternalAddCharsToResult([$004E]); {N}
-      $043D {н} : InternalAddCharsToResult([$006E]); {n}
-      $040A {Њ} : InternalAddCharsToResult([$004E,$0302]); {N̂}
-      $045A {њ} : InternalAddCharsToResult([$006E,$0302]); {n̂}
-      $04A4 {Ҥ} : InternalAddCharsToResult([$1E44]); {Ṅ}
-      $04A5 {ҥ} : InternalAddCharsToResult([$1E45]); {ṅ}
-      $04A2 {Ң} : InternalAddCharsToResult([$1E46]); {Ṇ}
-      $04A3 {ң} : InternalAddCharsToResult([$1E47]); {ṇ}
-      $041E {О} : InternalAddCharsToResult([$004F]); {O}
-      $043E {о} : InternalAddCharsToResult([$006F]); {o}
-      $04E6 {Ӧ} : InternalAddCharsToResult([$00D6]); {Ö}
-      $04E7 {ӧ} : InternalAddCharsToResult([$00F6]); {ö}
-      $04E8 {Ө} : InternalAddCharsToResult([$00D4]); {Ô}
-      $04E9 {ө} : InternalAddCharsToResult([$00F4]); {ô}
-      $041F {П} : InternalAddCharsToResult([$0050]); {P}
-      $043F {п} : InternalAddCharsToResult([$0070]); {p}
-      $04A6 {Ҧ} : InternalAddCharsToResult([$1E54]); {Ṕ}
-      $04A7 {ҧ} : InternalAddCharsToResult([$1E55]); {ṕ}
-      $0420 {Р} : InternalAddCharsToResult([$0052]); {R}
-      $0440 {р} : InternalAddCharsToResult([$0072]); {r}
-      $0421 {С} : InternalAddCharsToResult([$0053]); {S}
-      $0441 {с} : InternalAddCharsToResult([$0073]); {s}
-      $04AA {Ҫ} : InternalAddCharsToResult([$00C7]); {Ç}
-      $04AB {ҫ} : InternalAddCharsToResult([$00E7]); {ç}
-      $0422 {Т} : InternalAddCharsToResult([$0054]); {T}
-      $0442 {т} : InternalAddCharsToResult([$0074]); {t}
-      $04AC {Ҭ} : InternalAddCharsToResult([$0162]); {Ţ}
-      $04AD {ҭ} : InternalAddCharsToResult([$0163]); {ţ}
-      $040B {Ћ} : InternalAddCharsToResult([$0106]); {Ć}
-      $045B {ћ} : InternalAddCharsToResult([$0170]); {Ű}
-      $040C {Ќ} : InternalAddCharsToResult([$1E30]); {Ḱ}
-      $045C {ќ} : InternalAddCharsToResult([$1E31]); {ḱ}
-      $0423 {У} : InternalAddCharsToResult([$0055]); {U}
-      $0443 {у} : InternalAddCharsToResult([$0075]); {u}
-      $EE19 {} : InternalAddCharsToResult([$00DA]); {Ú}
-      $EE99 {} : InternalAddCharsToResult([$00FA]); {ú}
-      $040E {Ў} : InternalAddCharsToResult([$016C]); {Ŭ}
-      $045E {ў} : InternalAddCharsToResult([$016D]); {ŭ}
-      $04F0 {Ӱ} : InternalAddCharsToResult([$00DC]); {Ü}
-      $04F1 {ӱ} : InternalAddCharsToResult([$00FC]); {ü}
-      $04F2 {Ӳ} : InternalAddCharsToResult([$0170]); {Ű}
-      $04F3 {ӳ} : InternalAddCharsToResult([$0171]); {ű}
-      $04AE {Ү} : InternalAddCharsToResult([$00D9]); {Ù}
-      $04AF {ү} : InternalAddCharsToResult([$00F9]); {ù}
-      $0424 {Ф} : InternalAddCharsToResult([$0046]); {F}
-      $0444 {ф} : InternalAddCharsToResult([$0066]); {f}
-      $0425 {Х} : InternalAddCharsToResult([$0048]); {H}
-      $0445 {х} : InternalAddCharsToResult([$0068]); {h}
-      $04B2 {Ҳ} : InternalAddCharsToResult([$1E28]); {Ḩ}
-      $04B3 {ҳ} : InternalAddCharsToResult([$1E29]); {ḩ}
-      $04BA {Һ} : InternalAddCharsToResult([$1E24]); {Ḥ}
-      $04BB {һ} : InternalAddCharsToResult([$1E25]); {ḥ}
-      $0426 {Ц} : InternalAddCharsToResult([$0043]); {C}
-      $0446 {ц} : InternalAddCharsToResult([$0063]); {c}
-      $04B4 {Ҵ} : InternalAddCharsToResult([$0043,$0304]); {C̄}
-      $04B5 {ҵ} : InternalAddCharsToResult([$0063,$0304]); {c̄}
-      $0427 {Ч} : InternalAddCharsToResult([$010C]); {Č}
-      $0447 {ч} : InternalAddCharsToResult([$010D]); {č}
-      $04F4 {Ӵ} : InternalAddCharsToResult([$0043,$0308]); {C̈}
-      $04F5 {ӵ} : InternalAddCharsToResult([$0063,$0308]); {c̈}
-      $04CB {Ӌ} : InternalAddCharsToResult([$00C7]); {Ç}
-      $04CC {ӌ} : InternalAddCharsToResult([$00E7]); {ç}
-      $040F {Џ} : InternalAddCharsToResult([$0044,$0302]); {D̂}
-      $045F {џ} : InternalAddCharsToResult([$0064,$0302]); {d̂}
-      $0428 {Ш} : InternalAddCharsToResult([$0160]); {Š}
-      $0448 {ш} : InternalAddCharsToResult([$0161]); {š}
-      $0429 {Щ} : InternalAddCharsToResult([$015C]); {Ŝ}
-      $0449 {щ} : InternalAddCharsToResult([$015D]); {ŝ}
-      $042A {Ъ} : InternalAddCharsToResult([$02BA]); {ʺ}
+      $0410 {А}: InternalAddCharsToResult([$0041]); {A}
+      $0430 {а}: InternalAddCharsToResult([$0061]); {a}
+      $04D0 {Ӑ}: InternalAddCharsToResult([$0102]); {Ă}
+      $04D1 {ӑ}: InternalAddCharsToResult([$0103]); {ă}
+      $04D2 {Ӓ}: InternalAddCharsToResult([$00C4]); {Ä}
+      $04D3 {ӓ}: InternalAddCharsToResult([$00E4]); {ä}
+      $04D8 {Ә}: InternalAddCharsToResult([$0041,$030B]); {A̋}
+      $04D9 {ә}: InternalAddCharsToResult([$0061,$030B]); {a̋}
+      $0411 {Б}: InternalAddCharsToResult([$0042]); {B}
+      $0431 {б}: InternalAddCharsToResult([$0062]); {b}
+      $0412 {В}: InternalAddCharsToResult([$0056]); {V}
+      $0432 {в}: InternalAddCharsToResult([$0076]); {v}
+      $0413 {Г}: InternalAddCharsToResult([$0047]); {G}
+      $0433 {г}: InternalAddCharsToResult([$0067]); {g}
+      $0490 {Ґ}: InternalAddCharsToResult([$0047,$0300]); {G̀}
+      $0491 {ґ}: InternalAddCharsToResult([$0067,$0300]); {g̀}
+      $0494 {Ҕ}: InternalAddCharsToResult([$011E]); {Ğ}
+      $0495 {ҕ}: InternalAddCharsToResult([$011F]); {ğ}
+      $0492 {Ғ}: InternalAddCharsToResult([$0120]); {Ġ}
+      $0493 {ғ}: InternalAddCharsToResult([$0121]); {ġ}
+      $0414 {Д}: InternalAddCharsToResult([$0044]); {D}
+      $0434 {д}: InternalAddCharsToResult([$0064]); {d}
+      $0402 {Ђ}: InternalAddCharsToResult([$0110]); {Đ}
+      $0452 {ђ}: InternalAddCharsToResult([$0111]); {đ}
+      $0403 {Ѓ}: InternalAddCharsToResult([$01F4]); {Ǵ}
+      $0453 {ѓ}: InternalAddCharsToResult([$01F5]); {ǵ}
+      $0415 {Е}: InternalAddCharsToResult([$0045]); {E}
+      $0435 {е}: InternalAddCharsToResult([$0065]); {e}
+      $0401 {Ё}: InternalAddCharsToResult([$00CB]); {Ë}
+      $0451 {ё}: InternalAddCharsToResult([$00EB]); {ë}
+      $04D6 {Ӗ}: InternalAddCharsToResult([$0114]); {Ĕ}
+      $04D7 {ӗ}: InternalAddCharsToResult([$0115]); {ĕ}
+      $0404 {Є}: InternalAddCharsToResult([$00CA]); {Ê}
+      $0454 {є}: InternalAddCharsToResult([$00EA]); {ê}
+      $04BC {Ҽ}: InternalAddCharsToResult([$0043,$0306]); {C̆}
+      $04BD {ҽ}: InternalAddCharsToResult([$0063,$0306]); {c̆}
+      $04BE {Ҿ}: InternalAddCharsToResult([$00C7,$0306]); {Ç̆}
+      $04BF {ҿ}: InternalAddCharsToResult([$00E7,$0306]); {ç̆}
+      $0416 {Ж}: InternalAddCharsToResult([$017D]); {Ž}
+      $0436 {ж}: InternalAddCharsToResult([$017E]); {ž}
+      $04C1 {Ӂ}: InternalAddCharsToResult([$005A,$0306]); {Z̆}
+      $04C2 {ӂ}: InternalAddCharsToResult([$007A,$0306]); {z̆}
+      $04DC {Ӝ}: InternalAddCharsToResult([$005A,$0304]); {Z̄}
+      $04DD {ӝ}: InternalAddCharsToResult([$007A,$0304]); {z̄}
+      $0496 {Җ}: InternalAddCharsToResult([$017D,$0326]); {Ž̦}
+      $0497 {җ}: InternalAddCharsToResult([$017E,$0327]); {ž̧}
+      $0417 {З}: InternalAddCharsToResult([$005A]); {Z}
+      $0437 {з}: InternalAddCharsToResult([$007A]); {z}
+      $04DE {Ӟ}: InternalAddCharsToResult([$005A,$0308]); {Z̈}
+      $04DF {ӟ}: InternalAddCharsToResult([$007A,$0308]); {z̈}
+      $0405 {Ѕ}: InternalAddCharsToResult([$1E90]); {Ẑ}
+      $0455 {ѕ}: InternalAddCharsToResult([$1E91]); {ẑ}
+      $04E0 {Ӡ}: InternalAddCharsToResult([$0179]); {Ź}
+      $04E1 {ӡ}: InternalAddCharsToResult([$017A]); {ź}
+      $0418 {И}: InternalAddCharsToResult([$0049]); {I}
+      $0438 {и}: InternalAddCharsToResult([$0069]); {i}
+      $04E4 {Ӥ}: InternalAddCharsToResult([$00CE]); {Î}
+      $04E5 {ӥ}: InternalAddCharsToResult([$00EE]); {î}
+      $0406 {І}: InternalAddCharsToResult([$00CC]); {Ì}
+      $0456 {і}: InternalAddCharsToResult([$00EC]); {ì}
+      $0407 {Ї}: InternalAddCharsToResult([$00CF]); {Ï}
+      $0457 {ї}: InternalAddCharsToResult([$00EF]); {ï}
+      $0419 {Й}: InternalAddCharsToResult([$004A]); {J}
+      $0439 {й}: InternalAddCharsToResult([$006A]); {j}
+      $0408 {Ј}: InternalAddCharsToResult([$004A,$030C]); {J̌}
+      $0458 {ј}: InternalAddCharsToResult([$01F0]); {ǰ}
+      $041A {К}: InternalAddCharsToResult([$004B]); {K}
+      $043A {к}: InternalAddCharsToResult([$006B]); {k}
+      $049A {Қ}: InternalAddCharsToResult([$0136]); {Ķ}
+      $049B {қ}: InternalAddCharsToResult([$0137]); {ķ}
+      $049E {Ҟ}: InternalAddCharsToResult([$004B,$0304]); {K̄}
+      $049F {ҟ}: InternalAddCharsToResult([$006B,$0304]); {k̄}
+      $041B {Л}: InternalAddCharsToResult([$004C]); {L}
+      $043B {л}: InternalAddCharsToResult([$006C]); {l}
+      $0409 {Љ}: InternalAddCharsToResult([$004C,$0302]); {L̂}
+      $0459 {љ}: InternalAddCharsToResult([$006C,$0302]); {l̂}
+      $041C {М}: InternalAddCharsToResult([$004D]); {M}
+      $043C {м}: InternalAddCharsToResult([$006D]); {m}
+      $041D {Н}: InternalAddCharsToResult([$004E]); {N}
+      $043D {н}: InternalAddCharsToResult([$006E]); {n}
+      $040A {Њ}: InternalAddCharsToResult([$004E,$0302]); {N̂}
+      $045A {њ}: InternalAddCharsToResult([$006E,$0302]); {n̂}
+      $04A4 {Ҥ}: InternalAddCharsToResult([$1E44]); {Ṅ}
+      $04A5 {ҥ}: InternalAddCharsToResult([$1E45]); {ṅ}
+      $04A2 {Ң}: InternalAddCharsToResult([$1E46]); {Ṇ}
+      $04A3 {ң}: InternalAddCharsToResult([$1E47]); {ṇ}
+      $041E {О}: InternalAddCharsToResult([$004F]); {O}
+      $043E {о}: InternalAddCharsToResult([$006F]); {o}
+      $04E6 {Ӧ}: InternalAddCharsToResult([$00D6]); {Ö}
+      $04E7 {ӧ}: InternalAddCharsToResult([$00F6]); {ö}
+      $04E8 {Ө}: InternalAddCharsToResult([$00D4]); {Ô}
+      $04E9 {ө}: InternalAddCharsToResult([$00F4]); {ô}
+      $041F {П}: InternalAddCharsToResult([$0050]); {P}
+      $043F {п}: InternalAddCharsToResult([$0070]); {p}
+      $04A6 {Ҧ}: InternalAddCharsToResult([$1E54]); {Ṕ}
+      $04A7 {ҧ}: InternalAddCharsToResult([$1E55]); {ṕ}
+      $0420 {Р}: InternalAddCharsToResult([$0052]); {R}
+      $0440 {р}: InternalAddCharsToResult([$0072]); {r}
+      $0421 {С}: InternalAddCharsToResult([$0053]); {S}
+      $0441 {с}: InternalAddCharsToResult([$0073]); {s}
+      $04AA {Ҫ}: InternalAddCharsToResult([$00C7]); {Ç}
+      $04AB {ҫ}: InternalAddCharsToResult([$00E7]); {ç}
+      $0422 {Т}: InternalAddCharsToResult([$0054]); {T}
+      $0442 {т}: InternalAddCharsToResult([$0074]); {t}
+      $04AC {Ҭ}: InternalAddCharsToResult([$0162]); {Ţ}
+      $04AD {ҭ}: InternalAddCharsToResult([$0163]); {ţ}
+      $040B {Ћ}: InternalAddCharsToResult([$0106]); {Ć}
+      $045B {ћ}: InternalAddCharsToResult([$0170]); {Ű}
+      $040C {Ќ}: InternalAddCharsToResult([$1E30]); {Ḱ}
+      $045C {ќ}: InternalAddCharsToResult([$1E31]); {ḱ}
+      $0423 {У}: InternalAddCharsToResult([$0055]); {U}
+      $0443 {у}: InternalAddCharsToResult([$0075]); {u}
+      $EE19 {}: InternalAddCharsToResult([$00DA]); {Ú}
+      $EE99 {}: InternalAddCharsToResult([$00FA]); {ú}
+      $040E {Ў}: InternalAddCharsToResult([$016C]); {Ŭ}
+      $045E {ў}: InternalAddCharsToResult([$016D]); {ŭ}
+      $04F0 {Ӱ}: InternalAddCharsToResult([$00DC]); {Ü}
+      $04F1 {ӱ}: InternalAddCharsToResult([$00FC]); {ü}
+      $04F2 {Ӳ}: InternalAddCharsToResult([$0170]); {Ű}
+      $04F3 {ӳ}: InternalAddCharsToResult([$0171]); {ű}
+      $04AE {Ү}: InternalAddCharsToResult([$00D9]); {Ù}
+      $04AF {ү}: InternalAddCharsToResult([$00F9]); {ù}
+      $0424 {Ф}: InternalAddCharsToResult([$0046]); {F}
+      $0444 {ф}: InternalAddCharsToResult([$0066]); {f}
+      $0425 {Х}: InternalAddCharsToResult([$0048]); {H}
+      $0445 {х}: InternalAddCharsToResult([$0068]); {h}
+      $04B2 {Ҳ}: InternalAddCharsToResult([$1E28]); {Ḩ}
+      $04B3 {ҳ}: InternalAddCharsToResult([$1E29]); {ḩ}
+      $04BA {Һ}: InternalAddCharsToResult([$1E24]); {Ḥ}
+      $04BB {һ}: InternalAddCharsToResult([$1E25]); {ḥ}
+      $0426 {Ц}: InternalAddCharsToResult([$0043]); {C}
+      $0446 {ц}: InternalAddCharsToResult([$0063]); {c}
+      $04B4 {Ҵ}: InternalAddCharsToResult([$0043,$0304]); {C̄}
+      $04B5 {ҵ}: InternalAddCharsToResult([$0063,$0304]); {c̄}
+      $0427 {Ч}: InternalAddCharsToResult([$010C]); {Č}
+      $0447 {ч}: InternalAddCharsToResult([$010D]); {č}
+      $04F4 {Ӵ}: InternalAddCharsToResult([$0043,$0308]); {C̈}
+      $04F5 {ӵ}: InternalAddCharsToResult([$0063,$0308]); {c̈}
+      $04CB {Ӌ}: InternalAddCharsToResult([$00C7]); {Ç}
+      $04CC {ӌ}: InternalAddCharsToResult([$00E7]); {ç}
+      $040F {Џ}: InternalAddCharsToResult([$0044,$0302]); {D̂}
+      $045F {џ}: InternalAddCharsToResult([$0064,$0302]); {d̂}
+      $0428 {Ш}: InternalAddCharsToResult([$0160]); {Š}
+      $0448 {ш}: InternalAddCharsToResult([$0161]); {š}
+      $0429 {Щ}: InternalAddCharsToResult([$015C]); {Ŝ}
+      $0449 {щ}: InternalAddCharsToResult([$015D]); {ŝ}
+      $042A {Ъ}: InternalAddCharsToResult([$02BA]); {ʺ}
       {The capital hard sign is very seldom in use. It may be capital, if everything is written in upper case -
        therefore when transliteration is used reverse we can say that $02BA = $042A if everything is written in upper case}
-      $044A {ъ} : InternalAddCharsToResult([$02BA]); {ʺ}
-      $02BC {ʼ} : InternalAddCharsToResult([$2019]); {’}
-      $042B {Ы} : InternalAddCharsToResult([$0059]); {Y}
-      $044B {ы} : InternalAddCharsToResult([$0079]); {y}
-      $04F8 {Ӹ} : InternalAddCharsToResult([$0178]); {Ÿ}
-      $04F9 {ӹ} : InternalAddCharsToResult([$00FF]); {ÿ}
-      $042C {Ь} : InternalAddCharsToResult([$02B9]); {ʹ}
+      $044A {ъ}: InternalAddCharsToResult([$02BA]); {ʺ}
+      $02BC {ʼ}: InternalAddCharsToResult([$2019]); {’}
+      $042B {Ы}: InternalAddCharsToResult([$0059]); {Y}
+      $044B {ы}: InternalAddCharsToResult([$0079]); {y}
+      $04F8 {Ӹ}: InternalAddCharsToResult([$0178]); {Ÿ}
+      $04F9 {ӹ}: InternalAddCharsToResult([$00FF]); {ÿ}
+      $042C {Ь}: InternalAddCharsToResult([$02B9]); {ʹ}
       {The capital hard sign is very seldom in use. It may be capital, if everything is written in upper case -
        therefore when transliteration is used reverse we can say that $042C = $02B9 if everything is written in upper case}
-      $044C {ь} : InternalAddCharsToResult([$02B9]); {ʹ}
-      $042D {Э} : InternalAddCharsToResult([$00C8]); {È}
-      $044D {э} : InternalAddCharsToResult([$00E8]); {è}
-      $042E {Ю} : InternalAddCharsToResult([$00DB]); {Û}
-      $044E {ю} : InternalAddCharsToResult([$00FB]); {û}
-      $042F {Я} : InternalAddCharsToResult([$00C2]); {Â}
-      $044F {я} : InternalAddCharsToResult([$00E2]); {â}
-      $048C {Ҍ} : InternalAddCharsToResult([$011A]); {Ě}
-      $048D {ҍ} : InternalAddCharsToResult([$011B]); {ě}
-      $046A {Ѫ} : InternalAddCharsToResult([$01CD]); {Ǎ}
-      $046B {ѫ} : InternalAddCharsToResult([$01CE]); {ǎ}
-      $0472 {Ѳ} : InternalAddCharsToResult([$0046,$0300]); {F̀}
-      $0473 {ѳ} : InternalAddCharsToResult([$0066,$0300]); {f̀}
-      $0474 {Ѵ} : InternalAddCharsToResult([$1EF2]); {Ỳ}
-      $0475 {ѵ} : InternalAddCharsToResult([$1EF3]); {ỳ}
-      $04A8 {Ҩ} : InternalAddCharsToResult([$00D2]); {Ò}
-      $04A9 {ҩ} : InternalAddCharsToResult([$00F2]); {ò}
-      $04C0 {Ӏ} : InternalAddCharsToResult([$2021]); {‡}
+      $044C {ь}: InternalAddCharsToResult([$02B9]); {ʹ}
+      $042D {Э}: InternalAddCharsToResult([$00C8]); {È}
+      $044D {э}: InternalAddCharsToResult([$00E8]); {è}
+      $042E {Ю}: InternalAddCharsToResult([$00DB]); {Û}
+      $044E {ю}: InternalAddCharsToResult([$00FB]); {û}
+      $042F {Я}: InternalAddCharsToResult([$00C2]); {Â}
+      $044F {я}: InternalAddCharsToResult([$00E2]); {â}
+      $048C {Ҍ}: InternalAddCharsToResult([$011A]); {Ě}
+      $048D {ҍ}: InternalAddCharsToResult([$011B]); {ě}
+      $046A {Ѫ}: InternalAddCharsToResult([$01CD]); {Ǎ}
+      $046B {ѫ}: InternalAddCharsToResult([$01CE]); {ǎ}
+      $0472 {Ѳ}: InternalAddCharsToResult([$0046,$0300]); {F̀}
+      $0473 {ѳ}: InternalAddCharsToResult([$0066,$0300]); {f̀}
+      $0474 {Ѵ}: InternalAddCharsToResult([$1EF2]); {Ỳ}
+      $0475 {ѵ}: InternalAddCharsToResult([$1EF3]); {ỳ}
+      $04A8 {Ҩ}: InternalAddCharsToResult([$00D2]); {Ò}
+      $04A9 {ҩ}: InternalAddCharsToResult([$00F2]); {ò}
+      $04C0 {Ӏ}: InternalAddCharsToResult([$2021]); {‡}
       else InternalAddCharsToResult([j]);
     end;
   end;
@@ -9625,17 +9900,17 @@ Begin
   for i := 1 to length(LCyrillicWideStr) do begin
     j := ord(LCyrillicWideStr[i]);
     case j of
-      $0410 {А} : InternalAddCharsToResult([$0041]); {A}
-      $0430 {а} : InternalAddCharsToResult([$0061]); {a}
-      $0411 {Б} : InternalAddCharsToResult([$0042]); {B}
-      $0431 {б} : InternalAddCharsToResult([$0062]); {b}
-      $0412 {В} : InternalAddCharsToResult([$0056]); {V}
-      $0432 {в} : InternalAddCharsToResult([$0076]); {v}
-      $0413 {Г} : InternalAddCharsToResult([$0047]); {G}
-      $0433 {г} : InternalAddCharsToResult([$0067]); {g}
-      $0414 {Д} : InternalAddCharsToResult([$0044]); {D}
-      $0434 {д} : InternalAddCharsToResult([$0064]); {d}
-      $0415 {Е} : begin
+      $0410 {А}: InternalAddCharsToResult([$0041]); {A}
+      $0430 {а}: InternalAddCharsToResult([$0061]); {a}
+      $0411 {Б}: InternalAddCharsToResult([$0042]); {B}
+      $0431 {б}: InternalAddCharsToResult([$0062]); {b}
+      $0412 {В}: InternalAddCharsToResult([$0056]); {V}
+      $0432 {в}: InternalAddCharsToResult([$0076]); {v}
+      $0413 {Г}: InternalAddCharsToResult([$0047]); {G}
+      $0433 {г}: InternalAddCharsToResult([$0067]); {g}
+      $0414 {Д}: InternalAddCharsToResult([$0044]); {D}
+      $0434 {д}: InternalAddCharsToResult([$0064]); {d}
+      $0415 {Е}: begin
                     {The character e should be romanized ye initially, after the vowel characters a, e, ё, и, о, у, ы, э, ю, and я,
                      and after й, ъ, and ь. In all other instances, it should be romanized e.}
                     if (i > 1) and InternalCheckInRange(
@@ -9654,7 +9929,7 @@ Begin
                                      $042C {Ь}, $044C {ь}]) then InternalAddCharsToResult([$0059, $0065]) {Ye}
                     else InternalAddCharsToResult([$0045]); {E}
                   end;
-      $0435 {е} : begin
+      $0435 {е}: begin
                     {The character e should be romanized ye initially, after the vowel characters a, e, ё, и, о, у, ы, э, ю, and я,
                      and after й, ъ, and ь. In all other instances, it should be romanized e.}
                     if (i > 1) and InternalCheckInRange(
@@ -9673,7 +9948,7 @@ Begin
                                      $042C {Ь}, $044C {ь}]) then InternalAddCharsToResult([$0079, $0065]) {ye}
                     else InternalAddCharsToResult([$0065]); {e}
                   end;
-      $0401 {Ё} : begin
+      $0401 {Ё}: begin
                     {The character ё is not considered a separate character of the Russian alphabet and the dieresis is generally not shown.
                     When the dieresis is shown, the character should be romanized yë initially, after the vowel characters a, e, ё, и, о, у, ы, э, ю, and я,
                     and after й, ъ, and ь. In all other instances, it should be romanized ё. When the dieresis is not shown, the character may still be
@@ -9694,7 +9969,7 @@ Begin
                                      $042C {Ь}, $044C {ь}]) then InternalAddCharsToResult([$0059, $00EB]) {Yë}
                     else InternalAddCharsToResult([$00CB]); {Ë}
                   end;
-      $0451 {ё} : begin
+      $0451 {ё}: begin
                     {The character ё is not considered a separate character of the Russian alphabet and the dieresis is generally not shown.
                     When the dieresis is shown, the character should be romanized yë initially, after the vowel characters a, e, ё, и, о, у, ы, э, ю, and я,
                     and after й, ъ, and ь. In all other instances, it should be romanized ё. When the dieresis is not shown, the character may still be
@@ -9715,58 +9990,58 @@ Begin
                                      $042C {Ь}, $044C {ь}]) then InternalAddCharsToResult([$0079, $00EB]) {yë}
                     else InternalAddCharsToResult([$00EB]); {ë}
                   end;
-      $0416 {Ж} : InternalAddCharsToResult([$005A,$0068]); {Zh}
-      $0436 {ж} : InternalAddCharsToResult([$007A,$0068]); {zh}
-      $0417 {З} : InternalAddCharsToResult([$005A]); {Z}
-      $0437 {з} : InternalAddCharsToResult([$007A]); {z}
-      $0418 {И} : InternalAddCharsToResult([$0049]); {I}
-      $0438 {и} : InternalAddCharsToResult([$0069]); {i}
-      $0419 {Й} : InternalAddCharsToResult([$0059]); {Y}
-      $0439 {й} : InternalAddCharsToResult([$0079]); {y}
-      $041A {К} : InternalAddCharsToResult([$004B]); {K}
-      $043A {к} : InternalAddCharsToResult([$006B]); {k}
-      $041B {Л} : InternalAddCharsToResult([$004C]); {L}
-      $043B {л} : InternalAddCharsToResult([$006C]); {l}
-      $041C {М} : InternalAddCharsToResult([$004D]); {M}
-      $043C {м} : InternalAddCharsToResult([$006D]); {m}
-      $041D {Н} : InternalAddCharsToResult([$004E]); {N}
-      $043D {н} : InternalAddCharsToResult([$006E]); {n}
-      $041E {О} : InternalAddCharsToResult([$004F]); {O}
-      $043E {о} : InternalAddCharsToResult([$006F]); {o}
-      $041F {П} : InternalAddCharsToResult([$0050]); {P}
-      $043F {п} : InternalAddCharsToResult([$0070]); {p}
-      $0420 {Р} : InternalAddCharsToResult([$0052]); {R}
-      $0440 {р} : InternalAddCharsToResult([$0072]); {r}
-      $0421 {С} : InternalAddCharsToResult([$0053]); {S}
-      $0441 {с} : InternalAddCharsToResult([$0073]); {s}
-      $0422 {Т} : InternalAddCharsToResult([$0054]); {T}
-      $0442 {т} : InternalAddCharsToResult([$0074]); {t}
-      $0423 {У} : InternalAddCharsToResult([$0055]); {U}
-      $0443 {у} : InternalAddCharsToResult([$0075]); {u}
-      $0424 {Ф} : InternalAddCharsToResult([$0046]); {F}
-      $0444 {ф} : InternalAddCharsToResult([$0066]); {f}
-      $0425 {Х} : InternalAddCharsToResult([$004B, $0068]); {Kh}
-      $0445 {х} : InternalAddCharsToResult([$006B, $0068]); {kh}
-      $0426 {Ц} : InternalAddCharsToResult([$0054, $0073]); {Ts}
-      $0446 {ц} : InternalAddCharsToResult([$0074, $0073]); {ts}
-      $0427 {Ч} : InternalAddCharsToResult([$0043, $0068]); {Ch}
-      $0447 {ч} : InternalAddCharsToResult([$0063, $0068]); {ch}
-      $0428 {Ш} : InternalAddCharsToResult([$0053, $0068]); {Sh}
-      $0448 {ш} : InternalAddCharsToResult([$0073, $0068]); {sh}
-      $0429 {Щ} : InternalAddCharsToResult([$0053, $0068, $0063, $0068]); {Shch}
-      $0449 {щ} : InternalAddCharsToResult([$0073, $0068, $0063, $0068]); {shch}
-      $042A {Ъ} : InternalAddCharsToResult([$0022]); {"}
-      $044A {ъ} : InternalAddCharsToResult([$0022]); {"}
-      $042B {Ы} : InternalAddCharsToResult([$0059]); {Y}
-      $044B {ы} : InternalAddCharsToResult([$0079]); {y}
-      $042C {Ь} : InternalAddCharsToResult([$0027]); {'}
-      $044C {ь} : InternalAddCharsToResult([$0027]); {'}
-      $042D {Э} : InternalAddCharsToResult([$0045]); {E}
-      $044D {э} : InternalAddCharsToResult([$0065]); {e}
-      $042E {Ю} : InternalAddCharsToResult([$0059, $0075]); {Yu}
-      $044E {ю} : InternalAddCharsToResult([$0079, $0075]); {yu}
-      $042F {Я} : InternalAddCharsToResult([$0059, $0061]); {Ya}
-      $044F {я} : InternalAddCharsToResult([$0079, $0061]); {ya}
+      $0416 {Ж}: InternalAddCharsToResult([$005A,$0068]); {Zh}
+      $0436 {ж}: InternalAddCharsToResult([$007A,$0068]); {zh}
+      $0417 {З}: InternalAddCharsToResult([$005A]); {Z}
+      $0437 {з}: InternalAddCharsToResult([$007A]); {z}
+      $0418 {И}: InternalAddCharsToResult([$0049]); {I}
+      $0438 {и}: InternalAddCharsToResult([$0069]); {i}
+      $0419 {Й}: InternalAddCharsToResult([$0059]); {Y}
+      $0439 {й}: InternalAddCharsToResult([$0079]); {y}
+      $041A {К}: InternalAddCharsToResult([$004B]); {K}
+      $043A {к}: InternalAddCharsToResult([$006B]); {k}
+      $041B {Л}: InternalAddCharsToResult([$004C]); {L}
+      $043B {л}: InternalAddCharsToResult([$006C]); {l}
+      $041C {М}: InternalAddCharsToResult([$004D]); {M}
+      $043C {м}: InternalAddCharsToResult([$006D]); {m}
+      $041D {Н}: InternalAddCharsToResult([$004E]); {N}
+      $043D {н}: InternalAddCharsToResult([$006E]); {n}
+      $041E {О}: InternalAddCharsToResult([$004F]); {O}
+      $043E {о}: InternalAddCharsToResult([$006F]); {o}
+      $041F {П}: InternalAddCharsToResult([$0050]); {P}
+      $043F {п}: InternalAddCharsToResult([$0070]); {p}
+      $0420 {Р}: InternalAddCharsToResult([$0052]); {R}
+      $0440 {р}: InternalAddCharsToResult([$0072]); {r}
+      $0421 {С}: InternalAddCharsToResult([$0053]); {S}
+      $0441 {с}: InternalAddCharsToResult([$0073]); {s}
+      $0422 {Т}: InternalAddCharsToResult([$0054]); {T}
+      $0442 {т}: InternalAddCharsToResult([$0074]); {t}
+      $0423 {У}: InternalAddCharsToResult([$0055]); {U}
+      $0443 {у}: InternalAddCharsToResult([$0075]); {u}
+      $0424 {Ф}: InternalAddCharsToResult([$0046]); {F}
+      $0444 {ф}: InternalAddCharsToResult([$0066]); {f}
+      $0425 {Х}: InternalAddCharsToResult([$004B, $0068]); {Kh}
+      $0445 {х}: InternalAddCharsToResult([$006B, $0068]); {kh}
+      $0426 {Ц}: InternalAddCharsToResult([$0054, $0073]); {Ts}
+      $0446 {ц}: InternalAddCharsToResult([$0074, $0073]); {ts}
+      $0427 {Ч}: InternalAddCharsToResult([$0043, $0068]); {Ch}
+      $0447 {ч}: InternalAddCharsToResult([$0063, $0068]); {ch}
+      $0428 {Ш}: InternalAddCharsToResult([$0053, $0068]); {Sh}
+      $0448 {ш}: InternalAddCharsToResult([$0073, $0068]); {sh}
+      $0429 {Щ}: InternalAddCharsToResult([$0053, $0068, $0063, $0068]); {Shch}
+      $0449 {щ}: InternalAddCharsToResult([$0073, $0068, $0063, $0068]); {shch}
+      $042A {Ъ}: InternalAddCharsToResult([$0022]); {"}
+      $044A {ъ}: InternalAddCharsToResult([$0022]); {"}
+      $042B {Ы}: InternalAddCharsToResult([$0059]); {Y}
+      $044B {ы}: InternalAddCharsToResult([$0079]); {y}
+      $042C {Ь}: InternalAddCharsToResult([$0027]); {'}
+      $044C {ь}: InternalAddCharsToResult([$0027]); {'}
+      $042D {Э}: InternalAddCharsToResult([$0045]); {E}
+      $044D {э}: InternalAddCharsToResult([$0065]); {e}
+      $042E {Ю}: InternalAddCharsToResult([$0059, $0075]); {Yu}
+      $044E {ю}: InternalAddCharsToResult([$0079, $0075]); {yu}
+      $042F {Я}: InternalAddCharsToResult([$0059, $0061]); {Ya}
+      $044F {я}: InternalAddCharsToResult([$0079, $0061]); {ya}
       else InternalAddCharsToResult([j]);
     end;
   end;
@@ -9843,7 +10118,7 @@ end;
 {*****************************************}
 // return how many char (not byte) are in S
 function ALUTF8CharCount(const S: AnsiString): Integer;
-var P, L : Integer;
+var P, L: Integer;
 begin
   Result := 0;
   L := length(s);
@@ -9980,7 +10255,7 @@ begin
     Try
       Result := LEncoding.CodePage;
     Finally
-      LEncoding.Free;
+      ALFreeAndNil(LEncoding);
     end;
 
   Except
@@ -10251,6 +10526,60 @@ function ALPercentDecode(const AStr: String; const APlusAsSpaces: Boolean = Fals
 begin
   result := AStr;
   ALPercentDecodeInPlace(result, APlusAsSpaces);
+end;
+
+{***********************************************************************************************************}
+function ALExtractHeaderParamValue(const AHeaderValue: AnsiString; const AParamName: AnsiString): AnsiString;
+begin
+
+  //
+  // Content-Type: text/plain; charset=ISO-8859-1
+  // Content-Type: text/plain; charset="UTF-8"
+  //
+
+  var LLst := TALNVStringListA.Create;
+  try
+    LLst.LineBreak := ';';
+    LLst.Text := AHeaderValue;
+    for var I := 0 to LLst.Count - 1 do
+      If ALSameTextA(ALTrim(LLst.Names[i]), AParamName) then begin
+        Result := ALTrim(LLst.ValueFromIndex[I]);
+        if (Length(Result) >= 2) and (Result[low(Result)] = '"') and (Result[high(Result)] = '"') then
+          Result := ALCopyStr(Result, 2, Length(Result) - 2);
+        Exit;
+      end;
+    Result := '';
+  finally
+    ALFreeAndNil(LLst);
+  end;
+
+end;
+
+{************************************************************************************************}
+function  ALExtractHeaderParamValue(const AHeaderValue: String; const AParamName: String): String;
+begin
+
+  //
+  // Content-Type: text/plain; charset=ISO-8859-1
+  // Content-Type: text/plain; charset="UTF-8"
+  //
+
+  var LLst := TALNVStringListW.Create;
+  try
+    LLst.LineBreak := ';';
+    LLst.Text := AHeaderValue;
+    for var I := 0 to LLst.Count - 1 do
+      If ALSameTextW(ALTrim(LLst.Names[i]), AParamName) then begin
+        Result := ALTrim(LLst.ValueFromIndex[I]);
+        if (Length(Result) >= 2) and (Result[low(Result)] = '"') and (Result[high(Result)] = '"') then
+          Result := ALCopyStr(Result, 2, Length(Result) - 2);
+        Exit;
+      end;
+    Result := '';
+  finally
+    ALFreeAndNil(LLst);
+  end;
+
 end;
 
 {***********}
@@ -10700,7 +11029,7 @@ begin
         end
         else ReplaceString := '';
       finally
-        ParamList.Free;
+        ALFreeAndNil(ParamList);
       end;
     end
     else begin
@@ -11273,7 +11602,7 @@ initialization
 
   _Base64Encoding := nil;
 
-  {$IFNDEF ALCompilerVersionSupported130}
+  {$IFNDEF ALCompilerVersionSupported131}
     {$MESSAGE WARN 'Check if https://github.com/synopse/mORMot.git SynCommons.pas was not updated from References\mORMot\SynCommons.pas and adjust the IFDEF'}
   {$ENDIF}
 

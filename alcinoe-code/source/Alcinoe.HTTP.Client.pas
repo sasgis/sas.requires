@@ -11,7 +11,6 @@ uses
   {$ENDIF}
   Alcinoe.Localization,
   Alcinoe.StringList,
-  Alcinoe.MultiPartParser,
   System.Classes;
 
 type
@@ -348,19 +347,6 @@ type
                 const aRequestFields: TALStringsA;
                 const ARequestHeaderValues: TALNameValueArray = nil;
                 Const aEncodeRequestFields: Boolean=True): AnsiString; overload;
-    //-----
-    Procedure PostMultipartFormData(
-                const aUrl:AnsiString;
-                const aRequestFields: TALStringsA;
-                const aRequestFiles: TALMultiPartFormDataContents;
-                const aResponseContent: TStream;
-                const aResponseHeader: TALHTTPResponseHeader;
-                const ARequestHeaderValues: TALNameValueArray = nil); overload;
-    Function  PostMultiPartFormData(
-                const aUrl:AnsiString;
-                const aRequestFields: TALStringsA;
-                const aRequestFiles: TALMultiPartFormDataContents;
-                const ARequestHeaderValues: TALNameValueArray = nil): AnsiString; overload;
     //-----
     Procedure Head(
                 const aUrl:AnsiString;
@@ -2424,55 +2410,6 @@ begin
 
   finally
     AlFreeAndNil(LURLEncodedContentStream);
-    FrequestHeader.ContentType := LOldRequestContentType;
-  end;
-end;
-
-{********************************************}
-procedure TALHTTPClient.PostMultiPartFormData(
-            const aUrl: AnsiString;
-            const aRequestFields: TALStringsA;
-            const aRequestFiles: TALMultiPartFormDataContents;
-            const aResponseContent: TStream;
-            const aResponseHeader: TALHTTPResponseHeader;
-            const ARequestHeaderValues: TALNameValueArray = nil);
-Var LMultipartFormDataEncoder: TALMultipartFormDataEncoder;
-    LOldRequestContentType: AnsiString;
-begin
-  LMultipartFormDataEncoder := TALMultipartFormDataEncoder.create;
-  LOldRequestContentType := FrequestHeader.ContentType;
-  try
-    LMultipartFormDataEncoder.Encode(aRequestFields, aRequestFiles);
-    FrequestHeader.ContentType := 'multipart/form-data; boundary='+LMultipartFormDataEncoder.DataStream.Boundary;
-    post(
-      aUrl,
-      LMultipartFormDataEncoder.DataStream,
-      aResponseContent,
-      aResponseHeader,
-      ARequestHeaderValues);
-  finally
-    AlFreeAndNil(LMultipartFormDataEncoder);
-    FrequestHeader.ContentType := LOldRequestContentType;
-  end;
-end;
-
-{*******************************************}
-function TALHTTPClient.PostMultiPartFormData(
-           const aUrl: AnsiString;
-           const aRequestFields: TALStringsA;
-           const aRequestFiles: TALMultiPartFormDataContents;
-           const ARequestHeaderValues: TALNameValueArray = nil): AnsiString;
-Var LMultipartFormDataEncoder: TALMultipartFormDataEncoder;
-    LOldRequestContentType: AnsiString;
-begin
-  LMultipartFormDataEncoder := TALMultipartFormDataEncoder.create;
-  LOldRequestContentType := FrequestHeader.ContentType;
-  try
-    LMultipartFormDataEncoder.Encode(aRequestFields, aRequestFiles);
-    FrequestHeader.ContentType := 'multipart/form-data; boundary='+LMultipartFormDataEncoder.DataStream.Boundary;
-    Result := post(aUrl, LMultipartFormDataEncoder.DataStream, ARequestHeaderValues);
-  finally
-    AlFreeAndNil(LMultipartFormDataEncoder);
     FrequestHeader.ContentType := LOldRequestContentType;
   end;
 end;

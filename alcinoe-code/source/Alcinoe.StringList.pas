@@ -33,15 +33,15 @@ interface
 
 {$I Alcinoe.inc}
 
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.classes.TStringsEnumerator didn''t change and adjust the IFDEF'}
 {$ENDIF}
 
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.classes.TStrings didn''t change and adjust the IFDEF'}
 {$ENDIF}
 
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if System.classes.TStringList didn''t change and adjust the IFDEF'}
 {$ENDIF}
 
@@ -788,21 +788,9 @@ Uses
   system.IOUtils,
   System.Ansistrings,
   System.Hash,
+  Alcinoe.Backward,
   Alcinoe.StringUtils,
   Alcinoe.Common;
-
-{$IF CompilerVersion < 36.0}
-function ListIndexErrorMsg(AIndex, AMaxIndex: NativeInt; AListObj: TObject): string;
-var s: string;
-begin
-  if AListObj <> nil then s := AListObj.ClassName else s := '<nil>';
-  Result := Format('List index out of bounds (%d)', [AIndex]);
-  if AMaxIndex < 0 then
-    Result := Result + Format('.  %s is empty', [s])
-  else
-    Result := Result + Format('.  %s range is 0..%d', [s, AMaxIndex]);
-end;
-{$ENDIF}
 
 {**************************************************************}
 constructor TALStringsEnumeratorA.Create(AStrings: TALStringsA);
@@ -2070,19 +2058,8 @@ end;
 
 {****************************}
 procedure TALStringListA.Grow;
-{$IF CompilerVersion <= 32}{tokyo}
-var
-  Delta: Integer;
-{$endif}
 begin
-  {$IF CompilerVersion <= 32}{tokyo}
-  if FCapacity > 64 then Delta := FCapacity div 4 else
-    if FCapacity > 8 then Delta := 16 else
-      Delta := 4;
-  SetCapacity(FCapacity + Delta);
-  {$else}
   SetCapacity(GrowCollection(FCapacity, FCount + 1));
-  {$endif}
 end;
 
 {************************************************************}
@@ -2937,19 +2914,8 @@ end;
 
 {******************************}
 procedure TALNVStringListA.Grow;
-{$IF CompilerVersion <= 32}{tokyo}
-var
-  Delta: Integer;
-{$endif}
 begin
-  {$IF CompilerVersion <= 32}{tokyo}
-  if FCapacity > 64 then Delta := FCapacity div 4 else
-    if FCapacity > 8 then Delta := 16 else
-      Delta := 4;
-  SetCapacity(FCapacity + Delta);
-  {$else}
   SetCapacity(GrowCollection(FCapacity, FCount + 1));
-  {$endif}
 end;
 
 {***********************************************}
@@ -4189,7 +4155,7 @@ end;
 type
 
   {*************************************}
-  {$IFNDEF ALCompilerVersionSupported130}
+  {$IFNDEF ALCompilerVersionSupported131}
     {$MESSAGE WARN 'Check if System.Generics.Collections.TObjectDictionary<K,V> was not updated and adjust the IFDEF'}
   {$ENDIF}
   _TObjectDictionaryAccessPrivate<K,V> = class(TObjectDictionary<K,V>)
@@ -5025,7 +4991,7 @@ begin
     else
     begin
       SetLength(Buffer, Size);
-      Stream.Read(Buffer, 0, Size);
+      Stream.ReadBuffer(Buffer, 0, Size);
       Size := TEncoding.GetBufferEncoding(Buffer, Encoding, FDefaultEncoding);
       SetEncoding(Encoding); // Keep Encoding in case the stream is saved
       SetTextStr(Encoding.GetString(Buffer, Size, Length(Buffer) - Size));
@@ -5718,19 +5684,8 @@ end;
 
 {****************************}
 procedure TALStringListW.Grow;
-{$IF CompilerVersion <= 32}{tokyo}
-var
-  Delta: Integer;
-{$endif}
 begin
-  {$IF CompilerVersion <= 32}{tokyo}
-  if FCapacity > 64 then Delta := FCapacity div 4 else
-    if FCapacity > 8 then Delta := 16 else
-      Delta := 4;
-  SetCapacity(FCapacity + Delta);
-  {$else}
   SetCapacity(GrowCollection(FCapacity, FCount + 1));
-  {$endif}
 end;
 
 {********************************************************}
@@ -6578,19 +6533,8 @@ end;
 
 {******************************}
 procedure TALNVStringListW.Grow;
-{$IF CompilerVersion <= 32}{tokyo}
-var
-  Delta: Integer;
-{$endif}
 begin
-  {$IF CompilerVersion <= 32}{tokyo}
-  if FCapacity > 64 then Delta := FCapacity div 4 else
-    if FCapacity > 8 then Delta := 16 else
-      Delta := 4;
-  SetCapacity(FCapacity + Delta);
-  {$else}
   SetCapacity(GrowCollection(FCapacity, FCount + 1));
-  {$endif}
 end;
 
 {*******************************************}

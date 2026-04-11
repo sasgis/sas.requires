@@ -21,6 +21,30 @@ uses
 
 type
 
+  {~~~~~~~~~~~~~~~~~~}
+  TALImageWrapMode = (
+    /// <summary>
+    ///   The image is resized (shrunk or enlarged) to be as large as possible
+    ///   within the given width or height while preserving the aspect ratio.
+    /// </summary>
+    Fit,
+    /// <summary>
+    ///   Stretch the image to fill the entire rectangle of the control
+    /// </summary>
+    Stretch,
+    /// <summary>
+    ///   The image is shrunk in size to fully fit within the given width or
+    ///   height, but will not be enlarged.
+    /// </summary>
+    Place,
+    /// <summary>
+    ///   The image is resized to exactly fill the entire area specified by
+    ///   width and height and will be cropped if necessary.
+    /// </summary>
+    Cover);
+
+type
+
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
   TALPersistentObserver = class(TPersistent)
   private
@@ -110,7 +134,7 @@ type
   protected
     procedure Execute; override;
   public
-    constructor Create(const aWorkerThreadPool: TALWorkerThreadPool);
+    constructor Create(const AWorkerThreadPool: TALWorkerThreadPool);
     destructor Destroy; override;
     property Signal: TEvent read FSignal;
     property Waiting: Boolean read fWaiting write fWaiting;
@@ -446,18 +470,10 @@ type
 
 type
 
-  TALPointFHelper = record helper for TPointF
-    function RoundTo(const ADigit: TRoundToEXRangeExtended): TPointF;
-  end;
-
-  TALRectFHelper = record helper for TRectF
-    function RoundTo(const ADigit: TRoundToEXRangeExtended): TRectF;
-  end;
-
   TALPointDType = array [0..1] of Double;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported130}
+  {$IFNDEF ALCompilerVersionSupported131}
     {$MESSAGE WARN 'Check if System.Types.TPointf still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   PALPointD = ^TALPointD;
@@ -526,6 +542,8 @@ type
 
     function Abs: Double;
 
+    function ToString: String;
+
     case Integer of
       0: (V: TALPointDType;);
       1: (X: Double;
@@ -533,7 +551,16 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported130}
+  {$IFNDEF ALCompilerVersionSupported131}
+    {$MESSAGE WARN 'Check if System.Types.TPointf still having the same implementation and adjust the IFDEF'}
+  {$ENDIF}
+  TALPointFHelper = record helper for TPointF
+    function RoundTo(const ADigit: TRoundToEXRangeExtended): TPointF;
+    function ToString: String;
+  end;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  {$IFNDEF ALCompilerVersionSupported131}
     {$MESSAGE WARN 'Check if System.Types.TSizef still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   PALSizeD = ^TALSizeD;
@@ -573,10 +600,20 @@ type
     // properties
     property Width: Double read cx write cx;
     property Height: Double read cy write cy;
+
+    function ToString: String;
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported130}
+  {$IFNDEF ALCompilerVersionSupported131}
+    {$MESSAGE WARN 'Check if System.Types.TSizef still having the same implementation and adjust the IFDEF'}
+  {$ENDIF}
+  TALSizeFHelper = record helper for TSizeF
+    function ToString: String;
+  end;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  {$IFNDEF ALCompilerVersionSupported131}
     {$MESSAGE WARN 'Check if System.Types.TRectf still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   PALRectD = ^TALRectD;
@@ -720,13 +757,33 @@ type
 
     property Location: TALPointD read GetLocation write SetLocation;
 
+    function ToString: String;
+
   case Integer of
     0: (Left, Top, Right, Bottom: Double);
     1: (TopLeft, BottomRight: TALPointD);
   end;
 
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  {$IFNDEF ALCompilerVersionSupported131}
+    {$MESSAGE WARN 'Check if System.Types.TRectf still having the same implementation and adjust the IFDEF'}
+  {$ENDIF}
+  TALRectFHelper = record helper for TRectF
+    function RoundTo(const ADigit: TRoundToEXRangeExtended): TRectF;
+    function ToString: String;
+  end;
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  {$IFNDEF ALCompilerVersionSupported131}
+    {$MESSAGE WARN 'Check if System.Types.TRect still having the same implementation and adjust the IFDEF'}
+  {$ENDIF}
+  TALRectHelper = record helper for TRect
+    function ToString: String;
+  end;
+
+
 {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if functions below implemented in System.Types still having the same implementation and adjust the IFDEF'}
 {$ENDIF}
 function ALRectWidth(const Rect: TRect): Integer; inline; overload;
@@ -773,9 +830,20 @@ Type
   TALCustomLogMsgProc = procedure(Const Tag: String; Const msg: String; const &Type: TalLogType) of object;
   TALCustomLogExceptionProc = procedure(Const Tag: String; Const E: Exception; const &Type: TalLogType) of object;
 
-var
+Var
+  ALDisableLog: Boolean = False;
+  /// <summary>
+  ///   LogHistory is useful for error reporting, allowing the last printed logs
+  ///   to be included in the report. To enable it, set ALMaxLogHistory > 0.
+  /// </summary>
+  ALMaxLogHistory: integer = 0;
   ALCustomLogMsgProc: TALCustomLogMsgProc = nil;
   ALCustomLogExceptionProc: TALCustomLogExceptionProc = nil;
+  /// <summary>
+  ///   Optional log stream. When not nil, logs are written only to this stream
+  ///   and platform logging is disabled.
+  /// </summary>
+  ALLogStream: TStream = nil;
 
 procedure _ALLog(
             Const Tag: String;
@@ -790,19 +858,14 @@ procedure ALLog(Const Tag: String; const TagArgs: array of const; Const msg: Str
 procedure ALLog(Const Tag: String; Const msg: String; const msgArgs: array of const; const &Type: TalLogType = TalLogType.VERBOSE); overload;
 procedure ALLog(Const Tag: String; const Args: array of const; const &Type: TalLogType = TalLogType.VERBOSE); overload;
 procedure ALLog(Const Tag: String; const Args: array of const; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR); overload;
-
-var ALDisableLog: Boolean = False;
-
-// LogHistory is useful for error reporting, allowing the last printed logs
-// to be included in the report. To enable it, set ALMaxLogHistory > 0.
-var ALMaxLogHistory: integer = 0;
+procedure ALLog(Const Tag: AnsiString; Const msg: AnsiString; const &Type: TalLogType = TalLogType.VERBOSE); overload;
+procedure ALLog(Const Tag: AnsiString; const &Type: TalLogType = TalLogType.VERBOSE); overload;
+procedure ALLog(Const Tag: AnsiString; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR); overload;
+procedure ALLog(Const Tag: AnsiString; const TagArgs: array of const; Const msg: AnsiString; const msgArgs: array of const; const &Type: TalLogType = TalLogType.VERBOSE); overload;
+procedure ALLog(Const Tag: AnsiString; Const msg: AnsiString; const msgArgs: array of const; const &Type: TalLogType = TalLogType.VERBOSE); overload;
+procedure ALLog(Const Tag: AnsiString; const Args: array of const; const &Type: TalLogType = TalLogType.VERBOSE); overload;
+procedure ALLog(Const Tag: AnsiString; const Args: array of const; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR); overload;
 function ALGetLogHistory(const AIgnoreLastLogItemMsg: Boolean = False): String;
-
-// This flag allows us to enqueue logs when the device has just started
-// and hasn't yet been connected to the monitoring tool, enabling us
-// to print the logs later.
-Var ALEnqueueLog: Boolean = False;
-procedure ALPrintLogQueue;
 
 {~~}
 type
@@ -860,7 +923,7 @@ function ALIsValidLatlng(const ALatitude, ALongitude: Double): Boolean;
 function ALGetDistanceBetween2Points(const ALatitude1, ALongitude1, ALatitude2, ALongitude2: Double): Double{meters};
 
 {$IFDEF MSWINDOWS}
-{$IFNDEF ALCompilerVersionSupported130}
+{$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if EnumDynamicTimeZoneInformation/SystemTimeToTzSpecificLocalTimeEx/TzSpecificLocalTimeToSystemTimeEx are still not declared in Winapi.Windows and adjust the IFDEF'}
 {$ENDIF}
 {$WARNINGS OFF}
@@ -889,6 +952,7 @@ function ALDateTimeToUnixMs(const aValue: TDateTime): Int64;
 Function ALInc(var x: integer; Count: integer): Integer;
 procedure ALAssignError(Const ASource: TObject; const ADest: Tobject);
 procedure ALMove(const Source; var Dest; Count: NativeInt); inline;
+function ALSameBytes(const ABytes1: TBytes; const ABytes2: TBytes): Boolean;
 procedure ALMonitorEnter(const AObject: TObject {$IF defined(DEBUG)}; const ATag: string = ''{$ENDIF}); inline;
 procedure ALMonitorExit(const AObject: TObject {$IF defined(DEBUG)}; const ATag: string = ''{$ENDIF}); inline;
 {$IFDEF MSWINDOWS}
@@ -1162,12 +1226,12 @@ begin
 end;
 
 {*******************************************************************************}
-constructor TALWorkerThread.Create(const aWorkerThreadPool: TALWorkerThreadPool);
+constructor TALWorkerThread.Create(const AWorkerThreadPool: TALWorkerThreadPool);
 begin
   inherited Create(True);
   FSignal := TEvent.Create(nil{EventAttributes}, false{ManualReset}, false{InitialState}, ''{Name});
   FWaiting := False;
-  FWorkerThreadPool := aWorkerThreadPool;
+  FWorkerThreadPool := AWorkerThreadPool;
   {$IF defined(ANDROID) or defined(IOS)}
   Policy := SCHED_OTHER;
   priority := sched_get_priority_min(SCHED_OTHER);
@@ -1223,7 +1287,8 @@ begin
           alFreeAndNil(LWorkerThreadRequest);
         end;
       except
-        //hide the exception
+        on E: Exception do
+          ALLog('TALWorkerThread.Execute', E);
       end;
     end
 
@@ -2041,20 +2106,6 @@ begin
   Result := ALRectPlaceInto(R, Bounds, LRatio, AHorzAlign, AVertAlign);
 end;
 
-{*******************************************************************************}
-function TALPointFHelper.RoundTo(const ADigit: TRoundToEXRangeExtended): TPointF;
-begin
-  Result.X := System.math.RoundTo(X, ADigit);
-  Result.Y := System.math.RoundTo(Y, ADigit);
-end;
-
-{*****************************************************************************}
-function TALRectFHelper.RoundTo(const ADigit: TRoundToEXRangeExtended): TRectF;
-begin
-  Result.TopLeft := TopLeft.RoundTo(ADigit);
-  Result.BottomRight := BottomRight.RoundTo(ADigit);
-end;
-
 {***************************************************************}
 class function TALPointD.Create(const AX, AY: Double): TALPointD;
 begin
@@ -2417,6 +2468,31 @@ begin
     Result := Self.DotProduct(APoint) / Epsilon;
 
   Result := Max(Min(Result, 1), -1);
+end;
+
+{**********************************}
+function TALPointD.ToString: String;
+begin
+  Result := ALFormatW(
+              'X=%g Y=%g',
+              [x, y],
+              ALDefaultFormatSettingsW);
+end;
+
+{*******************************************************************************}
+function TALPointFHelper.RoundTo(const ADigit: TRoundToEXRangeExtended): TPointF;
+begin
+  Result.X := System.math.RoundTo(X, ADigit);
+  Result.Y := System.math.RoundTo(Y, ADigit);
+end;
+
+{****************************************}
+function TALPointFHelper.ToString: String;
+begin
+  Result := ALFormatW(
+              'X=%g Y=%g',
+              [x, y],
+              ALDefaultFormatSettingsW);
 end;
 
 {*****************************************************************}
@@ -2890,6 +2966,40 @@ begin
   end;
 end;
 
+{*********************************}
+function TALRectD.ToString: String;
+begin
+  Result := ALFormatW(
+              'L=%g T=%g R=%g B=%g',
+              [Left, Top, Right, Bottom],
+              ALDefaultFormatSettingsW);
+end;
+
+{*****************************************************************************}
+function TALRectFHelper.RoundTo(const ADigit: TRoundToEXRangeExtended): TRectF;
+begin
+  Result.TopLeft := TopLeft.RoundTo(ADigit);
+  Result.BottomRight := BottomRight.RoundTo(ADigit);
+end;
+
+{***************************************}
+function TALRectFHelper.ToString: String;
+begin
+  Result := ALFormatW(
+              'L=%g T=%g R=%g B=%g',
+              [Left, Top, Right, Bottom],
+              ALDefaultFormatSettingsW);
+end;
+
+{**************************************}
+function TALRectHelper.ToString: String;
+begin
+  Result := ALFormatW(
+              'L=%d T=%d R=%d B=%d',
+              [Left, Top, Right, Bottom],
+              ALDefaultFormatSettingsW);
+end;
+
 {*****************************************************}
 function TALSizeD.Add(const Point: TALSizeD): TALSizeD;
 begin
@@ -3032,6 +3142,24 @@ begin
   Result.cy := Size.cy;
 end;
 
+{*********************************}
+function TALSizeD.ToString: String;
+begin
+  Result := ALFormatW(
+              'W=%g H=%g',
+              [Width, Height],
+              ALDefaultFormatSettingsW);
+end;
+
+{***************************************}
+function TALSizeFHelper.ToString: String;
+begin
+  Result := ALFormatW(
+              'W=%g H=%g',
+              [Width, Height],
+              ALDefaultFormatSettingsW);
+end;
+
 {*****************************************************}
 constructor EALException.Create(const Msg: AnsiString);
 begin
@@ -3076,8 +3204,7 @@ type
   end;
 
 var
-  _ALLogQueue: TList<_TALLogItem>;
-  _ALLogHistory: TList<_TALLogItem>;
+  _ALLogHistory: TList<_TALLogItem> = nil;
   _ALLogHistoryIndex: integer = -1;
 
 {********************************}
@@ -3125,6 +3252,7 @@ function ALGetLogHistory(const AIgnoreLastLogItemMsg: Boolean = False): String;
 
 begin
   Result := '';
+  if _ALLogHistory = nil then exit;
   Tmonitor.enter(_ALLogHistory);
   Try
     for var i := _ALLogHistoryIndex downto 0 do
@@ -3151,7 +3279,7 @@ begin
   // ignore all verbose logs.
   if &Type = TalLogType.VERBOSE then exit;
   {$ENDIF}
-  if CanPreserve and (ALMaxLogHistory > 0) then begin
+  if CanPreserve and (ALMaxLogHistory > 0) and (_ALLogHistory <> nil) then begin
     var LLogItem := _TALLogItem.Create(
                       Tag, // const ATag: String;
                       Msg, // const AMsg: String;
@@ -3170,72 +3298,91 @@ begin
     End;
   end;
   //--
-  if CanPreserve and ALEnqueueLog then begin
-    Tmonitor.Enter(_ALLogQueue);
-    try
-      _ALLogQueue.Add(
-        _TALLogItem.Create(
-          Tag, // const ATag: String;
-          Msg, // const AMsg: String;
-          &Type, // Const aType: TalLogType
-          ThreadID, // Const AThreadID: TThreadID;
-          Now)); // const ATimeStamp: TDateTime
-    finally
-      Tmonitor.Exit(_ALLogQueue);
-    end;
-    if &Type = TalLogType.ASSERT then ALPrintLogQueue
-  end
-  else begin
-    var LMsg: String;
-    {$IF defined(ALCodeProfiler)}
-    if ALCodeProfilerIsrunning then begin
-      var LMilliseconds: Double := (TStopwatch.GetTimeStamp - ALCodeProfilerAppStartTimeStamp) * ALCodeProfilerMillisecondsPerTick;
-      var LMinutes: integer := Trunc(LMilliseconds) div (1000 * 60);
-      LMilliseconds := LMilliseconds - (LMinutes * 1000 * 60);
-      var LSeconds: integer := Trunc(LMilliseconds) div 1000;
-      LMilliseconds := LMilliseconds - (LSeconds * 1000);
-      var LHundredNanoseconds: integer := Round(Frac(LMilliseconds) * 10000);
-      if Msg <> '' then
-        LMsg := Msg + ALFormatW(' | StartTimeStamp: %.2d:%.2d:%.3d.%.5d', [{LHours,} LMinutes, LSeconds, Trunc(LMilliseconds), LHundredNanoseconds])
-      else
-        LMsg := ALFormatW('StartTimeStamp: %.2d:%.2d:%.3d.%.5d', [{LHours,} LMinutes, LSeconds, Trunc(LMilliseconds), LHundredNanoseconds]);
-    end;
-    {$ELSE}
-    LMsg := msg;
-    {$ENDIF}
-    {$IF defined(ANDROID)}
-    if LMsg = '' then LMsg := '<empty>';
-    if ThreadID <> MainThreadID then LMsg := '['+ALIntToStrW(ThreadID)+'] ' + LMsg;
+  var LMsg: String;
+  {$IF defined(ALCodeProfiler)}
+  if ALCodeProfilerIsrunning then begin
+    var LMilliseconds: Double := (TStopwatch.GetTimeStamp - ALCodeProfilerAppStartTimeStamp) * ALCodeProfilerMillisecondsPerTick;
+    var LMinutes: integer := Trunc(LMilliseconds) div (1000 * 60);
+    LMilliseconds := LMilliseconds - (LMinutes * 1000 * 60);
+    var LSeconds: integer := Trunc(LMilliseconds) div 1000;
+    LMilliseconds := LMilliseconds - (LSeconds * 1000);
+    var LHundredNanoseconds: integer := Round(Frac(LMilliseconds) * 10000);
+    if Msg <> '' then
+      LMsg := Msg + ALFormatW(' | StartTimeStamp: %.2d:%.2d:%.3d.%.5d', [{LHours,} LMinutes, LSeconds, Trunc(LMilliseconds), LHundredNanoseconds])
+    else
+      LMsg := ALFormatW('StartTimeStamp: %.2d:%.2d:%.3d.%.5d', [{LHours,} LMinutes, LSeconds, Trunc(LMilliseconds), LHundredNanoseconds]);
+  end;
+  {$ELSE}
+  LMsg := msg;
+  {$ENDIF}
+  {$IF defined(ANDROID)}
+  if LMsg = '' then LMsg := '<empty>';
+  if ThreadID <> MainThreadID then LMsg := '['+ALIntToStrW(ThreadID)+'] ' + LMsg;
+  case &Type of
+    TalLogType.VERBOSE: TJutil_Log.JavaClass.v(StringToJString(Tag), StringToJString(LMsg));
+    TalLogType.DEBUG: TJutil_Log.JavaClass.d(StringToJString(Tag), StringToJString(LMsg));
+    TalLogType.INFO: TJutil_Log.JavaClass.i(StringToJString(Tag), StringToJString(LMsg));
+    TalLogType.WARN: TJutil_Log.JavaClass.w(StringToJString(Tag), StringToJString(LMsg));
+    TalLogType.ERROR: TJutil_Log.JavaClass.e(StringToJString(Tag), StringToJString(LMsg));
+    TalLogType.ASSERT: TJutil_Log.JavaClass.wtf(StringToJString(Tag), StringToJString(LMsg)); // << wtf for What a Terrible Failure but everyone know that it's for what the fuck !
+  end;
+  {$ELSEIF defined(IOS)}
+  if LMsg <> '' then LMsg := Tag + ' | ' + LMsg
+  else LMsg := Tag;
+  var LThreadID: String;
+  if ThreadID <> MainThreadID then LThreadID := '['+ALIntToStrW(ThreadID)+']'
+  else LThreadID := '';
+  //On iOS NSLog is limited to 1024 Bytes so if the
+  //message is > 1024 bytes split it
+  var P: integer := 1;
+  while P <= length(LMsg) do begin
+    var LMsgPart := ALCopyStr(LMsg, P, 950); // to stay safe
+    inc(P, 950);
     case &Type of
-      TalLogType.VERBOSE: TJutil_Log.JavaClass.v(StringToJString(Tag), StringToJString(LMsg));
-      TalLogType.DEBUG: TJutil_Log.JavaClass.d(StringToJString(Tag), StringToJString(LMsg));
-      TalLogType.INFO: TJutil_Log.JavaClass.i(StringToJString(Tag), StringToJString(LMsg));
-      TalLogType.WARN: TJutil_Log.JavaClass.w(StringToJString(Tag), StringToJString(LMsg));
-      TalLogType.ERROR: TJutil_Log.JavaClass.e(StringToJString(Tag), StringToJString(LMsg));
-      TalLogType.ASSERT: TJutil_Log.JavaClass.wtf(StringToJString(Tag), StringToJString(LMsg)); // << wtf for What a Terrible Failure but everyone know that it's for what the fuck !
+      TalLogType.VERBOSE: NSLog(StringToID('[V]'+LThreadID+' ' + LMsgPart));
+      TalLogType.DEBUG:   NSLog(StringToID('[D][V]'+LThreadID+' ' + LMsgPart));
+      TalLogType.INFO:    NSLog(StringToID('[I][D][V]'+LThreadID+' ' + LMsgPart));
+      TalLogType.WARN:    NSLog(StringToID('[W][I][D][V]'+LThreadID+' ' + LMsgPart));
+      TalLogType.ERROR:   NSLog(StringToID('[E][W][I][D][V]'+LThreadID+' ' + LMsgPart));
+      TalLogType.ASSERT:  NSLog(StringToID('[A][E][W][I][D][V]'+LThreadID+' ' + LMsgPart));
     end;
-    {$ELSEIF defined(IOS)}
-    if LMsg <> '' then LMsg := Tag + ' | ' + LMsg
-    else LMsg := Tag;
+  end;
+  {$ELSEIF defined(MSWINDOWS)}
+  if ALLogStream <> nil then begin
+    If ALPosW(#13#10, LMsg) > 0 then begin
+      var LMsgParts := LMsg.Split([#13#10]);
+      for var I := Low(LMsgParts) to High(LMsgParts) do
+        _ALLog(
+          '',//If I = Low(LMsgParts) then Tag else '', // Const Tag: String;
+          LMsgParts[I], // Const msg: String;
+          &Type, // Const &Type: TalLogType;
+          ThreadID, // Const ThreadID: TThreadID;
+          CanPreserve); // Const CanPreserve: boolean)
+      exit;
+    end;
+    if (Tag <> '') and (LMsg <> '') then LMsg := Tag + ' | ' + LMsg
+    else if LMsg = '' then LMsg := Tag;
     var LThreadID: String;
     if ThreadID <> MainThreadID then LThreadID := '['+ALIntToStrW(ThreadID)+']'
     else LThreadID := '';
-    //On iOS NSLog is limited to 1024 Bytes so if the
-    //message is > 1024 bytes split it
-    var P: integer := 1;
-    while P <= length(LMsg) do begin
-      var LMsgPart := ALCopyStr(LMsg, P, 950); // to stay safe
-      inc(P, 950);
-      case &Type of
-        TalLogType.VERBOSE: NSLog(StringToID('[V]'+LThreadID+' ' + LMsgPart));
-        TalLogType.DEBUG:   NSLog(StringToID('[D][V]'+LThreadID+' ' + LMsgPart));
-        TalLogType.INFO:    NSLog(StringToID('[I][D][V]'+LThreadID+' ' + LMsgPart));
-        TalLogType.WARN:    NSLog(StringToID('[W][I][D][V]'+LThreadID+' ' + LMsgPart));
-        TalLogType.ERROR:   NSLog(StringToID('[E][W][I][D][V]'+LThreadID+' ' + LMsgPart));
-        TalLogType.ASSERT:  NSLog(StringToID('[A][E][W][I][D][V]'+LThreadID+' ' + LMsgPart));
-      end;
+    case &Type of
+      TalLogType.VERBOSE: LMsg := '[V]'+LThreadID+' ' + LMsg + #13#10;
+      TalLogType.DEBUG:   LMsg := '[D][V]'+LThreadID+' ' + LMsg + #13#10;
+      TalLogType.INFO:    LMsg := '[I][D][V]'+LThreadID+' ' + LMsg + #13#10;
+      TalLogType.WARN:    LMsg := '[W][I][D][V]'+LThreadID+' ' + LMsg + #13#10;
+      TalLogType.ERROR:   LMsg := '[E][W][I][D][V]'+LThreadID+' ' + LMsg + #13#10;
+      TalLogType.ASSERT:  LMsg := '[A][E][W][I][D][V]'+LThreadID+' ' + LMsg + #13#10;
     end;
-    {$ELSEIF defined(MSWINDOWS)}
+    LMsg := ALFormatDatetimeW('yyyy-mm-dd"T"hh:nn:ss.zzz"Z"', ALUtcNow) + ' ' + LMsg;
+    var LBytes := TEncoding.UTF8.GetBytes(LMsg);
+    TMonitor.Enter(ALLogStream);
+    try
+      ALLogStream.WriteBuffer(LBytes, Length(LBytes));
+    finally
+      TMonitor.Exit(ALLogStream);
+    end;
+  end
+  else begin
     if LMsg <> '' then LMsg := Tag + ' | ' + stringReplace(LMsg, '%', '%%', [rfReplaceALL]) // https://quality.embarcadero.com/browse/RSP-15942
     else LMsg := Tag;
     case &Type of
@@ -3246,8 +3393,8 @@ begin
       TalLogType.ERROR:   OutputDebugString(pointer('[E][W][I][D][V] ' + LMsg + ' |'));
       TalLogType.ASSERT:  OutputDebugString(pointer('[A][E][W][I][D][V] ' + LMsg + ' |'));
     end;
-    {$ENDIF}
   end;
+  {$ENDIF}
 end;
 
 {**************************************************************************************************}
@@ -3301,18 +3448,46 @@ begin
   ALLog(ALFormatW(Tag, Args), E, &Type);
 end;
 
-{************************}
-procedure ALPrintLogQueue;
+{**********************************************************************************************************}
+procedure ALLog(Const Tag: AnsiString; Const msg: AnsiString; const &Type: TalLogType = TalLogType.VERBOSE);
 begin
-  Tmonitor.Enter(_ALLogQueue);
-  try
-    for var I := 0 to _ALLogQueue.Count - 1 do
-      with _ALLogQueue[i] do
-        _ALLog(Tag, Msg, &Type, ThreadID, False{CanPreserve});
-    _ALLogQueue.Clear;
-  finally
-    Tmonitor.Exit(_ALLogQueue);
-  end;
+  ALLog(String(Tag), String(msg), &Type);
+end;
+
+{***********************************************************************************}
+procedure ALLog(Const Tag: AnsiString; const &Type: TalLogType = TalLogType.VERBOSE);
+begin
+  ALLog(String(Tag), &Type);
+end;
+
+{*****************************************************************************************************}
+procedure ALLog(Const Tag: AnsiString; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR);
+begin
+  ALLog(String(Tag), E, &Type);
+end;
+
+{************************************************************************************************************************************************************************}
+procedure ALLog(Const Tag: AnsiString; const TagArgs: array of const; Const msg: AnsiString; const msgArgs: array of const; const &Type: TalLogType = TalLogType.VERBOSE);
+begin
+  ALLog(String(Tag), TagArgs, String(msg), msgArgs, &Type);
+end;
+
+{*****************************************************************************************************************************************}
+procedure ALLog(Const Tag: AnsiString; Const msg: AnsiString; const msgArgs: array of const; const &Type: TalLogType = TalLogType.VERBOSE);
+begin
+  ALLog(String(Tag), String(msg), msgArgs, &Type);
+end;
+
+{***************************************************************************************************************}
+procedure ALLog(Const Tag: AnsiString; const Args: array of const; const &Type: TalLogType = TalLogType.VERBOSE);
+begin
+  ALLog(String(Tag), Args, &Type);
+end;
+
+{*********************************************************************************************************************************}
+procedure ALLog(Const Tag: AnsiString; const Args: array of const; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR);
+begin
+  ALLog(String(Tag), Args, E, &Type);
 end;
 
 {******************************************}
@@ -3839,13 +4014,21 @@ begin
   Move(Source, Dest, Count);
 end;
 
+{**************************************************************************}
+function ALSameBytes(const ABytes1: TBytes; const ABytes2: TBytes): Boolean;
+begin
+  if Length(ABytes1) <> Length(ABytes2) then Exit(False);
+  if Length(ABytes1) = 0 then Exit(True);
+  Result := CompareMem(Pointer(ABytes1), Pointer(ABytes2), Length(ABytes1));
+end;
+
 {*****************************************************************************************************}
 procedure ALMonitorEnter(const AObject: TObject {$IF defined(DEBUG)}; const ATag: string = ''{$ENDIF});
 begin
   {$IF defined(DEBUG)}
   //ALLog('ALMonitorEnter', ATag, TALLogType.verbose);
   if not TMonitor.Enter(AObject, 1{Timeout}) then begin
-    //ALLog(ATag, 'Lock contention detected', TALLogType.WARN);
+    if ATag <> '' then ALLog(ATag, 'Lock contention detected', TALLogType.WARN);
     TMonitor.Enter(AObject);
   end;
   {$ELSE}
@@ -4133,14 +4316,13 @@ initialization
   {$IF defined(MSWindows)}
   ALPerformanceFrequency := -1;
   {$ENDIF}
-  _ALLogQueue := TList<_TALLogItem>.Create;
   _ALLogHistory := TList<_TALLogItem>.Create;
 
 finalization
-  ALFreeAndNil(_ALLogHistory);
-  ALFreeAndNil(_ALLogQueue);
   {$IF defined(DEBUG)}
   //ALLog('Alcinoe.Common','finalization');
   {$ENDIF}
+  ALFreeAndNil(_ALLogHistory);
+  ALFreeAndNil(ALLogStream);
 
 end.

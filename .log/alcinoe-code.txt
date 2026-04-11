@@ -1,3 +1,9 @@
+commit d06c54063383a4cb9868878fb84ed9b64464a65e
+Author: zed <starmen@tut.by>
+Date:   2026-04-11 17:55:20 +0300
+
+    Sync with upstream (Delphi 10.4 - 13.1 support)
+
 commit 59d1d957c5b0782249a755249e6fd95d72f71384
 Author: zed <starmen@tut.by>
 Date:   2026-02-11 13:23:58 +0300
