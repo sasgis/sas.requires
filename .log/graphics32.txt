@@ -1,3 +1,308 @@
+commit 3feae02de105a70e34e89910167ff4cbe137d5af
+Merge: 557186e8 449633be
+Author: zed <starmen@tut.by>
+Date:   2026-04-15 14:01:21 +0300
+
+    Merge branch 'master' into sasgis
+    
+    # Conflicts:
+    #       Source/GR32_Resamplers.pas
+
+commit 449633bec825a2d3ea9ecbc62677c57fb942b8e8
+Merge: 4c4ff658 82924790
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-15 00:57:23 +0200
+
+    Merge branch 'alpha_resampling'
+
+commit 82924790087e2d6bb67ad02dd4e0a85c1c404853
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-14 22:41:24 +0200
+
+    Added SSE4.1 implementation of AlphaInterpolator
+    
+    - Updated unit test
+    Fixes #387
+
+commit a9fefaba7731db6e07d7903331bb4a758a32fc4c
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-14 15:21:35 +0200
+
+    Added resampler unit test to project group
+
+commit 4c4ff6587e24ff9577c6153cb5d2aac48ef89d32
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-14 00:15:52 +0200
+
+    TSamplerFiller enhancements
+    
+    - The filler can now own the sampler, which means it is responsible for freeing it on destruction.
+    - The filler supports regular alpha blending in addition to the (strange) default opaque mode.
+
+commit d7cb9f48d3dbbb41d9d0c1e23e9073a2eb827017
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-13 23:51:50 +0200
+
+    Workarounds for FPC ambiguities
+
+commit bfbc4d7223c7d4f15a214392e22cb9da7c9d640d
+Merge: 6f7e03c3 13702cdc
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-13 23:33:56 +0200
+
+    Merge branch 'LinearGradient'
+
+commit 6f7e03c3fc221561a5169b2dc52b0f0ad6e54168
+Merge: 2c36765e a4b78cb4
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-13 23:33:44 +0200
+
+    Merge branch 'AngularSamplers'
+
+commit 2c36765edf51e5f2112facf7718ba99685418d95
+Merge: 6350e6e8 3c664bb3
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-13 23:33:18 +0200
+
+    Merge branch 'BlendModes'
+
+commit 13702cdcf2f67eed2ffba4782223cd7ad8e03696
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-13 18:29:03 +0200
+
+    Linear gradient bug fixes
+    
+    - Fixed TXGradientSampler.GetEndPoint to correctly use Radius and screen-space Y-axis.
+    - Fixed TXGradientSampler.SetPoints and GetEndPoint logic to correctly align the gradient from StartPoint to EndPoint and correctly recover the EndPoint property.
+    - Added division-by-zero guards in UpdateInternals of various samplers.
+    - Improved TLinearGradientPolygonFiller and TCustomLinearGradientPolygonFiller numerical stability with epsilon-based comparisons and safety checks.
+    - Updated TLinearGradientPolygonFiller.GetFillLine to use epsilon-based floating point comparisons.
+    - Fixed potential signed integer overflows and bit-shift errors in TLinearGradientPolygonFiller.
+
+commit 6350e6e848d10c9752699af0d6c5fb11cac97188
+Merge: 5a914624 7cdb8071
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-13 17:24:10 +0200
+
+    Merge branch 'PSD_ZipPredict'
+
+commit 7cdb807181fee5edc09ec092a57b34b5ec9ff673
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-13 17:23:43 +0200
+
+    Added support for ZIP compression with prediction to PSD reader
+    
+    refs #240
+
+commit 825107c145631daacfec0cae65a9a0d9563fff6e
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-03 16:16:29 +0100
+
+    Introduced ALPHA_INTERPOLATOR compiler define.
+    
+    Forces use of AlphaInterpolator instead of Interpolator.
+    Refs #387
+
+commit 86785f568052fa1e0ae72fda6fed089726512cdd
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-03 16:03:46 +0100
+
+    Added unit test of Interpolator and AlphaInterpolator
+
+commit 696a7bfc3d7a1e6488466b53f1cf3fb0ccc03b17
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-01-03 14:49:43 +0100
+
+    Documented x86 and x64 register usage so I don't have to consult the docs everytime
+
+commit 70cc03ecb58b5ee26dc6c058357c6afadfc32464
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-03-02 22:02:40 +0100
+
+    More comments (procrastinating)
+
+commit 4ae148412844d7b1c390e3cbf1ca87f6eb592b70
+Author: Anders Melander <anders@melander.dk>
+Date:   2025-02-08 19:44:31 +0100
+
+    Minor work on Interpolator_SSE2 (just comments for now)
+
+commit c80b0a5e30eda19ff6d896423a15e8829d0bc8b5
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-12-29 18:21:07 +0100
+
+    Added Resampler unit test
+
+commit 5f46546101d5a3ab6b64ff6aeb18f242d1857de0
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-11-23 00:14:10 +0100
+
+    1) Fixed alpha handling bug in kernel resamplers.
+    
+    When the source bitmap did not have alpha in the range 1..254 the resampler assumed that it didn't need to premultiply alpha. However, this didn't take into account that a source bitmap with both alpha=0 and alpha=255 would produce target values with alpha in the 1..254 range and would thus need premultiplication.
+    2) Added alpha-aware version of interpolator.
+
+commit dc75000879f1b397198a6cf513c7ebd4b3f8d2b4
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-11-23 00:13:52 +0100
+
+    Minor refactoring of Interpolator_Pas
+
+commit a4b78cb498b1c4bc5c61d7040b8a4c926ce66d4b
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-12 23:47:44 +0200
+
+    Fixed missing reset of recalculate flag in TColor32Gradient.FillColorLookUpTable
+
+commit 3480b774e4fbee01d141f4549d6e42d7e4b3536d
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-12 22:55:57 +0200
+
+    Sweep and Conic angular gradient samplers
+    
+    - Reimplemented TConicGradientSampler; Old implementation mirrored at 180 degrees and mishandled the Angle value.
+    - TSweepGradientSampler is an angular sampler with both a start and an end angle.
+
+commit 5a9146242cbc9252aec65a09ed6c62e246d9b354
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-13 12:30:15 +0200
+
+    Fixed long standing precision bug in line stippling
+    
+    The bugs often manifested as periodic jumps in animated stipples (e.g. rubber-band/marching ants).
+    - Fixed precision loss in LineXSP clipping logic by using full fixed-point coordinates for distance calculations.
+    - Decoupled stipple color sampling from counter advancement in drawing routines to ensure continuity across clipped and connected segments.
+    - Added optional 'Advance' parameter to GetStippleColor (defaulting to True) for backward compatibility.
+    - Updated LineXP, LineXSP, HorzLineTSP, VertLineTSP, and FrameRectTSP to use explicit, high-precision counter advancement.
+
+commit 1a24a94aa074189add1ea479d1ae7ba16d92ff6f
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-13 11:47:02 +0200
+
+    Added support for ZIP compression with prediction to PSD writer
+    
+    refs #240
+
+commit 3c664bb36311474c93cee3685d1243a1850aa34a
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-07 12:45:30 +0200
+
+    GR32_Transforms refactoring
+    
+    - Cleaned up TNestedTransformation and modified to use TObjectList<T>.
+    - Deleted unused TNestedTransformation.Owner property.
+    - Modified TAffineTransformation stack to use TStack<T>.
+    - Removed published from TProjectiveTransformation properties.
+    - Unwrapped lines and various reformats to improve readability.
+
+commit 4737ed582bcd955637a68743fcfc71077a1daf90
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-07 01:43:07 +0200
+
+    Updated PixelCombine example to paint layers to a temporary buffer before final composition.
+    
+    This change was required in order to reproduce the output of the W3C's Porter-Duff examples.
+
+commit d1db1354d7cb60e30a7b9a550cdd3f38b0148e30
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-07 01:40:17 +0200
+
+    Blend mode bug fixes
+    
+    - Copy/paste bugs with BLEND_USE_TABLES caused wrong alpha value to be applied.
+    - Removed invalid MasterAlpha overload from DestOver blend mode.
+    - Fixed potential overflow bug in Xor blend mode.
+
+commit d5c70f9d9d0105a430764d6b037a41eaa7ba219e
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-26 22:55:27 +0200
+
+    Updated PixelCombine example to demonstrate the new composition system
+
+commit 9ad9beaf7d9f78b22e5a2a1573bc07843d12acd7
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-06 18:07:08 +0200
+
+    Photoshop blend mode improvements
+    
+    - Luminance calculation now defaults to using the Rec. 601 definition for better alignment with W3C.
+    - Avoids Hue calculation altogether for the Hue, Saturation, Color, and Luminosity modes.
+    - Added Soft Light alternative using the (slower) W3C formula.
+    - Fixed some minor rounding errors.
+
+commit 3e7126243cca20c4153eb560314b38983bff9cc0
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-06 16:18:34 +0200
+
+    Refactored Porter-Duff to optionally use division tables (default on).
+    
+    - Fixed incorrect use of formulas that required alpha-premultiplied colors.
+
+commit 0c6437031d9e74652e5446f12a80e13a317d0a42
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-06 15:49:35 +0200
+
+    BlendService refactored to use ordinal case-insensitive comparers
+
+commit 7552f00dac28c7e63f98db424246c67100e457cc
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-06 14:57:56 +0200
+
+    Renamed Extra.Clear blend mode to Extra.Erase to avoid conflict with same named Porter-Duff mode
+
+commit cfaa5dfe1065430944f68dc058ec8e4560a74354
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-06 14:55:31 +0200
+
+    Added blend mode/composition unit tests
+
+commit 971f6da54d5766a3ed998b97d0afbeca018f4fc8
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-05 17:17:57 +0200
+
+    Updated Extra blend modes
+    
+    Appears broken though...
+
+commit cde9a4a3e5358a9bbcdab43eec000c879655803d
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-08-15 00:13:04 +0200
+
+    Added new blend mode/composition framework
+    
+    - Includes the 12 Porter-Duff composition operators.
+    - Includes Various Adobe/PhotoShop blend modes.
+
+commit a45f88b6ad88731a64809c7c4efe6df1ab8dbae3
+Author: Anders Melander <anders@melander.dk>
+Date:   2024-09-30 00:01:12 +0200
+
+    Added Div127 function.
+    
+    ...and reference info
+
+commit b05827dc059c1f9bab6381b8900e1857c9d71451
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-05 16:03:23 +0200
+
+    Fixed leak of TPngChunkPalette and TPngChunkGamma
+    
+    - Bonus copy/paste bug fixed in TPortableNetworkGraphic.SetBackgroundChunk
+    Fixes #395
+
+commit 8f89bbdd72a7f41e016b83316c88aeaf7e1b772a
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-05 15:41:52 +0200
+
+    Filters: Fixed bitmap being cleared when applying various filter functions with Source=Dest.
+    
+    - CheckParams no longer clears in-place bitmaps (Source=Dest).
+    - Added convenience in-place overloads.
+    - Fixed a bunch of ARGB/ABGR issues.
+    - Eliminated `with`.
+    - Minor style edits.
+    Fixes #396
+
 commit 557186e822fcc6231152050bfffa0f6bc12268a3
 Merge: 6e91bf5f 88730a1b
 Author: zed <starmen@tut.by>
