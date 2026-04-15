@@ -1,3 +1,159 @@
+commit 81202d0350543945ef7b37e75ba6dc96a33b7bce
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-04-14 12:45:54 +0200
+
+    Cherry pick into stable: Fix Cm_cv use-after-free issue.
+
+commit 22cbe949d6c1ccec128c23d163f296378f0347fd
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-04-07 19:05:02 +0200
+
+    Cherry pick into stable: Fix yet more bugs and memory leaks.
+
+commit 9f807350c9f7646e9faabd8d1ae005e5567c6727
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-04-07 16:03:03 +0200
+
+    Cherry pick into stable: More bug fixes.
+
+commit c3c445d72ceef4e9067b13cbb854ee9b4ab78059
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-04-07 14:02:28 +0200
+
+    Cherry pick into stable: Fix CLX DialogHandle and CreateHandle.
+
+commit 4f18f97a5f8c7b400b6a901c71a07469a9a57645
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-04-07 13:41:20 +0200
+
+    Cherry pick into stable: Fix TFont.Pitch, TCanvas.CopyMode and TComponent.ComponentState types. Remove unused duplicate TControl.ShowHint helpers and unused TDragObject.DragTarget.
+    
+    # Conflicts:
+    #       Source/uPSR_controls.pas
+
+commit 9f1f5e9124e5305a41b93beb75368ff10a5e8b2e
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-04-07 13:13:40 +0200
+
+    Cherry pick into stable: Add comment about TScrollingWinControl issue.
+
+commit d9d1186730430542450a863626ddafe97531c2e1
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-04-07 11:09:08 +0200
+
+    Cherry pickinto stable: Fix multiple issues where the compiler allows more than what the runtime supports.
+
+commit 8a14488ba99cc7bf28fc2da7cc61a5bf0227330a
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-04-07 10:09:37 +0200
+
+    Cherry pick into stable: Fix a few bugs and memory leaks.
+
+commit 172e34ad050d71ed5ca385a318a574e1bd2cb5fc
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-04-05 20:05:12 +0200
+
+    Cherry pick into stable: Fix various other bugs and do cleanup.
+
+commit b42c4f0e8a97975070f0103bd599e2b281122226
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-29 15:12:33 +0200
+
+    Cherry pick fixes into stable.
+
+commit 92644ae7f36e3e7d7f0ad979d10cf289bb03aec2
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-29 14:42:17 +0200
+
+    Cherry pick into stable: Merge pull request #298 from superflexible/Small-Intel-Fix: Correction: 32-bit Intel fix was only correct for Windows
+
+commit 451de7a816db4e8eafd8fa8d49fc2de653854466
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-28 21:44:43 +0100
+
+    Cherry pick into stable: Fix more bugs and dead code.
+    
+    # Conflicts:
+    #       Source/uPSR_forms.pas
+
+commit 956f0b789562b8b90ada0aa1d73bf2656be16fe8
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-28 21:09:43 +0100
+
+    Cherry pick into stable: Fix 12 obvious bugs.
+
+commit d712a863496bbfba1802bc91235e7be758a4835b
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-28 16:26:51 +0100
+
+    Cherry pick into stable: Merge branch 'superflexible-Small-Intel-Fix'
+
+commit 8950764ef36c60f152dd6bea6d757a2819e60d68
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-28 13:59:38 +0100
+
+    Cherry pick into stable: Merge branch 'arm64'
+    
+    # Conflicts:
+    #       Source/uPSRuntime.pas
+
+commit f2498f8f4bcea591fd9f4cd998b73d01e830cd22
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-27 07:13:30 +0100
+
+    Cherry pick into stable: Delete (old) binary.
+
+commit 5ff1a801aa32d94c99184db928c9f1269572a7ac
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-25 20:33:50 +0100
+
+    Cherry pick into stable: Fix uPSC_controls registering TControl.Beging/EndDrag on FPC while uPSR_controls does not.
+
+commit ef0b492b6625189bba2dbe9972ecaed1af1541d9
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-25 20:31:15 +0100
+
+    Cherry pick into stable: Fix double registration to TControl.Dragging.
+    
+    # Conflicts:
+    #       Source/uPSR_controls.pas
+
+commit 6950abc5d9dc9ea316860f97ed61558a112e0027
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-25 20:30:17 +0100
+
+    Cherry pick into stable: Fix 7b33a99b which added proper DELPHI4UP check in the interface section, but not in the implementation section.
+    
+    # Conflicts:
+    #       Source/uPSR_controls.pas
+
+commit ff65aae2d421acb6b25e3066c2161a03ba9c094b
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-25 20:15:09 +0100
+
+    Cherry pick into stable: Fix stray 0x1a at end of file.
+
+commit 67a0cc763511f266cc62d6bc70362baa1082de69
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-25 20:07:31 +0100
+
+    Cherry pick into stable: Fix 3 old typos.
+    
+    # Conflicts:
+    #       Source/uPSR_classes.pas
+
+commit 34ea1eb35dfa474ad5b65cc9226c218090b5439c
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-16 18:34:52 +0100
+
+    Cherry pick into stable: Fix StoreReg overloads for Single.
+
+commit be0448a4393da595c333c3c6a788f2255d88f5cc
+Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
+Date:   2026-03-16 15:20:12 +0100
+
+    Cherry pick 3fe22ec0..afe048f4 into stable.
+
 commit 23f10a72b16816bc2b91ef0057a6ee13ca34835b
 Author: Martijn Laan <1092369+martijnlaan@users.noreply.github.com>
 Date:   2026-02-04 17:45:40 +0100

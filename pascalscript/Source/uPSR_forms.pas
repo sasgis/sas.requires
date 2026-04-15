@@ -94,7 +94,6 @@ begin
  {$IFNDEF FPC}
 {$IFNDEF CLX} 
     RegisterMethod(@TFORM.ARRANGEICONS, 'ArrangeIcons');
-    RegisterMethod(@TFORM.GETFORMIMAGE, 'GetFormImage');
     RegisterMethod(@TFORM.PRINT, 'Print');
     RegisterMethod(@TFORM.SENDCANCELMODE, 'SendCancelMode');
     RegisterPropertyHelper(@TFORMACTIVEOLECONTROL_R, @TFORMACTIVEOLECONTROL_W, 'ActiveOleControl');
@@ -189,11 +188,11 @@ begin
     RegisterPropertyHelper(@TAPPLICATIONONDEACTIVATE_R, @TAPPLICATIONONDEACTIVATE_W, 'OnDeactivate');
     RegisterPropertyHelper(@TAPPLICATIONONMINIMIZE_R, @TAPPLICATIONONMINIMIZE_W, 'OnMinimize');
     RegisterPropertyHelper(@TAPPLICATIONONRESTORE_R, @TAPPLICATIONONRESTORE_W, 'OnRestore');
-    RegisterPropertyHelper(@TAPPLICATIONDIALOGHANDLE_R, @TAPPLICATIONDIALOGHANDLE_W, 'DialogHandle');
-    RegisterMethod(@TAPPLICATION.CREATEHANDLE, 'CreateHandle');
     RegisterMethod(@TAPPLICATION.NORMALIZETOPMOSTS, 'NormalizeTopMosts');
     RegisterMethod(@TAPPLICATION.RESTORETOPMOSTS, 'RestoreTopMosts');
     {$IFNDEF CLX}
+    RegisterPropertyHelper(@TAPPLICATIONDIALOGHANDLE_R, @TAPPLICATIONDIALOGHANDLE_W, 'DialogHandle');
+    RegisterMethod(@TAPPLICATION.CREATEHANDLE, 'CreateHandle');
     RegisterPropertyHelper(@TAPPLICATIONHANDLE_R, @TAPPLICATIONHANDLE_W, 'Handle');
     RegisterPropertyHelper(@TAPPLICATIONUPDATEFORMATSETTINGS_R, @TAPPLICATIONUPDATEFORMATSETTINGS_W, 'UpdateFormatSettings');
     {$ENDIF}
@@ -223,16 +222,10 @@ begin
     RegisterMethod(@TAPPLICATION.HELPJUMP, 'HelpJump');
     {$ENDIF}
     {$ENDIF}
-//    RegisterMethod(@TAPPLICATION.HANDLEEXCEPTION, 'HandleException');
-//    RegisterMethod(@TAPPLICATION.HOOKMAINWINDOW, 'HookMainWindow');
-//    RegisterMethod(@TAPPLICATION.UNHOOKMAINWINDOW, 'UnhookMainWindow');
-
     RegisterMethod(@TAPPLICATION.HANDLEMESSAGE, 'HandleMessage');
     RegisterMethod(@TAPPLICATION.HIDEHINT, 'HideHint');
-    RegisterMethod(@TAPPLICATION.HINTMOUSEMESSAGE, 'HintMouseMessage');
     RegisterMethod(@TAPPLICATION.INITIALIZE, 'Initialize');
     RegisterMethod(@TAPPLICATION.RUN, 'Run');
-//    RegisterMethod(@TAPPLICATION.SHOWEXCEPTION, 'ShowException');
     RegisterPropertyHelper(@TAPPLICATIONHELPFILE_R, @TAPPLICATIONHELPFILE_W, 'HelpFile');
     RegisterPropertyHelper(@TAPPLICATIONHINTCOLOR_R, @TAPPLICATIONHINTCOLOR_W, 'HintColor');
     RegisterPropertyHelper(@TAPPLICATIONHINTPAUSE_R, @TAPPLICATIONHINTPAUSE_W, 'HintPause');
