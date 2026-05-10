@@ -1,3 +1,118 @@
+commit 47dd22789c5bed98d3cea2d5dc170c94bf1a5004
+Merge: 3feae02d 45e67eef
+Author: zed <starmen@tut.by>
+Date:   2026-05-10 11:49:10 +0300
+
+    Merge branch 'master' into sasgis
+
+commit 45e67eef3d00c4057e9c4fa2b9b16c423a7ce289
+Merge: a4b231e4 84e3d766
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-05-05 00:16:58 +0200
+
+    Merge branch 'Sphere'
+
+commit 84e3d76630634d2c974fb0b3969806e4c0a625ac
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-05-05 00:15:38 +0200
+
+    Sphere: Minor optimizations and cleanup
+
+commit c57cefe508f02f67c4dbddf7d9075abbe14014d6
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-05-01 10:00:12 +0200
+
+    Added Arcball rotation to Sphere example
+    
+    - Added TQuaternion record for 3D rotation handling.
+    - Introduced TArcballSphereTransformation as a subclass of TSphereTransformation.
+    - Implemented Shoemake's Arcball model for intuitive mouse rotation.
+    - Updated animation to rotate around the globe's local axis.
+
+commit 0d873c121b3709f07e17bb0eeffb352d04aacb9b
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-29 18:01:12 +0200
+
+    Sphere example update
+    
+    - Update during user interaction.
+    - Starfield option.
+    - Animation speed control.
+    - Reset to defaults option.
+    - Display available controls on screen.
+    - Added to Examples group project.
+    - Fixed Lattitude/Latitude typo.
+
+commit 2e1a34a815cd4dc04c8efac7cfa3526b07ef1f7d
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-30 13:10:30 +0200
+
+    Fixed some TSphereTransformation mistakes
+    
+    - Lattitude/Latitude typo.
+    - Latitude and Longtitude were swapped.
+    - Removed obsolete TSphereTransformation.ReverseTransformFloat assembler implementation.
+    - Moved the 180-degree longitude offset from the transformation to the application level.
+
+commit a4b231e404b1de3fbac872526adfb5456d2fb47f
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-29 00:09:18 +0200
+
+    Optimized TImage32 to not use dynamic memory when drawing checkers pattern
+
+commit 59b2bec412ceab95c32309dd83afd95803e22618
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-28 23:54:03 +0200
+
+    Fix for TImage32.Scale not invalidating scale cache if X-scale was different from Y-scale.
+
+commit 6835c037fe33c5c18d5753966a7cb7ff67ec5ee5
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-28 23:52:07 +0200
+
+    Fix for single pixel width lines not handled by repaint optimizer.
+
+commit 422e0fea7d8024d9f2b634f44a5421f4dafb0b1d
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-25 16:28:03 +0200
+
+    Documented IntersectRect behavior
+    
+    - Why it differs from Win32 behavior.
+    - How it differs from Win32 behavior.
+    refs #77
+
+commit 633afa0d2db4920fcf858c2faf212e04f2d8c471
+Merge: 3bffc940 fc1fd23a
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-24 23:59:53 +0200
+
+    Merge branch 'BlendLineOptimization'
+
+commit fc1fd23a31a67474cb43e2ca1c20787de49bc0ef
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-24 12:29:13 +0200
+
+    Added BlendLine_SSE41
+    
+    - Optimized for SSE4.1
+    - FPC is not supported.
+
+commit 3bffc940d25126e57b4249bda7494c0186d3bf01
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-20 22:56:02 +0200
+
+    Clear with 0 instead of $FF000000 fix for backends
+    
+    It's not enough to have TCustomBitmap32 clear with 0; The various backends needs to do it too.
+    Refs #394
+
+commit a99b22158061264f5ddc87bd9d727c1a01d9a9e2
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-19 12:41:44 +0200
+
+    Disabled BlendMemRGB128
+
 commit 3feae02de105a70e34e89910167ff4cbe137d5af
 Merge: 557186e8 449633be
 Author: zed <starmen@tut.by>
