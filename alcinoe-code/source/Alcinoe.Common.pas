@@ -956,6 +956,8 @@ function ALSameBytes(const ABytes1: TBytes; const ABytes2: TBytes): Boolean;
 procedure ALMonitorEnter(const AObject: TObject {$IF defined(DEBUG)}; const ATag: string = ''{$ENDIF}); inline;
 procedure ALMonitorExit(const AObject: TObject {$IF defined(DEBUG)}; const ATag: string = ''{$ENDIF}); inline;
 {$IFDEF MSWINDOWS}
+function ALIsAlreadyRunning(const AMutexName: String): Boolean;
+
 type
   TALConsoleColor = (
     ccRed,
@@ -4045,6 +4047,21 @@ begin
   TMonitor.Exit(AObject);
 end;
 
+{$IF defined(MSWINDOWS)}
+{*}
+var
+  ALRunningMutex: THandle = 0;
+
+{*************************************************************}
+function ALIsAlreadyRunning(const AMutexName: String): Boolean;
+begin
+  if ALRunningMutex <> 0 then Exit(False);
+  ALRunningMutex := CreateMutex(nil, True, PChar('Global\' + AMutexName));
+  if ALRunningMutex = 0 then RaiseLastOSError;
+  Result := GetLastError = ERROR_ALREADY_EXISTS;
+end;
+{$ENDIF}
+
 {******************************************************}
 {Accepts number of milliseconds in the parameter aValue,
  provides 1000 times more precise value of TDateTime}
@@ -4324,5 +4341,9 @@ finalization
   {$ENDIF}
   ALFreeAndNil(_ALLogHistory);
   ALFreeAndNil(ALLogStream);
+  {$IF defined(MSWINDOWS)}
+  if ALRunningMutex <> 0 then
+    CloseHandle(ALRunningMutex);
+  {$ENDIF}
 
 end.
