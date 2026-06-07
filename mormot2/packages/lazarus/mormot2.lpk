@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="5">
+    <Name Value="mormot2"/>
+    <Author Value="A. Bouchez, Synopse"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <SearchPaths>
+        <IncludeFiles Value="../../src;../../src/core;../../src/net"/>
+        <Libraries Value="../../static/$(TargetCPU)-$(TargetOS)"/>
+        <OtherUnitFiles Value="../../src/app;../../src/core;../../src/crypt;../../src/db;../../src/lib;../../src/net;../../src/orm;../../src/rest;../../src/soa;../../src/script;../../src/misc;../../src/tools/mget"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+        <SrcPath Value="../../src"/>
+      </SearchPaths>
+      <Conditionals Value="if TargetCPU=&apos;arm&apos; then CustomOptions := &apos;-O2&apos;;"/>
+      <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
+        <Optimizations>
+          <OptimizationLevel Value="3"/>
+        </Optimizations>
+      </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <DebugInfoType Value="dsDwarf3"/>
+        </Debugging>
+      </Linking>
+      <Other>
+        <Verbosity>
+          <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
+          <ShowHintsForSenderNotUsed Value="True"/>
+        </Verbosity>
+        <CompilerMessages>
+          <IgnoredMessages idx11047="True" idx6058="True" idx5092="True" idx5091="True" idx5060="True" idx5058="True" idx5057="True" idx5028="True" idx5024="True" idx5023="True" idx4081="True" idx4079="True" idx4055="True" idx3187="True" idx3124="True" idx3123="True"/>
+        </CompilerMessages>
+        <CustomOptions Value="-dNOSYNDBZEOS
+-dNOSYNDBIBX
+-dFPCMM_REPORTMEMORYLEAKS
+-dFPCMM_SERVER"/>
+        <OtherDefines Count="6">
+          <Define0 Value="NOSYNDBZEOS"/>
+          <Define1 Value="FPCMM_REPORTMEMORYLEAKS"/>
+          <Define2 Value="FPCMM_DEBUG"/>
+          <Define3 Value="FPCMM_ASSUMEMULTITHREAD"/>
+          <Define4 Value="NOSYNDBIBX"/>
+          <Define5 Value="FPCMM_SERVER"/>
+        </OtherDefines>
+      </Other>
+    </CompilerOptions>
+    <Description Value="mORMot 2 ORM/SOA/MVC framework"/>
+    <License Value="MPL, GPL or LGPL"/>
+    <Version Major="2" Release="1"/>
+    <Files Count="118">
+      <Item1>
+        <Filename Value="../../src/app/mormot.app.console.pas"/>
+        <UnitName Value="mormot.app.console"/>
+      </Item1>
+      <Item2>
+        <Filename Value="../../src/app/mormot.app.daemon.pas"/>
+        <UnitName Value="mormot.app.daemon"/>
+      </Item2>
+      <Item3>
+        <Filename Value="../../src/core/mormot.core.base.pas"/>
+        <UnitName Value="mormot.core.base"/>
+      </Item3>
+      <Item4>
+        <Filename Value="../../src/core/mormot.core.buffers.pas"/>
+        <UnitName Value="mormot.core.buffers"/>
+      </Item4>
+      <Item5>
+        <Filename Value="../../src/core/mormot.core.collections.pas"/>
+        <UnitName Value="mormot.core.collections"/>
+      </Item5>
+      <Item6>
+        <Filename Value="../../src/core/mormot.core.data.pas"/>
+        <UnitName Value="mormot.core.data"/>
+      </Item6>
+      <Item7>
+        <Filename Value="../../src/core/mormot.core.datetime.pas"/>
+        <UnitName Value="mormot.core.datetime"/>
+      </Item7>
+      <Item8>
+        <Filename Value="../../src/core/mormot.core.fpcx64mm.pas"/>
+        <UnitName Value="mormot.core.fpcx64mm"/>
+      </Item8>
+      <Item9>
+        <Filename Value="../../src/core/mormot.core.interfaces.pas"/>
+        <UnitName Value="mormot.core.interfaces"/>
+      </Item9>
+      <Item10>
+        <Filename Value="../../src/core/mormot.core.json.pas"/>
+        <UnitName Value="mormot.core.json"/>
+      </Item10>
+      <Item11>
+        <Filename Value="../../src/core/mormot.core.log.pas"/>
+        <UnitName Value="mormot.core.log"/>
+      </Item11>
+      <Item12>
+        <Filename Value="../../src/core/mormot.core.mustache.pas"/>
+        <UnitName Value="mormot.core.mustache"/>
+      </Item12>
+      <Item13>
+        <Filename Value="../../src/core/mormot.core.os.pas"/>
+        <UnitName Value="mormot.core.os"/>
+      </Item13>
+      <Item14>
+        <Filename Value="../../src/core/mormot.core.perf.pas"/>
+        <UnitName Value="mormot.core.perf"/>
+      </Item14>
+      <Item15>
+        <Filename Value="../../src/core/mormot.core.rtti.pas"/>
+        <UnitName Value="mormot.core.rtti"/>
+      </Item15>
+      <Item16>
+        <Filename Value="../../src/core/mormot.core.search.pas"/>
+        <UnitName Value="mormot.core.search"/>
+      </Item16>
+      <Item17>
+        <Filename Value="../../src/core/mormot.core.test.pas"/>
+        <UnitName Value="mormot.core.test"/>
+      </Item17>
+      <Item18>
+        <Filename Value="../../src/core/mormot.core.text.pas"/>
+        <UnitName Value="mormot.core.text"/>
+      </Item18>
+      <Item19>
+        <Filename Value="../../src/core/mormot.core.threads.pas"/>
+        <UnitName Value="mormot.core.threads"/>
+      </Item19>
+      <Item20>
+        <Filename Value="../../src/core/mormot.core.unicode.pas"/>
+        <UnitName Value="mormot.core.unicode"/>
+      </Item20>
+      <Item21>
+        <Filename Value="../../src/core/mormot.core.variants.pas"/>
+        <UnitName Value="mormot.core.variants"/>
+      </Item21>
+      <Item22>
+        <Filename Value="../../src/core/mormot.core.zip.pas"/>
+        <UnitName Value="mormot.core.zip"/>
+      </Item22>
+      <Item23>
+        <Filename Value="../../src/crypt/mormot.crypt.core.pas"/>
+        <UnitName Value="mormot.crypt.core"/>
+      </Item23>
+      <Item24>
+        <Filename Value="../../src/crypt/mormot.crypt.ecc.pas"/>
+        <UnitName Value="mormot.crypt.ecc"/>
+      </Item24>
+      <Item25>
+        <Filename Value="../../src/crypt/mormot.crypt.ecc256r1.pas"/>
+        <UnitName Value="mormot.crypt.ecc256r1"/>
+      </Item25>
+      <Item26>
+        <Filename Value="../../src/crypt/mormot.crypt.jwt.pas"/>
+        <UnitName Value="mormot.crypt.jwt"/>
+      </Item26>
+      <Item27>
+        <Filename Value="../../src/crypt/mormot.crypt.openssl.pas"/>
+        <UnitName Value="mormot.crypt.openssl"/>
+      </Item27>
+      <Item28>
+        <Filename Value="../../src/crypt/mormot.crypt.secure.pas"/>
+        <UnitName Value="mormot.crypt.secure"/>
+      </Item28>
+      <Item29>
+        <Filename Value="../../src/db/mormot.db.core.pas"/>
+        <UnitName Value="mormot.db.core"/>
+      </Item29>
+      <Item30>
+        <Filename Value="../../src/db/mormot.db.nosql.bson.pas"/>
+        <UnitName Value="mormot.db.nosql.bson"/>
+      </Item30>
+      <Item31>
+        <Filename Value="../../src/db/mormot.db.nosql.mongodb.pas"/>
+        <UnitName Value="mormot.db.nosql.mongodb"/>
+      </Item31>
+      <Item32>
+        <Filename Value="../../src/db/mormot.db.proxy.pas"/>
+        <UnitName Value="mormot.db.proxy"/>
+      </Item32>
+      <Item33>
+        <Filename Value="../../src/db/mormot.db.rad.pas"/>
+        <UnitName Value="mormot.db.rad"/>
+      </Item33>
+      <Item34>
+        <Filename Value="../../src/db/mormot.db.rad.bde.pas"/>
+        <UnitName Value="mormot.db.rad.bde"/>
+      </Item34>
+      <Item35>
+        <Filename Value="../../src/db/mormot.db.rad.firedac.pas"/>
+        <UnitName Value="mormot.db.rad.firedac"/>
+      </Item35>
+      <Item36>
+        <Filename Value="../../src/db/mormot.db.rad.nexusdb.pas"/>
+        <UnitName Value="mormot.db.rad.nexusdb"/>
+      </Item36>
+      <Item37>
+        <Filename Value="../../src/db/mormot.db.rad.unidac.pas"/>
+        <UnitName Value="mormot.db.rad.unidac"/>
+      </Item37>
+      <Item38>
+        <Filename Value="../../src/db/mormot.db.raw.odbc.pas"/>
+        <UnitName Value="mormot.db.raw.odbc"/>
+      </Item38>
+      <Item39>
+        <Filename Value="../../src/db/mormot.db.raw.oledb.pas"/>
+        <UnitName Value="mormot.db.raw.oledb"/>
+      </Item39>
+      <Item40>
+        <Filename Value="../../src/db/mormot.db.raw.oracle.pas"/>
+        <UnitName Value="mormot.db.raw.oracle"/>
+      </Item40>
+      <Item41>
+        <Filename Value="../../src/db/mormot.db.raw.postgres.pas"/>
+        <UnitName Value="mormot.db.raw.postgres"/>
+      </Item41>
+      <Item42>
+        <Filename Value="../../src/db/mormot.db.raw.sqlite3.pas"/>
+        <UnitName Value="mormot.db.raw.sqlite3"/>
+      </Item42>
+      <Item43>
+        <Filename Value="../../src/db/mormot.db.raw.sqlite3.static.pas"/>
+        <UnitName Value="mormot.db.raw.sqlite3.static"/>
+      </Item43>
+      <Item44>
+        <Filename Value="../../src/db/mormot.db.sql.pas"/>
+        <UnitName Value="mormot.db.sql"/>
+      </Item44>
+      <Item45>
+        <Filename Value="../../src/db/mormot.db.sql.ibx.pas"/>
+        <UnitName Value="mormot.db.sql.ibx"/>
+      </Item45>
+      <Item46>
+        <Filename Value="../../src/db/mormot.db.sql.odbc.pas"/>
+        <UnitName Value="mormot.db.sql.odbc"/>
+      </Item46>
+      <Item47>
+        <Filename Value="../../src/db/mormot.db.sql.oledb.pas"/>
+        <UnitName Value="mormot.db.sql.oledb"/>
+      </Item47>
+      <Item48>
+        <Filename Value="../../src/db/mormot.db.sql.oracle.pas"/>
+        <UnitName Value="mormot.db.sql.oracle"/>
+      </Item48>
+      <Item49>
+        <Filename Value="../../src/db/mormot.db.sql.postgres.pas"/>
+        <UnitName Value="mormot.db.sql.postgres"/>
+      </Item49>
+      <Item50>
+        <Filename Value="../../src/db/mormot.db.sql.sqlite3.pas"/>
+        <UnitName Value="mormot.db.sql.sqlite3"/>
+      </Item50>
+      <Item51>
+        <Filename Value="../../src/db/mormot.db.sql.zeos.pas"/>
+        <UnitName Value="mormot.db.sql.zeos"/>
+      </Item51>
+      <Item52>
+        <Filename Value="../../src/lib/mormot.lib.curl.pas"/>
+        <UnitName Value="mormot.lib.curl"/>
+      </Item52>
+      <Item53>
+        <Filename Value="../../src/lib/mormot.lib.gssapi.pas"/>
+        <UnitName Value="mormot.lib.gssapi"/>
+      </Item53>
+      <Item54>
+        <Filename Value="../../src/lib/mormot.lib.lizard.pas"/>
+        <UnitName Value="mormot.lib.lizard"/>
+      </Item54>
+      <Item55>
+        <Filename Value="../../src/lib/mormot.lib.openssl11.pas"/>
+        <UnitName Value="mormot.lib.openssl11"/>
+      </Item55>
+      <Item56>
+        <Filename Value="../../src/lib/mormot.lib.quickjs.pas"/>
+        <UnitName Value="mormot.lib.quickjs"/>
+      </Item56>
+      <Item57>
+        <Filename Value="../../src/lib/mormot.lib.sspi.pas"/>
+        <UnitName Value="mormot.lib.sspi"/>
+      </Item57>
+      <Item58>
+        <Filename Value="../../src/lib/mormot.lib.static.pas"/>
+        <UnitName Value="mormot.lib.static"/>
+      </Item58>
+      <Item59>
+        <Filename Value="../../src/lib/mormot.lib.winhttp.pas"/>
+        <UnitName Value="mormot.lib.winhttp"/>
+      </Item59>
+      <Item60>
+        <Filename Value="../../src/lib/mormot.lib.z.pas"/>
+        <UnitName Value="mormot.lib.z"/>
+      </Item60>
+      <Item61>
+        <Filename Value="../../src/net/mormot.net.async.pas"/>
+        <UnitName Value="mormot.net.async"/>
+      </Item61>
+      <Item62>
+        <Filename Value="../../src/net/mormot.net.client.pas"/>
+        <UnitName Value="mormot.net.client"/>
+      </Item62>
+      <Item63>
+        <Filename Value="../../src/net/mormot.net.http.pas"/>
+        <UnitName Value="mormot.net.http"/>
+      </Item63>
+      <Item64>
+        <Filename Value="../../src/net/mormot.net.relay.pas"/>
+        <UnitName Value="mormot.net.relay"/>
+      </Item64>
+      <Item65>
+        <Filename Value="../../src/net/mormot.net.rtsphttp.pas"/>
+        <UnitName Value="mormot.net.rtsphttp"/>
+      </Item65>
+      <Item66>
+        <Filename Value="../../src/net/mormot.net.server.pas"/>
+        <UnitName Value="mormot.net.server"/>
+      </Item66>
+      <Item67>
+        <Filename Value="../../src/net/mormot.net.sock.pas"/>
+        <UnitName Value="mormot.net.sock"/>
+      </Item67>
+      <Item68>
+        <Filename Value="../../src/net/mormot.net.tunnel.pas"/>
+        <UnitName Value="mormot.net.tunnel"/>
+      </Item68>
+      <Item69>
+        <Filename Value="../../src/net/mormot.net.ws.async.pas"/>
+        <AddToUsesPkgSection Value="False"/>
+        <UnitName Value="mormot.net.ws.async"/>
+      </Item69>
+      <Item70>
+        <Filename Value="../../src/net/mormot.net.ws.client.pas"/>
+        <UnitName Value="mormot.net.ws.client"/>
+      </Item70>
+      <Item71>
+        <Filename Value="../../src/net/mormot.net.ws.core.pas"/>
+        <UnitName Value="mormot.net.ws.core"/>
+      </Item71>
+      <Item72>
+        <Filename Value="../../src/net/mormot.net.ws.server.pas"/>
+        <UnitName Value="mormot.net.ws.server"/>
+      </Item72>
+      <Item73>
+        <Filename Value="../../src/orm/mormot.orm.base.pas"/>
+        <UnitName Value="mormot.orm.base"/>
+      </Item73>
+      <Item74>
+        <Filename Value="../../src/orm/mormot.orm.client.pas"/>
+        <UnitName Value="mormot.orm.client"/>
+      </Item74>
+      <Item75>
+        <Filename Value="../../src/orm/mormot.orm.core.pas"/>
+        <UnitName Value="mormot.orm.core"/>
+      </Item75>
+      <Item76>
+        <Filename Value="../../src/orm/mormot.orm.mongodb.pas"/>
+        <UnitName Value="mormot.orm.mongodb"/>
+      </Item76>
+      <Item77>
+        <Filename Value="../../src/orm/mormot.orm.rest.pas"/>
+        <UnitName Value="mormot.orm.rest"/>
+      </Item77>
+      <Item78>
+        <Filename Value="../../src/orm/mormot.orm.server.pas"/>
+        <UnitName Value="mormot.orm.server"/>
+      </Item78>
+      <Item79>
+        <Filename Value="../../src/orm/mormot.orm.sql.pas"/>
+        <UnitName Value="mormot.orm.sql"/>
+      </Item79>
+      <Item80>
+        <Filename Value="../../src/orm/mormot.orm.sqlite3.pas"/>
+        <UnitName Value="mormot.orm.sqlite3"/>
+      </Item80>
+      <Item81>
+        <Filename Value="../../src/orm/mormot.orm.storage.pas"/>
+        <UnitName Value="mormot.orm.storage"/>
+      </Item81>
+      <Item82>
+        <Filename Value="../../src/rest/mormot.rest.client.pas"/>
+        <UnitName Value="mormot.rest.client"/>
+      </Item82>
+      <Item83>
+        <Filename Value="../../src/rest/mormot.rest.core.pas"/>
+        <UnitName Value="mormot.rest.core"/>
+      </Item83>
+      <Item84>
+        <Filename Value="../../src/rest/mormot.rest.http.client.pas"/>
+        <UnitName Value="mormot.rest.http.client"/>
+      </Item84>
+      <Item85>
+        <Filename Value="../../src/rest/mormot.rest.http.server.pas"/>
+        <UnitName Value="mormot.rest.http.server"/>
+      </Item85>
+      <Item86>
+        <Filename Value="../../src/rest/mormot.rest.memserver.pas"/>
+        <UnitName Value="mormot.rest.memserver"/>
+      </Item86>
+      <Item87>
+        <Filename Value="../../src/rest/mormot.rest.mvc.pas"/>
+        <UnitName Value="mormot.rest.mvc"/>
+      </Item87>
+      <Item88>
+        <Filename Value="../../src/rest/mormot.rest.server.pas"/>
+        <UnitName Value="mormot.rest.server"/>
+      </Item88>
+      <Item89>
+        <Filename Value="../../src/rest/mormot.rest.sqlite3.pas"/>
+        <UnitName Value="mormot.rest.sqlite3"/>
+      </Item89>
+      <Item90>
+        <Filename Value="../../src/script/mormot.script.core.pas"/>
+        <UnitName Value="mormot.script.core"/>
+      </Item90>
+      <Item91>
+        <Filename Value="../../src/script/mormot.script.quickjs.pas"/>
+        <UnitName Value="mormot.script.quickjs"/>
+      </Item91>
+      <Item92>
+        <Filename Value="../../src/soa/mormot.soa.client.pas"/>
+        <UnitName Value="mormot.soa.client"/>
+      </Item92>
+      <Item93>
+        <Filename Value="../../src/soa/mormot.soa.codegen.pas"/>
+        <UnitName Value="mormot.soa.codegen"/>
+      </Item93>
+      <Item94>
+        <Filename Value="../../src/soa/mormot.soa.core.pas"/>
+        <UnitName Value="mormot.soa.core"/>
+      </Item94>
+      <Item95>
+        <Filename Value="../../src/soa/mormot.soa.server.pas"/>
+        <UnitName Value="mormot.soa.server"/>
+      </Item95>
+      <Item96>
+        <Filename Value="../../src/db/mormot.db.rad.ui.pas"/>
+        <UnitName Value="mormot.db.rad.ui"/>
+      </Item96>
+      <Item97>
+        <Filename Value="../../src/db/mormot.db.rad.ui.orm.pas"/>
+        <UnitName Value="mormot.db.rad.ui.orm"/>
+      </Item97>
+      <Item98>
+        <Filename Value="../../src/db/mormot.db.rad.ui.sql.pas"/>
+        <UnitName Value="mormot.db.rad.ui.sql"/>
+      </Item98>
+      <Item99>
+        <Filename Value="../../src/net/mormot.net.tftp.client.pas"/>
+        <UnitName Value="mormot.net.tftp.client"/>
+      </Item99>
+      <Item100>
+        <Filename Value="../../src/net/mormot.net.tftp.server.pas"/>
+        <UnitName Value="mormot.net.tftp.server"/>
+      </Item100>
+      <Item101>
+        <Filename Value="../../src/lib/mormot.lib.gdiplus.pas"/>
+        <UnitName Value="mormot.lib.gdiplus"/>
+      </Item101>
+      <Item102>
+        <Filename Value="../../src/net/mormot.net.acme.pas"/>
+        <UnitName Value="mormot.net.acme"/>
+      </Item102>
+      <Item103>
+        <Filename Value="../../src/db/mormot.db.rad.ui.cds.pas"/>
+        <UnitName Value="mormot.db.rad.ui.cds"/>
+      </Item103>
+      <Item104>
+        <Filename Value="../../src/core/mormot.core.os.mac.pas"/>
+        <UnitName Value="mormot.core.os.mac"/>
+      </Item104>
+      <Item105>
+        <Filename Value="../../src/app/mormot.app.agl.pas"/>
+        <UnitName Value="mormot.app.agl"/>
+      </Item105>
+      <Item106>
+        <Filename Value="../../src/misc/mormot.misc.pecoff.pas"/>
+        <UnitName Value="mormot.misc.pecoff"/>
+      </Item106>
+      <Item107>
+        <Filename Value="../../src/lib/mormot.lib.pkcs11.pas"/>
+        <UnitName Value="mormot.lib.pkcs11"/>
+      </Item107>
+      <Item108>
+        <Filename Value="../../src/net/mormot.net.ldap.pas"/>
+        <UnitName Value="mormot.net.ldap"/>
+      </Item108>
+      <Item109>
+        <Filename Value="../../src/core/mormot.core.fpclibcmm.pas"/>
+        <UnitName Value="mormot.core.fpclibcmm"/>
+      </Item109>
+      <Item110>
+        <Filename Value="../../src/net/mormot.net.dns.pas"/>
+        <UnitName Value="mormot.net.dns"/>
+      </Item110>
+      <Item111>
+        <Filename Value="../../src/lib/mormot.lib.win7zip.pas"/>
+        <UnitName Value="mormot.lib.win7zip"/>
+      </Item111>
+      <Item112>
+        <Filename Value="../../src/crypt/mormot.crypt.rsa.pas"/>
+        <UnitName Value="mormot.crypt.rsa"/>
+      </Item112>
+      <Item113>
+        <Filename Value="../../src/crypt/mormot.crypt.x509.pas"/>
+        <UnitName Value="mormot.crypt.x509"/>
+      </Item113>
+      <Item114>
+        <Filename Value="../../src/net/mormot.net.openapi.pas"/>
+        <UnitName Value="mormot.net.openapi"/>
+      </Item114>
+      <Item115>
+        <Filename Value="../../src/core/mormot.core.os.security.pas"/>
+        <UnitName Value="mormot.core.os.security"/>
+      </Item115>
+      <Item116>
+        <Filename Value="../../src/tools/mget/mormot.tools.mget.pas"/>
+        <UnitName Value="mormot.tools.mget"/>
+      </Item116>
+      <Item117>
+        <Filename Value="../../src/core/mormot.core.mvc.pas"/>
+        <UnitName Value="mormot.core.mvc"/>
+      </Item117>
+      <Item118>
+        <Filename Value="../../src/crypt/mormot.crypt.other.pas"/>
+        <UnitName Value="mormot.crypt.other"/>
+      </Item118>
+    </Files>
+    <CompatibilityMode Value="True"/>
+    <UsageOptions>
+      <IncludePath Value="$(PkgIncPath)"/>
+      <LibraryPath Value="$(PkgDir)/../../static/$(TargetCPU)-$(TargetOS)"/>
+      <ObjectPath Value="$(PkgDir)/../../static/$(TargetCPU)-$(TargetOS)"/>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
