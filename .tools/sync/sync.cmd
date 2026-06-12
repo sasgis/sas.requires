@@ -1,10 +1,13 @@
 @echo off
 
 set hidden=!git
+set config=.\.tools\sync\sync.csv
+
+cd .\..\..\
 
 git version
 
-for /f "usebackq tokens=1-5 delims=," %%a in ("sync.csv") do (
+for /f "usebackq tokens=1-5 delims=," %%a in ("%config%") do (
     
     echo.
     echo %%a %%b %%c %%d %%e
@@ -42,4 +45,3 @@ for /f "usebackq tokens=1-5 delims=," %%a in ("sync.csv") do (
 
 echo.
 
-call update

@@ -2,6 +2,9 @@
 
 set hidden=!git
 set log=.log
+set config=.\.tools\update\update.csv
+
+cd .\..\..\
 
 git version
 
@@ -9,7 +12,7 @@ if not exist %log%\ (
     mkdir %log%
 )
 
-for /f "usebackq tokens=1-3 delims=," %%a in ("update.csv") do (
+for /f "usebackq tokens=1-3 delims=," %%a in ("%config%") do (
     
     echo.
     echo %%a %%b %%c
@@ -45,5 +48,8 @@ for /f "usebackq tokens=1-3 delims=," %%a in ("update.csv") do (
 )
 
 echo.
+
+:: Restore mORMot static files
+cd .\mormot2\static && git restore delphi\*
 
 pause
