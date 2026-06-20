@@ -1,3 +1,435 @@
+commit 91c9ea3219d0eb4872ef1c675b471f827eb2dd6c
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-06-04 20:14:05 +0200
+
+    Added bugfix instuctions
+
+commit 18aeb208e4d5b5471e3a9f74c00c2877e5d342b9
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-06-04 20:05:57 +0200
+
+    Fix #1369: prevent bogus header click after title-bar maximize
+
+commit e43056fb4bc1bcf6a94436317523a0f9865b963e
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-06-03 18:42:00 +0200
+
+    IDE induced changes
+
+commit 85428f2402caaa11f4517aa90770d7ca055989a7
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-05-25 22:29:34 +0200
+
+    Fixed issue #1368: Missing HTML encoding in HTML export
+
+commit c241bd1e8806e93f1c407283fc8a8a02efad0155
+Merge: 77de000 8dad282
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-04-23 16:21:23 +0200
+
+    Merge pull request #1367 from stephane128/master
+    
+    https://github.com/JAM-Software/Virtual-TreeView/issues/1366
+
+commit 8dad282164a6505d9d50cc422266ca6f8920366b
+Author: stv <stephane.vanderclock@pvsyst.com>
+Date:   2026-04-23 10:15:17 +0200
+
+    https://github.com/JAM-Software/Virtual-TreeView/issues/1366
+
+commit 77de0006711ef6f3f5e7fb9f88da46f8b40249e2
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-04-16 15:14:34 +0200
+
+    Fix possible range check error by using the correct type for node height. Related to issues #1341 #1365
+
+commit 4676d9fe2744e922760fcb383bd53b4583158e80
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-04-14 00:15:26 +0200
+
+    Again improved fix for issue #1365
+
+commit d019c44c62af5bc194df480197c4fc8b54b430ee
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-04-12 14:28:02 +0200
+
+    Improved fix for issue #1365
+
+commit 65d00e1efe94c62ddac4afbca8127d8d492d38dd
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-04-09 09:43:55 +0200
+
+    Improvement for issue #1365
+
+commit 5a31ddeacbc33aa7b70de09b53678cc9577574dc
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-04-08 14:26:20 +0200
+
+    Added missing Windows 64Bit as platform. Issue #1342
+
+commit f6c709cfb1d817bdf80a698f734bb93abe00f420
+Merge: 7e0eecc 6a40f83
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-04-07 10:23:23 +0200
+
+    Merge branch 'master' of https://github.com/JAM-Software/Virtual-TreeView
+
+commit 7e0eecc510c5dc123513a7e165ab94fe63403f94
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-04-07 10:23:20 +0200
+
+    When chnaging default node height, create window handle and font proactively to prevent any unintended rescaling in AutoChnageScale(). See issue #1341
+
+commit 8635fb462e15e23a33f95a92c2f6d842c0c5d2c3
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-04-07 10:20:30 +0200
+
+    Changed the default value of the DefaultNodeHeight property to 19, which corresponds to the current default font in new Delphi forms Segoe UI 9pt. This change is related to issue #1341
+
+commit 6a40f83c09dd0219a8a256bc5d201ba274d8c8d8
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-03-18 10:47:53 +0100
+
+    Minor updates to the markdown files.
+
+commit 1bc2d0a07ea70437415b7b156e32cac49985f6da
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-03-18 10:24:29 +0100
+
+    Removed contributuon that is unmaintianed for 15 years. Much ahs improved in working with PVirtualNode since then.
+
+commit 7400b0e40de948a51459608650735c70a1114f92
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-03-18 10:22:09 +0100
+
+    Removed meanwhile unused bitmaps and cursors.
+
+commit 88412f1a20683faae9a590cb4cae967a573321d0
+Merge: c57181d 0ad4d8f
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-03-06 19:21:53 +0100
+
+    Merge branch 'master' of https://github.com/JAM-Software/Virtual-TreeView
+
+commit c57181d359d338998bb0f2a83a8ca6b9211bc98a
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-03-06 19:20:53 +0100
+
+    Revert "Merge pull request #1338 from chuacw/Fix-#1197"
+    
+    This reverts commit 65f4d6dd917a69adbc700bd5f32cf644f089b97a, reversing
+    changes made to f9fe7df9243e9a2a7f3cb1d122a1347eb8e8c3a0.
+
+commit 0ad4d8fe957b37d64886f1efb5cb2e26f8a53220
+Merge: 34f9c65 000beee
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-03-03 11:55:11 +0100
+
+    Merge pull request #1361 from JamSSchaefer/Issue1358
+    
+    Enhance MainColumn visibility handling in UpdateMainColumn procedure to prioritize visible columns and manage checkbox states.
+
+commit 34f9c65e262afe72ab056fa2c5ba8f4c2f5d265e
+Merge: d598028 530469a
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-03-03 11:53:20 +0100
+
+    Merge pull request #1362 from JamSSchaefer/Issue1359
+    
+    Fix checkbox state propagation to child nodes on header double-click
+
+commit 530469a5b2fbc6899769e328d9980283cbc67258
+Author: Sascha <schaefer@jam-software.de>
+Date:   2026-03-03 09:50:41 +0100
+
+    Fix checkbox state propagation to child nodes on header double-click
+
+commit 000beee46791cf5ece911faf1073d53f900421a9
+Author: Sascha <schaefer@jam-software.de>
+Date:   2026-03-03 09:17:05 +0100
+
+    Enhance MainColumn visibility handling in UpdateMainColumn procedure to prioritize visible columns and manage checkbox states.
+
+commit d598028ed4d213d835b02dae30d88f5645b9fa74
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-03-02 15:46:53 +0100
+
+    RAD Studio 13 induced chnages
+
+commit b99f45595a11b937cd5604f7ec0f2c5a56a2c600
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-03-02 15:45:38 +0100
+
+    IDE induced chnage
+
+commit 3be317130b6cbd23e983e34ca8f7e3c3ec34e466
+Merge: 247e7ad f789e48
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-03-02 15:44:37 +0100
+
+    Merge branch 'master' of https://github.com/JAM-Software/Virtual-TreeView
+
+commit 247e7add09e2920681a380b1dd12fffdf06bf012
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-03-02 15:23:36 +0100
+
+    IDE induced change
+
+commit f789e48ef1286df6eea17ce74a68f467e03263ca
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-15 23:20:57 +0100
+
+    Related to issue #1080: Repaint control in case coFixed and other column option have changed that change the appearance.
+
+commit 77dea2aa5801c77807bf0420b9c302c59d20104d
+Merge: e9a7cb0 0fd0a19
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-11 13:00:40 +0100
+
+    Merge pull request #1355 from chuacw/Fix-OnChange-event-for-node-selection
+    
+    Added a new enum toMultiCellSelect, fixes #1347
+
+commit 0fd0a194602f380cd29ffdd8cb2f8b6681a57b12
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-02-10 15:20:22 +0800
+
+    Added a new enum toMultiCellSelect
+    
+    Added a new enum toMultiCellSelect for multi-cell selection feature.
+    Without toMultiCellSelect, cell selection will not be enabled.
+
+commit e9a7cb0d4ae93f30b364444a864eb58b7460e43a
+Merge: 877c16c bdbb669
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-08 11:48:06 +0100
+
+    Merge pull request #1354 from chuacw/Fix-OnChange-event-for-node-selection
+    
+    Updated tests and code for missing OnChange event
+
+commit bdbb669f677db2382086082acff13b4226671c71
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-02-07 14:19:40 +0800
+
+    Updated tests for missing OnChange event
+    
+    Updated tests for missing OnChange event
+    Fixed code to properly handle combination of toMultiSelect, toExtendedFocus and toFullRowSelect
+
+commit 877c16cfc42f6e019a8c44157283d1519674b6f1
+Merge: 54792f9 c13700f
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-06 20:49:51 +0100
+
+    Merge pull request #1353 from chuacw/Fix-OnChange-event-for-node-selection
+    
+    Fixes missing OnChange event
+
+commit c13700ffa03661ee22d904fae692d6d93e7b44b0
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-02-06 22:20:25 +0800
+
+    Added test form to Tests
+    
+    Added test form to Tests
+
+commit 175d319f26a1374a5eab0d057e931806f616bcff
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-02-06 22:14:40 +0800
+
+    More tests and fixes
+    
+    Refactored MouseUtils with KeyedMouseClick, ShiftMouseClick and CtrlMouseClick.
+    Added VisibilityTest form as a manual check, and it's also used within VTCellSelectionTests.
+    Added more tests to VTCellSelectionTests
+    Updated VirtualTrees.Types to remove cell selection for certain triggers.
+
+commit 1321952a072a59c90a72095144d5632a4dca5c76
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-02-06 00:43:34 +0800
+
+    Fixes missing OnChange event
+    
+    Fixes missing OnChange event when empty area clicked.
+    Added a test case to check for OnChange event when empty area is clicked.
+
+commit 54792f9ff5067d21172fde24d1e29c8a362001a1
+Merge: 5a28155 ccfe666
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-05 17:05:06 +0100
+
+    Merge pull request #1352 from chuacw/remove-implicit-warnings-in-compiling-packages
+    
+    Removes implicit warnings when compiling
+
+commit ccfe666b72fff86f3ccf47cd095cb1743e42d753
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-02-05 23:02:10 +0800
+
+    Removes implicit warnings when compiling
+    
+    Removes implicit warnings when compiling by adding missing units.
+
+commit 5a28155b77f81eaa404f02843229a1f7c0086535
+Merge: 6db1b31 12a5822
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-05 15:15:55 +0100
+
+    Merge pull request #1350 from chuacw/Fix-OnChange-event-for-node-selection
+    
+    Fixes OnChange event #1347
+
+commit 12a5822921bbafba12d4027272de083c6ce3b034
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-02-05 18:53:27 +0800
+
+    Fixes OnChange event #1347
+    
+    Updated VisibilityDemo to show debug messages when OnChange for VSTs are fired.
+    Calls ClearCellSelection when VST.Clear is called.
+    Fixes clipboard tests in VTCellSelectionTests to no longer require 10 tests each.
+    Created/Moved (Shift)MouseClick to VirtualTrees.MouseUtils under test directory.
+    Added tests for OnChange, OnChangeCell, Clear, and updated Clipboard tests to use a fixed font and size as it affects the output.
+
+commit 6db1b31038e30ff53b9241c5364266aef4eb1b65
+Merge: 1a0d59e 9e42dd3
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-04 21:43:46 +0100
+
+    Merge pull request #1349 from chuacw/remove-inline-vars
+    
+    Remove inline var in VirtualTrees registration
+
+commit 9e42dd3188adcd70cf080aa92a9cf768ccd24d77
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-02-04 17:43:09 +0800
+
+    Remove inline var in VirtualTrees registration
+    
+    Remove inline var in VirtualTrees registration
+
+commit 1a0d59efe49fdf4c1c4574e9f535d97e9625a42d
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-03 23:16:52 +0100
+
+    Reapply "Fix OnChange event with post nil if the note is the same"
+    
+    This reverts commit c154935472704ee137ad01eac371c2243e940afd.
+
+commit 621805e08e34525d800fde3a8b4198cf2d124749
+Merge: c154935 699c376
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-03 23:15:53 +0100
+
+    Merge pull request #1348 from chuacw/remove-inline-vars
+    
+    Replaced inline vars with regular vars
+
+commit 699c3765b3b8c2e2f09b572d386e2bd0df22f305
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-02-03 18:29:54 +0800
+
+    Replaced inline vars with regular vars
+    
+    Replaced inline vars with regular vars
+
+commit c154935472704ee137ad01eac371c2243e940afd
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-02 22:27:26 +0100
+
+    Revert "Fix OnChange event with post nil if the note is the same"
+    
+    This reverts commit 273dfcd39b9a209861c1157638ce0446427a7d97.
+
+commit a73dfb1e45dbeaad9e1bf88cc69b6283d1b769ca
+Merge: d349efa 27d6422
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-01 21:09:18 +0100
+
+    Merge branch 'master' of https://github.com/JAM-Software/Virtual-TreeView
+
+commit d349efa7911767bb88a02f5b7b99580ea03ef030
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-02-01 21:09:15 +0100
+
+    Issue #841: Do not use inline assember on FMX platforms that do not support this, as they use the LLVM compiler.
+
+commit 27d64228bc22f42471b6762bc57e98ab3cfc9d6c
+Merge: afed010 7f773d7
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-01-18 21:42:20 +0100
+
+    Merge pull request #1345 from chuacw/Fix-#1236
+    
+    Fixes #1236
+
+commit 7f773d75cdc8245a1a3b093c8f495d7437fe7b42
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-01-16 22:13:05 +0800
+
+    Fixes #1236
+    
+    Prevents design-time setting of FixedAreaConstraints.MinWidthPercent when there are no columns with coFixed property
+    Also exits ResizeColumn repeat loop when checking MaxDelta if there are no columns changed
+
+commit afed010147605ce7197aca0fe980addb48b9ad5f
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-01-15 21:51:57 +0100
+
+    Added search path so that project compiles out-of-the-box.
+
+commit 77b6c8a4318f7079d3c7ac46b065d62dee2efea8
+Merge: ec3e41f 204e27e
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-01-14 22:45:01 +0100
+
+    Merge branch 'master' of https://github.com/JAM-Software/Virtual-TreeView
+
+commit ec3e41f2d1e8ab8a07388f83aaf6412e6f220bfe
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-01-14 22:44:53 +0100
+
+    Improve comment. Related to issue #1341
+
+commit ed91f6688a99c0f73e7beccbb00a6e735766cd4b
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-01-14 22:44:32 +0100
+
+    Ensure DefaultNodeHeight is updated. Related to issue #1341
+
+commit 204e27e36c3f2e5f6feeac52ffc39f0d533e2fad
+Author: Trierweiler <trierweiler@jam-software.com>
+Date:   2026-01-13 08:50:19 +0100
+
+    A TIntegerSet has a fix length (Int32). Cast it to Integer before expanding it to a NativeInt
+
+commit a81b13c05f601932a2cb829602aeeb0f35d844cb
+Merge: dfb9c38 8d89933
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-01-12 23:25:28 +0100
+
+    Merge pull request #1337 from chuacw/Multiselect
+    
+    Multicell select feature with copy support
+
+commit dfb9c38dfbaaa37b8d16c7904d1c1ec4875fb68d
+Merge: 194a43c 7d1854f
+Author: Joachim Marder <joachim.marder@outlook.com>
+Date:   2026-01-12 23:24:52 +0100
+
+    Merge pull request #1340 from chuacw/Fix1253
+    
+    Fix for #1253
+
+commit 7d1854f6f0e6fc761aa72d7569f96d0002b02362
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-01-12 15:23:24 +0800
+
+    Fix for #1253
+    
+    Fixes #1253
+
 commit 194a43c11f83d0e6c07ced983b73442f3eb53007
 Merge: 65f4d6d 60b4992
 Author: Joachim Marder <joachim.marder@outlook.com>
@@ -124,6 +556,49 @@ Date:   2026-01-11 23:31:57 +0800
     Fixes #1197
     
     Fixes 'Selected count is not always correct'
+
+commit 8d89933e59ebd9afb0264bce9e24bb6fe3f25fa7
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-01-11 22:51:47 +0800
+
+    Fixes ability to select with shift+arrows
+    
+    Fixes ability to select with shift+arrows
+    Added Ctrl+C  in VST in Multiselect demo to copy to clipboard
+
+commit 10c9b345b9f26c46379cfbe1b87e17daefb51109
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-01-11 21:29:05 +0800
+
+    Added IsCellSelectionEnabled virtual method
+    
+    Added IsCellSelectionEnabled virtual function to allow overriding in custom situations
+
+commit 14b60a0bfc8d3bbf0cdc57a616b84fc57d6451e1
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-01-11 17:49:00 +0800
+
+    Removed empty function
+    
+    Removed empty function
+
+commit e663be9a1234ff8b499edba45dc1b1372f9c8a55
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-01-11 17:12:10 +0800
+
+    Multicell with copy support
+    
+    Provides new feature of selecting a rectangular area of cells, and copying the selected set of cells, with headers to clipboard.
+    
+    Added a demo and a test set as well.
+
+commit 5e96edbb1467014d59d6691a366836b8b8df2b7f
+Author: chuacw <1757930+chuacw@users.noreply.github.com>
+Date:   2026-01-09 21:07:50 +0800
+
+    Initial check-in multicell selection
+    
+    Initial check-in of multiple cell selection code and tests
 
 commit f9fe7df9243e9a2a7f3cb1d122a1347eb8e8c3a0
 Merge: 6a14f4f 3d6968f

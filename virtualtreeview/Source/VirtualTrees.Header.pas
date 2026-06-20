@@ -259,6 +259,11 @@ type
     function GetPreviousVisibleColumn(Column : TColumnIndex; ConsiderAllowFocus : Boolean = False) : TColumnIndex;
     function GetScrollWidth : TDimension;
     function GetVisibleColumns : TColumnsArray;
+
+    // multicell support
+    function GetSelectedCellColumns: TColumnsArray;
+    function HasMulticellSelection: Boolean;
+
     function GetVisibleFixedWidth : TDimension;
     function IsValidColumn(Column : TColumnIndex) : Boolean;
     procedure LoadFromStream(const Stream : TStream; Version : Integer);
@@ -462,6 +467,9 @@ uses
   VirtualTrees.BaseTree,
   VirtualTrees.BaseAncestorVcl, // to eliminate H2443 about inline expanding
   VirtualTrees.DataObject;
+
+resourcestring
+  SConstraintsNotAllowed = 'Cannot set mininum constraints when there are no columns!';
 
 type
   TVirtualTreeColumnsCracker = class(TVirtualTreeColumns);
@@ -1262,11 +1270,28 @@ procedure TVTHeader.FixedAreaConstraintsChanged(Sender : TObject);
 
 //This method gets called when FFixedAreaConstraints is changed.
 
+  function HasFixedColumns: LongBool;
+  var
+    I: Integer;
+  begin
+    Result := False;
+    for I := 0 to Columns.Count-1 do
+      begin
+        if coFixed in Columns[I].Options then
+          Exit(True);
+      end;
+  end;
+
 begin
   if Tree.HandleAllocated then
     RescaleHeader
   else
     Include(FStates, hsNeedScaling);
+  if (FixedAreaConstraints.MinWidthPercent > 0) and not HasFixedColumns then
+    begin
+      FixedAreaConstraints.FMinWidthPercent := 0;
+      raise EVirtualTreeError.CreateRes(PResStringRec(@SConstraintsNotAllowed));
+    end;
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1693,7 +1718,9 @@ begin
             begin
               with TWMNCLButtonUp(Message) do
                 P := FOwner.ScreenToClient(Point(XCursor, YCursor));
-              if not fWasDoubleClick then
+              // Only handle a non-client header click if we previously got a header down event.
+              // This prevents bogus column clicks after title-bar double-click maximize.
+              if not fWasDoubleClick and (FColumns.DownIndex > NoColumn) then
                 TVirtualTreeColumnsCracker(FColumns).HandleClick(P, TMouseButton.mbLeft, True, False);
               TBaseVirtualTreeCracker(FOwner).DoHeaderMouseUp(TMouseButton.mbLeft, GetShiftState, P.X, P.Y + FHeight);
               Result := True;
@@ -2058,16 +2085,38 @@ procedure TVTHeader.UpdateMainColumn();
 
 //Called once the load process of the owner tree is done.
 
+var
+  lOldMainColumn: TColumnIndex;
+  lNewMainColumn: TColumnIndex;
 begin
   if FMainColumn < 0 then
     MainColumn := 0;
   if FMainColumn > FColumns.Count - 1 then
     MainColumn := FColumns.Count - 1;
-  if (FMainColumn >= 0) and not (coVisible in Self.Columns[FMainColumn].Options) then
-  begin
+
+  lOldMainColumn := FMainColumn;
+
+  // Issue #1358: Prefer MainColumn to be on position 0 (where checkboxes/icons are) If position 0 is visible, use it; otherwise use first visible column
+  if (FColumns.Count > 0) and (coVisible in FColumns[0].Options) then
+    lNewMainColumn := 0
+  else if (FMainColumn >= 0) and not (coVisible in Self.Columns[FMainColumn].Options) then
     //Issue #946: Choose new MainColumn if current one ist not visible
-    MainColumn := Self.Columns.GetFirstVisibleColumn();
-  end
+    lNewMainColumn := Self.Columns.GetFirstVisibleColumn()
+  else
+    lNewMainColumn := FMainColumn;
+
+  if (lNewMainColumn <> lOldMainColumn) and (lOldMainColumn >= 0) and (lOldMainColumn < FColumns.Count) and
+     (lNewMainColumn >= 0) and (lNewMainColumn < FColumns.Count) then
+  begin
+    if FColumns[lOldMainColumn].CheckBox then
+    begin
+      FColumns[lNewMainColumn].CheckBox := True;
+      FColumns[lOldMainColumn].CheckBox := False;
+    end;
+  end;
+
+  if lNewMainColumn <> FMainColumn then
+    MainColumn := lNewMainColumn;
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2642,6 +2691,8 @@ begin
         if MaxDelta < Abs(ChangeBy) then
           if not ReduceConstraints then
             Break;
+        if ColCount = 0 then // Fixes #1236: infinite loop
+          Break;
       until (MaxDelta >= Abs(ChangeBy)) or not (hsScaling in FStates);
 
       if ColCount = 0 then
@@ -2724,7 +2775,7 @@ procedure TVTHeader.SaveToStream(const Stream : TStream);
 
 var
   Dummy : Integer;
-  DummyDimension: TDimension;			   
+  DummyDimension: TDimension;
   Tmp   : AnsiString;
 
 begin
@@ -3244,10 +3295,10 @@ end;
 procedure TVirtualTreeColumn.SetOptions(Value : TVTColumnOptions);
 
 var
-  ToBeSet,
-    ToBeCleared     : TVTColumnOptions;
-  VisibleChanged,
-    lParentColorSet : Boolean;
+  ToBeSet: TVTColumnOptions;
+  ToBeCleared: TVTColumnOptions;
+  lAppearanceChanged: Boolean;
+  lParentColorSet : Boolean;
 begin
   if FOptions <> Value then
   begin
@@ -3258,7 +3309,7 @@ begin
     if coFixed in ToBeSet then
       FOptions := FOptions - [coDraggable]; // issue #1314
 
-    VisibleChanged := coVisible in (ToBeSet + ToBeCleared);
+    lAppearanceChanged := ([coVisible, coFixed, coStyleColor, coParentBidiMode, coWrapCaption] * (ToBeSet + ToBeCleared)) <> [];
     lParentColorSet := coParentColor in ToBeSet;
 
     if coParentBidiMode in ToBeSet then
@@ -3272,18 +3323,19 @@ begin
     if coAutoSpring in ToBeSet then
       FSpringRest := 0;
 
-    if coVisible in ToBeCleared then
-      Header.UpdateMainColumn(); // Fixes issue #946
+    // Update MainColumn when visibility changes
+    if (coVisible in ToBeCleared) or (coVisible in ToBeSet) then
+      Header.UpdateMainColumn(); // Fixes issue #946 and #1358
 
     if ((coFixed in ToBeSet) or (coFixed in ToBeCleared)) and (coVisible in FOptions) then
       Header.RescaleHeader;
 
     Changed(False);
     // Need to repaint and adjust the owner tree too.
-    if not (csLoading in TreeViewControl.ComponentState) and (VisibleChanged or lParentColorSet) and (Owner.UpdateCount = 0) and TreeViewControl.HandleAllocated then
+    if not (csLoading in TreeViewControl.ComponentState) and (lAppearanceChanged or lParentColorSet) and (Owner.UpdateCount = 0) and TreeViewControl.HandleAllocated then
     begin
       TreeViewControl.Invalidate();
-      if VisibleChanged then
+      if lAppearanceChanged then
       begin
         TreeViewControl.DoColumnVisibilityChanged(Self.Index, coVisible in ToBeSet);
         TreeViewControl.UpdateHorizontalScrollBar(False);
@@ -4549,7 +4601,12 @@ begin
   end;
 
   if DblClick then
-    TreeViewControl.DoHeaderDblClick(HitInfo)
+  begin
+    TreeViewControl.DoHeaderDblClick(HitInfo);
+    // Fix for 1359: Fire DoHeaderClick so that checkbox state propagates to child nodes occurs.
+    if hhiOnCheckbox in HitInfo.HitPosition then
+      TreeViewControl.DoHeaderClick(HitInfo);
+  end
   else begin
     if (hoHeaderClickAutoSort in Header.Options) and (HitInfo.Button = TMouseButton.mbLeft) and not (hhiOnCheckbox in HitInfo.HitPosition) and (HitInfo.Column >= 0) then
     begin
@@ -5289,6 +5346,42 @@ begin
     (coAllowFocus in Items[Result].Options)
     )
     );
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+function TVirtualTreeColumns.GetSelectedCellColumns : TColumnsArray;
+var
+  LColumnIndex: TColumnIndex;
+begin
+  Result := [];
+  LColumnIndex := GetFirstColumn;
+  if LColumnIndex = InvalidColumn then
+    Exit;
+  while LColumnIndex <> InvalidColumn do
+    begin
+      if coMulticellSelected in FHeader.Columns[LColumnIndex].Options then
+        Result := Result + [FHeader.Columns[LColumnIndex]];
+      LColumnIndex := GetNextColumn(LColumnIndex);
+    end;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+function TVirtualTreeColumns.HasMulticellSelection: Boolean;
+var
+  LColumnIndex: TColumnIndex;
+begin
+  LColumnIndex := GetFirstColumn;
+  if LColumnIndex = InvalidColumn then
+    Exit(False);
+  while LColumnIndex <> InvalidColumn do
+    begin
+      if coMulticellSelected in FHeader.Columns[LColumnIndex].Options then
+        Exit(True);
+      LColumnIndex := GetNextColumn(LColumnIndex);
+    end;
+  Result := False;
 end;
 
 //----------------------------------------------------------------------------------------------------------------------

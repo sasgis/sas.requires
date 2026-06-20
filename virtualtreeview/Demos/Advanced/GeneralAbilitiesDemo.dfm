@@ -10,10 +10,8 @@ object GeneralForm: TGeneralForm
   Font.Name = 'Tahoma'
   Font.Style = []
   KeyPreview = True
-  OldCreateOrder = False
   ShowHint = True
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object VST2: TVirtualStringTree
     Left = 0
@@ -23,6 +21,7 @@ object GeneralForm: TGeneralForm
     Align = alClient
     AutoExpandDelay = 300
     BiDiMode = bdLeftToRight
+    BottomSpace = 3
     ButtonFillMode = fmWindowColor
     ClipboardFormats.Strings = (
       'HTML Format'
@@ -34,7 +33,7 @@ object GeneralForm: TGeneralForm
     Colors.HotColor = clBlack
     Colors.UnfocusedSelectionBorderColor = clBtnShadow
     Ctl3D = True
-    DefaultNodeHeight = 20
+    DefaultNodeHeight = 19
     DragCursor = crHelp
     DragMode = dmAutomatic
     DrawSelectionMode = smBlendedRectangle
@@ -51,6 +50,7 @@ object GeneralForm: TGeneralForm
     Header.Style = hsFlatButtons
     HotCursor = crHandPoint
     Images = TreeImages
+    Margin = 8
     ParentBiDiMode = False
     ParentCtl3D = False
     ParentFont = False
@@ -76,6 +76,8 @@ object GeneralForm: TGeneralForm
     OnKeyDown = VST2KeyDown
     OnNewText = VST2NewText
     OnStateChange = VST2StateChange
+    Touch.InteractiveGestures = [igPan, igPressAndTap]
+    Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
     Columns = <
       item
         Hint = 'Column which initially contains the tree.'
