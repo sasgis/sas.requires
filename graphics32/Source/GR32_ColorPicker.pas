@@ -174,6 +174,11 @@ type
     procedure PaintBackground; virtual;
     procedure PaintColorPicker; virtual; abstract;
     procedure SelectedColorChanged; virtual;
+{$IFDEF HasParentBackground}
+    // Ignore previously published ParentBackground property
+    procedure ReadAndIgnoreParentBackground(Reader: TReader);
+    procedure DefineProperties(Filer: TFiler); override;
+{$ENDIF}
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -1050,6 +1055,19 @@ begin
   with Msg do
     Result := Result or DLGC_WANTARROWS;
 end;
+
+{$IFDEF HasParentBackground}
+procedure TCustomColorPicker.ReadAndIgnoreParentBackground(Reader: TReader);
+begin
+  Reader.ReadBoolean;
+end;
+
+procedure TCustomColorPicker.DefineProperties(Filer: TFiler);
+begin
+  inherited;
+  Filer.DefineProperty('ParentBackground', ReadAndIgnoreParentBackground, nil, False);
+end;
+{$ENDIF}
 
 
 { TCustomColorPickerComponent }
@@ -2087,7 +2105,7 @@ begin
         if Intensity(HSVtoRGB(FHue, 1, 1)) < 127 then
           PolylineFS(FBuffer, Polygon, $F0FFFFFF, True, LineWidth)
         else
-          PolylineFS(FBuffer, Polygon, $F0000000, True, LineWidth)
+          PolylineFS(FBuffer, Polygon, $F0000000, True, LineWidth);
     end;
   end;
 
@@ -2157,7 +2175,7 @@ begin
           PolylineFS(FBuffer, Polygon, clWhite32, True, LineWidth)
         else
           PolylineFS(FBuffer, Polygon, clBlack32, True, LineWidth)
-    end
+    end;
   end;
 
   inherited;

@@ -1328,7 +1328,7 @@ begin
           BlendLineEx(SrcP, DstP, W, SrcMasterAlpha);
           Inc(SrcP, SrcWidth);
           Inc(DstP, Dst.Width);
-        end
+        end;
       end;
     dmTransparent:
       begin
@@ -2050,10 +2050,10 @@ begin
 {$else}
             C := AlphaInterpolator(MapHorz[I].Weight, WY, SrcPtr1, SrcPtr2);
 {$ifend}
-            BlendMemEx(C, DstLine[I], SrcMasterAlpha)
+            BlendMemEx(C, DstLine[I], SrcMasterAlpha);
           end;
           Inc(DstLine, Dst.Width);
-        end
+        end;
       end;
 
     dmTransparent:
@@ -2082,7 +2082,7 @@ begin
               DstLine[I] := C;
           end;
           Inc(DstLine, Dst.Width);
-        end
+        end;
       end;
 
   else // cmCustom
@@ -3254,7 +3254,7 @@ begin
   if (WeightY_256 = 0) then
     Result := C1
   else
-    Result := CombineReg(C1, C3, WeightY_256)
+    Result := CombineReg(C1, C3, WeightY_256);
 end;
 
 
@@ -3761,7 +3761,7 @@ begin
   begin
     FCoeff := Value;
     Changed;
-  end
+  end;
 end;
 
 
@@ -4439,7 +4439,7 @@ begin
                 Inc(VertEntry.G, HorzEntry.G * Wv);
                 Inc(VertEntry.B, HorzEntry.B * Wv);
               end;
-            end
+            end;
           end;
         end;
       end;
@@ -4658,7 +4658,7 @@ procedure TNearestResampler.Resample(
   OuterColor: TColor32; CombineCallBack: TPixelCombineEvent);
 begin
   StretchNearest(Dst, DstRect, DstClip, SrcBits, SrcWidth, SrcHeight, SrcRect,
-    OuterColor, CombineOp, CombineMode, MasterAlpha, CombineCallBack)
+    OuterColor, CombineOp, CombineMode, MasterAlpha, CombineCallBack);
 end;
 
 
@@ -4798,7 +4798,7 @@ procedure TDraftResampler.Resample(
   OuterColor: TColor32; CombineCallBack: TPixelCombineEvent);
 begin
   DraftResample(Dst, DstRect, DstClip, SrcBits, SrcWidth, SrcHeight, SrcRect,
-    FLinearKernel, OuterColor, CombineOp, CombineMode, MasterAlpha, CombineCallBack)
+    FLinearKernel, OuterColor, CombineOp, CombineMode, MasterAlpha, CombineCallBack);
 end;
 
 

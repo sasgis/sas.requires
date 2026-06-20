@@ -1,3 +1,62 @@
+commit 8c171325939b1b48c5a748aa9a9f1e2935d93cd6
+Merge: 47dd2278 b79381b0
+Author: zed <starmen141@gmail.com>
+Date:   2026-06-20 13:22:11 +0300
+
+    Merge branch 'master' into sasgis
+
+commit b79381b06844f30f2b9c8ac69bb6494653dc7fca
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-06-19 22:07:20 +0200
+
+    Fix for TCanvas32.RenderText clears polygon buffer
+    
+    Fixes #401
+
+commit a5a84ee86e6c295f9e9aa22d1499b6c7f3456ee0
+Merge: 37adb92d 046af064
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-05-27 10:25:16 +0200
+
+    Merge branch 'TImage32_line_artifacts'
+
+commit 046af064548606fc7ee05dde235a736b459fe540
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-05-26 18:30:12 +0200
+
+    Fix for repaint optimizer artifacts with nearly horizontal line change regions.
+    
+    - The micro tiles generated from line change regions are now positioned relative to the pixel center instead of the top left corner.
+
+commit 6f596bb36f29683fca6798ccf3b263a0e8e00761
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-05-26 18:17:12 +0200
+
+    Added TCustomRubberBandLayer.FrameStippleSegmented
+    
+    Controls if rubber band is drawn as one continuously stippled line or as independent segments (the default).
+
+commit 37adb92d96138635f96c33c9a6ac9bcb3ab16f88
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-05-16 16:33:17 +0200
+
+    Fix for previously published color picker ParentBackground property
+    
+    - This change ensures that old forms, that were saved when the ParentBackground property was published, doesn't fail to load now that the property no longer exist.
+
+commit d19fcf31edc8e492bcf00852baf4b3df97d3bb24
+Merge: 45e67eef 33b9355a
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-05-15 17:08:10 +0200
+
+    Merge remote-tracking branch 'TommiPrami/TypoFixes'
+
+commit 33b9355ab88c0eef72580900c1ea2530dade155f
+Author: TommiPrami <tommi.prami@gmail.com>
+Date:   2026-05-15 07:34:05 +0300
+
+    Added missing semicolons (Where they could/should be)
+
 commit 47dd22789c5bed98d3cea2d5dc170c94bf1a5004
 Merge: 3feae02d 45e67eef
 Author: zed <starmen@tut.by>
@@ -53,6 +112,15 @@ Date:   2026-04-30 13:10:30 +0200
     - Latitude and Longtitude were swapped.
     - Removed obsolete TSphereTransformation.ReverseTransformFloat assembler implementation.
     - Moved the 180-degree longitude offset from the transformation to the application level.
+
+commit 6664b5fbfbdd1b71079ce9ab6b8a5b235ced63b0
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-29 12:44:28 +0200
+
+    Fix for nearly horizontal anti-aliased lines not invalidating AA part of line
+    
+    - Repaint artifacts could be seen when moving the lower right vertex of a nearly horizontal polygon rubberband up from 4th quadrant to 1st. For example in the PerspectiveCorrection example. There still remain a few artifacts when the repaint optimizer is enabled. These will be addressed in another fix.
+    - Added the rrLine rounding type to MakeRect for use in getting the outer rectangle of a line.
 
 commit a4b231e404b1de3fbac872526adfb5456d2fb47f
 Author: Anders Melander <anders@melander.dk>
