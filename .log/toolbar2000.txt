@@ -1,3 +1,16 @@
+commit f4de418229698e81c6305e7ea90947dccc18855f
+Merge: 7fb42d8 142c395
+Author: zed <starmen141@gmail.com>
+Date:   2026-06-20 11:12:30 +0300
+
+    Merge branch 'master' into sasgis-fix
+
+commit 142c395f04befc637068b1113849ad1b7d6427a5
+Author: Yuri Plashenkov <yuri@plashenkov.com>
+Date:   2026-06-19 14:29:03 +0300
+
+    Fixed submenu X position clamped against MonitorRect.Top instead of .Left #6
+
 commit 7fb42d8697ed8343df9e66392a9208035800a974
 Author: zed <starmen@tut.by>
 Date:   2026-01-25 17:42:52 +0300
