@@ -10,7 +10,7 @@
 
 1. Set the `Library path` (navigate to the end of the path, add path separator `;` and add the following line):
 
-    `$(SAS)\alcinoe-code\source;$(SAS)\ccr-exif;$(SAS)\clipper2\Delphi\Clipper2Lib;$(SAS)\embeddedwb\source;$(SAS)\graphics32\Source;$(SAS)\mormot2\src;$(SAS)\mormot2\src\app;$(SAS)\mormot2\src\core;$(SAS)\mormot2\src\crypt;$(SAS)\mormot2\src\db;$(SAS)\mormot2\src\lib;$(SAS)\mormot2\src\misc;$(SAS)\mormot2\src\net;$(SAS)\mormot2\src\orm;$(SAS)\mormot2\src\rest;$(SAS)\mormot2\src\script;$(SAS)\mormot2\src\soa;$(SAS)\mormot2\src\tools;$(SAS)\mormot2\src\ui;$(SAS)\pascalscript\Source;$(SAS)\synedit\Source;$(SAS)\tbx\Source;$(SAS)\tbx\Source\Themes;$(SAS)\toolbar2000\Source;$(SAS)\virtualtreeview\Source;$(SAS)\vsagps\Public;$(SAS)\vsagps\Runtime`
+    `$(SAS)\alcinoe-code\source;$(SAS)\ccr-exif;$(SAS)\clipper2\Delphi\Clipper2Lib;$(SAS)\embeddedwb\source;$(SAS)\graphics32\Source;$(SAS)\mormot2\src;$(SAS)\mormot2\src\app;$(SAS)\mormot2\src\core;$(SAS)\mormot2\src\crypt;$(SAS)\mormot2\src\db;$(SAS)\mormot2\src\lib;$(SAS)\mormot2\src\misc;$(SAS)\mormot2\src\net;$(SAS)\mormot2\src\orm;$(SAS)\mormot2\src\rest;$(SAS)\mormot2\src\script;$(SAS)\mormot2\src\soa;$(SAS)\mormot2\src\tools;$(SAS)\mormot2\src\ui;$(SAS)\pascalscript\Source;$(SAS)\synedit\Source;$(SAS)\tbx\Source;$(SAS)\tbx\Source\Themes;$(SAS)\toolbar2000\Source;$(SAS)\virtualtreeview\Source;$(SAS)\vsagps\Public;$(SAS)\vsagps\Runtime;$(SAS)\webview4delphi\source`
     
     `Library path` can be found in:
 

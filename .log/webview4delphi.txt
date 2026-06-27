@@ -1,0 +1,1830 @@
+commit c049cab4589f6d28a1ebf84e3fcce5d96f1515c0
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-06-17 18:42:40 +0200
+
+    Added the DedicatedWorkerBrowser demos
+
+commit 11e64aa65997d403bccc7f1ab5af2b47d40724ab
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-06-14 19:42:08 +0200
+
+    Fixed TCoreWebView2SharedWorkerCollectionView
+
+commit 6df44f773673a289456d5f313bb0748953b73c06
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-06-14 19:25:03 +0200
+
+    Update to WebView2 NuGet 1.0.4022.49
+
+commit 8eca73884b917427aae590f75aa489fc45c797aa
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-05-11 10:56:54 +0200
+
+    Update to WebView2 NuGet 1.0.3967.48
+
+commit bfd32b4b3fce92fdd5050ea8b9ef9e45532818f4
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-04-14 10:42:38 +0200
+
+    Update to WebView2 NuGet 1.0.3912.50
+
+commit 570e3299db4d08655169e59994057f73b0f52d76
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-03-27 14:20:22 +0100
+
+    Added an undocumented Windows error code.
+
+commit 0e0b9a2f78b8dd8657096cff0ea03f453b004fb9
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-03-19 15:45:33 +0100
+
+    Check that GlobalWebView2Loader is not nil at all times.
+
+commit 2e94ef773643273bcea50db8d3a2d44ded92b803
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-03-17 12:14:38 +0100
+
+    Update to WebView2 NuGet 1.0.3856.49
+
+commit 9f36cd5e5b23762d7147cefc30cd76c5e7bfc1c1
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-03-11 23:27:41 +0100
+
+    Update README with link for Delphi 6 patch
+
+commit 8759700ebb2cfcf7ca42a0ac310b8944f9e711ba
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-03-03 10:44:35 +0100
+
+    Added DLLBrowser demo
+
+commit 167c8e50c083cd8ed60d665d90db9103ecac4695
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-03-03 09:44:10 +0100
+
+    Clarify Delphi 6 patch requirement in README
+
+commit c2ef44a29962611374106141930cf60a0f35dda4
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-03-02 12:45:49 +0100
+
+    Fixed 64 bits compatibility in FMX thanks to Gabriel Moraru
+    
+    Added Lazarus 4.6 mention in the readme.
+
+commit 558fa4d3e7eddb0bed19fee40415618ae2f43fb4
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-02-17 14:46:24 +0100
+
+    Update to WebView2 NuGet 1.0.3800.47
+
+commit ad2ef0ab237bac809b2594df53c205bf8b0e91bf
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-01-27 16:46:04 +0100
+
+    Update to WebView2 NuGet 1.0.3719.77
+
+commit 34fcc08e4dcbf62401c95dff6da93130c541a3ff
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-01-05 09:21:43 +0100
+
+    Add new resource link for Lazarus Free Pascal
+
+commit 743dabc75f5b2fa6968eb433f4a3c99db79a2f14
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-01-04 18:05:44 +0100
+
+    Added a link to the VirtualTouchKeyboard4Delphi project
+
+commit 83a111ebb526cd1d2c63599da5c50da74fb66be0
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2026-01-01 19:40:56 +0100
+
+    Update copyright year in LICENSE file
+
+commit 928efef450d2d18198aad4100cadeac2e0cb365b
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-12-24 10:33:03 +0100
+
+    Removed symbol deprecated warnings
+
+commit 66304b8a49d4adeac0a1387565be426de4feab83
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-12-23 18:24:53 +0100
+
+    Removed more compiler warnings in Lazarus
+
+commit a77ada9fa1c4d11013f6faa2570e5fb0601591e1
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-12-23 17:00:26 +0100
+
+    Removed unused units from uses clause
+    
+    Removed warnings about uninitialized variables.
+
+commit 5ac1b17781a848ef6e23bf03b05244d1ff8a8263
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-12-17 23:03:28 +0100
+
+    Added Free Pascal and Lazarus Programming Textbook
+
+commit 689fca7e6d3cc24d52b2d7080e3ca39962a10190
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-12-08 18:12:06 +0100
+
+    Update to WebView2 NuGet 1.0.3650.58
+
+commit c52f26f493107df970f9a0a70bd16cd440be6b7e
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-11-09 16:46:49 +0100
+
+    Added more test endpoints to NavigateWithWebResourceRequestBrowser
+
+commit 074ce5492010ff5d8d004523e69bbe2f482840ba
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-11-03 19:05:37 +0100
+
+    Update to WebView2 NuGet 1.0.3595.46
+
+commit 527d2b2787a4c336556177175e78278e748d3e9a
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-10-07 13:09:10 +0200
+
+    Update to WebView2 NuGet 1.0.3537.50
+
+commit 1fdd4ecc16e1c5dfbad21a9bd6bc5d19d3c53d2c
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-09-26 17:18:01 +0200
+
+    Updated TWVClearDataStorageTypes values
+    
+    Improved documentation for TWVClearDataStorageTypes
+    Improved documentation for TWVBrowserBase.ClearDataForOrigin
+
+commit f8e8ec56d338c3f4dbddcff6db4487a75b2a125c
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-09-11 13:29:30 +0200
+
+    Added Delphi 13 mention
+
+commit c136452857f7e7543237814160f6e022f75b646b
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-09-09 10:43:30 +0200
+
+    Update to WebView2 NuGet 1.0.3485.44
+
+commit 4402923096d87983f6b4179e00c5885d8251133c
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-08-11 15:31:00 +0200
+
+    Update to WebView2 NuGet 1.0.3405.78
+
+commit 272fb9a95d9a22794eccfd239e0f42dde1e67d6f
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-08-10 16:58:11 +0200
+
+    Added KioskBrowser demo for Lazarus
+    
+    Fixed issue #93: TTouchKeyboard doesn't work in the KioskBrowser demo while running in Windows 11
+
+commit 3675120d3a24c3f811c0c16b8a5356b796ad8f3e
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-07-22 14:51:17 +0200
+
+    Added Rad Studio 13.0 to the defines
+
+commit 3bcdc1c43f018ec017651c4fc3d9f86cf0c9b32d
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-07-19 15:02:27 +0200
+
+    Added more error messages when the controller creation fails.
+
+commit 195d2d4b08db72ec0432c5032b0e8f856a2f7518
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-07-04 15:28:25 +0200
+
+    Fixed crash in TCoreWebView2Frame.RemoveAllEvents
+    
+    FBaseIntf7.remove_FrameCreated raises an exception when the frame is already destroyed.
+
+commit f96ef77fe0c3364ad4a0b71c08e2c69c18f4f14d
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-07-01 20:38:20 +0200
+
+    Update to WebView2 NuGet 1.0.3351.48
+
+commit 1ef0c977702d0a414897aa3d9db0b8b2a3907419
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-06-10 17:30:38 +0200
+
+    Fixed issue #89. Fixed alpha channel of TWVBrowser.DefaultBackgroundColor
+
+commit 88d6f6e01a9868b20696497219ff31388e9710be
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-06-03 16:21:17 +0200
+
+    Update to WebView2 NuGet 1.0.3296.44
+
+commit 43a0759cf86675377d46a959dcf67fd3ddae6611
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-05-07 17:22:02 +0200
+
+    Added links to several articles about setting up proxies in the code comments.
+
+commit 8f950eb03250add8626734bff8e2d4bd7170b589
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-05-05 16:56:31 +0200
+
+    Update to WebView2 NuGet 1.0.3240.44
+
+commit 2bb223f383b6487716a86c0a077d4c68e66b4c74
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-04-28 11:27:58 +0200
+
+    Update README.md
+
+commit a25c58e9a3d068b0cc369122a5123b8fc30d09ca
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-04-28 11:17:06 +0200
+
+    Update README.md
+
+commit 10f465d7355622e7c84b611e1593137734ddfc5a
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-04-07 14:32:34 +0200
+
+    Update to WebView2 NuGet 1.0.3179.45
+
+commit 7c75c83aeb5de71d8eca96f13d764043759fc958
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-03-26 15:08:52 +0100
+
+    Added link to the FileTypePolicy API article in TWVBrowserBase.OnSaveFileSecurityCheckStarting
+    
+    Added a Delphi 12.3 mention in the readme file.
+
+commit 9d80e35ee2656490f4e38cb363ed6d3ed12af3ef
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-03-17 11:12:08 +0100
+
+    Added more download information to MiniBrowser
+
+commit b46244092dd1cc6644840bfb1737e7d9f2399a88
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-03-10 16:17:11 +0100
+
+    Update to WebView2 NuGet 1.0.3124.44
+
+commit affdf6ff4b5023481f5b1f84afbdf11a29750ed0
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-03-01 11:57:14 +0100
+
+    Fixed Lazarus package version information
+
+commit 73c2b97c0f0f03f7aeb9bb7422d704e34e2c1af9
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-02-10 15:36:32 +0100
+
+    Update to WebView2 NuGet 1.0.3065.39
+    
+    Improved COM initialization thanks to the-Arioch
+
+commit 6d7df2713f47f39342fe7191c2e0a28f330e1ebd
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-01-24 19:13:34 +0100
+
+    Fixed crash when WebView2 runtime is not installed
+
+commit f68a259ec09c6fe069ed5a116ea79fca74173e6f
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-01-24 13:04:51 +0100
+
+    Fixed issue #82
+
+commit 77f3aac77c817a69468ccf56ec70a47d4ed12574
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-01-24 12:57:34 +0100
+
+    Moved the recreatewnd test to the MiniBrowser demo
+    
+    Added the Lazarus 3.8 mention to the readme file
+
+commit c2cc16b045e3f62a2f836c55ee07968988aa1737
+Merge: 2712dbb 68cf153
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-01-24 11:51:13 +0100
+
+    Merge pull request #80 from the-Arioch/#75_CM_RECREATEWND
+    
+    #75 cm_recreatewnd survival
+    I'll move the code to another demo in the future.
+    SimpleBrowser should have as little code as possible.
+
+commit 68cf15363f92161d8fac0be0a3242eba6f9d32d2
+Author: Arioch <AriochThe@gmail.com>
+Date:   2025-01-21 17:06:48 +0300
+
+    #75 typo
+
+commit 1a0a5997bcb926df27f44656dce82c1c8b8533aa
+Author: Arioch <AriochThe@gmail.com>
+Date:   2025-01-21 16:56:21 +0300
+
+    #75 survive VCL CM_RECREATEWND
+    
+    (cherry picked from commit 5266570a419bf07a5606a757760de1ae58b37344)
+
+commit 6750a9f8c72c0d5386b613b1ea3c00f704bb702d
+Author: Arioch <AriochThe@gmail.com>
+Date:   2025-01-17 14:15:26 +0300
+
+    #75 test command for CM_RECREATEWND
+    
+    (cherry picked from commit d6331b8267bae424d83366c43ecfd198dd5677b1)
+
+commit 2712dbbf9ce76aff2971eb0dec4a739695f0a30d
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-01-21 12:41:23 +0100
+
+    Added GlobalWebView2Loader.UserAgent
+    
+    Added https://abrahamjuliot.github.io/creepjs/ to the MobileBrowser demo
+
+commit abd92f6d361b92a20594cb0d3efb901c0f4699d2
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-01-20 12:59:11 +0100
+
+    Update to WebView2 NuGet 1.0.2957.106
+
+commit df76c6afea9c921a0e6aae53e6908abb3b9b2d4b
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2025-01-01 10:58:33 +0100
+
+    Update LICENSE
+
+commit 2913f29f793c78a6c6728ec7d4cbdc47a0ab54e2
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-12-30 14:07:22 +0100
+
+    Added more links to free Pascal books.
+
+commit 3b4a20fc8bb90f9a689174434422251e638c0b4f
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-11-29 17:54:07 +0100
+
+    Added workaround for issue #73: WebView2 initialization failure
+
+commit 961e7423f6299a5812604ab60863648efa3a9041
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-11-18 18:57:49 +0100
+
+    Update to WebView2 NuGet 1.0.2903.40
+
+commit 16343a443b958619dfe2790dcedb8f07129a075c
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-11-18 18:57:14 +0100
+
+    Update to WebView2 NuGet 1.0.2903.40
+
+commit c4ac26b66cdef5e6e1d90b336d787c4c49c64f05
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-11-18 18:55:40 +0100
+
+    Update to WebView2 NuGet 1.0.2903.40
+
+commit b0cfcb2f551bb589e4ce6456b847d9e2aee2acc0
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-10-22 15:19:29 +0200
+
+    Update to WebView2 NuGet 1.0.2849.39
+
+commit be7bb662ce6c1127431ec380b83261d58fe720e9
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-10-22 15:18:00 +0200
+
+    Update to WebView2 NuGet 1.0.2849.39
+
+commit 75ef21a82ce3a1925791b85579923455df294f03
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-10-01 18:00:23 +0200
+
+    Updated readme to Lazarus 3.6
+
+commit abc714c6808bc01d09c0fb40af8843635ecaecae
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-09-24 15:42:36 +0200
+
+    Update to WebView2 NuGet 1.0.2792.45
+
+commit a7e05d986929abf05fda0a2001c82600723b006d
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-09-14 16:42:53 +0200
+
+    Added Delphi 12.2 mention
+    
+    Removed duplicated webview2.inc files.
+
+commit cba81733cc5b68e1e0a1ebf39814182d987cd527
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-09-03 18:23:27 +0200
+
+    Added GlobalWebView2Loader.TLS13HybridizedKyberSupport
+
+commit 1011732fdf63b22de5081c8363ca4cc3faa76f61
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-08-28 14:56:51 +0200
+
+    Update to WebView2 NuGet 1.0.2739.15
+
+commit a369af7afe66db012ab18604b13503154ea15d57
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-08-21 15:40:27 +0200
+
+    Workaround for issue #66
+
+commit fcdb780f30f77cd156155ef9ab3a045936a11e55
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-08-20 18:58:27 +0200
+
+    Update to WebView2 NuGet 1.0.2651.64
+
+commit 05346e895e996d3d59021bbf5409f72cc33d32be
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-08-06 12:03:29 +0200
+
+    Fixed zoom issue
+    
+    Add TWVBrowserBase.CalculateZoomStep and call it before triggering TWVBrowserBase.OnZoomFactorChanged
+
+commit 8734597628aa2c0c58f2ebd4d95d327f1c6d5a7d
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-07-25 10:46:53 +0200
+
+    Removed extra quotes
+
+commit a15b917a7b819d70cdaf94f5624738c502068d32
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-07-25 10:34:04 +0200
+
+    Added GlobalWebView2Loader.MicrosoftSignIn thanks to 2eck
+
+commit 5d7e881ffbf303319096e93073bba2ec18a6969f
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-07-07 17:22:26 +0200
+
+    Fixed issue #64 : Set DefaultURL in the MonacoBrowser demo
+
+commit fc2403b4f2a5b86a8d590b14d6da3024b6ee1036
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-06-30 12:59:34 +0200
+
+    Added the MobileBrowser demo
+
+commit 9bab6081eca7d6330942af2637ea912d24bf6a8a
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-06-26 10:50:56 +0200
+
+    Added a aVisibleTextOnly parameter to TWVBrowserBase.RetrieveText
+
+commit 3e9e33c873db1f4fc6babc0fda8640a722112a7a
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-06-25 15:26:23 +0200
+
+    Fixed issue #63. Removed Windows 7 dependency.
+
+commit e6c592a1a26a88fea66cd3816a35e366f454cb39
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-06-20 15:44:25 +0200
+
+    Update to WebView2 NuGet 1.0.2592.51
+
+commit 4237899b45584899280dc964dd2adaf9e8ea096d
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-06-08 09:18:00 +0200
+
+    Fixed high DPI issue in Delphi_VCL\WindowlessBrowser
+
+commit f67544311518a0815b9224e9417eaa46b54eb458
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-06-08 09:12:21 +0200
+
+    Fixed high DPI issue in Delphi_VCL\WindowlessBrowser
+
+commit 97e464ae23dd6c58238da4baba4ca6919aa39fde
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-06-07 08:27:44 +0200
+
+    Fixed JSON parsing issue in WindowlessBrowser demo
+
+commit 25655c43137e78d3342b7b09ac3880db4deea2c3
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-06-06 13:32:57 +0200
+
+    Added context menu to execute JS in WindowlessBrowser demo
+
+commit fcea573b23d8ca6044bb8e199446f6a49b985fdf
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-05-31 16:16:24 +0200
+
+    Added GlobalWebView2Loader.OpenOfficeDocumentsInWebViewer
+
+commit 0f0c4cef7462783d2cf13e9c11b11ebb2339bcd8
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-05-29 10:59:24 +0200
+
+    Update to WebView2 NuGet 1.0.2535.41
+
+commit 226eab570d75d051f54eed36069c3e089d60dbe5
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-05-26 11:21:24 +0200
+
+    Fixed issue #59 : View Source missing characters thanks to Crayovan
+
+commit 2c7dec03305b1fbb966d81911e3c4179d3e1294b
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-04-29 16:01:29 +0200
+
+    Fixed code comments
+
+commit 985917d09f687c570d9ac08a4b15700367473b6e
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-04-29 15:59:05 +0200
+
+    Fixed code comment
+
+commit 222e53ce264181b25366c47f14e6134cf932faf2
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-04-29 15:51:47 +0200
+
+    Added the Monaco Editor demos thanks to Mark S Day GrooverMD
+
+commit d9638fa4c275189ce183b41ba2127d789d6ecd24
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-04-23 19:12:46 +0200
+
+    Update to WebView2 NuGet 1.0.2478.35
+
+commit b63b0a2019a789e0af3ad1f05abd93ec95acef98
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-04-04 19:59:04 +0200
+
+    Added Delphi 12.1 mention in the readme
+
+commit 2168c2ea4a44d522ceedaf143474c7504887433f
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-03-26 17:45:18 +0100
+
+    Update to WebView2 NuGet 1.0.2420.47
+
+commit 361a164582b8ccb7de754aec5de9bb8410b5062d
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-03-23 19:38:58 +0100
+
+    Added experimental Delphi 6 support thanks to andreluisfc
+
+commit 3e21cc986becfedb1608da35a4c4b49bd158f309
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-03-23 19:36:51 +0100
+
+    Added experimental Delphi 6 support thanks to andreluisfc
+
+commit d1f57e955ac25e5c258a74901a66e1bcb47c50f0
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-03-18 12:22:02 +0100
+
+    Fixed compatibility issue with Delphi 2009 and 2010
+
+commit 217d7f171efc3c5fb4c4d9bea9d22ed6e58932ff
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-03-09 18:22:30 +0100
+
+    Fixed issue #53 : Incorrent custom context menu handling
+
+commit 16b7d236b6d5e94a8215746da1c297c9eeea1b5a
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-03-06 09:35:01 +0100
+
+    Fixed the project order in the groupproj file
+
+commit 287f14328c607d392f98c1a0efec8114f8c66314
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-02-28 17:18:24 +0100
+
+    Added Lazarus 3.2 to the readme file
+
+commit c74906157fd25a1a30784af1cd545fcffa425bab
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-02-28 11:28:04 +0100
+
+    Updated Lazarus package version info
+
+commit e0cd179c374a463cc091488c86603a58fa6e1f23
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-02-28 11:24:08 +0100
+
+    Update to WebView2 NuGet 1.0.2365.46
+
+commit 6061826fdb6f2ddbb439c9ba472de602e696484c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2024-02-19 11:22:41 +0100
+
+    Fixed D7 build issue
+
+commit 62fb06e3ccd8fcf3072f62b19bbe97ed9f5bc35e
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-02-16 21:31:18 +0100
+
+    Added the WebpageSnapshot demo for Lazarus
+
+commit 58ce62507a3532e9fcc041496b514cb2999124de
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-02-16 21:01:13 +0100
+
+    Fixed build issue in ControllerOptionsCreationErrorToString
+
+commit 0e05ee84483eab826bebe2d8583f4e90a7d31bf4
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2024-02-16 20:51:36 +0100
+
+    Added the WebpageSnapshot demo.
+    
+    Added undocumented error code to ControllerOptionsCreationErrorToString.
+
+commit 78d54bccd9a43b29be122f1c4e5f4053cb724b1c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2024-02-16 11:48:26 +0100
+
+    Added GlobalWebView2Loader.AllowOldRuntime
+
+commit ed85930f45cbd8bae5a47f113d1314adbcfc8926
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2024-02-15 18:41:16 +0100
+
+    Added TWVBrowserBase.CreateInvisibleBrowser
+
+commit da1928813687fcbb6e055978a01c307cae2afc80
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2024-02-06 09:49:55 +0100
+
+    Update to WebView2 NuGet 1.0.2277.86
+
+commit 0a94a1a42e91021844902acbe91d7755735ea90b
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2024-01-01 15:34:29 +0100
+
+    Update copyright year
+
+commit 6864cc56e28e335ee50bee7b314a6d94f14cfc11
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-12-23 20:06:21 +0100
+
+    Added Lazarus 3.0 to the readme file
+
+commit 111517b447f0ca27923ad4cceea7a56ae1356f24
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-12-21 15:24:01 +0100
+
+    Move showmessage out of webview2 events in MiniBrowser
+
+commit 08d22351bf72c3b3a1a25743cadfa1a1929466f1
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-12-19 17:27:48 +0100
+
+    Added full screen support to the MiniBrowser demo.
+
+commit 097a289d0cb28d86a12f70bffb0abed70abf7987
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-12-19 15:32:02 +0100
+
+    Fixed browser focus issue in TWVWindowParent
+
+commit a6067650ea0b0328bc7b3ae1be4f0a6cfb70b9e2
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-12-19 15:30:36 +0100
+
+    Fixed browser focus issue in TWVWindowParent
+
+commit a1fb9e4ba0a52be9564cced3332c415b50e94e40
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-12-19 15:15:46 +0100
+
+    Added more XML documentation
+
+commit 6097da7a0c5a97df8779a9e489915872f1ce4e68
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-12-18 12:57:02 +0100
+
+    Update to WebView2 NuGet 1.0.2210.55
+
+commit c58854a5441ab766b6ff2c60ff0a246bb3d6d59f
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2023-11-07 22:06:03 +0100
+
+    Update to WebView2 NuGet 1.0.2151.40
+
+commit 0ebf206ea90e06ef4a7d44d8cf7274ee440ddc47
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-11-07 19:22:01 +0100
+
+    Added Delphi 12 mention to the readme file.
+
+commit 21ec541a491cda69969756f4439f25e28df81658
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-10-25 11:47:23 +0200
+
+    Updated webview2.inc files with the Delphi 12 compiler version info found in Skia4Delphi
+
+commit eafc619b67a582261eff7fe6bbe258dea0eeba94
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-10-17 10:21:08 +0200
+
+    Update to WebView2 NuGet 1.0.2088.41
+
+commit 379bd4e1a5e7143ff0d8f0097a7152d047399f77
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-09-19 12:45:31 +0200
+
+    Update to WebView2 NuGet 1.0.2045.28
+
+commit ade919536ff4ae4a55b5047b7847798edcf43518
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-09-10 20:21:53 +0200
+
+    Fixed initialization issue with an outdated WebView2 Runtime version
+
+commit 78ffff680e44fee45acdcffeb2e047f208ade774
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-09-10 20:00:03 +0200
+
+    Added a non documented result value to ControllerOptionsCreationErrorToString
+
+commit 311de2c0f07c8a02f0b4be90bf3809020617d414
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-09-05 12:14:43 +0200
+
+    Fixed XML documentation about TWVBrowser.PrintToPdfStream
+
+commit df00412b91b90c41c48090c3a1026b7940744e6d
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-29 15:40:00 +0200
+
+    Update to WebView2 NuGet 1.0.1938.49
+
+commit a8d0a1d891a0bc47d83d8641adabab439c072b89
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-28 11:59:45 +0200
+
+    Fixed some issues in XML comments
+    
+    Added more XML documentation
+    Added links to MfPack and PasDoc in the README.md file
+
+commit a59ad9cb75708cb68bb43f23d7e166318275aab9
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-26 19:26:29 +0200
+
+    Added WebView4Delphi help file
+    
+    Added WebView4Delphi.pds file used by pasdoc.
+    Added more XML documentation.
+
+commit a53e1ebd47bc59fb8a3c6eb4c5a68f8311dbcd15
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-25 19:42:01 +0200
+
+    Fixed reference URLs in XML comments
+
+commit 3ca8387ee086b98abac26b10b7f5f4c0f5597771
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-25 19:38:26 +0200
+
+    Added more XML documentation
+
+commit 6d7dcb8f322027dd2bb4105b9452e76711917ebb
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-24 20:27:44 +0200
+
+    Added more XML documentation
+
+commit 53325f5db15b71aed8fb0aa903b6e7d51174e94c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-23 20:06:29 +0200
+
+    Added more XML documentation
+
+commit cb99dd2b0a74776ff555fb9bc6390320d4eeee7a
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-21 20:03:19 +0200
+
+    Added more XML documentation
+
+commit a8479fa19304d5935568662aac0774522553812f
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-20 18:07:17 +0200
+
+    Added more XML documentation
+
+commit ef494d0d7aebaafe7e2fa9f499cb755aa4ab3eb4
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-19 20:36:19 +0200
+
+    Added more XML documentation
+
+commit 47fa9f4497f3aa3f126f9c2286d2b2536effefae
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-16 18:32:13 +0200
+
+    Added more XML documentation
+
+commit 416cbefe5c0d693041b7eb1b3a24df1e73c8a051
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-15 19:51:12 +0200
+
+    Added more XML documentation
+
+commit 4c15e17b2ed964d872a09575ac1d511a27abc17e
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-15 17:08:41 +0200
+
+    Added more XML documentation
+
+commit da789df55070e376dac720b161c26b7bf3ba1211
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-08-13 14:59:38 +0200
+
+    Added XML documentation (work in progress)
+    
+    Clean up uWVTypeLibrary.pas
+
+commit 2f89ecd3427bbbe5221a5a3f6545f880ae03a4b1
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-07-25 17:05:31 +0200
+
+    Update to WebView2 NuGet 1.0.1901.177
+
+commit b6fb6fde5081304ab9ad48dcb6edcb8f78d9c81b
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-07-16 16:59:34 +0200
+
+    Updated Lazarus package file
+
+commit 8d4ab88ecf3298533d0582ba0b03f3dda04479f7
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2023-07-16 13:08:33 +0200
+
+    Updated DownloadZipURL value
+
+commit 72e47056c84b3dd2a10adff65088d5d110a308f3
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-06-27 12:45:42 +0200
+
+    Added GlobalWebView2Loader.AutoAcceptCamAndMicCapture
+    
+    Improved error handling while creating the controller.
+
+commit ab710a894a3a312842627a413ade3c68c311e209
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-06-06 16:06:50 +0200
+
+    Update to WebView2 NuGet 1.0.1823.32
+
+commit 25da452402b4c5407ac2ce6d3ff5eabd66459c45
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-05-13 16:04:12 +0200
+
+    Fix for issue #40
+
+commit 1c42a7a16c06e4bca03c78101149b3ae91112cae
+Merge: 8528e95 8f41c02
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-05-10 14:50:51 +0200
+
+    Merge branch 'main' of https://github.com/salvadordf/WebView4Delphi
+
+commit 8528e955131005dc734fa17699f66f8780ace5f3
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-05-10 14:50:31 +0200
+
+    Update to WebView2 NuGet 1.0.1774.30
+
+commit 8f41c023c09ae911c1bae1adbdea42cb627f5044
+Merge: b2ca8c7 973fbc1
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2023-05-06 10:04:26 +0200
+
+    Merge pull request #39 from michaliskambi/main
+    
+    Fix JSON validity in Delphinus.Install.json
+
+commit 973fbc1786e2e902bee9fd304cfb7dd7e66e26fb
+Author: Michalis Kamburelis <michalis.kambi@gmail.com>
+Date:   2023-05-06 00:38:58 +0200
+
+    Fix JSON validity in Delphinus.Install.json
+
+commit b2ca8c7430ca53ce9515ef2b435adc1a3c769836
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-04-15 11:50:15 +0200
+
+    Fixed backwards compatibility issue
+
+commit 1ce40054fca5c254a81f28fda5c7c5c104e3ec50
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-04-15 11:20:03 +0200
+
+    Fixed command line build issue
+
+commit 628f58ecbfebf10ce23f6aeb30105c70ccb778d8
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-04-13 22:43:38 +0200
+
+    Update to WebView2 NuGet 1.0.1722.45
+
+commit 180ce23ce4824e3cae68b506bc3d8e7e4e6c4c88
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-04-11 12:05:53 +0200
+
+    Update to WebView2 NuGet 1.0.1722.32
+
+commit 229db3465f765a769b6c43ca407d1e001006452d
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-04-11 12:03:51 +0200
+
+    Update to WebView2 NuGet 1.0.1722.32
+
+commit f7b80fe7d03474b2db0ffa98436817fd50e8c0a8
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-03-26 16:54:53 +0200
+
+    Updated server in the NavigateWithWebResourceRequestBrowser demo for Lazarus
+
+commit 51938d2c7bb85169e3b2e340d1f603b1e523124c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-03-25 20:01:32 +0100
+
+    Update to WebView2 NuGet 1.0.1661.34
+
+commit a9b27d919ea2ad6c8862636e55de4b97a0df8085
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-03-12 20:24:52 +0100
+
+    Added GlobalWebView2Loader.RemoteAllowOrigins
+
+commit 7580a6a757392ef30a2dfad6272071d9acdc1b65
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2023-03-11 11:38:57 +0100
+
+    Added Lazarus 2.2.6 reference
+
+commit ad9cf9b659a8f73b111a889f9a424970ab36f322
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-03-11 11:27:43 +0100
+
+    Fixed TWVCustomSchemeRegistrationArray initialization
+
+commit ee5cfd93bbbf4fbae04204c7d3520daf318a19db
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-03-05 16:23:35 +0100
+
+    Fixed version values.
+    
+    Added Delphi 11.3 reference to the readme file.
+
+commit 2e461daa705bb1447475d8b9e1c0c9fc7b0c1619
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-02-19 23:06:43 +0100
+
+    Fixed TCoreWebView2CustomSchemeRegistration.GetAllowedOrigins
+
+commit 8315ccd126e3173cba2bce0941ccbf1c4c47818e
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-02-19 22:23:54 +0100
+
+    Update to WebView2 NuGet 1.0.1587.40
+    
+    Added the CustomSchemeBrowser demo.
+    Fixed the interfaces in the TCoreWebView2EnvironmentOptions decalration.
+    Added TWVBrowserBase.OnGetCustomSchemes
+    Added GlobalWebView2Loader.OnGetCustomSchemes
+
+commit 3217ffe723e053b875e73d4dc34a3b4d0d24a126
+Merge: 75f790e a33ae91
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-01-25 18:40:19 +0100
+
+    Merge branch 'main' of https://github.com/salvadordf/WebView4Delphi
+
+commit 75f790ef0a21fdbf2a4475095896ac37ab5d7de1
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-01-25 18:40:11 +0100
+
+    Added $(WEBVIEW4DELPHI)\source; to the search path
+
+commit a33ae917a7f050780a5015100d9c50918afba27e
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2023-01-25 18:38:41 +0100
+
+    Increase InternalVersion
+
+commit 09a2ba524adde6e5dad4c607ec99f932738a2d81
+Merge: f242f14 68bc1f1
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2023-01-25 18:38:06 +0100
+
+    Merge pull request #33 from jonjbar/main
+    
+    Update .gitignore to ignore content produced by demos.
+    Thanks for this pull request!
+
+commit 68bc1f1cd7bbbfe9056fe94dd58b54d9db57cf86
+Merge: f242f14 0ba481a
+Author: jonjbar <17639746+jonjbar@users.noreply.github.com>
+Date:   2023-01-25 17:49:20 +0100
+
+    Merge pull request #1 from jonjbar/ignore-demo-content
+    
+    Ignore content produced by demos
+
+commit 0ba481a074d88c43c04dc15756582d2089ba242f
+Author: jonjbar <17639746+jonjbar@users.noreply.github.com>
+Date:   2023-01-25 17:48:05 +0100
+
+    Ignore content produced by demos
+    
+    Update .gitignore to ignore content produced by demos
+
+commit f242f1475208e3db97334df13b81d8ec851ba72e
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2023-01-17 20:21:42 +0100
+
+    Increase InternalVersion
+
+commit 4009217ab26886d516a65798a229162a8cb2f23c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-01-17 20:20:54 +0100
+
+    Update to WebView2 NuGet 1.0.1518.46
+    
+    Replaced the server used in the NavigateWithWebResourceRequestBrowser demo.
+    Fixed issue #31.
+
+commit 46f6ba0385e4356a891c9dbb2dbb3629d4b0db93
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-01-07 16:00:39 +0100
+
+    Updated copyright year
+
+commit 5be35095c3347e15556bf5ede1ea4c4606aff61f
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-01-02 12:17:40 +0100
+
+    Added the TWVBrowserBase.ScreenScale property
+    
+    Added TWVFMXBrowser.GetScreenScale.
+    Use FBrowser.ScreenScale in TWVFMXWindowParent.UpdateSize to get the scale for the current monitor if possible.
+
+commit 90bf31011b5c085aab195bcb8cc66746e32ef80e
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2023-01-01 21:48:45 +0100
+
+    Fixed screen scale issue in SimpleFMXBrowser and FMXTabbedBrowser
+
+commit 33458cc405a583fc1f13251c8cbaf4ae948008df
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-12-11 17:15:52 +0100
+
+    Fixed backwards compatibility issues with XE2
+
+commit 1521e518d7b8e33ddcae8bab6a6c707098a2d939
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-12-06 12:01:52 +0100
+
+    Update to WebView2 NuGet 1.0.1462.37
+
+commit 3cd7e78aeebd5aaef67635b7df8558259afad8a4
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-12-06 12:01:00 +0100
+
+    Update to WebView2 NuGet 1.0.1462.37
+
+commit c5f5ef5bf1f4d70886f34894247336c8a49ef0af
+Merge: ab633c6 afe4f54
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-11-27 18:58:49 +0100
+
+    Merge branch 'main' of https://github.com/salvadordf/WebView4Delphi
+
+commit ab633c64cb8d1d1879b96fb40a9aab7cd811d4fc
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-11-27 18:58:46 +0100
+
+    Lazarus : Fix crash when trying to show a message before initialization
+
+commit afe4f54f7155fc3689e6f0f6c25add809d358019
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2022-11-12 16:26:58 +0100
+
+    Added Liberapay entry
+
+commit fcb64d53f698835faac82eedcca8e770897ac8ab
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2022-11-12 16:06:45 +0100
+
+    Added Liberapay button
+
+commit d65c4b12e0cceae1f5e7267987eb30b0406e9132
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-10-31 19:32:03 +0100
+
+    Update to WebView2 NuGet 1.0.1418.22
+
+commit d883f332b55fccf5ccdc616435d14fb23461039b
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-10-30 09:21:46 +0100
+
+    Fixed button alignment in SimpleBrowser demo
+
+commit 16c3f5fc0fff528edc66ac213ac264ba0cb125c1
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-10-28 17:38:24 +0200
+
+    Added Delphi 7 support (issue #27)
+    
+    Added VCL WebView4Delphi package for issue #27.
+    Added D7 project for the SimpleBrowser demo.
+    Refactored uWVLoaderInternal for issue #27.
+    Fixed flickering issue in VCL.
+    Fixed TWVLoader.CompareVersions.
+    Removed deprecation warnings in TWVBrowserBase.ExtractEncodedJSON in old Delphi versions.
+
+commit d7fc4a463d5c870223c91d0a162a9f311d9064fb
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-10-26 20:08:20 +0200
+
+    Use MessageBoxW in older Delphi versions (issue #27)
+
+commit 2b391032ea87709c209ca4c6b9989d682c7f265b
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-10-26 19:36:11 +0200
+
+    Remove HTTPApp dependency for issue #27
+    
+    Added CustomURLDecode
+
+commit 91cccfd28ac3cbe46362bc41fadc7ad0f2444a43
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-10-26 16:50:01 +0200
+
+    Added conditionals for Unicode functions related to issue #27
+    
+    Convert GUID to string using an older function.
+
+commit f4a6af4bfdfd01eb9150e8ca74fda6afae7664bf
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-10-25 21:35:20 +0200
+
+    Modified more conditionals and other small fixes for issue #27
+
+commit 6de8154ca5b37f538ec927de3953c24a1e7b3c88
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-10-24 19:53:53 +0200
+
+    Initial steps for D7 support
+    
+    Issue #27 : Add missing include file
+    Issue #27 : Modify conditionals
+
+commit 5caefb4de265c7cee808cb022389475461f7915f
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-10-23 15:59:00 +0200
+
+    Fixed issue #29.
+    
+    Check the Windows version before creating the composition controller.
+
+commit 7b9f2d20f4b86563682e005b14d643fe6d6a0d19
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-10-13 19:54:42 +0200
+
+    Update to WebView2 NuGet 1.0.1370.28
+
+commit 1a353d98f93265c513f2fe952d21763be7cb7d56
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-09-28 18:39:11 +0200
+
+    Updated readme with Lazarus 2.2.4
+
+commit a516abac6624543ac20c7075ac0399faa328b7af
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-09-13 17:23:00 +0200
+
+    Added Delphi 11.2 reference to the Readme.md file
+
+commit 85300d4fa655d71c9c504545ecb2f6b28a05edc8
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-09-10 16:41:06 +0200
+
+    Update to WebView2 NuGet 1.0.1343.22
+
+commit a41339f3c37524ca9441bac9f0ce2d8adefc7efe
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-08-12 15:50:11 +0200
+
+    Send custom HTTP headers in NavigateWithWebResourceRequestBrowser
+
+commit c06172e7cc4011632b9555fec2b5b6e6590e714e
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-08-08 23:18:51 +0200
+
+    Added TWVBrowserBase.FaviconURI
+
+commit 2c1aa3cc577cf6f66403b1fd3f8a34275eec4088
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-08-08 23:10:24 +0200
+
+    Update Lazarus package
+
+commit 57a0026df102d0248a05fe4ed3ff9c0f1d7ba5c1
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-08-08 23:07:05 +0200
+
+    Update to WebView2 NuGet 1.0.1293.44
+
+commit c56f656133ca3aba0dc1486df7765833aa2f0844
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-07-06 22:31:19 +0200
+
+    Update to WebView2 NuGet 1.0.1264.42
+    
+    Fixed high DPI issue in FMXTabbedBrowser
+
+commit f18502e717511a560a9cf9cd01f5f33b9d614c14
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2022-07-05 14:41:51 +0200
+
+    Increase InternalVersion value
+
+commit 45994ad5b80278bdb5607e0977a5a846ab4ee085
+Merge: efb0839 fada3a8
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2022-07-05 14:41:24 +0200
+
+    Merge pull request #26 from hhonisch/main
+    
+    Fix various internal loader issues ...
+
+commit fada3a85aa1b768fc9f701f14c91687939d12530
+Author: Hartmut Honisch <Hartmut.Honisch@gmail.com>
+Date:   2022-07-05 14:12:37 +0200
+
+    Fix various internal loader issues to make it behave more like the "official" WebView2Loader
+    * Fix handling empty enviroment variables
+    * Fix handling empty registry keys/values
+    * Fix determining AppUserModeId
+
+commit efb0839b5b7378b3f5f6c9aab61371e6dfe4bf9f
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-06-20 10:36:45 +0200
+
+    Added TCoreWebView2Cookie.ExpiresDate
+
+commit 82e47ccb20f29b680e8989efdeddf0c34d2459c2
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-06-18 17:59:32 +0200
+
+    Update to WebView2 NuGet 1.0.1245.22
+
+commit f212eb6fbb715c6286e76a08f998cfe7ae448107
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-06-04 12:10:58 +0200
+
+    Added TWVLoader.LoaderDllPath thanks to hhonisch
+    
+    Added TWVLoader.UseInternalLoader thanks to hhonisch
+    Added TWVLoader.DisableEdgePitchNotification
+
+commit cf02f4fae18cf488512ea30d3db5c03f2d302650
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-06-04 09:44:34 +0200
+
+    Added Delphi XE2 support thanks to hhonisch
+
+commit 9d45d9f1a8462e471a81fc6a0c40db98d8971106
+Merge: b5c33eb 68f861b
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2022-06-04 09:14:42 +0200
+
+    Merge pull request #22 from hhonisch/feature-separate-designtime-vcl-fmx
+    
+    Create separte design time packages for VCL and FMX.
+
+commit 68f861bafb77bc26f776a48cb193dbf4527603cd
+Author: Hartmut Honisch <Hartmut.Honisch@festo.com>
+Date:   2022-06-01 13:01:10 +0200
+
+    Create separte design time packages for VCL and FMX.
+
+commit b5c33eb9fc52cde0763afef0e1260573795e1c58
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-05-18 15:06:53 +0200
+
+    Added a "Save resource as" menu option to MiniBrowser
+    
+    Added a "Cleat all browser data" menu option to MiniBrowser
+
+commit 60aeab0d7a40b529e3196b8d688a99f50f2e5ac4
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-05-14 16:31:42 +0200
+
+    Added GlobalWebView2Loader.SupportsCompositionController
+    
+    Added GlobalWebView2Loader.SupportsControllerOptions
+    Reset TWVBrowserBase.ProfileName and TWVBrowserBase.IsInPrivateModeEnabled when it's not possible to create the controller with options.
+
+commit 417c0d7d8d67d43d55dff25fb27548f7b053d3ea
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-05-09 21:37:05 +0200
+
+    Update to WebView2 NuGet 1.0.1210.39
+    
+    Added workaround memory leak with custom context menu items
+
+commit b125c1afd33d18c6dcae986831b4d9b5f53b1e83
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-04-24 14:55:42 +0200
+
+    Added the SubscribeToDevToolsProtocolEventBrowser demo
+
+commit eb8c26a8af5220d1a276a07e3965714049324f29
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-04-16 12:55:15 +0200
+
+    Added TWVBrowserBase.HiddenPdfToolbarItems
+
+commit b92dd8d0326e33d7f6dd19d95a2b31a4bc16c998
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-04-16 12:06:29 +0200
+
+    Update to WebView2 NuGet 1.0.1185.39
+
+commit e9fbb9575531e296a62e3d5b3fc0c0c0006a7cca
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-04-09 18:29:25 +0200
+
+    Improved error messages when the environment creation fails
+
+commit 0e3f73cc5f50949132719e8ffd03ebf80e3b505b
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-04-07 12:00:32 +0200
+
+    Improved error messages when initialization fails
+
+commit a7916d147f85a63755d05766e493cb736d2d03ef
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-04-01 17:12:54 +0200
+
+    Updated projects to Delphi 11.1
+
+commit 93a9471a4fbd084526993a6385f2a107fe3a1164
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-03-24 10:03:50 +0100
+
+    Fixed TCoreWebView2NewWindowRequestedEventArgs.GetName
+    
+    TCoreWebView2NewWindowRequestedEventArgs.GetName was returning the value of a different property
+
+commit 50523645c7a6defe61e0a3a194b3e94de6d8777a
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-03-15 09:55:57 +0100
+
+    Added GlobalWebView2Loader.JavaScriptFlags property
+    
+    Fixed an issue when GlobalWebView2Loader.ForcedDeviceScaleFactor was used with other properties.
+
+commit 2b6fe85c693235302b97567a5de3eecedba94050
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-03-11 18:13:04 +0100
+
+    Update to WebView2 NuGet 1.0.1150.38
+    
+    Renamed the "aWebView" parameter to "aFrame" in TWVBrowserBase.OnFrameNavigationStarting, TWVBrowserBase.OnFrameNavigationCompleted,
+    TWVBrowserBase.OnFrameContentLoading,
+    TWVBrowserBase.OnFrameDOMContentLoaded and
+    TWVBrowserBase.OnFrameWebMessageReceived
+
+commit c48d2d97d734e53fa04c1c048ab269cc608a79ec
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-03-06 10:23:06 +0100
+
+    Fixed a backwards compatibility issue
+
+commit d18512d4ae053d3fd69ba01d01602bc3426aae90
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-03-04 17:45:56 +0100
+
+    Added the NavigateWithWebResourceRequestBrowser demo
+
+commit 5813998b11e2bc6fe6ac9700d1e266cd6cdd1e71
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-28 14:49:18 +0100
+
+    Added the FMXWindowlessBrowser demo
+
+commit ea7c2357713c5ae65759a71cc580cf6756a1d303
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-27 19:56:22 +0100
+
+    Initialize TWVFMXWindowParent fields in CreateNew
+
+commit 2f629e03d3c719a4d563e12eec5f67b74ae79996
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-27 19:44:59 +0100
+
+    Added FMXTabbedBrowser demo
+    
+    Fixed some focus issues in FMX demos
+
+commit ed117f072453a3a3c04af1dc4e856cadd7c348dc
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-25 08:52:02 +0100
+
+    Added missing error code in the loader error message
+
+commit 5f8d27df4774d2fed266a1e15d4e11dea0a37ac9
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-24 14:55:37 +0100
+
+    Fixed Lazarus build issue
+
+commit 02f4af25c02a4c1aed80513af9644bc64e8e185e
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-24 11:56:30 +0100
+
+    Update the cursor in the WindowlessBrowser demo
+
+commit 270dcaaa12d9336bea8ce0cbe627c038db20cc2c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-23 13:02:51 +0100
+
+    Renamed delphinus json file with the right package name
+
+commit b3c847a4b44744559e24a6a87e504b11dcf98c7c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-23 12:44:37 +0100
+
+    Added WebView4Delphi source path to search path in all demos
+    
+    Removed TWVWinControl.TakeSnapshot
+    Added the TARGET_64BITS define in webview2.inc
+
+commit 01dade7a01a1d8b5c1b0ad131e237f18f8e650b5
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-21 15:21:08 +0100
+
+    Added the WindowlessBrowser demo
+    
+    The WindowlessBrowser demo requires the modified MfPack component available at
+    https://github.com/salvadordf/MfPack
+
+commit 8713902d988ea664191d17fe06808dfab4d668e6
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-12 09:51:17 +0100
+
+    Fixed typos in MiniBrowser events
+
+commit a395b4869387e4ce172aef7c9b5238f1fdb7f1e5
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-10 17:06:12 +0100
+
+    Fixed the uses clause in uWVBrowserBase
+
+commit 82cccc0718af2c804d936744d4568f211196d7a4
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-10 11:54:34 +0100
+
+    Disabled the text selection context menu in the KioskBrowser demo
+    
+    Fixed issue #7 : The focus is now removed from the focused control when the browser gets the focus.
+    Use TNetEncoding.URL in Delphi XE7 and newer versions
+
+commit a27211ccd4ed2466bce9d1c1fe27ea89267b763c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-09 15:01:42 +0100
+
+    Added debug logging properties
+    
+    Added the GlobalWebView2Loader.DebugLog property
+    Added the GlobalWebView2Loader.DebugLogLevel property
+
+commit aac364580991811f5b943905a4cd8731e6a490b8
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-09 10:47:59 +0100
+
+    Increased internal version
+
+commit af15af9f011ece805cb9c01212d2507168cf22a9
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-09 10:47:10 +0100
+
+    Added a menu option to see the process info in the MiniBrowser demo
+    
+    Fixed units path in the DPK file
+
+commit 20ff22d6485e3b366b986b8c4c5e03ffaa4d3c37
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-02-08 17:06:48 +0100
+
+    Update to WebView2 NuGet 1.0.1108.44
+
+commit 22827f2b63423119723a876e1ef49469d5db05a1
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-29 15:29:19 +0100
+
+    Separate Delphi packages for VCL and FMX thanks to Larry Hengen (lhengen)
+
+commit 54f5454077015f77262d0c8b89168110ce582f0e
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-16 14:34:24 +0100
+
+    Avoid early ICoreWebView2PrintSettings destruction
+    
+    Assign a nil value to the ICoreWebView2PrintSettings instance at the end of TWVBrowserBase.ControllerCompletedHandler_Invoke to avoid possible problems in some old Delphi versions.
+
+commit fb83ac0b3f106f239095316cd6ddc2d75bb905da
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-16 12:59:11 +0100
+
+    Added more code comments with WebView2 API references for many properties and events
+
+commit 73ca5c46a3f0ee4762f560b1d7b2cf55886ce443
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-14 09:46:39 +0100
+
+    Fixed an issue assigning values to the proxy settings
+
+commit c49a2207dc67d451a44ed3d0e17a02e01b59753f
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-11 16:21:20 +0100
+
+    Added TWVBrowserBase.OpenDefaultDownloadDialog
+    
+    Added TWVBrowserBase.CloseDefaultDownloadDialog
+
+commit 5c7c49c8e0e1ceed9558da6af50c771d1eabb031
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-11 15:41:12 +0100
+
+    Added the new events to TWVBrowser and TWVFMXBrowser
+
+commit ac17ee5bb692314bc944fd515baa1d376217b5bb
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-11 15:27:00 +0100
+
+    Update to WebView2 NuGet 1.0.1072.54
+
+commit 174721180eb11cbc9600e9a16c5acca87f6e3647
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-08 12:51:31 +0100
+
+    Added TWVBrowserBase.SimulateEditingCommand
+    
+    Modified the EditorBrowser demos to use the new TWVBrowserBase.SimulateEditingCommand function instead of executing JavaScript.
+    Added EditingCommandToString to uWVMiscFunctions
+
+commit 10af040c9092b80c08316bd2444aaa3b093f4835
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-06 10:55:01 +0100
+
+    Updated readme file with the latest Lazarus version
+    
+    Added attribution links to the readme file
+
+commit 0e3b1d195310f2e03c2f0a4035cc8ebdf4911552
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-04 15:23:59 +0100
+
+    Added TWVBrowserBase.RenderCompHWND
+    
+    Added TWVBrowserBase.Widget0CompHWND
+    Added TWVBrowserBase.Widget1CompHWND
+    Added TWVBrowserBase.D3DWindowCompHWND
+
+commit b88e4c6ef5d0822b5e4b5df954cda76ea1578913
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-03 11:58:36 +0100
+
+    Added TWVBRowserBase.SimulateKeyEvent
+    
+    Added TWVBRowserBase.KeyboardShortcutSearch
+    Added TWVBRowserBase.KeyboardShortcutRefreshIgnoreCache
+    Added TWVBRowserBase.OnSimulateKeyEventCompleted
+    Added JSONEscape in uWVMiscFunctions
+    Fixed JSONUnescape declaration
+
+commit fc4622ef46a7fb4ade3b6f8dfc0dccc266cfb309
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-01 18:15:18 +0100
+
+    Added GlobalWebView2Loader.RemoteDebuggingPort
+
+commit 18a39a7950e18e2c0546d18f783a8ed25cdd5902
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2022-01-01 10:45:36 +0100
+
+    Updated copyright year
+
+commit 6b0621a1450655c77069f0fa363b414c24e4975c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-31 13:12:04 +0100
+
+    Implemented TWVBrowserBase.OnWindowCloseRequested in the TabbedBrowser and PopupBrowser demos.
+    
+    Use the TWVBrowserBase.OnWindowCloseRequested event to close browsers in popup windows.
+
+commit dfe3bc41d0e9331914455aa7226a9b464ec8ff09
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-31 12:36:13 +0100
+
+    Added a aResourceID parameter to the TWVBrowserBase.OnWebResourceResponseViewGetContentCompleted event
+    
+    Renamed TWVBrowserBase.doIgnoreCertificateErrorsCompleted to TWVBrowserBase.doOnIgnoreCertificateErrorsCompleted
+
+commit 7f294fc869ed8e2321fb24e089a233a8a528100f
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-29 17:59:42 +0100
+
+    Added new popup windows and new tab support to the TabbedBrowser demos
+
+commit bb1c4a20fd9b8ddd74a2256986705debd5e8ff7e
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-27 16:31:32 +0100
+
+    Added TWVBrowser.RefreshIgnoreCache
+    
+    Added TWVBrowser.OnRefreshIgnoreCacheCompleted
+
+commit 0cb61d45357922fd11c0bfcefe10b1f276236a24
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-27 16:11:46 +0100
+
+    Expose ICoreWebView2CompositionController methods and properties in TWVBrowserBase too
+
+commit f1b4c0ec0f965f5a0cbe3d73d42ab35ff4c06fcd
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-26 18:25:28 +0100
+
+    Added TWVBrowserBase.OnClearCacheCompleted
+    
+    Added TWVBrowserBase.OnClearDataForOriginCompleted
+    Added TWVBrowserBase.OnOfflineCompleted
+    Added TWVBrowserBase.OnIgnoreCertificateErrorsCompleted
+
+commit 7703b37e1ffc0e3a676383e54661d8a82dab175c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-26 13:22:39 +0100
+
+    Added TWVBrowser.IsNavigating
+    
+    Added TWVBrowser.RetrieveMHTML
+    Added TWVBrowser.OnRetrieveMHTMLCompleted
+    Reserved an execution id value range for internal use by some DevTools method calls.
+    MiniBrowser demo : Condensed all load and save functions in 2 menu items with several dialog filters.
+    MiniBrowser demo : Added MHTML support in the new open and save dialog filter options.
+
+commit 59c982eaab0fbc78c7d1e3d92f27bf50f49915a7
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-24 18:38:23 +0100
+
+    Added missing dependency used in older Delphi versions.
+
+commit e0ff39ebf4d9bdcc7f20c28d4aeead159d093e49
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-24 18:09:13 +0100
+
+    MiniBrowser demo : Added a menu option to change the User Agent string
+
+commit c73bb655166ddf812d5cf7cf26103992af6e01f8
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-24 16:33:19 +0100
+
+    Kiosk demo: Replaced JS code with a simple property to disable the context menu
+
+commit 52486492804e1fc97b7929deb4e1fef010db218b
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-23 18:26:05 +0100
+
+    Internal version increased
+
+commit 0c8f10dfa3a00793cbf42afee0600c9fa2a07b3c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-23 17:30:22 +0100
+
+    Added the EditorBrowser demo
+    
+    Fixed build issue in Lazarus.
+    Fixed string conversion in showmessage calls
+    Added TWVBrowser.RetrieveHTML
+    Added TWVBrowser.RetrieveText
+    Added TWVBrowser.OnPrintCompleted
+    Added TWVBrowser.OnRetrieveHTMLCompleted
+    Added TWVBrowser.OnRetrieveTextCompleted
+
+commit 06906d0c110ea13bc7e18463a01c987146f6b9b7
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-22 20:36:18 +0100
+
+    Revert default TWVBrowser.DefaultURL value to an empty string
+
+commit c0d401c4bfc8a13d1fa51174d30084d7bbbc0c0c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-19 12:27:27 +0100
+
+    Added the custom HTML file for the KioskBrowser demo
+
+commit f24512ea474f8fba2c4ae212e0cb6f72d016586b
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-19 12:19:55 +0100
+
+    Added the KioskBrowser demo
+    
+    Added TWVBrowserBase.OnWidget0CompMsg, TWVBrowserBase.OnWidget1CompMsg, TWVBrowserBase.OnRenderCompMsg and TWVBrowserBase.OnD3DWindowCompMsg to intercept Windows messages
+    Added an additional registry check in TWVLoader to detect if the WebView2 runtime is installed.
+    Added a custom TPopupMenu thanks to Alessandro Mancini in issue #9
+    Navigate to "about:blank" in TWVBrowser if the user doesn't specify a default URL
+
+commit 11b6851854e481af792ff578b6630e203bfc4b0f
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2021-12-08 18:19:43 +0100
+
+    Added the Delphinus-Support tag
+
+commit 0089a90f45560a5ba0ff1285b850f32fdfde9771
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-08 18:08:57 +0100
+
+    Fix for issue #6 : Backwards compatibility issues with Delphi XE4
+
+commit c1ece31ccb5e585eac9459a453c3cd2b2238814c
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-05 22:29:14 +0100
+
+    Fixed issue #4 : Added a clear reference for the supported operating systems.
+
+commit f953973d0b496140d36ee3274e5a7ff04186e52d
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-05 20:11:45 +0100
+
+    Added Delphinus support for Delphi
+    
+    Added Online Package Manager support for Lazarus
+    Added a link to the intructions at briskbard.com in the readme.md file
+
+commit fdd311d82b8761e49605dde7ce2a7cf97a62dc41
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-04 17:07:23 +0100
+
+    Create FUNDING.yml
+
+commit 4bae66d08b18586783886b56d1554a72b35bab55
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2021-12-04 10:46:43 +0100
+
+    Improved Delphi installation instructions
+    
+    Added instructions to add the source directory to the library path
+
+commit 48da4e7cc6987ab8a53eed0807c578fd89a09a01
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-04 10:43:33 +0100
+
+    Added missing loader DLLs that the ".ignore" file filtered
+
+commit ff593b4582b4f028009687719bf609de173f9894
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2021-12-04 10:41:37 +0100
+
+    Removed DLL form the ignore list
+
+commit 6a0169aa0e8c0280f93ec7f874abe95e38dd9e5a
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2021-12-03 23:54:40 +0100
+
+    typo
+
+commit 71f5ebdd28bb5b81d14a5c2a6bb4ae1958258340
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2021-12-03 23:54:19 +0100
+
+    Removed the broken links.
+
+commit 0f23c1a062f147269bcb8c74220661fbdd7f33ed
+Author: salvadordf <briskbard@briskbard.com>
+Date:   2021-12-03 22:35:59 +0100
+
+    Initial commit
+
+commit 383abb34a69a5cf9e54fc615eeac4359f00a9696
+Author: Salvador Díaz Fau <briskbard@briskbard.com>
+Date:   2021-12-03 22:33:39 +0100
+
+    Initial commit

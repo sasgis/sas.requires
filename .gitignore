@@ -1,1 +1,6 @@
 **/!git/**
+/webview4delphi/assets/*
+/webview4delphi/bin32/*
+/webview4delphi/bin64/*
+/webview4delphi/demos/*
+/webview4delphi/docs/*

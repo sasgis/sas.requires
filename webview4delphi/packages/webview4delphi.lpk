@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="5">
+    <PathDelim Value="\"/>
+    <Name Value="WebView4Delphi"/>
+    <Type Value="RunAndDesignTime"/>
+    <Author Value="Salvador Diaz Fau"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <IncludeFiles Value="..\source"/>
+        <OtherUnitFiles Value="..\source"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+    </CompilerOptions>
+    <Description Value="WebView4Delphi is an open source project created by Salvador Díaz Fau to embed Chromium-based browsers in applications made with Delphi or Lazarus/FPC."/>
+    <License Value="MIT"/>
+    <Version Major="1" Release="4022" Build="49"/>
+    <Files Count="79">
+      <Item1>
+        <Filename Value="..\source\uWVBrowser.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="uWVBrowser"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\source\uWVBrowserBase.pas"/>
+        <UnitName Value="uWVBrowserBase"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\source\uWVConstants.pas"/>
+        <UnitName Value="uWVConstants"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\source\uWVCoreWebView2.pas"/>
+        <UnitName Value="uWVCoreWebView2"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\source\uWVCoreWebView2Args.pas"/>
+        <UnitName Value="uWVCoreWebView2Args"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\source\uWVCoreWebView2BasicAuthenticationResponse.pas"/>
+        <UnitName Value="uWVCoreWebView2BasicAuthenticationResponse"/>
+      </Item6>
+      <Item7>
+        <Filename Value="..\source\uWVCoreWebView2BrowserExtension.pas"/>
+        <UnitName Value="uWVCoreWebView2BrowserExtension"/>
+      </Item7>
+      <Item8>
+        <Filename Value="..\source\uWVCoreWebView2BrowserExtensionList.pas"/>
+        <UnitName Value="uWVCoreWebView2BrowserExtensionList"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\source\uWVCoreWebView2Certificate.pas"/>
+        <UnitName Value="uWVCoreWebView2Certificate"/>
+      </Item9>
+      <Item10>
+        <Filename Value="..\source\uWVCoreWebView2ClientCertificate.pas"/>
+        <UnitName Value="uWVCoreWebView2ClientCertificate"/>
+      </Item10>
+      <Item11>
+        <Filename Value="..\source\uWVCoreWebView2ClientCertificateCollection.pas"/>
+        <UnitName Value="uWVCoreWebView2ClientCertificateCollection"/>
+      </Item11>
+      <Item12>
+        <Filename Value="..\source\uWVCoreWebView2CompositionController.pas"/>
+        <UnitName Value="uWVCoreWebView2CompositionController"/>
+      </Item12>
+      <Item13>
+        <Filename Value="..\source\uWVCoreWebView2ContextMenuItem.pas"/>
+        <UnitName Value="uWVCoreWebView2ContextMenuItem"/>
+      </Item13>
+      <Item14>
+        <Filename Value="..\source\uWVCoreWebView2ContextMenuItemCollection.pas"/>
+        <UnitName Value="uWVCoreWebView2ContextMenuItemCollection"/>
+      </Item14>
+      <Item15>
+        <Filename Value="..\source\uWVCoreWebView2ContextMenuTarget.pas"/>
+        <UnitName Value="uWVCoreWebView2ContextMenuTarget"/>
+      </Item15>
+      <Item16>
+        <Filename Value="..\source\uWVCoreWebView2Controller.pas"/>
+        <UnitName Value="uWVCoreWebView2Controller"/>
+      </Item16>
+      <Item17>
+        <Filename Value="..\source\uWVCoreWebView2ControllerOptions.pas"/>
+        <UnitName Value="uWVCoreWebView2ControllerOptions"/>
+      </Item17>
+      <Item18>
+        <Filename Value="..\source\uWVCoreWebView2Cookie.pas"/>
+        <UnitName Value="uWVCoreWebView2Cookie"/>
+      </Item18>
+      <Item19>
+        <Filename Value="..\source\uWVCoreWebView2CookieList.pas"/>
+        <UnitName Value="uWVCoreWebView2CookieList"/>
+      </Item19>
+      <Item20>
+        <Filename Value="..\source\uWVCoreWebView2CookieManager.pas"/>
+        <UnitName Value="uWVCoreWebView2CookieManager"/>
+      </Item20>
+      <Item21>
+        <Filename Value="..\source\uWVCoreWebView2CustomSchemeRegistration.pas"/>
+        <UnitName Value="uWVCoreWebView2CustomSchemeRegistration"/>
+      </Item21>
+      <Item22>
+        <Filename Value="..\source\uWVCoreWebView2DedicatedWorker.pas"/>
+        <UnitName Value="uWVCoreWebView2DedicatedWorker"/>
+      </Item22>
+      <Item23>
+        <Filename Value="..\source\uWVCoreWebView2Deferral.pas"/>
+        <UnitName Value="uWVCoreWebView2Deferral"/>
+      </Item23>
+      <Item24>
+        <Filename Value="..\source\uWVCoreWebView2Delegates.pas"/>
+        <UnitName Value="uWVCoreWebView2Delegates"/>
+      </Item24>
+      <Item25>
+        <Filename Value="..\source\uWVCoreWebView2DownloadOperation.pas"/>
+        <UnitName Value="uWVCoreWebView2DownloadOperation"/>
+      </Item25>
+      <Item26>
+        <Filename Value="..\source\uWVCoreWebView2Environment.pas"/>
+        <UnitName Value="uWVCoreWebView2Environment"/>
+      </Item26>
+      <Item27>
+        <Filename Value="..\source\uWVCoreWebView2EnvironmentOptions.pas"/>
+        <UnitName Value="uWVCoreWebView2EnvironmentOptions"/>
+      </Item27>
+      <Item28>
+        <Filename Value="..\source\uWVCoreWebView2ExecuteScriptResult.pas"/>
+        <UnitName Value="uWVCoreWebView2ExecuteScriptResult"/>
+      </Item28>
+      <Item29>
+        <Filename Value="..\source\uWVCoreWebView2File.pas"/>
+        <UnitName Value="uWVCoreWebView2File"/>
+      </Item29>
+      <Item30>
+        <Filename Value="..\source\uWVCoreWebView2FileSystemHandle.pas"/>
+        <UnitName Value="uWVCoreWebView2FileSystemHandle"/>
+      </Item30>
+      <Item31>
+        <Filename Value="..\source\uWVCoreWebView2Find.pas"/>
+        <UnitName Value="uWVCoreWebView2Find"/>
+      </Item31>
+      <Item32>
+        <Filename Value="..\source\uWVCoreWebView2FindOptions.pas"/>
+        <UnitName Value="uWVCoreWebView2FindOptions"/>
+      </Item32>
+      <Item33>
+        <Filename Value="..\source\uWVCoreWebView2Frame.pas"/>
+        <UnitName Value="uWVCoreWebView2Frame"/>
+      </Item33>
+      <Item34>
+        <Filename Value="..\source\uWVCoreWebView2FrameInfo.pas"/>
+        <UnitName Value="uWVCoreWebView2FrameInfo"/>
+      </Item34>
+      <Item35>
+        <Filename Value="..\source\uWVCoreWebView2FrameInfoCollection.pas"/>
+        <UnitName Value="uWVCoreWebView2FrameInfoCollection"/>
+      </Item35>
+      <Item36>
+        <Filename Value="..\source\uWVCoreWebView2FrameInfoCollectionIterator.pas"/>
+        <UnitName Value="uWVCoreWebView2FrameInfoCollectionIterator"/>
+      </Item36>
+      <Item37>
+        <Filename Value="..\source\uWVCoreWebView2HttpHeadersCollectionIterator.pas"/>
+        <UnitName Value="uWVCoreWebView2HttpHeadersCollectionIterator"/>
+      </Item37>
+      <Item38>
+        <Filename Value="..\source\uWVCoreWebView2HttpRequestHeaders.pas"/>
+        <UnitName Value="uWVCoreWebView2HttpRequestHeaders"/>
+      </Item38>
+      <Item39>
+        <Filename Value="..\source\uWVCoreWebView2HttpResponseHeaders.pas"/>
+        <UnitName Value="uWVCoreWebView2HttpResponseHeaders"/>
+      </Item39>
+      <Item40>
+        <Filename Value="..\source\uWVCoreWebView2Notification.pas"/>
+        <UnitName Value="uWVCoreWebView2Notification"/>
+      </Item40>
+      <Item41>
+        <Filename Value="..\source\uWVCoreWebView2ObjectCollection.pas"/>
+        <UnitName Value="uWVCoreWebView2ObjectCollection"/>
+      </Item41>
+      <Item42>
+        <Filename Value="..\source\uWVCoreWebView2ObjectCollectionView.pas"/>
+        <UnitName Value="uWVCoreWebView2ObjectCollectionView"/>
+      </Item42>
+      <Item43>
+        <Filename Value="..\source\uWVCoreWebView2PermissionSetting.pas"/>
+        <UnitName Value="uWVCoreWebView2PermissionSetting"/>
+      </Item43>
+      <Item44>
+        <Filename Value="..\source\uWVCoreWebView2PermissionSettingCollectionView.pas"/>
+        <UnitName Value="uWVCoreWebView2PermissionSettingCollectionView"/>
+      </Item44>
+      <Item45>
+        <Filename Value="..\source\uWVCoreWebView2PointerInfo.pas"/>
+        <UnitName Value="uWVCoreWebView2PointerInfo"/>
+      </Item45>
+      <Item46>
+        <Filename Value="..\source\uWVCoreWebView2PrintSettings.pas"/>
+        <UnitName Value="uWVCoreWebView2PrintSettings"/>
+      </Item46>
+      <Item47>
+        <Filename Value="..\source\uWVCoreWebView2ProcessExtendedInfo.pas"/>
+        <UnitName Value="uWVCoreWebView2ProcessExtendedInfo"/>
+      </Item47>
+      <Item48>
+        <Filename Value="..\source\uWVCoreWebView2ProcessExtendedInfoCollection.pas"/>
+        <UnitName Value="uWVCoreWebView2ProcessExtendedInfoCollection"/>
+      </Item48>
+      <Item49>
+        <Filename Value="..\source\uWVCoreWebView2ProcessInfo.pas"/>
+        <UnitName Value="uWVCoreWebView2ProcessInfo"/>
+      </Item49>
+      <Item50>
+        <Filename Value="..\source\uWVCoreWebView2ProcessInfoCollection.pas"/>
+        <UnitName Value="uWVCoreWebView2ProcessInfoCollection"/>
+      </Item50>
+      <Item51>
+        <Filename Value="..\source\uWVCoreWebView2Profile.pas"/>
+        <UnitName Value="uWVCoreWebView2Profile"/>
+      </Item51>
+      <Item52>
+        <Filename Value="..\source\uWVCoreWebView2RegionRectCollectionView.pas"/>
+        <UnitName Value="uWVCoreWebView2RegionRectCollectionView"/>
+      </Item52>
+      <Item53>
+        <Filename Value="..\source\uWVCoreWebView2ScriptException.pas"/>
+        <UnitName Value="uWVCoreWebView2ScriptException"/>
+      </Item53>
+      <Item54>
+        <Filename Value="..\source\uWVCoreWebView2ServiceWorker.pas"/>
+        <UnitName Value="uWVCoreWebView2ServiceWorker"/>
+      </Item54>
+      <Item55>
+        <Filename Value="..\source\uWVCoreWebView2ServiceWorkerManager.pas"/>
+        <UnitName Value="uWVCoreWebView2ServiceWorkerManager"/>
+      </Item55>
+      <Item56>
+        <Filename Value="..\source\uWVCoreWebView2ServiceWorkerRegistration.pas"/>
+        <UnitName Value="uWVCoreWebView2ServiceWorkerRegistration"/>
+      </Item56>
+      <Item57>
+        <Filename Value="..\source\uWVCoreWebView2ServiceWorkerRegistrationCollectionView.pas"/>
+        <UnitName Value="uWVCoreWebView2ServiceWorkerRegistrationCollectionView"/>
+      </Item57>
+      <Item58>
+        <Filename Value="..\source\uWVCoreWebView2Settings.pas"/>
+        <UnitName Value="uWVCoreWebView2Settings"/>
+      </Item58>
+      <Item59>
+        <Filename Value="..\source\uWVCoreWebView2SharedBuffer.pas"/>
+        <UnitName Value="uWVCoreWebView2SharedBuffer"/>
+      </Item59>
+      <Item60>
+        <Filename Value="..\source\uWVCoreWebView2SharedWorker.pas"/>
+        <UnitName Value="uWVCoreWebView2SharedWorker"/>
+      </Item60>
+      <Item61>
+        <Filename Value="..\source\uWVCoreWebView2SharedWorkerCollectionView.pas"/>
+        <UnitName Value="uWVCoreWebView2SharedWorkerCollectionView"/>
+      </Item61>
+      <Item62>
+        <Filename Value="..\source\uWVCoreWebView2SharedWorkerManager.pas"/>
+        <UnitName Value="uWVCoreWebView2SharedWorkerManager"/>
+      </Item62>
+      <Item63>
+        <Filename Value="..\source\uWVCoreWebView2StringCollection.pas"/>
+        <UnitName Value="uWVCoreWebView2StringCollection"/>
+      </Item63>
+      <Item64>
+        <Filename Value="..\source\uWVCoreWebView2WebResourceRequest.pas"/>
+        <UnitName Value="uWVCoreWebView2WebResourceRequest"/>
+      </Item64>
+      <Item65>
+        <Filename Value="..\source\uWVCoreWebView2WebResourceResponse.pas"/>
+        <UnitName Value="uWVCoreWebView2WebResourceResponse"/>
+      </Item65>
+      <Item66>
+        <Filename Value="..\source\uWVCoreWebView2WebResourceResponseView.pas"/>
+        <UnitName Value="uWVCoreWebView2WebResourceResponseView"/>
+      </Item66>
+      <Item67>
+        <Filename Value="..\source\uWVCoreWebView2WindowFeatures.pas"/>
+        <UnitName Value="uWVCoreWebView2WindowFeatures"/>
+      </Item67>
+      <Item68>
+        <Filename Value="..\source\uWVEvents.pas"/>
+        <UnitName Value="uWVEvents"/>
+      </Item68>
+      <Item69>
+        <Filename Value="..\source\uWVInterfaces.pas"/>
+        <UnitName Value="uWVInterfaces"/>
+      </Item69>
+      <Item70>
+        <Filename Value="..\source\uWVLibFunctions.pas"/>
+        <UnitName Value="uWVLibFunctions"/>
+      </Item70>
+      <Item71>
+        <Filename Value="..\source\uWVLoader.pas"/>
+        <UnitName Value="uWVLoader"/>
+      </Item71>
+      <Item72>
+        <Filename Value="..\source\uWVLoaderInternal.pas"/>
+        <UnitName Value="uWVLoaderInternal"/>
+      </Item72>
+      <Item73>
+        <Filename Value="..\source\uWVMiscFunctions.pas"/>
+        <UnitName Value="uWVMiscFunctions"/>
+      </Item73>
+      <Item74>
+        <Filename Value="..\source\uWVTypeLibrary.pas"/>
+        <UnitName Value="uWVTypeLibrary"/>
+      </Item74>
+      <Item75>
+        <Filename Value="..\source\uWVTypes.pas"/>
+        <UnitName Value="uWVTypes"/>
+      </Item75>
+      <Item76>
+        <Filename Value="..\source\uWVVersion.inc"/>
+        <Type Value="Include"/>
+      </Item76>
+      <Item77>
+        <Filename Value="..\source\uWVWinControl.pas"/>
+        <UnitName Value="uWVWinControl"/>
+      </Item77>
+      <Item78>
+        <Filename Value="..\source\uWVWindowParent.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="uWVWindowParent"/>
+      </Item78>
+      <Item79>
+        <Filename Value="..\source\webview2.inc"/>
+        <Type Value="Include"/>
+      </Item79>
+    </Files>
+    <CompatibilityMode Value="True"/>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="LCLBase"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
+  </Package>
+</CONFIG>
