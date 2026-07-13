@@ -1,3 +1,15 @@
+commit d07e611f853a13eb0dbfc2699daf82ed569b3086
+Author: zed <starmen141@gmail.com>
+Date:   2026-07-13 12:34:53 +0300
+
+    Disable use of SetDllDirectoryW in TryLoadLibrary
+
+commit 3d37859247213a75032c237b323e350c67374086
+Author: zed <starmen141@gmail.com>
+Date:   2026-07-13 12:27:01 +0300
+
+    Cherry pick into sasgis: net: improve libcurl dynamic library loading logic
+
 commit 6dbdf7453e7656c62a2a555c8ff838feabc9c565
 Author: Arnaud Bouchez <ab@synopse.info>
 Date:   2026-01-12 19:29:08 +0100

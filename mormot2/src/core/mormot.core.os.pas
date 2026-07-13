@@ -8668,7 +8668,7 @@ var
     // change the current folder at loading on Windows
     {$ifdef OSWINDOWS}
     try
-      if nwd <> '' then
+      if False {nwd <> ''} then
       begin
         GlobalLock; // SetDllDirectoryW() is for the whole process not thread
         if not LibrarySetDirectory(nwd) then // as documented on microsoft.com
@@ -8679,7 +8679,7 @@ var
       end;
       fHandle := LibraryOpen(lib); // preserve x87 flags and prevent msg box
     finally
-      if nwd <> '' then
+      if False {nwd <> ''} then
       begin
         SetDllDirectoryW(nil); // revert to default
         GlobalUnLock;
