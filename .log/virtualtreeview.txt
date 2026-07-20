@@ -1,3 +1,58 @@
+commit 47a1148e48db888f5c8d22bc3bd21172155557f4
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-07-20 13:00:54 +0200
+
+    Added convenience alias for TItemEraseAction, see issue #1374
+
+commit 484f785a7803bccda9bf162882a9410241193357
+Merge: 7c9e22f f06727a
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-07-16 09:22:13 +0200
+
+    Merge pull request #1373 from VSoftTechnologies/master
+    
+    Fix regression caused by previous fix for issue #1358
+
+commit f06727ae8f8c27645bcc71a27f3bec5dee62d712
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2026-07-15 18:21:13 +1000
+
+    minor typo in dspec
+
+commit 90c721b06c7019398702098232f7a97492c3cf06
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2026-07-15 18:17:38 +1000
+
+    Fix regression caused by previous fix for issue #1358
+    Bumped dpm package patch version (no interface change)
+
+commit 7c9e22f506b762fff54f5d1d2946de30f6c2f58e
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-06-24 18:07:59 +0200
+
+    Minor tweaks
+
+commit 9334da1232a8b7b15163d11da2efc9afaa59a1da
+Merge: 5fadafb 1bc9523
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-06-24 09:18:39 +0200
+
+    Merge pull request #1371 from VSoftTechnologies/master
+    
+    Added new DPM dspec file
+
+commit 1bc9523d63625205105deea9b68b34473f863551
+Author: Vincent Parrett <vincent@finalbuilder.com>
+Date:   2026-06-23 18:40:19 +1000
+
+    Added new DPM dspec file
+
+commit 5fadafbc214c2436bc91da560b01bc4cc711e779
+Author: Joachim Marder <marder@jam-software.com>
+Date:   2026-06-16 22:23:56 +0200
+
+    Update RAD Studio version range in README
+
 commit 91c9ea3219d0eb4872ef1c675b471f827eb2dd6c
 Author: marder <joachim.marder@jam-software.com>
 Date:   2026-06-04 20:14:05 +0200

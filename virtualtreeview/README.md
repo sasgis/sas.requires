@@ -8,7 +8,7 @@ I don't use C++ Builder and my experience with it is very limited. This makes it
 
 ## Downloads
 
-[**V8** official release](https://github.com/JAM-Software/Virtual-TreeView/releases/latest) for **RAD Studio 10 to 12** which includes some **[breaking changes](https://github.com/JAM-Software/Virtual-TreeView/wiki/Breaking-Changes-in-V8)**.
+[**V8** official release](https://github.com/JAM-Software/Virtual-TreeView/releases/latest) for **RAD Studio 10 to 13** which includes some **[breaking changes](https://github.com/JAM-Software/Virtual-TreeView/wiki/Breaking-Changes-in-V8)**.
 
 [**V7.6.x**](https://github.com/JAM-Software/Virtual-TreeView/releases/tag/V7.6.6) for **Delphi XE3 to XE8**.
 

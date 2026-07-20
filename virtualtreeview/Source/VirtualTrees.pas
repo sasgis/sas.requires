@@ -121,6 +121,7 @@ type
   TVTSelectionOption       = VirtualTrees.Types.TVTSelectionOption;
   TVSTTextType             = VirtualTrees.Types.TVSTTextType;
   TVTHintMode              = VirtualTrees.Types.TVTHintMode;
+  TItemEraseAction         = VirtualTrees.Types.TItemEraseAction;
   TBaseVirtualTree         = VirtualTrees.BaseTree.TBaseVirtualTree;
   IVTEditLink              = VirtualTrees.BaseTree.IVTEditLink;
   TVTHeaderNotifyEvent     = VirtualTrees.BaseTree.TVTHeaderNotifyEvent;

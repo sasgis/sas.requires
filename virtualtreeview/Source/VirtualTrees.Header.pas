@@ -2097,7 +2097,7 @@ begin
   lOldMainColumn := FMainColumn;
 
   // Issue #1358: Prefer MainColumn to be on position 0 (where checkboxes/icons are) If position 0 is visible, use it; otherwise use first visible column
-  if (FColumns.Count > 0) and (coVisible in FColumns[0].Options) then
+  if (FColumns.Count > 0) and (coVisible in FColumns[0].Options) and (toCheckSupport in Tree.TreeOptions.MiscOptions) then
     lNewMainColumn := 0
   else if (FMainColumn >= 0) and not (coVisible in Self.Columns[FMainColumn].Options) then
     //Issue #946: Choose new MainColumn if current one ist not visible
