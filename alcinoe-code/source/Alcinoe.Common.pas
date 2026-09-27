@@ -922,6 +922,12 @@ function ALElapsedTimeSecondsAsInt64: int64;
 function ALIsValidLatlng(const ALatitude, ALongitude: Double): Boolean;
 function ALGetDistanceBetween2Points(const ALatitude1, ALongitude1, ALatitude2, ALongitude2: Double): Double{meters};
 
+function  ALGetAppVersionA: AnsiString;
+function  ALGetAppVersionW: String;
+function  ALSemanticVersionToInt64(const AVersion: string): Int64;
+function  ALInt64ToSemanticVersionA(const AVersion: Int64): AnsiString; overload;
+function  ALInt64ToSemanticVersionW(const AVersion: Int64): string; overload;
+
 {$IFDEF MSWINDOWS}
 {$IFNDEF ALCompilerVersionSupported131}
   {$MESSAGE WARN 'Check if EnumDynamicTimeZoneInformation/SystemTimeToTzSpecificLocalTimeEx/TzSpecificLocalTimeToSystemTimeEx are still not declared in Winapi.Windows and adjust the IFDEF'}
@@ -1027,13 +1033,16 @@ uses
   {$ENDIF}
   {$IF defined(ANDROID)}
   Posix.Sched,
+  Androidapi.JNI.GraphicsContentViewText,
+  Androidapi.JNI.App,
   Androidapi.JNI.JavaTypes,
-  Androidapi.Helpers,
   Androidapi.JNI.Util,
+  Androidapi.Helpers,
   Posix.Time,
   {$ENDIF}
   {$IF defined(IOS)}
   Posix.Sched,
+  iOSapi.Helpers,
   Macapi.Helpers,
   Macapi.Mach,
   {$ENDIF}
@@ -1043,6 +1052,7 @@ uses
   system.DateUtils,
   System.UIConsts,
   System.Diagnostics,
+  Alcinoe.FileUtils,
   Alcinoe.Localization,
   Alcinoe.StringUtils;
 
@@ -3186,6 +3196,37 @@ begin
   inherited CreateFmt(Msg, Args);
 end;
 
+{$IF defined(IOS)}
+const
+  libSystem = '/usr/lib/libSystem.dylib';
+  libdyld = '/usr/lib/system/libdyld.dylib';
+
+  OS_LOG_TYPE_DEFAULT = $00;
+  OS_LOG_TYPE_INFO    = $01;
+  OS_LOG_TYPE_DEBUG   = $02;
+  OS_LOG_TYPE_ERROR   = $10;
+  OS_LOG_TYPE_FAULT   = $11;
+
+type
+  os_log_t = Pointer;
+  os_log_type_t = Byte; // uint8_t
+
+// os_release(void *object);
+procedure os_release(&object: Pointer); cdecl; external libSystem;
+// os_log_t os_log_create(const char *subsystem, const char *category);
+function os_log_create(subsystem: MarshaledAString; category: MarshaledAString): os_log_t; cdecl; external libSystem;
+// bool os_log_type_enabled(os_log_t oslog, os_log_type_t type);
+function os_log_type_enabled(oslog: os_log_t; &type: os_log_type_t): Boolean; cdecl; external libSystem;
+// void _os_log_impl(void *dso, os_log_t log, os_log_type_t type, const char *format, uint8_t *buf, uint32_t size);
+procedure _os_log_impl(dso: Pointer; log: os_log_t; &type: os_log_type_t; format: MarshaledAString; buf: PByte; size: Cardinal); cdecl; external libSystem;
+// const struct mach_header* _dyld_get_image_header(uint32_t image_index)
+function _dyld_get_image_header(image_index: Cardinal): Pointer; cdecl; external libdyld;
+
+var
+  _ImageHeader: Pointer;
+  _LogHandle: Pointer;
+{$ENDIF}
+
 type
 
   {******************}
@@ -3329,6 +3370,7 @@ begin
     TalLogType.ASSERT: TJutil_Log.JavaClass.wtf(StringToJString(Tag), StringToJString(LMsg)); // << wtf for What a Terrible Failure but everyone know that it's for what the fuck !
   end;
   {$ELSEIF defined(IOS)}
+  If (_LogHandle = nil) or (_ImageHeader = nil) then exit;
   if LMsg <> '' then LMsg := Tag + ' | ' + LMsg
   else LMsg := Tag;
   var LThreadID: String;
@@ -3339,14 +3381,23 @@ begin
   var P: integer := 1;
   while P <= length(LMsg) do begin
     var LMsgPart := ALCopyStr(LMsg, P, 950); // to stay safe
+    LMsgPart := ALStringReplaceW(LMsgPart, '%', '%%', [rfReplaceAll]);
     inc(P, 950);
+    var M: TMarshaller;
+    var LBuf: UInt16 := 0;
     case &Type of
-      TalLogType.VERBOSE: NSLog(StringToID('[V]'+LThreadID+' ' + LMsgPart));
-      TalLogType.DEBUG:   NSLog(StringToID('[D][V]'+LThreadID+' ' + LMsgPart));
-      TalLogType.INFO:    NSLog(StringToID('[I][D][V]'+LThreadID+' ' + LMsgPart));
-      TalLogType.WARN:    NSLog(StringToID('[W][I][D][V]'+LThreadID+' ' + LMsgPart));
-      TalLogType.ERROR:   NSLog(StringToID('[E][W][I][D][V]'+LThreadID+' ' + LMsgPart));
-      TalLogType.ASSERT:  NSLog(StringToID('[A][E][W][I][D][V]'+LThreadID+' ' + LMsgPart));
+      // TalLogType.VERBOSE: NSLog(StringToID('[V]'+LThreadID+' ' + LMsgPart));
+      // TalLogType.DEBUG:   NSLog(StringToID('[D][V]'+LThreadID+' ' + LMsgPart));
+      // TalLogType.INFO:    NSLog(StringToID('[I][D][V]'+LThreadID+' ' + LMsgPart));
+      // TalLogType.WARN:    NSLog(StringToID('[W][I][D][V]'+LThreadID+' ' + LMsgPart));
+      // TalLogType.ERROR:   NSLog(StringToID('[E][W][I][D][V]'+LThreadID+' ' + LMsgPart));
+      // TalLogType.ASSERT:  NSLog(StringToID('[A][E][W][I][D][V]'+LThreadID+' ' + LMsgPart));
+      TalLogType.VERBOSE: _os_log_impl(_ImageHeader{dso}, _LogHandle{log}, OS_LOG_TYPE_DEFAULT{&type}, M.AsAnsi('[V]'+LThreadID+' '+LMsgPart).ToPointer{format}, @LBuf{buf}, SizeOf(LBuf){size});
+      TalLogType.DEBUG:   _os_log_impl(_ImageHeader{dso}, _LogHandle{log}, OS_LOG_TYPE_DEFAULT{&type}, M.AsAnsi('[D][V]'+LThreadID+' '+LMsgPart).ToPointer{format}, @LBuf{buf}, SizeOf(LBuf){size});
+      TalLogType.INFO:    _os_log_impl(_ImageHeader{dso}, _LogHandle{log}, OS_LOG_TYPE_DEFAULT{&type}, M.AsAnsi('[I][D][V]'+LThreadID+' '+LMsgPart).ToPointer{format}, @LBuf{buf}, SizeOf(LBuf){size});
+      TalLogType.WARN:    _os_log_impl(_ImageHeader{dso}, _LogHandle{log}, OS_LOG_TYPE_DEFAULT{&type}, M.AsAnsi('[W][I][D][V]'+LThreadID+' '+LMsgPart).ToPointer{format}, @LBuf{buf}, SizeOf(LBuf){size});
+      TalLogType.ERROR:   _os_log_impl(_ImageHeader{dso}, _LogHandle{log}, OS_LOG_TYPE_DEFAULT{&type}, M.AsAnsi('[E][W][I][D][V]'+LThreadID+' '+LMsgPart).ToPointer{format}, @LBuf{buf}, SizeOf(LBuf){size});
+      TalLogType.ASSERT:  _os_log_impl(_ImageHeader{dso}, _LogHandle{log}, OS_LOG_TYPE_DEFAULT{&type}, M.AsAnsi('[A][E][W][I][D][V]'+LThreadID+' '+LMsgPart).ToPointer{format}, @LBuf{buf}, SizeOf(LBuf){size});
     end;
   end;
   {$ELSEIF defined(MSWINDOWS)}
@@ -3765,6 +3816,88 @@ begin
   var dLon: Double := (ALongitude2 - ALongitude1) * (PI / 180); // Difference in longitude (radians)
   var a: Double := Sqr(Sin(dLat / 2)) + Cos(ALatitude1 * (PI / 180)) * Cos(ALatitude2 * (PI / 180)) * Sqr(Sin(dLon / 2));
   Result := 2 * 6371{Earth's mean radius in km} * ArcTan2(Sqrt(a), Sqrt(1 - a)) * 1000; // Distance in meters
+end;
+
+{*************************************}
+function  ALGetAppVersionA: AnsiString;
+begin
+  {$IF defined(ANDROID)}
+  Result := AnsiString(ALGetAppVersionW)
+  {$ELSEIF defined(IOS)}
+  Result := AnsiString(ALGetAppVersionW)
+  {$ELSEIF defined(MSWINDOWS)}
+  Result := AlGetFileVersionA(ALGetModulePathW+ALGetModuleNameW);
+  {$ELSE}
+  Result := 'x.x.x';
+  {$ENDIF}
+end;
+
+{*********************************}
+function  ALGetAppVersionW: String;
+begin
+  {$IF defined(ANDROID)}
+  var LPackageManager := TandroidHelper.Activity.getPackageManager;
+  if LPackageManager <> nil then begin
+    var LPackageInfo := LPackageManager.getPackageInfo(TandroidHelper.Context.getPackageName(), TJPackageManager.JavaClass.GET_ACTIVITIES);
+    if LPackageInfo <> nil then Result := JStringToString(LPackageInfo.versionName) // 1.0.8
+    else Result := 'x.x.x';
+  end
+  else Result := 'x.x.x';
+  {$ELSEIF defined(IOS)}
+  var LVersionObject := TiOSHelper.MainBundle.infoDictionary.objectForKey(StringToID('CFBundleVersion'));
+  if LVersionObject <> nil then Result := NSStrToStr(TNSString.Wrap(LVersionObject)) // 1.0.8
+  else Result := 'x.x.x';
+  {$ELSEIF defined(MSWINDOWS)}
+  Result := AlGetFileVersionW(ALGetModulePathW+ALGetModuleNameW);
+  {$ELSE}
+  Result := 'x.x.x';
+  {$ENDIF}
+end;
+
+{***************************************************************}
+function ALSemanticVersionToInt64(const AVersion: string): Int64;
+begin
+  var LParts := AVersion.Split(['.']);
+  if Length(LParts) <> 3 then
+    raise Exception.CreateFmt('Invalid version format: "%s". Expected x.x.x', [AVersion]);
+  var LMajor: Int64 := ALStrToInt64(LParts[0]);
+  var LMinor: Int64 := ALStrToInt64(LParts[1]);
+  var LPatch: Int64 := ALStrToInt64(LParts[2]);
+  if (LMajor < 0) or (LMajor > 999999) or
+     (LMinor < 0) or (LMinor > 999999) or
+     (LPatch < 0) or (LPatch > 999999) then
+    raise Exception.CreateFmt('Invalid version value: "%s". Each part must be between 0 and 999999.', [AVersion]);
+  Result := (LMajor * 1000000000000) +
+            (LMinor * 1000000) +
+            LPatch;
+end;
+
+{********************************************************************}
+function ALInt64ToSemanticVersionA(const AVersion: Int64): AnsiString;
+begin
+  const CPartBase: Int64 = 1000000;
+  if (AVersion < 0) or (AVersion > 999999999999999999) then
+    raise Exception.CreateFmt('Invalid packed version: %d.', [AVersion]);
+  var LMajor: Int64 := AVersion div (CPartBase * CPartBase);
+  var LMinor: Int64 := (AVersion div CPartBase) mod CPartBase;
+  var LPatch: Int64 := AVersion mod CPartBase;
+  Result := ALIntToStrA(LMajor) + '.' +
+            ALIntToStrA(LMinor) + '.' +
+            ALIntToStrA(LPatch);
+end;
+
+{****************************************************************}
+function ALInt64ToSemanticVersionW(const AVersion: Int64): string;
+begin
+  const CPartBase: Int64 = 1000000;
+  if (AVersion < 0) or (AVersion > 999999999999999999) then
+    raise Exception.CreateFmt('Invalid packed version: %d.', [AVersion]);
+  var LMajor: Int64 := AVersion div (CPartBase * CPartBase);
+  var LMinor: Int64 := (AVersion div CPartBase) mod CPartBase;
+  var LPatch: Int64 := AVersion mod CPartBase;
+  Result := ALIntToStrW(LMajor) + '.' +
+            ALIntToStrW(LMinor) + '.' +
+            ALIntToStrW(LPatch);
 end;
 
 {****************}
@@ -4333,6 +4466,11 @@ initialization
   {$IF defined(MSWindows)}
   ALPerformanceFrequency := -1;
   {$ENDIF}
+  {$IF defined(IOS)}
+  var M: TMarshaller;
+  _LogHandle := os_log_create(M.AsAnsi(NSStrToStr(TNSBundle.OCClass.mainBundle.bundleIdentifier)).ToPointer, 'General');
+  _ImageHeader := _dyld_get_image_header(0);
+  {$ENDIF}
   _ALLogHistory := TList<_TALLogItem>.Create;
 
 finalization
@@ -4344,6 +4482,9 @@ finalization
   {$IF defined(MSWINDOWS)}
   if ALRunningMutex <> 0 then
     CloseHandle(ALRunningMutex);
+  {$ENDIF}
+  {$IF defined(IOS)}
+  os_release(_LogHandle);
   {$ENDIF}
 
 end.
