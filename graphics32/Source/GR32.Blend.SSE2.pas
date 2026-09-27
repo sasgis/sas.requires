@@ -54,6 +54,7 @@ uses
 // Blend
 //------------------------------------------------------------------------------
 function BlendReg_SSE2(F, B: TColor32): TColor32; {$IFDEF FPC} assembler; {$ENDIF}
+function BlendReg_SSE41(F, B: TColor32): TColor32; {$IFDEF FPC} assembler; {$ENDIF}
 procedure BlendMem_SSE2(F: TColor32; var B: TColor32); {$IFDEF FPC} assembler; {$ENDIF}
 procedure BlendMems_SSE2(F: TColor32; B: PColor32; Count: Integer); {$IFDEF FPC} assembler; {$ENDIF}
 
@@ -110,6 +111,13 @@ procedure ScaleMems_SSE41(Dst: PColor32; Count: Integer; Weight: Cardinal); {$IF
 procedure FastScaleMems_SSE41(Dst: PColor32; Count: Integer; Weight: Cardinal); {$IFDEF FPC} assembler; {$ENDIF}
 
 
+//------------------------------------------------------------------------------
+// Premultiply/Unpremultiply
+//------------------------------------------------------------------------------
+procedure PremultiplyMem_SSE41(Pixels: PColor32Entry; Count: Integer);
+procedure UnpremultiplyMem_SSE41(Pixels: PColor32Entry; Count: Integer);
+
+
 {$ifend}
 
 //------------------------------------------------------------------------------
@@ -131,61 +139,93 @@ uses
 //      Blend
 //
 //------------------------------------------------------------------------------
+// Blend foreground color (F) with a background color (B), using alpha channel
+// value of F.
+//
+// Result := F.a * (F.argb - B.argb) + B.argb
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // BlendReg
 //------------------------------------------------------------------------------
-function BlendReg_SSE2(F, B: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
+function BlendReg_SSE41(F, B: TColor32): TColor32;
+(*
+        BlendReg_SSE41_Sanyin_257
+        Contributed by: Sanyin
+
+        Errors: 0
+
+        Calculates "x div 255" as:
+
+          x div 255 = ((x + 128) * 257) >> 16
+*)
 asm
-  // blend foreground color (F) to a background color (B),
-  // using alpha channel value of F
-  // EAX <- F
-  // EDX <- B
-  // Result := Fa * (Fargb - Bargb) + Bargb
+{$if defined(TARGET_x86)}
+        MOVD      XMM0, EAX
+        MOVD      XMM1, EDX
+{$elseif defined(TARGET_x64)}
+        MOVD      XMM0, ECX
+        MOVD      XMM1, EDX
+{$ifend}
 
-{$IFDEF TARGET_x86}
-        MOVD      XMM0,EAX           // XMM0  <-  00 00 00 00 00 00 00 00 00 00 00 00 Fa Fr Fg Fb
-        PXOR      XMM3,XMM3          // XMM3  <-  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-        MOVD      XMM2,EDX           // XMM2  <-  00 00 00 00 00 00 00 00 00 00 00 00 Ba Br Bg Bb
-        PUNPCKLBW XMM0,XMM3          // XMM0  <-  00 00 00 00 00 00 00 00 00 Fa 00 Fr 00 Fg 00 Fb
-        MOV       ECX,bias_ptr       // ECX   <-  Pointer to Bias
-        PUNPCKLBW XMM2,XMM3          // XMM2  <-  00 00 00 00 00 00 00 00 00 Ba 00 Br 00 Bg 00 Bb
-        MOVQ      XMM1,XMM0          // XMM1  <-  00 00 00 00 00 00 00 00 00 Fa 00 Fr 00 Fg 00 Fb
-        PSHUFLW   XMM1,XMM1,$FF      // XMM1  <-  00 00 00 00 00 00 00 00 00 Fa 00 Fa 00 Fa 00 Fa
-        PSUBW     XMM0,XMM2          // XMM0  <-  00 00 00 00 00 00 00 00 00 Da 00 Dr 00 Dg 00 Db
-        PSLLW     XMM2,8             // XMM2  <-  00 00 00 00 00 00 00 00 Ba 00 Br 00 Bg 00 Bb 00
-        PMULLW    XMM0,XMM1          // XMM0  <-  00 00 00 00 00 00 00 00 Pa ** Pr ** Pg ** Pb **
-        PADDW     XMM2,[ECX]         // add bias
-        PADDW     XMM2,XMM0          // XMM2  <-  00 00 00 00 00 00 00 00 Qa ** Qr ** Qg ** Qb **
-        PSRLW     XMM2,8             // XMM2  <-  00 00 00 00 00 00 00 00 00 Qa ** Qr ** Qg ** Qb
-        PACKUSWB  XMM2,XMM3          // XMM2  <-  00 00 00 00 00 00 00 00 00 00 00 00 Qa Qr Qg Qb
-        MOVD      EAX,XMM2           // EAX   <-  Za Zr Zg Zb
-        OR        EAX,$FF000000      // EAX   <-  FF Zr Zg Zb
-{$ENDIF}
+        PMOVZXBW  XMM0, XMM0
+        PMOVZXBW  XMM1, XMM1
+        PSHUFLW   XMM2, XMM0, $FF
+        MOVDQA    XMM3, DQWORD PTR [SSE_00FF00FF_ALIGNED]
+        PSUBW     XMM3, XMM2
+        PMULLW    XMM0, XMM2
+        PMULLW    XMM1, XMM3
+        PADDW     XMM0, XMM1
+        PADDW     XMM0, DQWORD PTR [SSE_00800080_ALIGNED]
+        PMULHUW   XMM0, DQWORD PTR [SSE_01010101_ALIGNED]
+        PACKUSWB  XMM0, XMM0
+        MOVD      EAX, XMM0
+        OR        EAX, $FF000000
+end;
 
-{$IFDEF TARGET_x64}
-        MOVD      XMM0,ECX           // XMM0  <-  00 00 00 00 00 00 00 00 00 00 00 00 Fa Fr Fg Fb
-        PXOR      XMM3,XMM3          // XMM3  <-  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-        MOVD      XMM2,EDX           // XMM2  <-  00 00 00 00 00 00 00 00 00 00 00 00 Ba Br Bg Bb
-        PUNPCKLBW XMM0,XMM3          // XMM0  <-  00 00 00 00 00 00 00 00 00 Fa 00 Fr 00 Fg 00 Fb
-{$IFNDEF FPC}
-        MOV       RAX,bias_ptr       // RAX   <-  Pointer to Bias
-{$ELSE}
-        MOV       RAX,[RIP+bias_ptr] // XXX : Enabling PIC by relative offsetting for x64
-{$ENDIF}
-        PUNPCKLBW XMM2,XMM3          // XMM2  <-  00 00 00 00 00 00 00 00 00 Ba 00 Br 00 Bg 00 Bb
-        MOVQ      XMM1,XMM0          // XMM1  <-  00 00 00 00 00 00 00 00 00 Fa 00 Fr 00 Fg 00 Fb
-        PSHUFLW   XMM1,XMM1,$FF      // XMM1  <-  00 00 00 00 00 00 00 00 00 Fa 00 Fa 00 ** 00 **
-        PSUBW     XMM0,XMM2          // XMM0  <-  00 00 00 00 00 00 00 00 00 Da 00 Dr 00 Dg 00 Db
-        PSLLW     XMM2,8             // XMM2  <-  00 00 00 00 00 00 00 00 Ba 00 Br 00 Bg 00 Bb 00
-        PMULLW    XMM0,XMM1          // XMM2  <-  00 00 00 00 00 00 00 00 Pa ** Pr ** Pg ** Pb **
-        PADDW     XMM2,[RAX]         // add bias
-        PADDW     XMM2,XMM0          // XMM2  <-  00 00 00 00 00 00 00 00 Qa ** Qr ** Qg ** Qb **
-        PSRLW     XMM2,8             // XMM2  <-  00 00 00 00 00 00 00 00 00 Qa ** Qr ** Qg ** Qb
-        PACKUSWB  XMM2,XMM3          // XMM2  <-  00 00 00 00 00 00 00 00 00 00 00 00 Qa Qr Qg Qb
-        MOVD      EAX,XMM2           // EAX   <-  Za Zr Zg Zb
-        OR        EAX,$FF000000      // EAX   <-  FF Zr Zg Zb
-{$ENDIF}
+//------------------------------------------------------------------------------
+
+function BlendReg_SSE2(F, B: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
+(*
+        BlendReg_SSE2_Sanyin_257
+        Contributed by: Sanyin
+
+        Errors: 0
+
+        Calculates "x div 255" as:
+
+          x div 255 = ((x + 128) * 257) >> 16
+*)
+{$if defined(TARGET_x64) and defined(FPC)}begin{$ifend}
+asm
+{$if defined(TARGET_x64) and not defined(FPC)}
+        .SAVENV XMM4
+{$ifend}
+
+{$if defined(TARGET_x86)}
+        MOVD      XMM0, EAX
+        MOVD      XMM1, EDX
+{$elseif defined(TARGET_x64)}
+        MOVD      XMM0, ECX
+        MOVD      XMM1, EDX
+{$ifend}
+
+        PXOR      XMM4, XMM4
+        PUNPCKLBW XMM0, XMM4          // Components of F (word)
+        PUNPCKLBW XMM1, XMM4          // Components of B (word)
+        PSHUFLW   XMM2, XMM0, $FF     // Broadcast Fa into words
+        MOVDQA    XMM3, DQWORD PTR [SSE_00FF00FF_ALIGNED]
+        PSUBW     XMM3, XMM2
+        PMULLW    XMM0, XMM2
+        PMULLW    XMM1, XMM3
+        PADDW     XMM0, XMM1
+        PADDW     XMM0, DQWORD PTR [SSE_00800080_ALIGNED]
+        PMULHUW   XMM0, DQWORD PTR [SSE_01010101_ALIGNED]
+        PACKUSWB  XMM0, XMM0
+        MOVD      EAX, XMM0
+        OR        EAX, $FF000000
+
+{$if defined(TARGET_x64) and defined(FPC)}end['XMM4'];{$ifend}
 end;
 
 
@@ -194,7 +234,7 @@ end;
 //------------------------------------------------------------------------------
 procedure BlendMem_SSE2(F: TColor32; var B: TColor32); {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_x86}
+{$if defined(TARGET_x86)}
   // EAX - Color X
   // [EDX] - Color Y
   // Result := W * (X - Y) + Y
@@ -223,9 +263,7 @@ asm
 
 @1:     RET
 @2:     MOV       [EDX], EAX
-{$ENDIF}
-
-{$IFDEF TARGET_x64}
+{$elseif defined(TARGET_x64)}
   // ECX - Color X
   // [EDX] - Color Y
   // Result := W * (X - Y) + Y
@@ -258,20 +296,19 @@ asm
 
 @1:     RET
 @2:     MOV       [RDX], ECX
-{$ENDIF}
+{$ifend}
 end;
 
 
 //------------------------------------------------------------------------------
 // BlendRegEx
 //------------------------------------------------------------------------------
+// Result := M * F.a * (F.argb - B.argb) + B.argb
+//------------------------------------------------------------------------------
 function BlendRegEx_SSE2(F, B: TColor32; M: Cardinal): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-  // blend foreground color (F) to a background color (B),
-  // using alpha channel value of F
-  // Result := M * Fa * (Fargb - Bargb) + Bargb
+{$if defined(TARGET_x86)}
 
-{$IFDEF TARGET_x86}
   // EAX <- F
   // EDX <- B
   // ECX <- M
@@ -305,9 +342,9 @@ asm
 
 @1:     MOV       EAX,EDX
         POP       EBX
-{$ENDIF}
 
-{$IFDEF TARGET_x64}
+{$elseif defined(TARGET_x64)}
+
   // ECX <- F
   // EDX <- B
   // R8D <- M
@@ -346,18 +383,20 @@ asm
         RET
 
 @1:     MOV       EAX,EDX
-{$ENDIF}
+
+{$ifend}
 end;
 
 
 //------------------------------------------------------------------------------
 // BlendMemEx
 //------------------------------------------------------------------------------
+// B.argb := M * F.a * (F.argb - B.argb) + B.argb
+//------------------------------------------------------------------------------
 procedure BlendMemEx_SSE2(F: TColor32; var B:TColor32; M: Cardinal); {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_x86}
-  // blend foreground color (F) to a background color (B),
-  // using alpha channel value of F
+
+{$if defined(TARGET_x86)}
   // EAX <- F
   // [EDX] <- B
   // ECX <- M
@@ -394,9 +433,9 @@ asm
         POP       EBX
 
 @2:
-{$ENDIF}
 
-{$IFDEF TARGET_x64}
+{$elseif defined(TARGET_x64)}
+
   // blend foreground color (F) to a background color (B),
   // using alpha channel value of F
   // RCX <- F
@@ -439,7 +478,8 @@ asm
         PACKUSWB  XMM1,XMM0
         MOVD      DWORD PTR [RDX],XMM1
 @1:
-{$ENDIF}
+
+{$ifend}
 end;
 
 
@@ -448,7 +488,8 @@ end;
 //------------------------------------------------------------------------------
 function BlendRegRGB_SSE2(F, B: TColor32; W: Cardinal): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_x86}
+{$if defined(TARGET_x86)}
+
         PXOR      XMM2,XMM2
         MOVD      XMM0,EAX
         PUNPCKLBW XMM0,XMM2
@@ -466,9 +507,9 @@ asm
         PSRLW     XMM1,8
         PACKUSWB  XMM1,XMM2
         MOVD      EAX,XMM1
-{$ENDIF}
 
-{$IFDEF TARGET_x64}
+{$elseif defined(TARGET_x64)}
+
         PXOR      XMM2,XMM2
         MOVD      XMM0,ECX
         PUNPCKLBW XMM0,XMM2
@@ -490,7 +531,8 @@ asm
         PSRLW     XMM1,8
         PACKUSWB  XMM1,XMM2
         MOVD      EAX,XMM1
-{$ENDIF}
+
+{$ifend}
 end;
 
 
@@ -499,7 +541,8 @@ end;
 //------------------------------------------------------------------------------
 procedure BlendMemRGB_SSE2(F: TColor32; var B: TColor32; W: Cardinal); {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_x86}
+{$if defined(TARGET_x86)}
+
         PXOR      XMM2,XMM2
         MOVD      XMM0,EAX
         PUNPCKLBW XMM0,XMM2
@@ -517,8 +560,9 @@ asm
         PSRLW     XMM1,8
         PACKUSWB  XMM1,XMM2
         MOVD      [EDX],XMM1
-{$ENDIF}
-{$IFDEF TARGET_x64}
+
+{$elseif defined(TARGET_x64)}
+
         MOVD      XMM1,R8D
 
         PXOR      XMM4,XMM4
@@ -553,7 +597,8 @@ asm
         PACKUSWB  XMM0,XMM4
 
         MOVD      [RDX],XMM0
-{$ENDIF}
+
+{$ifend}
 end;
 
 
@@ -563,7 +608,8 @@ end;
 {$IFDEF TEST_BLENDMEMRGB128SSE4}
 procedure BlendMemRGB128_SSE4(F: TColor32; var B: TColor32; W: UInt64); {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_x86}
+{$if defined(TARGET_x86)}
+
         MOVQ      XMM1,W
 
         PXOR      XMM4,XMM4
@@ -597,8 +643,9 @@ asm
         PACKUSWB  XMM0,XMM4
 
         MOVQ      [EDX].QWORD,XMM0
-{$ENDIF}
-{$IFDEF TARGET_x64}
+
+{$elseif defined(TARGET_x64)}
+
         MOVQ      XMM1,R8
 
         PXOR      XMM4,XMM4
@@ -632,7 +679,8 @@ asm
         PACKUSWB  XMM0,XMM4
 
         MOVQ      [RDX].QWORD,XMM0
-{$ENDIF}
+
+{$ifend}
 end;
 {$ENDIF}
 
@@ -640,6 +688,7 @@ end;
 //------------------------------------------------------------------------------
 // BlendLine
 //------------------------------------------------------------------------------
+
 //------------------------------------------------------------------------------
 // BlendLine_SSE41
 //
@@ -827,6 +876,7 @@ asm
 @Done:
 
 {$elseif defined(TARGET_X64)}
+
   //
   // Parameters (x64):
   //   RCX <- Src
@@ -1011,7 +1061,8 @@ const
   COpaque: QWORD = QWORD($FF000000FF000000);
 {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX <- Src
   // EDX <- Dst
   // ECX <- Count
@@ -1095,9 +1146,8 @@ asm
         JS        @1
 @3:
 
-{$ENDIF}
+{$elseif defined(TARGET_x64)}
 
-{$IFDEF TARGET_X64}
         TEST      R8D,R8D
         JLE       @3
 
@@ -1188,7 +1238,8 @@ asm
         PACKUSWB  XMM0,XMM4
         MOVD      [RDX], XMM0
 @3:
-{$ENDIF}
+
+{$ifend}
 end;
 
 
@@ -1205,7 +1256,8 @@ asm
   // For Fa * Fargb, ((a*x) div 255) is approximated as ((((a * $101) shr 16) * x + 128) div 256)
   // For Fa * Bargb, (x div 255) is approximated as ((x + 128) div 256)
   //
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX <- Src: TColor32
   // EDX <- Dst: PColor32
   // ECX <- Count
@@ -1313,9 +1365,8 @@ asm
 
         CALL      FillLongword // EAX:Dest, EDX:Count, ECX:Value
 
-{$ENDIF}
+{$elseif defined(TARGET_x64)}
 
-{$IFDEF TARGET_X64}
   // ECX <- Src: TColor32
   // RDX <- Dst: PColor32
   // R8D <- Count
@@ -1432,7 +1483,7 @@ asm
         CALL      [rip+FillLongword] // RCX:Dest, EDX:Count, R8D:Value
 {$ENDIF}
 
-{$ENDIF}
+{$ifend}
 end;
 
 
@@ -1441,7 +1492,8 @@ end;
 //------------------------------------------------------------------------------
 procedure BlendLineEx_SSE2(Src, Dst: PColor32; Count: Integer; M: Cardinal); {$IFDEF FPC} assembler; {$IFDEF TARGET_X64}nostackframe;{$ENDIF} {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX <- Src
   // EDX <- Dst
   // ECX <- Count
@@ -1500,9 +1552,9 @@ asm
         POP       EDI
         POP       ESI
 @4:
-{$ENDIF}
 
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
+
   // ECX <- Src
   // EDX <- Dst
   // R8D <- Count
@@ -1562,7 +1614,8 @@ asm
         DEC       R8D
         JNZ       @1
 @4:
-{$ENDIF}
+
+{$ifend}
 end;
 
 
@@ -1577,7 +1630,8 @@ end;
 //------------------------------------------------------------------------------
 function CombineReg_SSE2(X, Y: TColor32; W: Cardinal): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX - Color X
   // EDX - Color Y
   // ECX - Weight of X [0..255]
@@ -1604,9 +1658,9 @@ asm
         PSRLW     XMM1,8
         PACKUSWB  XMM1,XMM0
         MOVD      EAX,XMM1
-{$ENDIF}
 
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
+
   // ECX - Color X
   // EDX - Color Y
   // R8D - Weight of X [0..255]
@@ -1641,7 +1695,8 @@ asm
         PSRLW     XMM1,8
         PACKUSWB  XMM1,XMM0
         MOVD      EAX,XMM1
-{$ENDIF}
+
+{$ifend}
 end;
 
 
@@ -1666,7 +1721,8 @@ asm
   // Approximates (x div 255) as ((x + 128) div 256)
   //
 
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX        Color X
   // [EDX]      Color Y
   // ECX        Weight of X [0..255]
@@ -1713,8 +1769,9 @@ asm
 
 @return_x:
         MOV       [EDX], EAX                    // ColorY <- ColorX
-{$ENDIF}
-{$IFDEF TARGET_X64}
+
+{$elseif defined(TARGET_x64)}
+
   // ECX - Color X
   // [RDX] - Color Y
   // R8D - Weight of X [0..255]
@@ -1758,7 +1815,8 @@ asm
 @1:     RET
 
 @2:     MOV       [RDX],ECX
-{$ENDIF}
+
+{$ifend}
 end;
 
 //------------------------------------------------------------------------------
@@ -1782,7 +1840,8 @@ asm
   // Approximates (x div 255) as ((x + 128) div 256)
   //
 
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX        Color X (Foreground)
   // [EDX]      Color Y (Background)
   // ECX        Weight of X [0..255]
@@ -1793,7 +1852,7 @@ asm
         // Return ColorX if weight=255
         CMP       ECX, $FF
         JZ        @return_x
-{$ELSE}
+{$elseif defined(TARGET_x64)}
   // ECX        Color X (Foreground)
   // [RDX]      Color Y (Background)
   // R8D        Weight of X [0..255]
@@ -1805,23 +1864,23 @@ asm
         // Return ColorX if weight=255
         CMP       ECX, $FF
         JZ        @return_x
-{$ENDIF}
+{$ifend}
 
         // Load ColorX and ColorY
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      XMM1, EAX                     // XMM1 <- ColorX       (Fa Fr Fg Fb)
         MOVD      XMM2, [EDX]                   // XMM2 <- ColorY       (Ba Br Bg Bb)
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         MOVD      XMM1, ECX                     // XMM1 <- ColorX       (Fa Fr Fg Fb)
         MOVD      XMM2, [RDX]                   // XMM2 <- ColorY       (Ba Br Bg Bb)
-{$ENDIF}
+{$ifend}
 
         // Duplicate weight into 4 words
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      XMM3, ECX                     // XMM3 <- Weight       (00 00 00 00 00 00 00 WW)
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         MOVD      XMM3, R8D                     // XMM3 <- Weight       (00 00 00 00 00 00 00 WW)
-{$ENDIF}
+{$ifend}
         PSHUFLW   XMM3, XMM3, 0                 //                      (00 WW 00 WW 00 WW 00 WW)
 
         // Duplicate 128 into 4 words for saturated biasing
@@ -1850,21 +1909,21 @@ asm
 
         // Pack result back from word to byte components
         PACKUSWB  XMM1, XMM1                    // XMM1 <- XMM1.low     (Ra Rr Rg Rb)
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      [EDX], XMM1                   // ColorY <- XMM1
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         MOVD      [RDX], XMM1                   // ColorY <- XMM1
-{$ENDIF}
+{$ifend}
 
 @exit:
         RET
 
 @return_x:
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOV       [EDX], EAX                    // ColorY <- ColorX
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         MOV       [RDX], ECX                    // ColorY <- ColorX
-{$ENDIF}
+{$ifend}
 end;
 
 //------------------------------------------------------------------------------
@@ -1890,7 +1949,8 @@ asm
   // Approximates Round(x / 255) as (((x + $7F) * $8081) shr 23) = ((x * $8081 + Bias) shr 23)
   //
 
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX        Color X (Foreground)
   // [EDX]      Color Y (Background)
   // ECX        Weight of X [0..255]
@@ -1901,7 +1961,7 @@ asm
         // Return ColorX if weight=255
         CMP       ECX, $FF
         JZ        @return_x
-{$ELSE}
+{$elseif defined(TARGET_x64)}
   // ECX        Color X (Foreground)
   // [RDX]      Color Y (Background)
   // R8D        Weight of X [0..255]
@@ -1913,23 +1973,23 @@ asm
         // Return ColorX if weight=255
         CMP       R8D, $FF
         JZ        @return_x
-{$ENDIF}
+{$ifend}
 
         // Load ColorX and ColorY
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      XMM1, EAX                     // XMM1 <- ColorX       (Fa Fr Fg Fb)
         MOVD      XMM2, [EDX]                   // XMM2 <- ColorY       (Ba Br Bg Bb)
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         MOVD      XMM1, ECX                     // XMM1 <- ColorX       (Fa Fr Fg Fb)
         MOVD      XMM2, [RDX]                   // XMM2 <- ColorY       (Ba Br Bg Bb)
-{$ENDIF}
+{$ifend}
 
         // Duplicate weight*$8081 into 4 dwords
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         IMUL      ECX, ECX, $8081
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         IMUL      ECX, R8D, $8081
-{$ENDIF}
+{$ifend}
         MOVD      XMM3, ECX                     // XMM3 <- Weight * $8081
         PSHUFD    XMM3, XMM3, 0                 // XMM3[0..3] <- XMM3[0][0..3]
 
@@ -1965,21 +2025,21 @@ asm
 
         // Result := Value + ColorY
         PADDB     XMM1, XMM2                    // XMM0 <- XMM2 + ColorY
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      [EDX], XMM1                   // ColorY <- XMM1
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         MOVD      [RDX], XMM1                   // ColorY <- XMM1
-{$ENDIF}
+{$ifend}
 
 @exit:
         RET
 
 @return_x:
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOV       [EDX], EAX                    // ColorY <- ColorX
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         MOV       [RDX], ECX                    // ColorY <- ColorX
-{$ENDIF}
+{$ifend}
 end;
 
 //------------------------------------------------------------------------------
@@ -2001,7 +2061,7 @@ asm
   // Approximates Round(x / 255) as ((x * $8081 + Bias) shr 23)
   //
 
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
   // EAX        Color X (Foreground)
   // [EDX]      Color Y (Background)
   // ECX        Weight of X [0..255]
@@ -2012,7 +2072,7 @@ asm
         // Return ColorX if weight=255
         CMP       ECX, $FF
         JZ        @return_x
-{$ELSE}
+{$elseif defined(TARGET_x64)}
   // ECX        Color X (Foreground)
   // [RDX]      Color Y (Background)
   // R8D        Weight of X [0..255]
@@ -2024,23 +2084,23 @@ asm
         // Return ColorX if weight=255
         CMP       R8D, $FF
         JZ        @return_x
-{$ENDIF}
+{$ifend}
 
         // Load ColorX and ColorY
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      XMM0, EAX                     // XMM0 <- ColorX       (Fa Fr Fg Fb)
         MOVD      XMM1, [EDX]                   // XMM1 <- ColorY       (Ba Br Bg Bb)
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         MOVD      XMM0, ECX                     // XMM0 <- ColorX       (Fa Fr Fg Fb)
         MOVD      XMM1, [RDX]                   // XMM1 <- ColorY       (Ba Br Bg Bb)
-{$ENDIF}
+{$ifend}
 
         // Weight = Weight * $8081
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         IMUL      ECX, ECX, $8081
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         IMUL      ECX, R8D, $8081
-{$ENDIF}
+{$ifend}
 
         // Convert from bytes to integers
         // PMOVZXBD is SSE4.1
@@ -2077,21 +2137,21 @@ asm
 
         // Result := Value + ColorY
         PADDB     XMM2, XMM1                    // XMM2 <- XMM2 + ColorY
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      [EDX], XMM2                   // ColorY <- XMM2
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         MOVD      [RDX], XMM2                   // ColorY <- XMM2
-{$ENDIF}
+{$ifend}
 
 @exit:
         RET
 
 @return_x:
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOV       [EDX], EAX                    // ColorY <- ColorX
-{$ELSE}
+{$elseif defined(TARGET_x64)}
         MOV       [RDX], ECX                    // ColorY <- ColorX
-{$ENDIF}
+{$ifend}
 end;
 
 
@@ -2100,7 +2160,8 @@ end;
 //------------------------------------------------------------------------------
 procedure CombineLine_SSE2(Src, Dst: PColor32; Count: Integer; W: Cardinal); {$IFDEF FPC} assembler; {$IFDEF TARGET_X64}nostackframe;{$ENDIF} {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX <- Src
   // EDX <- Dst
   // ECX <- Count
@@ -2155,9 +2216,9 @@ asm
 @4:     SHL       ECX,2
         CALL      Move
         POP       EBX
-{$ENDIF}
 
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
+
   // ECX <- Src
   // EDX <- Dst
   // R8D <- Count
@@ -2213,7 +2274,8 @@ asm
 
 @3:     SHL       R8D,2
         CALL      Move
-{$ENDIF}
+
+{$ifend}
 end;
 
 
@@ -2222,38 +2284,40 @@ end;
 //      Merge
 //
 //------------------------------------------------------------------------------
+(*
+  This is an implementation of the merge formula, as described
+  in a paper by Bruce Wallace in 1981. Merging is associative,
+  that is, A over (B over C) = (A over B) over C. The formula is,
+
+    Ra = Fa + Ba * (1 - Fa)
+    Rc = (Fa * (Fc - Bc * Ba) + Bc * Ba) / Ra
+
+  where
+
+    Rc is the resultant color,
+    Ra is the resultant alpha,
+    Fc is the foreground color,
+    Fa is the foreground alpha,
+    Bc is the background color,
+    Ba is the background alpha.
+
+  Implementation:
+
+    Ra := 1 - (1 - Fa) * (1 - Ba);
+    Wa := Fa / Ra;
+    Rc := Bc + Wa * (Fc - Bc);
+
+    (1 - Fa) * (1 - Ba) = 1 - Fa - Ba + Fa * Ba = (1 - Ra)
+*)
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // MergeReg
 //------------------------------------------------------------------------------
 function MergeReg_SSE2(F, B: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-  { This is an implementation of the merge formula, as described
-    in a paper by Bruce Wallace in 1981. Merging is associative,
-    that is, A over (B over C) = (A over B) over C. The formula is,
+{$if defined(TARGET_x86)}
 
-      Ra = Fa + Ba * (1 - Fa)
-      Rc = (Fa * (Fc - Bc * Ba) + Bc * Ba) / Ra
-
-    where
-
-      Rc is the resultant color,
-      Ra is the resultant alpha,
-      Fc is the foreground color,
-      Fa is the foreground alpha,
-      Bc is the background color,
-      Ba is the background alpha.
-
-    Implementation:
-
-      Ra := 1 - (1 - Fa) * (1 - Ba);
-      Wa := Fa / Ra;
-      Rc := Bc + Wa * (Fc - Bc);
-
-      (1 - Fa) * (1 - Ba) = 1 - Fa - Ba + Fa * Ba = (1 - Ra)
-  }
-
-{$IFDEF TARGET_X86}
         TEST      EAX,$FF000000  // foreground completely transparent =>
         JZ        @1             // result = background
         CMP       EAX,$FF000000  // foreground completely opaque =>
@@ -2293,9 +2357,9 @@ asm
         RET
 @1:     MOV       EAX,EDX
 @2:
-{$ENDIF}
 
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
+
         TEST      ECX,$FF000000   // foreground completely transparent =>
         JZ        @1              // result = background
         MOV       EAX,ECX         //  EAX  <-  Fa
@@ -2336,7 +2400,8 @@ asm
         RET
 @1:     MOV       EAX,EDX
 @2:
-{$ENDIF}
+
+{$ifend}
 end;
 
 
@@ -2351,19 +2416,17 @@ end;
 //------------------------------------------------------------------------------
 function ColorAdd_SSE2(C1, C2: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      XMM0,EAX
         MOVD      XMM1,EDX
         PADDUSB   XMM0,XMM1
         MOVD      EAX,XMM0
-{$ENDIF}
-
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
         MOVD      XMM0,ECX
         MOVD      XMM1,EDX
         PADDUSB   XMM0,XMM1
         MOVD      EAX,XMM0
-{$ENDIF}
+{$ifend}
 end;
 
 
@@ -2372,19 +2435,17 @@ end;
 //------------------------------------------------------------------------------
 function ColorSub_SSE2(C1, C2: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      XMM0,EAX
         MOVD      XMM1,EDX
         PSUBUSB   XMM0,XMM1
         MOVD      EAX,XMM0
-{$ENDIF}
-
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
         MOVD      XMM0,ECX
         MOVD      XMM1,EDX
         PSUBUSB   XMM0,XMM1
         MOVD      EAX,XMM0
-{$ENDIF}
+{$ifend}
 end;
 
 
@@ -2393,7 +2454,7 @@ end;
 //------------------------------------------------------------------------------
 function ColorModulate_SSE2(C1, C2: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         PXOR      XMM2,XMM2
         MOVD      XMM0,EAX
         PUNPCKLBW XMM0,XMM2
@@ -2403,9 +2464,7 @@ asm
         PSRLW     XMM0,8
         PACKUSWB  XMM0,XMM2
         MOVD      EAX,XMM0
-{$ENDIF}
-
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
         PXOR      XMM2,XMM2
         MOVD      XMM0,ECX
         PUNPCKLBW XMM0,XMM2
@@ -2415,7 +2474,7 @@ asm
         PSRLW     XMM0,8
         PACKUSWB  XMM0,XMM2
         MOVD      EAX,XMM0
-{$ENDIF}
+{$ifend}
 end;
 
 
@@ -2424,19 +2483,17 @@ end;
 //------------------------------------------------------------------------------
 function ColorMax_SSE2(C1, C2: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      XMM0,EAX
         MOVD      XMM1,EDX
         PMAXUB    XMM0,XMM1
         MOVD      EAX,XMM0
-{$ENDIF}
-
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
         MOVD      XMM0,ECX
         MOVD      XMM1,EDX
         PMAXUB    XMM0,XMM1
         MOVD      EAX,XMM0
-{$ENDIF}
+{$ifend}
 end;
 
 
@@ -2445,19 +2502,17 @@ end;
 //------------------------------------------------------------------------------
 function ColorMin_SSE2(C1, C2: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      XMM0,EAX
         MOVD      XMM1,EDX
         PMINUB    XMM0,XMM1
         MOVD      EAX,XMM0
-{$ENDIF}
-
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
         MOVD      XMM0,ECX
         MOVD      XMM1,EDX
         PMINUB    XMM0,XMM1
         MOVD      EAX,XMM0
-{$ENDIF}
+{$ifend}
 end;
 
 
@@ -2466,7 +2521,7 @@ end;
 //------------------------------------------------------------------------------
 function ColorDifference_SSE2(C1, C2: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         MOVD      XMM0,EAX
         MOVD      XMM1,EDX
         MOVQ      XMM2,XMM0
@@ -2474,9 +2529,7 @@ asm
         PSUBUSB   XMM1,XMM2
         POR       XMM0,XMM1
         MOVD      EAX,XMM0
-{$ENDIF}
-
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
         MOVD      XMM0,ECX
         MOVD      XMM1,EDX
         MOVQ      XMM2,XMM0
@@ -2484,7 +2537,7 @@ asm
         PSUBUSB   XMM1,XMM2
         POR       XMM0,XMM1
         MOVD      EAX,XMM0
-{$ENDIF}
+{$ifend}
 end;
 
 
@@ -2493,7 +2546,7 @@ end;
 //------------------------------------------------------------------------------
 function ColorExclusion_SSE2(C1, C2: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         PXOR      XMM2,XMM2
         MOVD      XMM0,EAX
         PUNPCKLBW XMM0,XMM2
@@ -2506,9 +2559,7 @@ asm
         PSUBUSW   XMM0,XMM1
         PACKUSWB  XMM0,XMM2
         MOVD      EAX,XMM0
-{$ENDIF}
-
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
         PXOR      XMM2,XMM2
         MOVD      XMM0,ECX
         PUNPCKLBW XMM0,XMM2
@@ -2521,7 +2572,7 @@ asm
         PSUBUSW   XMM0,XMM1
         PACKUSWB  XMM0,XMM2
         MOVD      EAX,XMM0
-{$ENDIF}
+{$ifend}
 end;
 
 
@@ -2530,7 +2581,7 @@ end;
 //------------------------------------------------------------------------------
 function ColorScale_SSE2(C: TColor32; W: Cardinal): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
         PXOR      XMM2,XMM2
         SHL       EDX,4
         MOVD      XMM0,EAX
@@ -2540,9 +2591,7 @@ asm
         PSRLW     XMM0,8
         PACKUSWB  XMM0,XMM2
         MOVD      EAX,XMM0
-{$ENDIF}
-
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
         PXOR      XMM2,XMM2
         SHL       RDX,4
         MOVD      XMM0,ECX
@@ -2556,7 +2605,7 @@ asm
         PSRLW     XMM0,8
         PACKUSWB  XMM0,XMM2
         MOVD      EAX,XMM0
-{$ENDIF}
+{$ifend}
 end;
 
 
@@ -2572,7 +2621,8 @@ end;
 //------------------------------------------------------------------------------
 function LightenReg_SSE2(C: TColor32; Amount: Integer): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
 asm
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX <- C: TColor32
   // EDX <- Amount: integer
   // EAX -> Result
@@ -2593,9 +2643,9 @@ asm
         MOVD    XMM1, EDX
         PSUBUSB XMM0, XMM1
         MOVD    EAX, XMM0
-{$ENDIF}
 
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
+
   // ECX <- C: TColor32
   // EDX <- Amount: integer
   // EAX -> Result
@@ -2616,7 +2666,8 @@ asm
         MOVD    XMM1, EDX
         PSUBUSB XMM0, XMM1
         MOVD    EAX, XMM0
-{$ENDIF}
+
+{$ifend}
 end;
 
 
@@ -2630,7 +2681,8 @@ asm
   //
   // Approximates (x div 255) as ((x * $8081 + Bias) shr 23)
   //
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX <- Dst: PColor32
   // EDX <- Count
   // ECX <- Weight: Byte
@@ -2692,9 +2744,9 @@ asm
         ADD       EAX, 4
         DEC       EDX
         JNZ       @Clear
-{$ENDIF}
 
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
+
   // RCX <- Dst: PColor32
   // RDX <- Count
   // R8D <- Weight: Byte
@@ -2764,7 +2816,8 @@ asm
         ADD       RCX, 4
         DEC       EDX
         JNZ       @Clear
-{$ENDIF}
+
+{$ifend}
 end;
 
 procedure FastScaleMems_SSE41(Dst: PColor32; Count: Integer; Weight: Cardinal); {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
@@ -2774,7 +2827,8 @@ asm
   //
   // Approximates (x div 255) as (x shr 8); Same as ColorScale_Pas
   //
-{$IFDEF TARGET_X86}
+{$if defined(TARGET_x86)}
+
   // EAX <- Dst: PColor32
   // EDX <- Count
   // ECX <- Weight: Byte
@@ -2867,9 +2921,9 @@ asm
         ADD       EAX, 4
         DEC       EDX
         JNZ       @Clear
-{$ENDIF}
 
-{$IFDEF TARGET_X64}
+{$elseif defined(TARGET_x64)}
+
   // RCX <- Dst: PColor32
   // RDX <- Count
   // R8D <- Weight: Byte
@@ -2965,11 +3019,317 @@ asm
         ADD       RCX, 4
         DEC       RDX
         JNZ       @Clear
+
+{$ifend}
+end;
+
+
+//------------------------------------------------------------------------------
+// Premultiply/Unpremultiply
+//------------------------------------------------------------------------------
+procedure PremultiplyMem_SSE41(Pixels: PColor32Entry; Count: Integer);
+//
+// Uses PMULLD for 32-bit integer multiplication and the $8081 formula for
+// accurate division:
+//
+//   Round(x/255) approx (x * $8081 + $400000) >> 23.
+//
+// This variant processes a single pixel at a time but is extremely accurate.
+//
+asm
+{$IFDEF TARGET_x86}
+  // Parameters (x86):
+  //   EAX <- Pixels
+  //   EDX <- Count
+  //
+  // Register usage:
+  //   ECX: Misc., @SSE_0C080400_ALIGNED
+  //
+  // SSE register usage:
+  //   XMM0: Pixel
+  //   XMM1: Misc.
+  //   XMM2: SSE_003FFF7F_ALIGNED
+  //   XMM3: $8081
+  //   XMM4: Zero
+  //   XMM5:
+  //   XMM6:
+  //   XMM7:
+  //
+
+        TEST      EDX, EDX              // Count=0 -> Exit
+        JZ        @Exit
+
+        PXOR      XMM4, XMM4
+        MOV       ECX, $8081
+        MOVD      XMM3, ECX
+        PSHUFD    XMM3, XMM3, 0         // Multiplier constant for division
+
+        MOV       ECX, offset SSE_003FFF7F_ALIGNED
+        MOVDQA    XMM2, [ECX]
+        MOV       ECX, offset SSE_0C080400_ALIGNED // Table for PSHUFB byte extraction
+
+@Loop:
+        MOVD      XMM0, [EAX]           // Load pixel
+
+        PMOVZXBD  XMM0, XMM0            // Zero-extend bytes to dwords: B G R A
+        PSHUFD    XMM1, XMM0, $FF       // Broadcast Alpha to all slots
+        PMULLD    XMM0, XMM1            // C * A
+        PMULLD    XMM0, XMM3            // (C * A) * $8081
+        PADDD     XMM0, XMM2            // Add bias ($400000) for rounding
+        PSRLD     XMM0, 23              // Component result
+
+        PINSRB    XMM0, [EAX+3], 12     // Restore original Alpha to byte 12 (component 3 low byte)
+
+        PSHUFB    XMM0, DQWORD PTR [ECX]// Extract low bytes of each dword to pack
+        MOVD      [EAX], XMM0
+
+        ADD       EAX, 4                // Next pixel
+        DEC       EDX
+        JNZ       @Loop
+
+@Exit:
+{$ELSE}
+  // Parameters (x64):
+  //   RCX <- Pixels
+  //   RDX <- Count
+  //
+  // Register usage:
+  //   RAX: Misc., SSE_0C080400_ALIGNED
+  //
+  // SSE register usage:
+  //   XMM0: Pixel
+  //   XMM1: Misc.
+  //   XMM2: SSE_003FFF7F_ALIGNED
+  //   XMM3: $8081
+  //   XMM4: Zero
+  //   XMM5:
+  //   XMM6:
+  //   XMM7:
+  //
+
+        TEST      EDX, EDX              // Count=0 -> Exit
+        JZ        @Exit
+
+        PXOR      XMM4, XMM4
+        MOV       EAX, $8081
+        MOVD      XMM3, EAX
+        PSHUFD    XMM3, XMM3, 0
+        LEA       RAX, [RIP+SSE_003FFF7F_ALIGNED]
+        MOVDQA    XMM2, [RAX]
+        LEA       RAX, [RIP+SSE_0C080400_ALIGNED]
+
+@Loop:
+        MOVD      XMM0, [RCX]           // Load pixel
+
+        PMOVZXBD  XMM0, XMM0            // Zero-extend bytes to dwords: B G R A
+        PSHUFD    XMM1, XMM0, $FF       // Broadcast Alpha to all slots
+        PMULLD    XMM0, XMM1            // C * A
+        PMULLD    XMM0, XMM3            // (C * A) * $8081
+        PADDD     XMM0, XMM2            // Add bias ($400000) for rounding
+        PSRLD     XMM0, 23              // Component result
+
+        PINSRB    XMM0, [RCX+3], 12     // Restore original Alpha to byte 12 (component 3 low byte)
+
+        PSHUFB    XMM0, [RAX]           // Extract low bytes of each dword to pack
+        MOVD      [RCX], XMM0
+
+        ADD       RCX, 4                // Next pixel
+        DEC       EDX
+        JNZ       @Loop
+
+@Exit:
+{$ENDIF}
+end;
+
+// Precomputed multipliers used to avoid costly integer division inside the
+// unpremultiply loop.
+// The table maps an alpha value (1..255) to a 16.16 fixed point multiplier:
+//
+//   UnpremultiplyTable[A] = Round((255 << 16) / A)
+//
+// and allows us to replace division by A with a 16.16 fixed-point
+// multiplication.
+var
+  UnpremultiplyTable: array[0..255] of Cardinal;
+
+procedure InitUnpremultiplyTable;
+var
+  i: integer;
+begin
+  UnpremultiplyTable[0] := 0;
+  for i := 1 to 255 do
+    UnpremultiplyTable[i] := (Cardinal(255) shl 16 + i div 2) div i;
+end;
+
+procedure UnpremultiplyMem_SSE41(Pixels: PColor32Entry; Count: Integer);
+//
+// Uses PMULLD and PSHUFB to improve the multiplier-based fixed-point logic.
+//
+asm
+{$IFDEF TARGET_x86}
+  // Parameters (x86):
+  //   EAX <- Pixels
+  //   EDX <- Count
+  //
+  // Register usage:
+  //   EBX: Misc.
+  //   ECX: Misc.
+  //   ESI: @UnpremultiplyTable
+  //
+  // SSE register usage:
+  //   XMM0: Pixel
+  //   XMM1: Misc.
+  //   XMM2: 32768 x 4
+  //   XMM3: SSE_0C080400_ALIGNED
+  //   XMM4:
+  //   XMM5:
+  //   XMM6:
+  //   XMM7:
+  //
+
+        PUSH      ESI
+        PUSH      EBX
+
+        MOV       ESI, offset SSE_0C080400_ALIGNED
+        MOVDQA    XMM3, [ESI]
+        LEA       ESI, [UnpremultiplyTable]
+        // Generate 32768 bias for rounding: (x + 32768) >> 16
+        PCMPEQW   XMM2, XMM2
+        PSLLW     XMM2, 15              // words = $8000
+        PSHUFD    XMM2, XMM2, 0         // dwords = 32768
+
+@Loop:
+        MOV       ECX, [EAX]            // Load pixel
+        TEST      ECX, $FF000000        // Skip if Alpha=0
+        JZ        @ZeroAlpha
+
+// [1] --> To here --+
+//                   |
+//                   v
+        MOVD      XMM0, ECX             // Save pixel in XMM0
+
+        SHR       ECX, 24               // Extract Alpha
+        CMP       CL, 255               // Skip if Alpha=255
+        JZ        @Next
+
+        MOV       EBX, [ESI + ECX * 4]  // Multiplier from precomputed table
+        MOVD      XMM1, EBX
+        PSHUFD    XMM1, XMM1, 0         // Broadcast multiplier to all slots
+
+// [1] Moved from here --+
+//                       |
+//                       v
+//        MOVD      XMM0, [EAX]
+        PMOVZXBD  XMM0, XMM0            // Extend bytes to 4 DWords
+
+        PMULLD    XMM0, XMM1            // component * multiplier
+
+        PADDD     XMM0, XMM2            // Round: (x + 32768) >> 16
+        PSRLD     XMM0, 16
+
+        // Restore Alpha
+        MOVZX     EBX, BYTE PTR [EAX+3]
+        PINSRD    XMM0, EBX, 3          // Put original Alpha in dword 3
+
+        PSHUFB    XMM0, XMM3            // Fast byte extraction
+        MOVD      [EAX], XMM0
+
+@Next:
+        ADD       EAX, 4                // Next pixel
+        DEC       EDX
+        JNZ       @Loop
+
+@Exit:
+        POP       EBX
+        POP       ESI
+        RET
+
+@ZeroAlpha:
+        MOV       DWORD PTR [EAX], 0    // Clear pixel
+        JMP       @Next
+
+{$ELSE}
+  // Parameters (x64):
+  //   RCX <- Pixels
+  //   RDX <- Count
+  //
+  // Register usage:
+  //   RAX: Misc.
+  //   R8:  Misc.
+  //   R9:  @UnpremultiplyTable
+  //
+  // SSE register usage:
+  //   XMM0: Pixel
+  //   XMM1: Misc.
+  //   XMM2: 32768 x 4
+  //   XMM3: SSE_0C080400_ALIGNED
+  //   XMM4:
+  //   XMM5:
+  //   XMM6:
+  //   XMM7:
+  //
+
+        LEA       R9, [UnpremultiplyTable]
+        LEA       RAX, [RIP+SSE_0C080400_ALIGNED]
+        MOVDQA    XMM3, [RAX]
+        // Generate 32768 bias for rounding: (x + 32768) >> 16
+        PCMPEQW   XMM2, XMM2
+        PSLLW     XMM2, 15              // words = $8000
+        PSHUFD    XMM2, XMM2, 0         // dwords = 32768
+
+@Loop:
+        MOV       R8D, [RCX]            // Load pixel
+        TEST      R8D, $FF000000        // Skip if Alpha=0
+        JZ        @ZeroAlpha
+
+// [1] --> To here --+
+//                   |
+//                   v
+        MOVD      XMM0, R8D
+
+        SHR       R8D, 24               // Extract Alpha
+        CMP       R8B, 255              // Skip if Alpha=255
+        JZ        @Next
+
+        MOV       EAX, [R9 + R8 * 4]    // Multiplier from precomputed table
+        MOVD      XMM1, EAX
+        PSHUFD    XMM1, XMM1, 0         // Broadcast multiplier to all slots
+
+// [1] Moved from here --+
+//                       |
+//                       v
+//        MOVD      XMM0, [RCX]
+        PMOVZXBD  XMM0, XMM0            // Extend bytes to 4 DWords
+
+        PMULLD    XMM0, XMM1            // component * multiplier
+
+        PADDD     XMM0, XMM2            // Round: (x + 32768) >> 16
+        PSRLD     XMM0, 16
+
+        MOVZX     EAX, BYTE PTR [RCX+3] // Put original Alpha in dword 3
+        PINSRD    XMM0, EAX, 3
+
+        PSHUFB    XMM0, XMM3            // Fast byte extraction
+        MOVD      [RCX], XMM0
+
+@Next:
+        ADD       RCX, 4                // Next pixel
+        DEC       EDX
+        JNZ       @Loop
+
+@Exit:
+        RET
+
+@ZeroAlpha:
+        MOV       DWORD PTR [RCX], 0    // Clear pixel
+        JMP       @Next
 {$ENDIF}
 end;
 
 
+
 {$ifend}
+
 
 //------------------------------------------------------------------------------
 //
@@ -2980,46 +3340,56 @@ procedure RegisterBindingFunctions;
 begin
 {$if (not defined(PUREPASCAL)) and (not defined(OMIT_SSE2))}
 
-  BlendRegistry[@@MergeReg].Add(      @MergeReg_SSE2,         [isSSE2]).Name := 'MergeReg_SSE2';
-  BlendRegistry[@@CombineReg].Add(    @CombineReg_SSE2,       [isSSE2]).Name := 'CombineReg_SSE2';
-  BlendRegistry[@@CombineMem].Add(    @CombineMem_SSE2_128,   [isSSE2]).Name := 'CombineMem_SSE2_128';
-  BlendRegistry[@@CombineMem].Add(    @CombineMem_SSE41_Kadaif, [isSSE41]).Name := 'CombineMem_SSE41_Kadaif';
-{$if defined(BENCHMARK)}
-  BlendRegistry[@@CombineMem].Add(    @CombineMem_SSE2_Table, [isSSE2], BindingPriorityWorse).Name := 'CombineMem_SSE2_Table';
-  BlendRegistry[@@CombineMem].Add(    @CombineMem_SSE41_8081, [isSSE41], BindingPriorityWorse).Name := 'CombineMem_SSE41_8081';
+  BlendRegistry[@@MergeReg].Add(       @MergeReg_SSE2,          [isSSE2]).Name := 'MergeReg_SSE2';
+  BlendRegistry[@@CombineReg].Add(     @CombineReg_SSE2,        [isSSE2]).Name := 'CombineReg_SSE2';
+  BlendRegistry[@@CombineMem].Add(     @CombineMem_SSE2_128,    [isSSE2]).Name := 'CombineMem_SSE2_128';
+  BlendRegistry[@@CombineMem].Add(     @CombineMem_SSE41_Kadaif,[isSSE41]).Name := 'CombineMem_SSE41_Kadaif';
+{$if defined(BENCHMARK)} // TODO : Move these to the benchmark unit
+  BlendRegistry[@@CombineMem].Add(     @CombineMem_SSE2_Table,  [isSSE2], BindingPriorityWorse).Name := 'CombineMem_SSE2_Table';
+  BlendRegistry[@@CombineMem].Add(     @CombineMem_SSE41_8081,  [isSSE41], BindingPriorityWorse).Name := 'CombineMem_SSE41_8081';
 {$ifend}
-  BlendRegistry[@@CombineLine].Add(   @CombineLine_SSE2,      [isSSE2]).Name := 'CombineLine_SSE2';
-  BlendRegistry[@@BlendReg].Add(      @BlendReg_SSE2,         [isSSE2]).Name := 'BlendReg_SSE2';
-  BlendRegistry[@@BlendMem].Add(      @BlendMem_SSE2,         [isSSE2]).Name := 'BlendMem_SSE2';
-  BlendRegistry[@@BlendMems].Add(     @BlendMems_SSE2,        [isSSE2]).Name := 'BlendMems_SSE2';
-  BlendRegistry[@@BlendMemEx].Add(    @BlendMemEx_SSE2,       [isSSE2]).Name := 'BlendMemEx_SSE2';
-  BlendRegistry[@@BlendLine].Add(     @BlendLine_SSE2,        [isSSE2]).Name := 'BlendLine_SSE2';
+  BlendRegistry[@@CombineLine].Add(    @CombineLine_SSE2,       [isSSE2]).Name := 'CombineLine_SSE2';
+  BlendRegistry[@@BlendReg].Add(       @BlendReg_SSE2,          [isSSE2]).Name := 'BlendReg_SSE2';
+  BlendRegistry[@@BlendReg].Add(       @BlendReg_SSE41,         [isSSE41]).Name := 'BlendReg_SSE41';
+  BlendRegistry[@@BlendMem].Add(       @BlendMem_SSE2,          [isSSE2]).Name := 'BlendMem_SSE2';
+  BlendRegistry[@@BlendMems].Add(      @BlendMems_SSE2,         [isSSE2]).Name := 'BlendMems_SSE2';
+  BlendRegistry[@@BlendMemEx].Add(     @BlendMemEx_SSE2,        [isSSE2]).Name := 'BlendMemEx_SSE2';
+  BlendRegistry[@@BlendLine].Add(      @BlendLine_SSE2,         [isSSE2]).Name := 'BlendLine_SSE2';
 {$if not defined(FPC)}
-  BlendRegistry[@@BlendLine].Add(     @BlendLine_SSE41,       [isSSE41]).Name := 'BlendLine_SSE41';
+  BlendRegistry[@@BlendLine].Add(      @BlendLine_SSE41,        [isSSE41]).Name := 'BlendLine_SSE41';
 {$ifend}
-  BlendRegistry[@@BlendLineEx].Add(   @BlendLineEx_SSE2,      [isSSE2]).Name := 'BlendLineEx_SSE2';
-  BlendRegistry[@@BlendRegEx].Add(    @BlendRegEx_SSE2,       [isSSE2]).Name := 'BlendRegEx_SSE2';
-  BlendRegistry[@@ColorMax].Add(      @ColorMax_SSE2,         [isSSE2]).Name := 'ColorMax_SSE2';
-  BlendRegistry[@@ColorMin].Add(      @ColorMin_SSE2,         [isSSE2]).Name := 'ColorMin_SSE2';
-  BlendRegistry[@@ColorAdd].Add(      @ColorAdd_SSE2,         [isSSE2]).Name := 'ColorAdd_SSE2';
-  BlendRegistry[@@ColorSub].Add(      @ColorSub_SSE2,         [isSSE2]).Name := 'ColorSub_SSE2';
-  BlendRegistry[@@ColorModulate].Add( @ColorModulate_SSE2,    [isSSE2]).Name := 'ColorModulate_SSE2';
-  BlendRegistry[@@ColorDifference].Add(@ColorDifference_SSE2, [isSSE2]).Name := 'ColorDifference_SSE2';
-  BlendRegistry[@@ColorExclusion].Add(@ColorExclusion_SSE2,   [isSSE2]).Name := 'ColorExclusion_SSE2';
-  BlendRegistry[@@ColorScale].Add(    @ColorScale_SSE2,       [isSSE2]).Name := 'ColorScale_SSE2';
-  BlendRegistry[@@LightenReg].Add(    @LightenReg_SSE2,       [isSSE]).Name := 'LightenReg_SSE2';
-  BlendRegistry[@@BlendRegRGB].Add(   @BlendRegRGB_SSE2,      [isSSE2]).Name := 'BlendRegRGB_SSE2';
-  BlendRegistry[@@BlendMemRGB].Add(   @BlendMemRGB_SSE2,      [isSSE2]).Name := 'BlendMemRGB_SSE2';
+  BlendRegistry[@@BlendLineEx].Add(    @BlendLineEx_SSE2,       [isSSE2]).Name := 'BlendLineEx_SSE2';
+  BlendRegistry[@@BlendRegEx].Add(     @BlendRegEx_SSE2,        [isSSE2]).Name := 'BlendRegEx_SSE2';
+  BlendRegistry[@@ColorMax].Add(       @ColorMax_SSE2,          [isSSE2]).Name := 'ColorMax_SSE2';
+  BlendRegistry[@@ColorMin].Add(       @ColorMin_SSE2,          [isSSE2]).Name := 'ColorMin_SSE2';
+  BlendRegistry[@@ColorAdd].Add(       @ColorAdd_SSE2,          [isSSE2]).Name := 'ColorAdd_SSE2';
+  BlendRegistry[@@ColorSub].Add(       @ColorSub_SSE2,          [isSSE2]).Name := 'ColorSub_SSE2';
+  BlendRegistry[@@ColorModulate].Add(  @ColorModulate_SSE2,     [isSSE2]).Name := 'ColorModulate_SSE2';
+  BlendRegistry[@@ColorDifference].Add(@ColorDifference_SSE2,   [isSSE2]).Name := 'ColorDifference_SSE2';
+  BlendRegistry[@@ColorExclusion].Add( @ColorExclusion_SSE2,    [isSSE2]).Name := 'ColorExclusion_SSE2';
+  BlendRegistry[@@ColorScale].Add(     @ColorScale_SSE2,        [isSSE2]).Name := 'ColorScale_SSE2';
+  BlendRegistry[@@LightenReg].Add(     @LightenReg_SSE2,        [isSSE]).Name := 'LightenReg_SSE2';
+  BlendRegistry[@@BlendRegRGB].Add(    @BlendRegRGB_SSE2,       [isSSE2]).Name := 'BlendRegRGB_SSE2';
+  BlendRegistry[@@BlendMemRGB].Add(    @BlendMemRGB_SSE2,       [isSSE2]).Name := 'BlendMemRGB_SSE2';
 
 {$if defined(GR32_SCALEMEMS_FAST) or defined(BENCHMARK)}
-  BlendRegistry[@@ScaleMems].Add(     @FastScaleMems_SSE41,   [isSSE41]).Name := 'FastScaleMems_SSE41';
+  BlendRegistry[@@ScaleMems].Add(      @FastScaleMems_SSE41,    [isSSE41]).Name := 'FastScaleMems_SSE41';
 {$ifend}
 {$if (not defined(GR32_SCALEMEMS_FAST)) or defined(BENCHMARK)}
-  BlendRegistry[@@ScaleMems].Add(     @ScaleMems_SSE41,       [isSSE41]).Name := 'ScaleMems_SSE41';
+  BlendRegistry[@@ScaleMems].Add(      @ScaleMems_SSE41,        [isSSE41]).Name := 'ScaleMems_SSE41';
 {$ifend}
 
 {$if defined(TEST_BLENDMEMRGB128SSE4)}
-  BlendRegistry[@@BlendMemRGB128].Add(@BlendMemRGB128_SSE4,   [isSSE2]).Name := 'BlendMemRGB128_SSE4';
+  BlendRegistry[@@BlendMemRGB128].Add( @BlendMemRGB128_SSE4,    [isSSE2]).Name := 'BlendMemRGB128_SSE4';
+{$ifend}
+
+  BlendRegistry[@@PremultiplyMem].Add(@PremultiplyMem_SSE41,    [isSSE41]).Name := 'PremultiplyMem_SSE41';
+  BlendRegistry[@@UnpremultiplyMem].Add(@UnpremultiplyMem_SSE41,[isSSE41]).Name := 'UnpremultiplyMem_SSE41';
+{$if declared(PremultiplyMem_SSE2)}
+  BlendRegistry[@@PremultiplyMem].Add(@PremultiplyMem_SSE2,     [isSSE2]).Name := 'PremultiplyMem_SSE2';
+{$ifend}
+{$if declared(UnpremultiplyMem_SSE2)}
+  BlendRegistry[@@UnpremultiplyMem].Add(@UnpremultiplyMem_SSE2, [isSSE2]).Name := 'UnpremultiplyMem_SSE2';
 {$ifend}
 
 {$ifend}
@@ -3031,4 +3401,7 @@ end;
 
 initialization
   RegisterBindingFunctions;
+{$if not defined(PUREPASCAL)}
+  InitUnpremultiplyTable;
+{$ifend}
 end.

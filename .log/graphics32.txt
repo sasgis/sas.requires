@@ -1,3 +1,315 @@
+commit aae864c5bc87183e89420e3ec3d14b019b22469d
+Merge: 8c171325 e4315a06
+Author: zed <starmen141@gmail.com>
+Date:   2026-09-27 12:24:00 +0300
+
+    Merge branch 'master' into sasgis
+
+commit e4315a06ac188333687533c17d6e1476c59f8965
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-09-13 14:17:03 +0200
+
+    Add guard against attaching a rubber band layer to itself
+    
+    ...which caused the creation of a small black hole
+
+commit 4d7496c7bfbeab17014399197965bf3b491dd17c
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-09-12 15:25:55 +0200
+
+    Added TTransformation.HasSrcRect eliminating the requirement to specify a SrcRect.
+    
+    The requirement was a bug introduced in TTransformer.GetSampleBounds in commit c87bd94c723aea5f62d0728b21c7f34faf0c3049
+
+commit d91cae5706fedbf1ef9fd23aafe234d85f6c39ac
+Merge: bc2f79f6 aac426fa
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-08-21 22:11:37 +0200
+
+    Merge branch 'EightBitInvasion'
+
+commit aac426fadb51616b6fbd7b7050cbb39e03b0ed1c
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-08-21 22:10:43 +0200
+
+    Added Space Invaders example
+    
+    - Demonstrates TImage32, TIndirectBitmapLayer, and using layers as sprites
+
+commit bc2f79f62aa88baf0ed204a99b74e541205ad8ea
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-08-16 13:56:30 +0200
+
+    Replaced use of timeGetTime in drag detection with GetTickCount
+    
+    Fixes #407
+
+commit b8134557d8d63788b3403156f737a39b8f4c0871
+Merge: 32630523 830bf11a
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-16 15:01:12 +0200
+
+    Merge branch 'PSD_Thumbnail'
+
+commit 830bf11a4dded36f2ae81567808738a06ed62c12
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-16 14:57:59 +0200
+
+    The peCompositeThumbnail  option is now default Off
+    
+    - I have been unable to find a single application that actually uses or displays the thumbnail resource, so it doesn't make sense to have the option default On. Also, it's completely untested for the same reason.
+    - Added UI in PSD Import/Export example to control peCompositeThumbnail option.
+    refs #240
+
+commit f22952512b7031dcdc6cccd48aecdfd42b0a863b
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-10 17:38:48 +0200
+
+    Added support for PSD thumbnails to the PSD writer
+    
+    - Implemented a generic image resource system in TPhotoshopDocument.
+    - Added peCompositeThumbnail option to TPhotoshopExportOptions (default on).
+    - Updated CreatePhotoshopDocument to generate thumbnails (max 256x256 by default, maintaining aspect ratio).
+    - Implemented PSD_THUMB_RES2 (ID 1036) writing with JPEG compression in PhotoshopDocumentWriter.
+    refs #240
+
+commit 3263052311f385ddc4a4c964a75b17ed8bf1f093
+Merge: 151c2ef9 23d29d49
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-16 14:00:55 +0200
+
+    Merge remote-tracking branch 'TommiPrami/TypoFixes'
+
+commit 23d29d491df6ce38190cc0489bc66b7dbafa08d5
+Author: TommiPrami <tommi.prami@gmail.com>
+Date:   2026-07-16 12:44:32 +0300
+
+    Typos fixed
+    
+    Free free to commet if disagree
+
+commit 151c2ef9fe4428bb7e8afdcf2e2948fd880ae064
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-10 23:29:27 +0200
+
+    Fix for wrong XMM register used in BlendReg_SSE2
+    
+    - Added BlendReg_SSE41_Sanyin_257_2 to BlendReg benchmark suite.
+
+commit ac786e547ace6279362fafe360946d6ade5c9ebd
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-10 22:41:23 +0200
+
+    Fixed regression in TPointerMap.Add causing AV in repaint optimizer.
+    
+    Bug was ironically introduced in the `with` elimination refactoring (a137ad6538dd340215e4b8ec0d5071bae8eb0fec).
+
+commit 44d406fc366dbfb6cdfadf85a68b408fff8c60bd
+Merge: 3e7751f7 6bf44e66
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-10 13:42:28 +0200
+
+    Merge branch 'Premultiply'
+
+commit 6bf44e668d0afee578cf5d6a26a89b9490ca52dc
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-04-16 14:07:35 +0200
+
+    Added PremultiplyMem and UnpremultiplyMem functions
+    
+    ...and
+    - Unit tests.
+    - Premultiply32(TBitmap32) and Unpremultiply32(TBitmap32) wrappers.
+
+commit 3e7751f76b8e40ba8121404f255f5cb1483640f7
+Merge: ad8d1278 c3fc9a46
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-09 13:16:30 +0200
+
+    Merge branch 'GR32_Filters_fixes'
+
+commit ad8d127893c91b397b2088c047cf824d94058a09
+Merge: d90b9f8d 61dc6e9e
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-09 13:08:59 +0200
+
+    Merge branch 'BlendReg'
+
+commit 61dc6e9e83906be040d0a617702165b11f345fbe
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-09 13:06:39 +0200
+
+    The BlendReg_SSE*_Sanyin_257 functions are now the default SSE BlendReg implementations.
+    
+    - Replaced {$IFDEF TARGET_x*} with {$if defined(TARGET_x*)} for readability and consistency.
+    Fixes #402
+
+commit d90b9f8d87e03791e1319e8244cf88cc903bb03a
+Merge: 20d4b1f1 2cdca02b
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-09 00:30:13 +0200
+
+    Merge branch 'Interpolator'
+
+commit 2cdca02b5b6ae0cd02052a0a92f4cc3982e26a60
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-08 15:47:35 +0200
+
+    Interpolator and AlphaInterpolator fixes
+    
+    - Improved precision of AlphaInterpolator_Pas.
+    - Fixed boundary condition errors in Interpolator_Pas.
+    - Fixed Interpolator unit test reference function.
+
+commit c3fc9a46e4786ca54d5483661dd351f4a116dba6
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-08 12:41:27 +0200
+
+    Reimplemented and enabled 64-bit versions of the GR32_Filters bitmask ASM functions.
+    
+    - The existing 64-bit versions had been disabled since they appeared to be an incomplete, abandoned, and uncompilable work in progress.
+    - Additionally fixed some bugs in the unrolled loops that could cause infinite loops or memory corruption.
+    - Extended TTestApplyBitmask with in-place AND/OR test cases.
+
+commit 20d4b1f13fd01f7714ed35fe1e1506d07bc6228e
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-08 15:25:39 +0200
+
+    Bitmap unit test now stores bitmap resources as RCDATA
+    
+    Apparently the Delphi 13 resource compiler no longer supports some of the more obscure bitmaps our test suite contains.
+
+commit 56b381608199112993f650523cf7861160a31243
+Merge: b79381b0 9a586143
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-08 12:29:41 +0200
+
+    Merge branch 'with_and_fluff'
+
+commit 9a586143d4884e1f113b9485d69833183814b3bb
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-08 11:57:27 +0200
+
+    Added missing WaterEffect\media.rc
+
+commit 8ad2e98b29d891a87e710a75a90e01c027fcf806
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-08 11:22:04 +0200
+
+    Eliminated some hints and warnings from examples
+    
+    - Suppressed deprecation hints where possible.
+    - Removed duplicate MAINICON resource.
+    - Updated use of TStream.Seek(Int64, Word) to TStream.Seek(Int64, TSeekOrigin).
+    - ClientToScreenRect symbol is now only defined for Delphi 10.3 and later.
+
+commit a137ad6538dd340215e4b8ec0d5071bae8eb0fec
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-08 10:43:13 +0200
+
+    Eliminated composite and nested `with` statements and other "dangerous" uses of `with`.
+    
+    - and a bit of code style cleanup
+
+commit 1478240bdee1540fa196ad028af4f5243951565c
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-07 19:08:03 +0200
+
+    Fix CopyComponents and ApplyBitmask bugs
+    
+    - "with" shadowing: Eliminated "with" statements that caused variable shadowing between TCustomBitmap32 and TRect (specifically Width and Height).
+      This was causing incorrect stride calculations and resulting in "zigzag" artifacts in CopyComponents.
+    - Clipping alignment: Fixed alignment issues when copying clipped rectangles.
+      The source coordinates are now correctly offset to maintain spatial alignment with the destination when clipping occurs.
+    - Memory overrun: Fixed a bug in ApplyBitmask where it would incorrectly attempt to process non-full-width rectangles as contiguous memory.
+    - Minor refactoring to simplify and (hopefully) optimize masking logic in CopyComponents.
+
+commit bf1e1ada3c8efa58aaecb5563f5c053ec32c4cad
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-07 16:47:40 +0200
+
+    Fix ApplyLUT(PreserveAlpha=True) copied the destination alpha instead of the source alpha.
+    
+    This is a breaking change for PreserveAlpha=True, but it aligns the behavior with the documentation.
+
+commit e1ee409881f8d774058d406d4995e919313921bb
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-07 16:44:36 +0200
+
+    Added GR32_Filters unit tests
+
+commit b5d1ae768b3fa3539ef00d1348a1dc0cad9d8cf4
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-07 16:08:22 +0200
+
+    Added API documentation comments to GR32_Filters
+
+commit dbac92a4192e83438a8b12977745f96433d49526
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-07 16:05:00 +0200
+
+    Fixed mangled GR32_Filters MMX binding registration
+
+commit 593887bbb6cb6abc9460db58289f50f031d354e0
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-07 16:02:42 +0200
+
+    Fixed swapped Src and Dst in InvertRGB(Dst, Src)
+
+commit e666c32f1c5d74676776377f0f4bbc1364c1d2f0
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-07 14:16:29 +0200
+
+    CheckParams related optimizations
+    
+    - ColorToGrayscale(Dst, Src) now doesn't clear the destination bitmap if it is resized since the content is completely replaced by the filter function anyway.
+    - ApplyLUT(Dst, Src) now doesn't clear the destination bitmap and ignores the PreserveAlpha parameter if the destination bitmap was resized, since there is no alpha to preserve if the bitmap is resized.
+      This is a breaking change for code that relied on the function to return a bitmap with Alpha=0 if the bitmap was resized. Unlikely but possible.
+
+commit 687fa6acf8c31e6f5c5a530486929f5a0e748fd8
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-07 14:08:09 +0200
+
+    Fix for GR32_Filters.CheckParams needlessly clearing destination bitmap
+    
+    - The destination bitmap is now only cleared if its size differs from the source bitmap.
+    - A new parameter has been added that specifies if a resize should also clear the destination bitmap.
+    - The function now returns a boolean that indicates if the destination bitmap was resized.
+    Fixes #403
+
+commit 5cb80410f73e9c9d5bbc02c5a2db6563f84fabd3
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-06 18:42:50 +0200
+
+    BlendReg benchmark: Added a bunch of Sanyin BlendReg alternatives
+    
+    Added reference BlendReg and option to validate against it.
+
+commit 20cccee86fc2b05dca3cbb2488cd843f8ac7358e
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-01 18:06:30 +0200
+
+    Boundary validation is now optional (default: Off) in BlendReg benchmark
+
+commit 052dce9897d5e16c01e99eecb2e4216be730cbcb
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-01 18:05:19 +0200
+
+    Fixed BlendReg_SSE41_Sanyin
+    
+    - Corrected rounding bias from $8000 to $0080 (replaced SSE_80008000_ALIGNED with SSE_00800080_ALIGNED).
+    - Fixed alpha broadcasting by replacing PSHUFD with PSHUFLW on word-unpacked data.
+    - Generated $00FF constant in-register to ensure correctness.
+    - Added RIP-relative addressing for FPC x64 compatibility.
+
+commit 1021499acee0d9ffcba31b54fa15ba27dd713f8c
+Author: Anders Melander <anders@melander.dk>
+Date:   2026-07-01 15:37:14 +0200
+
+    Added BlendReg benchmark
+    
+    - Including various BlendReg experiments
+
 commit 8c171325939b1b48c5a748aa9a9f1e2935d93cd6
 Merge: 47dd2278 b79381b0
 Author: zed <starmen141@gmail.com>
