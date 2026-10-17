@@ -51,6 +51,8 @@ type
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: string);
     procedure EnableMultiCellSelection(const ATree: TBaseVirtualTree = nil);
+    function BuildExpectedCellHTML(const ANodes: array of PVirtualNode): string;
+    function GetExpectedRTFPaperSize: string;
   public
     [Setup]
     procedure Setup;
@@ -304,6 +306,80 @@ begin
     [toExtendedFocus, toMultiSelect, toMultiCellSelect] - [toFullRowSelect];
 end;
 
+function TCellSelectionTests.BuildExpectedCellHTML(const ANodes: array of PVirtualNode): string;
+
+// Builds the expected CF_HTML clipboard content for a rectangular col1..col3 cell selection
+// from the tree's ACTUAL metrics (font, header height, node heights, column widths). The
+// former hardcoded strings were generated on a 216 dpi machine (see PixelsPerInch in the
+// fixture's dfm) and failed on any other dpi because the exported pixel heights differ.
+
+const
+  CRLF = #13#10;
+  DocType = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">';
+  HTMLIntro = '<html><head><META http-equiv=Content-Type content="text/html; charset=utf-8">' +
+    '</head><body><!--StartFragment-->';
+  HTMLExtro = '<!--EndFragment--></body></html>';
+  // Fixed-width offset header, mirroring MakeFragment in VirtualTrees.Export.pas.
+  DescriptionLength = Length('Version:1.0'#13#10) + Length('StartHTML:') + Length('EndHTML:') +
+    Length('StartFragment:') + Length('EndFragment:') + 4 * 10 {NumberLengthAndCR};
+var
+  LFragment, LFont: string;
+  LStartFragment, LEndFragment: Integer;
+  I, C: Integer;
+begin
+  LFont := Format('font-family: ''%s''; font-size: %dpt; font-style: normal; font-weight: normal; ' +
+    'text-decoration: none; color: #000000;', [FTree.Font.Name, FTree.Font.Size]);
+  LFragment :=
+    '<META http-equiv="Content-Type" content="text/html; charset=utf-8">' +
+    '<style type="text/css">' + CRLF +
+    '.default{' + LFont + '}' + CRLF +
+    '.header{' + LFont + '}' + CRLF +
+    '.noborder{border-style: none;padding-left: 4px; padding-right: 4px;}' + CRLF +
+    '.normalborder {vertical-align: top; border-right: none; border-left:none; border-top:none; ' +
+    'border-bottom: none;border-width: thin; border-style: dotted;padding-left: 4px; padding-right: 4px;}</style>' + CRLF +
+    '<table class="default" style="border-collapse: collapse;" bgcolor=#FFFFFF  border="1" frame=box cellspacing="0">' + CRLF +
+    '<tr class="header" style="padding-left: 4px; padding-right: 4px;">' + CRLF;
+  for C := col1 to col3 do
+    LFragment := LFragment + Format('<th height="%dpx" align=left bgcolor=#F0F0F0 width="%dpx">%s</th>',
+      [FTree.Header.Height, FTree.Header.Columns[C].Width, FTree.Header.Columns[C].Text]);
+  LFragment := LFragment + '</tr>' + CRLF;
+  for I := 0 to High(ANodes) do
+  begin
+    LFragment := LFragment + ' <tr class="default">' + CRLF;
+    for C := col1 to col3 do
+      LFragment := LFragment + Format(' <td class="normalborder"  height="%dpx" align=left>%s</td>',
+        [FTree.NodeHeight[ANodes[I]], FTree.Text[ANodes[I], C]]);
+    LFragment := LFragment + ' </tr>' + CRLF;
+  end;
+  LFragment := LFragment + '</table>';
+
+  LStartFragment := DescriptionLength + Length(DocType) + Length(HTMLIntro);
+  LEndFragment := LStartFragment + Length(LFragment);
+  Result := 'Version:1.0' + CRLF +
+    Format('StartHTML:%.8d', [DescriptionLength]) + CRLF +
+    Format('EndHTML:%.8d', [LEndFragment + Length(HTMLExtro)]) + CRLF +
+    Format('StartFragment:%.8d', [LStartFragment]) + CRLF +
+    Format('EndFragment:%.8d', [LEndFragment]) + CRLF +
+    DocType + HTMLIntro + LFragment + HTMLExtro;
+end;
+
+function TCellSelectionTests.GetExpectedRTFPaperSize: string;
+
+// Mirrors the locale check in VirtualTrees.Export.pas (MakeFragment) that picks A4 vs. US Letter
+// landscape paper size for the RTF clipboard header based on the OS's measurement system. The
+// former hardcoded '\paperw16840\paperh11907' (A4) only matched a metric-locale machine and
+// failed on a US-locale one, which emits '\paperw15840\paperh12240' (Letter) instead.
+
+var
+  LocaleBuffer: array [0..1] of Char;
+
+begin
+  if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IMEASURE, @LocaleBuffer[0], Length(LocaleBuffer)) <> 0) and (LocaleBuffer[0] = '0'{metric}) then
+    Result := '\paperw16840\paperh11907' // A4 landscape
+  else
+    Result := '\paperw15840\paperh12240'; // US Letter landscape
+end;
+
 procedure TCellSelectionTests.DoChangeCellEvent(Sender: TBaseVirtualTree; const Cells: TVTCellArray);
 begin
   if Assigned(FChangeCellEventProc) then
@@ -545,7 +621,6 @@ var
   n3, n4: PVirtualNode;
   LText, LExpected: string;
   LTries: Integer;
-  LCompareSuccessful: LongBool;
 begin
   LTree := FTree;
   LTree.Font.Name := 'Tahoma';
@@ -584,17 +659,8 @@ begin
     end;
     // End unnecessary stuff
   until (LText <> '') or (LTries > MaxTries);
-  LExpected := 'Version:1.0'#$D#$A'StartHTML:00000097'#$D#$A'EndHTML:00001737'#$D#$A'StartFragment:00000269'#$D#$A'EndFragment:00001705'#$D#$A +
-  '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html><head><META http-equiv=Content-Type content="text/html; charset=utf-8"></head><body><!--StartFragment--><META http-equiv="Content-Type" content="text/html; charset=utf-8">'+
-  '<style type="text/css">'#$D#$A'.default{font-family: ''Tahoma''; font-size: 8pt; font-style: normal; font-weight: normal; text-decoration: none; color: #000000;}'#$D#$A +
-  '.header{font-family: ''Tahoma''; font-size: 8pt; font-style: normal; font-weight: normal; text-decoration: none; color: #000000;}'#$D#$A'.noborder{border-style: none;padding-left: 4px; padding-right: 4px;}'#$D#$A +
-  '.normalborder {vertical-align: top; border-right: none; border-left:none; border-top:none; border-bottom: none;border-width: thin; border-style: dotted;padding-left: 4px; padding-right: 4px;}</style>'#$D#$A +
-  '<table class="default" style="border-collapse: collapse;" bgcolor=#FFFFFF  border="1" frame=box cellspacing="0">'#$D#$A'<tr class="header" style="padding-left: 4px; padding-right: 4px;">'#$D#$A +
-  '<th height="17px" align=left bgcolor=#F0F0F0 width="50px">col2</th><th height="17px" align=left bgcolor=#F0F0F0 width="50px">col3</th><th height="17px" align=left bgcolor=#F0F0F0 width="50px">col4</th></tr>'#$D#$A+
-  ' <tr class="default">'#$D#$A' <td class="normalborder"  height="18px" align=left>3b</td> <td class="normalborder"  height="18px" align=left>3c</td> <td class="normalborder"  height="18px" align=left>3d</td> </tr>'#$D#$A+
-  ' <tr class="default">'#$D#$A' <td class="normalborder"  height="18px" align=left>4b</td> <td class="normalborder"  height="18px" align=left>4c</td> <td class="normalborder"  height="18px" align=left>4d</td> </tr>'#$D#$A'</table><!--EndFragment--></body></html>';
-  LCompareSuccessful := LText = LExpected;
-  Assert.IsTrue(LCompareSuccessful, 'Clipboard text is unexpected!');
+  LExpected := BuildExpectedCellHTML([n3, n4]);
+  Assert.AreEqual(LExpected, LText, 'Clipboard HTML does not match the export template!');
 end;
 
 procedure TCellSelectionTests.TestCopyHTML2;
@@ -603,7 +669,6 @@ var
   n3, n5: PVirtualNode;
   LText, LExpected: string;
   LTries: Integer;
-  LCompareSuccessful: LongBool;
 begin
   LTree := FTree;
   LTree.Font.Name := 'Tahoma';
@@ -642,18 +707,8 @@ begin
     end;
     // End unnecessary stuff
   until (LText <> '') or (LTries > MaxTries);
-  LExpected := 'Version:1.0'#$D#$A'StartHTML:00000097'#$D#$A'EndHTML:00001947'#$D#$A'StartFragment:00000269'#$D#$A'EndFragment:00001915'#$D#$A'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html><head>'+
-  '<META http-equiv=Content-Type content="text/html; charset=utf-8"></head><body><!--StartFragment--><META http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css">'#$D#$A+
-  '.default{font-family: ''Tahoma''; font-size: 10pt; font-style: normal; font-weight: normal; text-decoration: none; color: #000000;}'#$D#$A+
-  '.header{font-family: ''Tahoma''; font-size: 10pt; font-style: normal; font-weight: normal; text-decoration: none; color: #000000;}'#$D#$A'.noborder{border-style: none;padding-left: 4px; padding-right: 4px;}'#$D#$A+
-  '.normalborder {vertical-align: top; border-right: none; border-left:none; border-top:none; border-bottom: none;border-width: thin; border-style: dotted;padding-left: 4px; padding-right: 4px;}</style>'#$D#$A +
-  '<table class="default" style="border-collapse: collapse;" bgcolor=#FFFFFF  border="1" frame=box cellspacing="0">'#$D#$A'<tr class="header" style="padding-left: 4px; padding-right: 4px;">'#$D#$A+
-  '<th height="20px" align=left bgcolor=#F0F0F0 width="50px">col2</th><th height="20px" align=left bgcolor=#F0F0F0 width="50px">col3</th><th height="20px" align=left bgcolor=#F0F0F0 width="50px">col4</th></tr>'#$D#$A+
-  ' <tr class="default">'#$D#$A' <td class="normalborder"  height="18px" align=left>3b</td> <td class="normalborder"  height="18px" align=left>3c</td> <td class="normalborder"  height="18px" align=left>3d</td> </tr>'#$D#$A+
-  ' <tr class="default">'#$D#$A' <td class="normalborder"  height="18px" align=left>4b</td> <td class="normalborder"  height="18px" align=left>4c</td> <td class="normalborder"  height="18px" align=left>4d</td> </tr>'#$D#$A' <tr class="default">'#$D#$A +
-  ' <td class="normalborder"  height="18px" align=left>5b</td> <td class="normalborder"  height="18px" align=left>5c</td> <td class="normalborder"  height="18px" align=left>5d</td> </tr>'#$D#$A'</table><!--EndFragment--></body></html>';
-  LCompareSuccessful := LText = LExpected;
-  Assert.IsTrue(LCompareSuccessful, 'Clipboard text is unexpected!');
+  LExpected := BuildExpectedCellHTML([n3, FNode4, n5]);
+  Assert.AreEqual(LExpected, LText, 'Clipboard HTML does not match the export template!');
 end;
 
 procedure TCellSelectionTests.TestCopyPlainText1;
@@ -800,7 +855,7 @@ begin
     end;
     // End unnecessary stuff
   until (LText <> '') or (LTries > MaxTries);
-  LExpected := '{\rtf1\ansi\ansicpg1252\deff0\deflang1043{\fonttbl{\f0 Tahoma;}}{\colortbl;\red0\green0\blue0;}\paperw16840\paperh11907\margl720\margr720\margt720\margb720\uc1\trowd\trgaph70\cellx750\cellx1500\cellx2250\pard\intbl\ql\f0\cf1'+
+  LExpected := '{\rtf1\ansi\ansicpg1252\deff0\deflang1043{\fonttbl{\f0 Tahoma;}}{\colortbl;\red0\green0\blue0;}' + GetExpectedRTFPaperSize + '\margl720\margr720\margt720\margb720\uc1\trowd\trgaph70\cellx750\cellx1500\cellx2250\pard\intbl\ql\f0\cf1'+
   '\fs16 \u99\''3f\u111\''3f\u108\''3f\u50\''3f\cell\ql \u99\''3f\u111\''3f\u108\''3f\u51\''3f\cell\ql \u99\''3f\u111\''3f\u108\''3f\u52\''3f\cell\row\pard\intbl \u51\''3f\u98\''3f\cell\pard\intbl \u51\''3f\u99\''3f\cell\pard\intbl \u51\''3f'+
   '\u100\''3f\cell\row'#$D#$A'\pard\intbl \u52\''3f\u98\''3f\cell\pard\intbl \u52\''3f\u99\''3f\cell\pard\intbl \u52\''3f\u100\''3f\cell\row'#$D#$A'\pard\par}';
   FRichEdit.SelText := LText;
@@ -854,7 +909,7 @@ begin
     end;
     // End unnecessary stuff
   until (LText <> '') or (LTries > MaxTries);
-  LExpected := '{\rtf1\ansi\ansicpg1252\deff0\deflang1043{\fonttbl{\f0 Tahoma;}}{\colortbl;\red0\green0\blue0;}\paperw16840\paperh11907\margl720\margr720\margt720\margb720\uc1\trowd\trgaph70\cellx750\cellx1500\cellx2250\pard\intbl\ql\f0\cf1\fs16 \u99\''3f\u111\''3f\u108\''3' +
+  LExpected := '{\rtf1\ansi\ansicpg1252\deff0\deflang1043{\fonttbl{\f0 Tahoma;}}{\colortbl;\red0\green0\blue0;}' + GetExpectedRTFPaperSize + '\margl720\margr720\margt720\margb720\uc1\trowd\trgaph70\cellx750\cellx1500\cellx2250\pard\intbl\ql\f0\cf1\fs16 \u99\''3f\u111\''3f\u108\''3' +
   'f\u50\''3f\cell\ql \u99\''3f\u111\''3f\u108\''3f\u51\''3f\cell\ql \u99\''3f\u111\''3f\u108\''3f\u52\''3f\cell\row\pard\intbl \u51\''3f\u98\''3f\cell\pard\intbl \u51\''3f\u99\''3f\cell\pard\intbl \u51\''3f\u100\''3f\cell\row' + sLineBreak +
   '\pard\intbl \u52\''3f\u98\''3f\cell\pard\intbl \u52\''3f\u99\''3f\cell\pard\intbl \u52\''3f\u100\''3f\cell\row' + sLineBreak +
   '\pard\intbl \u53\''3f\u98\''3f\cell\pard\intbl \u53\''3f\u99\''3f\cell\pard\intbl \u53\''3f\u100\''3f\cell\row' + sLineBreak +

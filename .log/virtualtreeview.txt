@@ -1,3 +1,831 @@
+commit 2a8aef840081ff35b90f1cc610602c3d65c0502e
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-10-12 17:06:03 +0200
+
+    Updated dspec file for V8.5
+
+commit eb27351b454ce330007d6c80f13250aa7e939918
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-10-01 22:24:02 +0200
+
+    Updated link to FPC/Lazarus version
+
+commit 1ca733f1938a7e83de00e048f0e739dc5316b2be
+Merge: 9dbe349 cadf947
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-09-29 09:55:48 +0200
+
+    Merge pull request #1402 from zencode1/background-bitmap-performance
+    
+    Cache the prepared background bitmap to avoid re-rendering on every paint
+
+commit 9dbe3493f6cb87286f37821fe8c12a0234072b8f
+Merge: cafdf73 c1310f6
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-09-25 18:10:30 +0200
+
+    Merge pull request #1405 from zencode1/fix-rtf-clipboard-test-locale
+    
+    Fix locale-dependent RTF clipboard test failures
+
+commit c1310f6d2694515acb73a68171e2a536a1f9605e
+Author: Clayton Arends <clayton.arends@evisions.com>
+Date:   2026-09-25 08:21:42 -0700
+
+    Fix locale-dependent RTF clipboard test failures
+    
+    TestCopyRTF1/2 hardcoded the A4 paper size that VirtualTrees.Export.pas
+    only emits on metric-locale machines, so they failed under a US locale.
+    GetExpectedRTFPaperSize mirrors that locale check so the expected RTF
+    adapts to whichever machine runs the tests.
+
+commit cadf94776b19785491299a56b42f386fab11cf75
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-25 08:10:27 -0700
+
+    Invalidate when Background is changed
+
+commit 08d54d2ef8009c67d5ab0bd3ca6781a156482f5c
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-25 08:08:46 -0700
+
+    Guard against consumers overwriting Background.OnChange (#1402)
+    
+    Background is public, so assigning Background.OnChange directly replaced
+    our internal hook and left FBackgroundPrepared stale. Detect and re-chain
+    it via GetBackgroundBitmap so the consumer's handler still fires.
+
+commit cafdf738458b87ff8bf3f15ee2bc2f0278231487
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-09-25 13:42:43 +0200
+
+    Added make target 13.2 and commemted build for WINARM64EC platform
+
+commit cf2c10b19c05b7743b9a5a340b3c58df95da599d
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-09-25 13:38:43 +0200
+
+    Transformed comments for `TVTSelectionOption`into XmlDoc and added limitation from issue #1400
+
+commit 1679913f98386689963e7cecf7f673a3d5e982df
+Merge: 311d990 4615571
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-09-22 14:53:28 +0200
+
+    Merge pull request #1403 from zencode1/cppbuilder
+    
+    Add C++Builder 13 support and fix packaging inconsistencies in C++Builder 12
+
+commit 311d9902724b473f700cc27561aa01e595a4943d
+Merge: 88f9eb7 4dbc14f
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-09-22 14:51:05 +0200
+
+    Merge pull request #1401 from zencode1/cpp-v7-compatibility-constants
+    
+    Fix C++Builder compile errors on V7 compatibility constants
+
+commit 46155714d0444f2c5ef2387c04894ea263eb6ec4
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 16:55:46 -0700
+
+    Add CBuilder 13 project files
+
+commit 5329d59fe3739298b9952d8bd3301ca34ed49fce
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 16:55:18 -0700
+
+    Switch build control to "Explicit rebuild" like all other packages
+
+commit bfdc6f0b5ff10560baa6bb5702c56b161b6f10c8
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 16:34:37 -0700
+
+    Win64/Win64x are not yet supported for C++Builder design-time packages
+
+commit cc2fba048816281acc02c796f8e5d57d8be5869a
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 15:16:12 -0700
+
+    Move VerInfo_IncludeVerInfo setting to base conditional group
+
+commit b15791ec9b0377913abd1340f03834c4c5bfc96d
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 15:10:38 -0700
+
+    Move ILINK_Description setting to base conditional group and match the value of the other C++Builder packages
+
+commit 3608ae0ad567da717889f6aadf3d5127cc5c2134
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 14:35:37 -0700
+
+    Move BCC_UseClassicCompiler setting to base Win32 conditional group
+
+commit 2ab85380a64907a92cf5116faec265cb2626676f
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 14:31:18 -0700
+
+    Move conditional defines to the base Debug and Release conditional groups
+
+commit cf0a267a2453c8f2ba063d225315983eeac035e3
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 13:40:22 -0700
+
+    Renamed VirtualTrees.groupproj to VirtualTreeView.groupproj to match all other packages
+
+commit d5dd0e2f5740bc7dab410a64d22c019829009787
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 13:30:39 -0700
+
+    Fix ProjectGuid and BuildOrder values to match previous package files
+
+commit c67097dd39d7284bf9e5ed53c84d8e5be65d761b
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 13:21:41 -0700
+
+    Add missing DllSuffix
+
+commit 71be63aa3a8b22873da51ca0e025ad3dbfc6566c
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 12:39:31 -0700
+
+    Fix page size linker warning
+
+commit 0e28eea5fefe24abcd974552df911a7de02565a8
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 12:13:26 -0700
+
+    Modernize VCL includes with unit scope naming
+
+commit 6858704217a615e6f546076415e4e1e364fd1b9b
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 12:12:42 -0700
+
+    Add includes and pragma links caused by VirtualTrees.pas reorganization
+
+commit cc24f03aaf031e4aaa817fd3f7f0b9961236fe6a
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 12:10:05 -0700
+
+    Update .gitignore for Twine Compiler, debug symbols, and C++ incremental linker
+
+commit 1da02dfb29024321507211bb535ad7ff4cd4942d
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 10:03:59 -0700
+
+    Clean up indentation
+
+commit 0be5179763ea825a0ba5054b03c5b5c4241cc002
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 08:56:30 -0700
+
+    Re-prepare the prepared background bitmap on settings changes
+
+commit 14607f2ce6cf9c00b1e5c180eb5f76434425c009
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 08:38:35 -0700
+
+    Clear the prepared background bitmap if the background image changes
+
+commit b56b10e4c20d29c3b33f29a5aabda502a8a2fea8
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-20 08:36:06 -0700
+
+    Add FBackgroundPrepared to cache and reuse the prepared background bitmap
+
+commit 4dbc14fd0ba486733612173e6f66f65b3377c2e2
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-19 14:20:35 -0700
+
+    Remove alias alignment spacing
+
+commit af934b5aaba79eb8724cff69c953edd9af456152
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-19 14:03:55 -0700
+
+    Add {$HPPEMIT} lines to properly alias for C++Builder
+
+commit 82582c25b851b882239020ab9ae319055c5bfb4f
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-19 14:02:57 -0700
+
+    Fix misspelled enum value
+
+commit bcc6caeddf0ad0bd83bcfd2bdebf484a7531a866
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-19 13:29:18 -0700
+
+    Use {$EXTERNALSYM} for aliased constants to avoid C++ ambiguity errors
+
+commit 001af36899fb17a8fd68d37c99c419d9af009297
+Author: Clayton Arends <claytonarends@hotmail.com>
+Date:   2026-09-19 12:42:27 -0700
+
+    Group by enum
+
+commit 88f9eb75a7bd895363ffc32b72d3698ca5d9153c
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-09-08 11:31:18 +0200
+
+    Improve conditional code for ARM64EC platofrm in PackArray(), we do have x86 assembler code only.
+
+commit 9cf3c8b63401ddf9b4f45e62048930eee88a0e68
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-09-08 11:20:51 +0200
+
+    Ger rid of unnecessary helper type, duplicate from WinApi.Messages.pas
+
+commit e5efe0b44d82e0d59f4587af3e62f054ceae2e69
+Merge: c5282ff 39d637b
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-09-07 16:55:24 +0200
+
+    Merge pull request #1398 from JAM-Software/fix/issue-983-consider-scrollbar-height-in-scrollrange
+    
+    chore: Merged tests for #983 as provided by TetzkatLipHoka in PR #1391
+
+commit 39d637bff4add6c725afc684aeab9d81f4c61879
+Merge: 834104f c5282ff
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-09-07 16:55:15 +0200
+
+    Merge branch 'master' into fix/issue-983-consider-scrollbar-height-in-scrollrange
+
+commit 834104f97e8ef103865be0eeefbc2849701fb5bb
+Author: Daniel Trierweiler <daniel.trierweiler@jam-software.com>
+Date:   2026-09-07 16:53:51 +0200
+
+    chore: Merged tests for #983 as provided by TetzkatLipHoka in PR #1391
+
+commit c5282ff21e97f38a0477632292c8f862e2d37599
+Merge: 305499b 2c661a6
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-09-07 16:46:41 +0200
+
+    Merge pull request #1393 from JAM-Software/fix/issue-983-consider-scrollbar-height-in-scrollrange
+    
+    fix #983: When scrolling down, consider the height of the horizontal …
+
+commit 2c661a6ebb40f65a477a63613af8daa3e41df81f
+Author: Daniel Trierweiler <daniel.trierweiler@jam-software.com>
+Date:   2026-09-07 16:46:16 +0200
+
+    fix (#983): Use GetPreviousVisible suggested to take node in a hierarchy into account as well, not just siblings
+
+commit 305499b3e2084d3ed5e9518b30b248c39759242f
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-09-01 17:35:30 +0200
+
+    Issue #1372: Improved and unifiied output paths.
+
+commit c39597150acb8b551746386e90898c9c900fce88
+Merge: 5f74137 2d03d06
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-08-31 08:06:11 +0200
+
+    Merge pull request #1394 from TetzkatLipHoka/fix/copyhtml-tests-dpi
+    
+    Fixed TestCopyHTML1/2: expectations were generated on a 216 dpi machine
+
+commit 5f74137aa86f5ad33edf1a2a210c6fd51f2a9935
+Merge: 2cc8ddc 453dca4
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-08-29 10:41:47 +0200
+
+    Merge pull request #1396 from TetzkatLipHoka/fix/issue-728-header-hint
+    
+    Fixed unreliable header tooltips (issue #728)
+
+commit 453dca48d5272a4a5d2b2c1c240a83ff13ef2b47
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-28 14:52:21 +0200
+
+    Fixed unreliable header tooltips (issue #728)
+    
+    The header is non-client area, so hovering it produces WM_NCMOUSEMOVE.
+    Measured against the VCL hint pipeline, header tooltips failed for three
+    independent reasons:
+    
+    1. While the application's hint window is the stock THintWindow, its
+       IsHintMsg cancels the pending hint on every WM_NCMOUSEMOVE pulled
+       from the message queue. The header only re-armed the hint pipeline
+       (Application.HintMouseMessage) when the hover COLUMN changed, so any
+       further movement inside the same column killed the pending hint for
+       good. Header tooltips only worked reliably after a virtual tree hint
+       had been shown, because then TVirtualTreeHintWindow.IsHintMsg
+       filtered the cancellation.
+    2. Re-arming must not happen while the cursor is inside LastHintRect
+       (a hint was already accepted for the header): showing the hint
+       window generates a synthesized WM_NCMOUSEMOVE at the unchanged
+       cursor position, the re-entered pipeline calls ActivateHint
+       immediately (CMHintShowPause reports zero pause for hmToolTip),
+       the LastHintRect short-circuit in CMHintShow rejects the re-show,
+       and TApplication.ActivateHint reacts to the rejection with
+       CancelHint, hiding the hint that just appeared.
+    3. LastHintRect is only cleared by CM_MOUSELEAVE, which the tree
+       receives after the mouse visited its CLIENT area. Entering and
+       leaving the header alone never cleared it, so no header hint would
+       show on the next visit ("works again after selecting and scrolling
+       a row", as reported in the issue).
+    
+    Fix, entirely local to TVTHeader (no application-global changes):
+    re-arm the hint pipeline on every WM_NCMOUSEMOVE inside the header
+    unless the cursor is inside LastHintRect, and clear a header-band
+    LastHintRect (Top < 0 in client coordinates) from the header's existing
+    mouse-leave detection timer.
+    
+    The regression tests drive the header's message handler directly and
+    observe the pipeline via CM_HINTSHOWPAUSE; without the fix three of the
+    four tests fail. The end-to-end behaviour (real cursor, real message
+    queue, counting visible hint windows) was verified with a deterministic
+    measurement harness: unpatched, a header hover with in-column movement
+    shows no hint and hovering after a foreign control's hint shows no hint
+    either; with this change both show, while foreign control hints remain
+    untouched - stable over repeated runs on Delphi 13.1, compiled clean on
+    10 Seattle Win32 and 13.1 Win32/Win64.
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+commit 2cc8ddc7d66d2b8d9a5f4be99a3d6c58cd29e66f
+Merge: 5865698 8c89a52
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-08-28 11:28:52 +0200
+
+    Merge pull request #1397 from TetzkatLipHoka/fix/issue-873-accessibility-autoregister
+    
+    Register the accessibility providers by default (issue #873)
+
+commit 8c89a52b9083162c5b6c1cf87430cc48216274d5
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-28 11:26:27 +0200
+
+    Register the accessibility providers by default (issue #873)
+    
+    Screen-reader support was effectively off unless the application added
+    VirtualTrees.Accessibility to a uses clause itself: nothing linked that unit in
+    Delphi (only a C++Builder $HPPEMIT pragma in VirtualTrees.BaseTree referenced it),
+    so its initialization - which registers the default IAccessible providers - never
+    ran and WM_GETOBJECT returned no tree accessible.
+    
+    Reference VirtualTrees.Accessibility from the VirtualTrees umbrella unit's
+    implementation uses so the providers register automatically. The IAccessible
+    objects are still created lazily on WM_GETOBJECT, so there is no cost until an
+    accessibility client attaches.
+    
+    With this, keyboard navigation is announced by screen readers out of the box
+    (verified with NVDA); previously the EVENT_OBJECT_FOCUS notifications from
+    DoFocusChange had no registered accessible to act on.
+    
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 2d03d06300e78efda2819b6f520b0e9c076c1aba
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-25 17:49:44 +0200
+
+    Fixed TestCopyHTML1/2: expectations were generated on a 216 dpi machine
+    
+    The two tests compared the CF_HTML clipboard content byte-by-byte against
+    hardcoded strings whose pixel heights came from the machine the fixture was
+    created on (the test form's dfm carries PixelsPerInch = 216). On any other
+    dpi the dpi-rescale chain yields different node heights - measured on a
+    96 dpi machine the only difference is height="18px" vs height="19px" in the
+    data rows - so the tests have been permanently red on standard-dpi machines
+    since their introduction.
+    
+    The expected string is now built from the tree's actual metrics (font,
+    Header.Height, column widths and captions, NodeHeight[], Text[]) using the
+    same sources the HTML exporter reads, with the fixed-width CF_HTML offset
+    header computed exactly like MakeFragment in VirtualTrees.Export.pas. The
+    comparison stays byte-exact, so any change to the export format still fails
+    the test - only the machine dependency is gone. Assert.AreEqual now also
+    reports the actual difference instead of a plain boolean message.
+    
+    With this the whole suite is green for the first time: 153/153 on Delphi
+    13.1 and on 10 Seattle (the oldest claimed supported version).
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+commit 5865698ae71ba07453ed93a7aa1cce6834f7bde7
+Merge: 9d93c37 5b3f80a
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-25 08:55:33 +0200
+
+    Merge pull request #1392 from TetzkatLipHoka/fix/header-background-classic
+    
+    Fixed classic header cells ignoring Header.Background
+
+commit 3cedaca16fb1f49b00208065cc1393e89776a526
+Author: Daniel Trierweiler <daniel.trierweiler@jam-software.com>
+Date:   2026-08-25 08:47:36 +0200
+
+    fix #983: When scrolling down, consider the height of the horizontal scrollbar to calculate whether the bar should be visible or not. This effectively enlarges the view port by one (or more) rows, so that we can calculate the need for the scrollbar as if it was not visible.
+    Downside of this approach: If the first invisible row would require the scrollbar to be visible, but no other visible row would, we would still show the scrollbar.
+
+commit 5b3f80ab57df9d4928690c0196a35faf742994e2
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-24 17:09:44 +0200
+
+    Fixed classic header cells ignoring Header.Background
+    
+    In the classic (non-themed) paint path DrawBackground fills the area right of
+    the last column with Header.Background, but PaintColumnHeader painted the
+    column cells via DrawEdge with BF_MIDDLE, which always fills the interior with
+    clBtnFace - a custom Header.Background only ever showed up in the filler area.
+    The cells now get filled explicitly with Header.Background before the edges
+    are drawn. For the default clBtnFace the result is pixel-identical, and the
+    themed and VCL-styles paths are untouched.
+    
+    Tests/VTHeaderBackgroundTests.pas renders the header offscreen and checks both
+    directions: cells follow a custom Header.Background (fails without the fix)
+    and the default rendering keeps the clBtnFace look (guards the no-change
+    promise).
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+commit 9d93c37d5643a5b50b0f857f97e47848ec5565c6
+Merge: 71226c8 d23467f
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-24 15:44:59 +0200
+
+    Merge pull request #1387 from TetzkatLipHoka/fix/issue-1379-refocus
+    
+    Fixed issue #1379: Redundant focused-node assignment ended node editing during keyboard navigation
+
+commit d23467fde27a89214c6a81a51ebb38b6558474da
+Merge: fa3a06c 71226c8
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-24 15:44:48 +0200
+
+    Merge branch 'master' into fix/issue-1379-refocus
+
+commit 71226c8a88b196f80422cb33fe00575822e55b8a
+Merge: c911daf 012b43d
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-24 15:42:43 +0200
+
+    Merge pull request #1385 from TetzkatLipHoka/fix/issue-765-focusrect
+    
+    Fixed issue #765: Focus rect covers the whole row with toFullRowSelect, independent of the explorer theme
+
+commit 012b43d2c0933ae3e4420b83a0043d540eddd9b3
+Merge: aa3ee9d c911daf
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-24 15:37:29 +0200
+
+    Merge branch 'master' into fix/issue-765-focusrect
+
+commit c911daf98bab3e6576a25faad98a2c7009ea608b
+Merge: c96ed14 cf4e6cc
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-24 15:33:42 +0200
+
+    Merge pull request #1381 from TetzkatLipHoka/fix/issue-1197-selectedcount
+    
+    Fix #1197: SelectedCount is stale while selection change events run
+
+commit cf4e6cc95e9fce145e5c96cb46b68a74ff6f1bec
+Merge: ec83799 c96ed14
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-24 15:31:46 +0200
+
+    Merge branch 'master' into fix/issue-1197-selectedcount
+
+commit c96ed14db36375016df89bb80735997072281bc9
+Merge: 6e0b0e2 bcdce4d
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-24 15:13:08 +0200
+
+    Merge pull request #1390 from bolidesoft/fix-win7-black-tree
+    
+    Fix solid black tree on Windows 7 without DWM composition (Delphi 12), closes #1389
+
+commit 6e0b0e2b74d0d78ff6a01843d7232f3e539f36eb
+Merge: e019424 b69cc57
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-08-24 10:21:13 +0200
+
+    Merge pull request #1384 from TetzkatLipHoka/fix/issue-1074-mapmode
+    
+    Fixed issue #1074: PaintTree with poUnbuffered misplaces nodes under a mapping mode
+
+commit b69cc576ee4fe9dd1e34e25ad5bb02b81ca578a2
+Merge: c412e32 e019424
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-08-24 10:20:37 +0200
+
+    Merge branch 'master' into fix/issue-1074-mapmode
+
+commit e0194240a9b057d1f6a991ab7bb122ca24dc663f
+Merge: 574a3f3 19374a0
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-08-24 10:15:35 +0200
+
+    Merge pull request #1383 from TetzkatLipHoka/fix/issue-1091-bands
+    
+    Fixed issue #1091: Bands disappear with explorer theme
+
+commit 19374a0b19e3804597a0c5237670769f335ccd1d
+Merge: 8dc2556 574a3f3
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-08-24 10:15:12 +0200
+
+    Merge branch 'master' into fix/issue-1091-bands
+
+commit bcdce4d8fce8dbfb540916f9a3907cb3e83e1e61
+Author: Max <bolide@mail.kz>
+Date:   2026-08-22 02:40:35 -0700
+
+    Fix solid black tree on Windows 7 without DWM composition (Delphi 12), see #1269
+
+commit 574a3f38c94485f36bd65a2b5f10fb0b10c0a4d9
+Author: marder <joachim.marder@jam-software.com>
+Date:   2026-08-19 15:04:46 +0200
+
+    Added some IDE genereate fies to ignore list.
+
+commit 49efc2b4923f0f039c7b3bbfdcac23938fd0e8c0
+Merge: 16bab91 aa6f886
+Author: Joachim Marder <10615289+joachimmarder@users.noreply.github.com>
+Date:   2026-08-18 17:10:43 +0200
+
+    Merge pull request #1388 from TetzkatLipHoka/fix/issue-1377-fixedcol-drag
+    
+    Fixed issue #1377: Normal columns could be dropped inside the fixed area and were trapped there
+
+commit 16bab910ac5ea01e95649fc3c19f2ae0c6eca73b
+Merge: 5ec47ed 3160200
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-18 08:28:03 +0200
+
+    Merge pull request #1386 from TetzkatLipHoka/chore/remove-stray-repro-zip
+    
+    Remove accidentally committed repro project from the repository root
+
+commit 5ec47ed4840c3c6d4d50cacbdac90405e635370a
+Merge: 9351e4f 7d967a4
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-18 08:26:51 +0200
+
+    Merge pull request #1382 from TetzkatLipHoka/fix/issue-632-paintto
+    
+    Fix #632: header is missing from PaintTo and drawn for client-only WM_PRINT
+
+commit aa6f8863d9e08f9814a259753a7094d08bb4cd75
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-17 23:38:53 +0200
+
+    Fixed issue #1377: Normal columns could be dropped inside the fixed area and were trapped there
+    
+    Dropping a normal column in front of a fixed column made it fixed
+    (deliberate behavior of TVirtualTreeColumn.SetPosition when a column
+    enters the fixed area) - and since issue #1314 fixed columns lose
+    coDraggable, so the column could never be dragged out again.
+    
+    Redirect the drop target in TVTHeader.DragTo(): when a non-fixed
+    column is dragged over a fixed one, the target becomes the first
+    non-fixed visible column instead. Drop mark and drop are consistent
+    and the column lands right after the fixed area, staying normal and
+    draggable. The programmatic path is unchanged: assigning Position
+    directly still moves a column into the fixed area and makes it fixed.
+    
+    New regression test Tests/VTFixedColumnDragIssue1377Tests.pas drives
+    DragIndex/DragTo/ColumnDropped directly and asserts the redirected
+    target, the resulting position and the preserved options; it fails
+    without the fix. A second test pins the unchanged programmatic
+    behavior. Test suite: 2 pre-existing failures (TestCopyHTML1/2, also
+    failing on unmodified master), no new failures.
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+commit fa3a06cafae5c0a181bed998c70304420395800c
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-17 23:28:58 +0200
+
+    Fixed issue #1379: Redundant focused-node assignment ended node editing during keyboard navigation
+    
+    Keyboard navigation sets the focused node twice: WMKeyDown moves the
+    focus (which fires OnFocusChanged), then AddToSelection() assigns the
+    - by now unchanged - focused node again. SetFocusedNode() always ran
+    DoFocusNode(), which begins by ending a node edit. An edit started by
+    the application inside OnFocusChanged was therefore ended again right
+    away by that redundant assignment. With the mouse the event order
+    differs, which is why the same handler worked there.
+    
+    Fix as suggested in the issue discussion: SetFocusedNode() exits early
+    when the node is already focused, so the property setter has no side
+    effects for a no-op assignment. DoFocusNode() itself is unchanged, its
+    deliberate same-node handling (scroll into view) remains available to
+    its direct callers.
+    
+    New regression test Tests/VTFocusChangedIssue1379Tests.pas covers the
+    minimal contract (re-assigning the focused node keeps tsEditing) and
+    the reported scenario (edit started in OnFocusChanged survives a
+    VK_DOWN); both fail without the fix. Test suite: 2 pre-existing
+    failures (TestCopyHTML1/2, also failing on unmodified master), no new
+    failures.
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+commit aa3ee9d3e463ee93b8ea979ed6e363fccf86a8f3
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-17 23:05:40 +0200
+
+    Fixed issue #765: Focus rect covers the whole row with toFullRowSelect, with or without explorer theme
+    
+    Without the explorer theme the focus rect was drawn around InnerRect
+    (or CellRect with toGridExtensions) only, although toFullRowSelect
+    selects and highlights the entire row. Both the draw condition and the
+    rectangle choice in PrepareCell were gated on tsUseExplorerTheme; in
+    addition RowRect was only computed when the explorer theme was active.
+    
+    Compute RowRect unconditionally and drop the two tsUseExplorerTheme
+    conditions. Each cell draws the row-wide rect clipped to its own
+    rectangle, so the XOR-based DrawFocusRect touches every pixel exactly
+    once - measured: the dotted perimeter pixel count matches a single
+    420x18 rectangle (436 vs. expected 438) with no cancelled segments.
+    
+    Measured offscreen: without columns the focus rect now spans the whole
+    client width, with three columns it spans all columns instead of just
+    the focused one; the explorer-themed rendering is pixel-identical to
+    before. New regression test Tests/VTFocusRectIssue765Tests.pas asserts
+    both spans; without the fix both assertions fail. Test suite: 2
+    pre-existing failures (TestCopyHTML1/2, also failing on unmodified
+    master), no new failures.
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+commit 316020003b9c7dcb4a29be7ef17f4d447ba72f71
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-17 22:59:42 +0200
+
+    Remove accidentally committed repro project from the repository root
+    
+    The zip is the reproduction project of a bug report and slipped in
+    with 85428f2 (Fixed issue #1368).
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+commit c412e32803d30fa0d6a3098673bcb5266263449b
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-17 22:56:18 +0200
+
+    Fixed issue #1074: PaintTree with poUnbuffered misplaces nodes under a mapping mode
+    
+    SetCanvasOrigin() transformed its shift through LPtoDP before passing
+    it to SetWindowOrgEx. SetWindowOrgEx however expects logical units -
+    the same units the tree calculates with - so on a canvas with a
+    mapping mode (the issue uses MM_ANISOTROPIC with a 2x viewport) the
+    shift was scaled twice and every node was drawn at twice its offset:
+    node contents, tree lines, buttons and grid lines all drifted apart,
+    exactly as shown in the issue. With the default MM_TEXT mapping the
+    transformation was a no-op, which is why the ordinary paint paths
+    never showed the problem.
+    
+    Pass the shift to SetWindowOrgEx untransformed.
+    
+    Measured offscreen (2x MM_ANISOTROPIC): after the fix the unbuffered
+    rendering places all grid lines and tree lines pixel-identical to the
+    buffered rendering, and exactly at twice the unmapped positions; the
+    MM_TEXT rendering is byte-identical to the one before the fix. New
+    regression test Tests/VTPaintTreeIssue1074Tests.pas asserts both
+    properties; without the fix both assertions fail. Test suite: 2
+    pre-existing failures (TestCopyHTML1/2, also failing on unmodified
+    master), no new failures.
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+commit 8dc2556dec5a13e9efc7f4b4229d0c69895f2d4d
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-17 22:47:00 +0200
+
+    Fixed issue #1091: Bands disappear with explorer theme
+    
+    With the explorer theme active, DetermineLineImageAndSelectLevel()
+    suppresses the tree line under the expand button by overwriting the
+    last line image entry with ltNone. The band conversion in
+    PaintTreeLines() however relies on the documented invariant that
+    ltNone never appears as the last entry: on ltNone it takes over the
+    style of the entry to the right, which for the last entry is an
+    out-of-bounds read of the dynamic array (raises ERangeError with
+    range checking on). The resulting garbage styles made the bands of
+    every collapsed node with children disappear, while expanded nodes
+    stayed intact - matching the screenshot in the issue.
+    
+    Skip the suppression in band mode: bands are box edges, not lines
+    pointing at a button, so there is nothing to suppress.
+    
+    Measured offscreen via pixel counting (see new regression test):
+    identical band rendering with and without the explorer theme state
+    after the fix; before, 53 of 1954 band pixels were missing in the
+    test scenario. Test suite: 2 pre-existing failures (TestCopyHTML1/2,
+    also failing on unmodified master), no new failures.
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+commit 7d967a41070fc32ffd969bfad2a9569b0358ccef
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-17 21:32:18 +0200
+
+    Fix #632: header is missing from PaintTo and drawn for client-only WM_PRINT
+    
+    The header lives in the non-client area, and two separate mistakes made rendering
+    the tree into a caller supplied device context unusable.
+    
+    WMPaint always fetched a window DC via GetDCEx to draw the header, ignoring the DC
+    that comes with the message. TWinControl.PaintTo performs WM_PAINT with the target
+    DC, so the client area ended up in the copy while the header was painted onto the
+    real window instead - the copy had no header at all. It now paints into Message.DC
+    when one is supplied.
+    
+    That alone put the header two pixels off: PaintTo draws the border itself and then
+    moves the origin inside it, while FHeaderRect is relative to the outer window
+    corner, so the header was shifted by the border width and clipped on the opposite
+    edge. csPaintCopy marks exactly that case, and GetBorderDimensions returns negative
+    values, so adding them shifts back.
+    
+    WMPrint drew the header regardless of the PRF_ flags, so a PRF_CLIENT only request
+    got the non-client header painted over the client area, which is the corrupted
+    border the reporter saw. It now checks PRF_NONCLIENT.
+    
+    Measured on Delphi 13.1 / Win32 by rendering into an off-screen bitmap and counting
+    the pixels of a distinctively coloured header, so the result does not depend on
+    window visibility or theming:
+    
+                                            before          after
+      PaintTo                               0 px            304 px, (362,2)-(377,20)
+      WM_PRINT, PRF_CLIENT only             38 px           0 px
+      WM_PRINT, PRF_CLIENT or PRF_NONCLIENT 304 px          304 px, unchanged
+      WM_PRINT, PRF_NONCLIENT               304 px          304 px, unchanged
+    
+    PaintTo is now pixel identical to WM_PRINT with PRF_NONCLIENT.
+    
+    Tests/VTPaintToIssue632Tests.pas covers all four cases. Three of them fail without
+    this change and one passes either way, guarding against over-correcting the case
+    that already worked. Suite goes from 135 passed / 5 failed to 138 passed / 2
+    failed; the two remaining failures are the pre-existing TestCopyHTML1 and
+    TestCopyHTML2, which also fail on an unmodified master here.
+    
+    Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+commit ec83799b921f9e7218a4ac1bb1f84db45107fd72
+Author: TetzkatLipHoka <10427286+TetzkatLipHoka@users.noreply.github.com>
+Date:   2026-08-17 20:16:15 +0200
+
+    Fix #1197: SelectedCount is stale while selection change events run
+    
+    ToggleSelection() - the Shift+Arrow path - removes nodes via
+    InternalRemoveFromSelection(). That routine only *marks* the entry in FSelection
+    (it sets the low bit of the pointer, which is what PackArray later looks for) but
+    fires DoRemoveFromSelection() and Change() straight away. FSelectionCount is not
+    corrected until PackArray runs after the loop, so every handler invoked in
+    between sees a count that is too high by the number of nodes already dropped.
+    Iterating SelectedNodes gives the right answer at the same moment because
+    vsSelected has been cleared, which is exactly the discrepancy reported.
+    
+    FSelectionCount cannot simply be decremented when marking: it is also the length
+    PackArray scans, so lowering it early would leave marked entries in the array.
+    Instead the pending marks are counted and subtracted in GetSelectedCount, and
+    SelectedCount now reads that getter instead of the raw field. Internal callers
+    keep using FSelectionCount directly, so the physical bookkeeping is unchanged.
+    
+    Event order is deliberately left alone - Change() is called from
+    InternalRemoveFromSelection() on purpose, see the comment referring to #1047.
+    
+    The five line pack-and-resize block that appeared at seven call sites is now
+    PackSelection(), which also resets the pending counter. Centralising it is what
+    keeps that counter from drifting, since resetting it at seven places is easy to
+    forget. It returns whether the array was shortened, which is what InvertSelection
+    used its local flag for.
+    
+    Adds Tests/VTSelectedCountIssue1197Tests.pas: one test asserts the count seen
+    during OnRemoveFromSelection, a second asserts the count after the operation so a
+    future change cannot over-correct. Verified both ways - with the fix the suite is
+    136 passed / 2 failed, reverting only the getter change puts it back to 135 / 3.
+    The two remaining failures are the pre-existing TestCopyHTML1 and TestCopyHTML2.
+    
+    Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+commit 9351e4f0807e67255985a740261d7d4bc95943ba
+Merge: 5ed9c0e e93af64
+Author: Daniel Trierweiler <trierweiler@jam-software.de>
+Date:   2026-08-14 07:59:07 +0200
+
+    Merge pull request #1380 from JAM-Software/fix-missing-caret-with-textscaling
+    
+    fix: Adjusted height calculation for the text-editing-caret. With the…
+
+commit e93af64e71ed1384bccb97c49881cbfb5d55c7df
+Author: Daniel Trierweiler <daniel.trierweiler@jam-software.com>
+Date:   2026-08-14 07:57:24 +0200
+
+    fix: Adjusted height calculation for the text-editing-caret. With the current implementation, it might become invisible, if the text scaling in Windows is activated, while the overall scaling for the screen isn't
+
+commit 5ed9c0e1ae81cdedc0a534135d0ac605bf1a638c
+Author: Daniel Trierweiler <daniel.trierweiler@jam-software.com>
+Date:   2026-07-27 08:31:26 +0200
+
+    chore: Updated CI target to run on Delphi 13.1
+
 commit 47a1148e48db888f5c8d22bc3bd21172155557f4
 Author: marder <joachim.marder@jam-software.com>
 Date:   2026-07-20 13:00:54 +0200

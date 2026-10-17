@@ -1232,6 +1232,21 @@ begin
   //Make coordinates relative to (0, 0) of the non-client area.
   Inc(ClientP.Y, FHeight);
   NewTarget := FColumns.ColumnFromPosition(ClientP);
+  // Issue #1377: A normal column must not be dropped inside the fixed area. It would become
+  // fixed there (see TVirtualTreeColumn.SetPosition) and thereby lose coDraggable (issue
+  // #1314), so it could never be dragged out again. Redirect such a target to the first
+  // non-fixed visible column: drop mark and drop then both land right after the fixed area.
+  if (NewTarget > NoColumn) and (coFixed in FColumns[NewTarget].Options) and
+     (FColumns.DragIndex > NoColumn) and not (coFixed in FColumns[FColumns.DragIndex].Options) then
+  begin
+    NewTarget := InvalidColumn;
+    for I := 0 to FColumns.Count - 1 do
+      if [coVisible, coFixed] * FColumns[FColumns.ColumnFromPosition(TColumnPosition(I))].Options = [coVisible] then
+      begin
+        NewTarget := FColumns.ColumnFromPosition(TColumnPosition(I));
+        Break;
+      end;
+  end;
   NeedRepaint := (NewTarget <> InvalidColumn) and (NewTarget <> FColumns.DropTarget);
   if NewTarget >= 0 then
   begin
@@ -1754,15 +1769,28 @@ begin
       begin
         P := Tree.ScreenToClient(Point(XCursor, YCursor));
         Tree.DoHeaderMouseMove(GetShiftState, P.X, P.Y + FHeight);
-        if InHeader(P) and ((AdjustHoverColumn(P)) or ((DownIndex >= 0) and (HoverIndex <> DownIndex))) then
+        if InHeader(P) then
         begin
-          //We need a mouse leave detection from here for the non client area.
-          //TODO: The best solution available would be the TrackMouseEvent API.
-          //With the drop of the support of Win95 totally and WinNT4 we should replace the timer.
-          Tree.StopTimer(HeaderTimer);
-          SetTimer(Tree.Handle, HeaderTimer, 50, nil);
-          //use Delphi's internal hint handling for header hints too
-          if hoShowHint in FOptions then
+          if (AdjustHoverColumn(P)) or ((DownIndex >= 0) and (HoverIndex <> DownIndex)) then
+          begin
+            //We need a mouse leave detection from here for the non client area.
+            //TODO: The best solution available would be the TrackMouseEvent API.
+            //With the drop of the support of Win95 totally and WinNT4 we should replace the timer.
+            Tree.StopTimer(HeaderTimer);
+            SetTimer(Tree.Handle, HeaderTimer, 50, nil);
+          end;
+          //use Delphi's internal hint handling for header hints too.
+          //Issue #728: this must happen on EVERY move, not only when the hover column
+          //changes. The header is non-client area, and while the application's hint
+          //window is the stock THintWindow, its IsHintMsg cancels the pending hint on
+          //each WM_NCMOUSEMOVE pulled from the queue. Re-arming only on column changes
+          //meant any further movement inside the same column killed the hint for good,
+          //which made header tooltips unreliable.
+          //Do NOT re-arm while the cursor is inside LastHintRect: a header hint was
+          //already accepted for this area, and re-entering the hint pipeline would
+          //bounce off the LastHintRect short-circuit in CMHintShow, whose rejection
+          //makes TApplication.ActivateHint cancel (and thereby hide) the visible hint.
+          if (hoShowHint in FOptions) and not PtInRect(TBaseVirtualTreeCracker(FOwner).LastHintRect, P) then
           begin
             //client coordinates!
             XCursor := P.X;
@@ -1789,6 +1817,14 @@ begin
             Result := True;
             Message.Result := 0;
             Invalidate(nil);
+            //Issue #728: LastHintRect is "the area which the mouse must leave to reshow
+            //a hint". For header hints that area is the header band (Bottom = 0 in client
+            //coordinates). The tree itself only notices the departure via CM_MOUSELEAVE
+            //after the mouse visited its client area, so clear the rectangle from the
+            //header's own leave detection - otherwise no header hint is shown on the
+            //next visit.
+            if not InHeader(P) and (Tree.LastHintRect.Top < 0) then
+              Tree.LastHintRect := Rect(0, 0, 0, 0);
           end;
         end;
       end;
@@ -5552,26 +5588,26 @@ var
       hsThickButtons :
         begin
           NormalButtonStyle := BDR_RAISEDINNER or BDR_RAISEDOUTER;
-          NormalButtonFlags := BF_LEFT or BF_TOP or BF_BOTTOM or BF_MIDDLE or BF_SOFT or BF_ADJUST;
+          NormalButtonFlags := BF_LEFT or BF_TOP or BF_BOTTOM or BF_SOFT or BF_ADJUST;
           PressedButtonStyle := BDR_RAISEDINNER or BDR_RAISEDOUTER;
           PressedButtonFlags := NormalButtonFlags or BF_RIGHT or BF_FLAT or BF_ADJUST;
         end;
       hsFlatButtons :
         begin
           NormalButtonStyle := BDR_RAISEDINNER;
-          NormalButtonFlags := BF_LEFT or BF_TOP or BF_BOTTOM or BF_MIDDLE or BF_ADJUST;
+          NormalButtonFlags := BF_LEFT or BF_TOP or BF_BOTTOM or BF_ADJUST;
           PressedButtonStyle := BDR_SUNKENOUTER;
-          PressedButtonFlags := BF_RECT or BF_MIDDLE or BF_ADJUST;
+          PressedButtonFlags := BF_RECT or BF_ADJUST;
         end;
     else
       // hsPlates or hsXPStyle, values are not used in the latter case
       begin
         NormalButtonStyle := BDR_RAISEDINNER;
-        NormalButtonFlags := BF_RECT or BF_MIDDLE or BF_SOFT or BF_ADJUST;
+        NormalButtonFlags := BF_RECT or BF_SOFT or BF_ADJUST;
         PressedButtonStyle := BDR_SUNKENOUTER;
-        PressedButtonFlags := BF_RECT or BF_MIDDLE or BF_ADJUST;
+        PressedButtonFlags := BF_RECT or BF_ADJUST;
         RaisedButtonStyle := BDR_RAISEDINNER;
-        RaisedButtonFlags := BF_LEFT or BF_TOP or BF_BOTTOM or BF_MIDDLE or BF_ADJUST;
+        RaisedButtonFlags := BF_LEFT or BF_TOP or BF_BOTTOM or BF_ADJUST;
       end;
     end;
   end;
@@ -5715,6 +5751,10 @@ var
           end
           else
           begin // Windows classic mode
+            // Fill the cell interior ourselves instead of via BF_MIDDLE: DrawEdge would always use
+            // clBtnFace and ignore Header.Background (identical result for the default clBtnFace).
+            TargetCanvas.Brush.Color := Header.Background;
+            TargetCanvas.FillRect(PaintRectangle);
             if IsDownIndex then
               DrawEdge(TargetCanvas.Handle, PaintRectangle, PressedButtonStyle, PressedButtonFlags)
             else
