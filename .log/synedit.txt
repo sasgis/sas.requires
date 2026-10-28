@@ -1,3 +1,9 @@
+commit 576e241713893fb37aa5ad6b5c10c95ae75232bc
+Author: zed <starmen141@gmail.com>
+Date:   2026-10-28 20:09:13 +0300
+
+    fix: W1075 Overloading a similar index type by declaring an array property 'Items'
+
 commit f764eb9cc002c4ba40067af970bd1d9208853853
 Author: zed <starmen@tut.by>
 Date:   2025-09-16 20:03:04 +0300

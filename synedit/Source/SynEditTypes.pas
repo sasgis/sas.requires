@@ -58,6 +58,16 @@ const
 type
   ESynError = class(Exception);
 
+  { Index type of the Items array properties redeclared by TList/TObjectList
+    descendants. Delphi 12 (RAD Studio 23.0) changed the index type in the RTL
+    from Integer to NativeInt, which causes W1075 on Win64 when a descendant
+    still declares Items with an Integer index. }
+{$IFDEF SYN_COMPILER_29_UP}
+  TSynEditIndexType = NativeInt;
+{$ELSE}
+  TSynEditIndexType = Integer;
+{$ENDIF}
+
   TSynSearchOption = (ssoMatchCase, ssoWholeWord, ssoBackwards,
     ssoEntireScope, ssoSelectedOnly, ssoReplace, ssoReplaceAll, ssoPrompt);
   TSynSearchOptions = set of TSynSearchOption;
