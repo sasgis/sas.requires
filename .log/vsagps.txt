@@ -1,3 +1,27 @@
+commit bd3bfbe0ee4bf0db60fc02fc1ba3359087280f78
+Author: zed <starmen141@gmail.com>
+Date:   2026-10-28 19:26:22 +0300
+
+    Ещё пачка фиксов для совместимости с x64 и юникодными строками
+
+commit d4d02d7fd41bb6f8c818a78dc77d1ddd88f8f9af
+Author: zed <starmen141@gmail.com>
+Date:   2026-10-28 18:07:33 +0300
+
+    Лишний ifdef
+
+commit 5076009be1d24bd9d4b1ddb7ced15e24a7033cd4
+Author: zed <starmen141@gmail.com>
+Date:   2026-10-28 17:57:22 +0300
+
+    Удаление мёртвого кода (USE_SIMPLE_CLASSES, USE_NATIVE_NT_API, DLL)
+
+commit 77ea2d3aa9eaaaadf7ac31e2129eb03fcf1b5dae
+Author: zed <starmen141@gmail.com>
+Date:   2026-10-28 14:17:18 +0300
+
+    Фикс работы с указателями в x64 и фикс бага для USE_SIMPLE_CLASSES
+
 commit ca335e6fd8dd49b5fdbe71b98aa52b7eb5ab0838
 Author: zed <starmen@tut.by>
 Date:   2024-01-03 11:40:41 +0300

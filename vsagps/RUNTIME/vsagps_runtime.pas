@@ -11,9 +11,7 @@ unit vsagps_runtime;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils,
 {$IFDEF HAS_ANSISTRINGS_UNIT}
   AnsiStrings,
@@ -22,35 +20,16 @@ uses
   vsagps_public_classes,
   vsagps_tools;
 
-(*
-typedef enum _EVENT_TYPE {
-	NotificationEvent, // A manual-reset event
-	SynchronizationEvent // An auto-reset event
-} EVENT_TYPE;
-*)
-type
-  EVENT_TYPE=Byte;
 const
-  NotificationEvent=0;
-  SynchronizationEvent=1;
-
-const
-  NtCurrentProcess = DWORD(-1);
-
   FakeFileHandle = THandle(1);
 
 const
-  ntdll_dll='ntdll.dll';
-
-type
-  CLIENT_ID=record
-    UniqueProcess: DWORD;
-    UniqueThread: DWORD;
-  end;
-  PCLIENT_ID=^CLIENT_ID;
-
-const
   setupapi_dll = 'setupapi.dll';
+
+  // SetupAPI checks cbSize strictly:
+  // Win32 expects the packed size (5),
+  // Win64 expects the structure with alignment padding (8).
+  SP_DEVICE_INTERFACE_DETAIL_DATA_A_Size: DWORD = {$IFDEF CPUX64} 8 {$ELSE} 5 {$ENDIF};
 
 type
   HDEVINFO = THandle;
@@ -65,7 +44,7 @@ type
     cbSize: DWORD;
     ClassGuid: TGUID;
     DevInst: DWORD;    // DEVINST handle
-    Reserved: DWORD;
+    Reserved: ULONG_PTR;
   end;
   PSP_DEVINFO_DATA = ^SP_DEVINFO_DATA;
 
@@ -73,7 +52,7 @@ type
     cbSize: DWORD;
     InterfaceClassGuid: TGUID;
     Flags: DWORD;
-    Reserved: DWORD;
+    Reserved: ULONG_PTR;
   end;
   PSP_DEVICE_INTERFACE_DATA = ^SP_DEVICE_INTERFACE_DATA;
 
@@ -199,144 +178,19 @@ TSetupDiGetDeviceRegistryPropertyW = function (DeviceInfoSet: HDEVINFO;
 
 
 type
-  NTSTATUS = LongInt;
-  PWSTR=PWideChar;
-  PIO_APC_ROUTINE=Pointer;
-  SIZE_T=ULONG;
-  PRTL_CRITICAL_SECTION = ^TRTLCriticalSection;
-  PLARGE_INTEGER=^LARGE_INTEGER;
   PTHREAD_START_ROUTINE = function(lpThreadParameter: Pointer): DWORD; stdcall;
 
-  UNICODE_STRING=record
-	  Length: WORD;
-	  MaximumLength: WORD;
-	  Buffer: PWSTR;
-  end;
-  PUNICODE_STRING=^UNICODE_STRING;
-
-  OBJECT_ATTRIBUTES=record
-    Length: ULONG;
-    RootDirectory: Pointer;
-    ObjectName: PUNICODE_STRING;
-    Attributes: ULONG;
-    SecurityDescriptor: Pointer;
-    SecurityQualityOfService: Pointer;
-  end;
-  POBJECT_ATTRIBUTES=^OBJECT_ATTRIBUTES;  
-  
 type
   // internal working thread params
   TVSAGPS_WorkingThread_Params = record
     bAskToExit: LongBool; // flag set by main thread to notify internal working thread to exit
     bSelfExited: LongBool; // flag set by internal working thread when exited
-    sClientId: CLIENT_ID; // used to create thread
+    sThreadID: DWORD; // id of created thread
     dwLastError: DWORD; // getlasterror in thread
     dwFinishReason: DWORD; // internal working thread finish reasons (wtfr_* constants)
     dwRunningOptions: DWORD; // options (wtro_* constants)
   end;
   PVSAGPS_WorkingThread_Params = ^TVSAGPS_WorkingThread_Params;
-
-  // external ntdll_dll;
-  TNtClose = function (hObject: THandle): NTSTATUS; stdcall;
-
-  TNtOpenSymbolicLinkObject = function (
-    phSymbolicLink: PHANDLE;
-    DesiredAccess: ACCESS_MASK;
-    ObjectAttributes: POBJECT_ATTRIBUTES): NTSTATUS; stdcall;
-
-  TNtQuerySymbolicLinkObject = function (
-    hSymbolicLink: THandle;
-    TargetName: PUNICODE_STRING;
-    ReturnLength: PULONG): NTSTATUS; stdcall;
-  
-{$if defined(USE_NATIVE_NT_API)}
-
-function NtClose(hObject: THandle): NTSTATUS; stdcall; external ntdll_dll;
-
-function NtCreateEvent(
-	EventHandle: PHANDLE;
-	DesiredAccess: ACCESS_MASK;
-	ObjectAttributes: POBJECT_ATTRIBUTES;
-	EventType: EVENT_TYPE;
-	InitialState: BOOLEAN): NTSTATUS; stdcall; external ntdll_dll;
-
-function NtDeviceIoControlFile (
-	DeviceHandle: THandle;
-	Event: THandle;
-	UserApcRoutine: PIO_APC_ROUTINE;
-	UserApcContext: Pointer;
-	IoStatusBlock: PIO_STATUS_BLOCK;
-	IoControlCode: ULONG;
-	InputBuffer: Pointer;
-	InputBufferSize: ULONG;
-	OutputBuffer: Pointer;
-	OutputBufferSize: ULONG
-): NTSTATUS; stdcall; external ntdll_dll;
-
-function NtReadFile (
-	FileHandle: THandle;
-	Event: THandle;
-	UserApcRoutine: PIO_APC_ROUTINE;
-	UserApcContext: Pointer;
-	IoStatusBlock: PIO_STATUS_BLOCK;
-	Buffer: Pointer;
-	BufferLength: ULONG;
-	ByteOffset: PLARGE_INTEGER;
-	Key: PULONG
-): NTSTATUS; stdcall; external ntdll_dll;
-  
-function NtTerminateThread (
-	ThreadHandle: THandle;
-  ExitStatus: NTSTATUS
-): NTSTATUS; stdcall; external ntdll_dll;
-
-function NtWaitForSingleObject (
-	hObject: THandle;
-	Alertable: BOOLEAN;
-	Time: PLARGE_INTEGER
-): NTSTATUS; stdcall; external ntdll_dll;
-
-function NtWriteFile (
-	FileHandle: THandle;
-	Event: THandle;
-	ApcRoutine: PIO_APC_ROUTINE;
-	ApcContext: Pointer;
-	IoStatusBlock: PIO_STATUS_BLOCK;
-	Buffer: Pointer;
-	Length: ULONG;
-	ByteOffset: PLARGE_INTEGER;
-	Key: PULONG
-): NTSTATUS; stdcall; external ntdll_dll;
-
-function RtlCreateUserThread (
-	ProcessHandle: THandle;
-	SecurityDescriptor: PSECURITY_DESCRIPTOR;
-	CreateSuspended: BOOLEAN;
-	StackZeroBits: ULONG;
-	StackReserve: SIZE_T;
-	StackCommit: SIZE_T;
-	StartAddress: PTHREAD_START_ROUTINE;
-	Parameter: Pointer;
-	ThreadHandle: PHANDLE;
-	ClientId: PCLIENT_ID
-): NTSTATUS; stdcall; external ntdll_dll;
-
-function RtlExitUserThread(
-  ExitStatus: ULONG
-): NTSTATUS; stdcall; external ntdll_dll;
-
-(*
-function RtlFreeUserThreadStack(
-  ProcessHandle: THandle;
-  ThreadHandle: THandle
-): NTSTATUS; stdcall; external ntdll_dll;
-*)
-  
-{$ifend}
-
-{$if defined(USE_NATIVE_NT_API)}
-function VSAGPS_CreateEvent(phEvent: PHandle): NTSTATUS;
-{$ifend}
 
 // terminate and close working thread
 procedure VSAGPS_WorkingThread_Kill(phThread: PHandle;
@@ -401,7 +255,6 @@ end;
 procedure VSAGPS_WorkingThread_Kill(phThread: PHandle;
                                     pParams: PVSAGPS_WorkingThread_Params;
                                     const AWaitFor: Boolean);
-var li: LARGE_INTEGER;
 begin
   if (0=phThread^) then
     Exit;
@@ -416,24 +269,12 @@ begin
   if (not VSAGPS_WorkingThread_WaitExited(phThread,
                                           pParams)) then begin
     // wait for thread about 1.2 sec
-{$if defined(USE_NATIVE_NT_API)}
-    li.QuadPart:=-10000*cWorkingThread_MaxDelay_Msec;
-    NtWaitForSingleObject(phThread^, FALSE, @li);
-{$else}
-    li.LowPart:=cWorkingThread_MaxDelay_Msec;
-    WaitForSingleObject(phThread^, li.LowPart);
-{$ifend}
+    WaitForSingleObject(phThread^, cWorkingThread_MaxDelay_Msec);
   end;
 
   // kill and close
-{$if defined(USE_NATIVE_NT_API)}
-  NtTerminateThread(phThread^, 0);
-  ////RtlFreeUserThreadStack(NtCurrentProcess, phThread^);
-  NtClose(phThread^);
-{$else}
   TerminateThread(phThread^, 0);
   CloseHandle(phThread^);
-{$ifend}
 
   phThread^:=0;
   VSAGPS_WorkingThread_InitParams(pParams);
@@ -448,29 +289,15 @@ begin
   if (0<>phThread^) then
     VSAGPS_WorkingThread_Kill(phThread, pParams, TRUE);
   // create new thread
-{$if defined(USE_NATIVE_NT_API)}
-  Result:=(STATUS_SUCCESS=RtlCreateUserThread(
-                NtCurrentProcess,
-                nil,
-                FALSE,
-                0, 0, 0,
-                pStartAddress,
-                pParameter,
-                phThread,
-                @(pParams^.sClientId)));
-  if (Result) then
-    Result:=(0<>phThread^);
-{$else}
-  pParams^.sClientId.UniqueProcess:=0; // GetCurrentProcessId;
+  pParams^.sThreadID:=0;
   phThread^:=CreateThread(
                nil,
                0,
                @pStartAddress,
                pParameter,
                0,
-               pParams^.sClientId.UniqueThread);
+               pParams^.sThreadID);
   Result:=(0<>phThread^);
-{$ifend}
 end;
 
 function VSAGPS_WorkingThread_NeedToExit(pParams: PVSAGPS_WorkingThread_Params): LongBool;
@@ -481,16 +308,6 @@ begin
   else if (pParams^.bAskToExit) then
     Result:=TRUE;
 end;
-
-{$if defined(USE_NATIVE_NT_API)}
-function VSAGPS_CreateEvent(phEvent: PHandle): NTSTATUS;
-begin
-  Result:=NtCreateEvent(phEvent, (_DELETE or READ_CONTROL or SYNCHRONIZE or WRITE_DAC or WRITE_OWNER or 3),
-                        nil,
-                        NotificationEvent,
-                        FALSE);
-end;
-{$ifend}
 
 function VSAGPS_Autodetect_Get_SetupDi_Devices(const AClassGuid: PGUID;
                                                pdwLastError: PDWORD;
@@ -578,7 +395,7 @@ begin
         if (0<theBytesReturned) then begin
           theDevDetailData := VSAGPS_GetMemZ(theBytesReturned);
           try
-            theDevDetailData^.cbSize := sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA_A);
+            theDevDetailData^.cbSize := SP_DEVICE_INTERFACE_DETAIL_DATA_A_Size;
             ZeroMemory(@theDevInfoData,sizeof(theDevInfoData));
             theDevInfoData.cbSize:=sizeof(theDevInfoData);
 

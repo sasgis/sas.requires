@@ -11,9 +11,7 @@ unit vsagps_device_base;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils,
 {$IFDEF HAS_ANSISTRINGS_UNIT}
   AnsiStrings,
@@ -341,20 +339,22 @@ end;
 
 function Tvsagps_device_base.AllocDeviceInfo(out AIsWide: Boolean): Pointer;
 begin
-  AIsWide := CIsWide;
+  // FDeviceInfo is ANSI string list - result is PAnsiChar
+  AIsWide := False;
   if (nil=FDeviceInfo) or (0=FDeviceInfo.Count) then
     Result:=nil
   else
-    Result:=VSAGPS_AllocPCharByString(FDeviceInfo.Text, TRUE);
+    Result:=VSAGPS_AllocPCharByString(AnsiString(FDeviceInfo.Text), TRUE);
 end;
 
 function Tvsagps_device_base.AllocSupportedProtocols(out AIsWide: Boolean): Pointer;
 begin
-  AIsWide := CIsWide;
+  // FSupportedProtocols is ANSI string list - result is PAnsiChar
+  AIsWide := False;
   if (nil=FSupportedProtocols) or (0=FSupportedProtocols.Count) then
     Result:=nil
   else
-    Result:=VSAGPS_AllocPCharByString(FSupportedProtocols.Text, TRUE);
+    Result:=VSAGPS_AllocPCharByString(AnsiString(FSupportedProtocols.Text), TRUE);
 end;
 
 function Tvsagps_device_base.AllocUnitInfo(out AIsWide: Boolean): Pointer;
@@ -362,7 +362,8 @@ var
   i: TVSAGPS_UNIT_INFO_Kind;
   sl: TStringList;
 begin
-  AIsWide := CIsWide;
+  // unit info is built as unicode text - result is PWideChar
+  AIsWide := True;
   sl:=TStringList.Create;
   try
     // to list
@@ -370,7 +371,7 @@ begin
       sl.Append(FUNIT_INFO[i]);
     end;
     // to result
-    Result:=VSAGPS_AllocPCharByString(sl.Text, TRUE);
+    Result:=VSAGPS_AllocPCharByString(WideString(sl.Text), TRUE);
   finally
     sl.Free;
   end;

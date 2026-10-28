@@ -10,11 +10,9 @@ unit vsagps_public_debugstring;
 
 interface
 
-{$IFDEF MSWINDOWS}
 uses
   Windows,
   SysUtils;
-{$ENDIF}
 
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
 // ansi

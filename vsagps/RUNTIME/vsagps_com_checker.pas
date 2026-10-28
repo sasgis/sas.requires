@@ -11,19 +11,12 @@ unit vsagps_com_checker;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils,
-{$if defined(USE_SIMPLE_CLASSES)}
-  vsagps_classes,
-{$else}
   Classes,
-{$ifend}
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   vsagps_public_debugstring,
 {$ifend}
-  //vsagps_public_com_checker, // do not use!
   vsagps_public_base,
   vsagps_public_classes,
   vsagps_public_sysutils,
@@ -53,7 +46,6 @@ type
     FFirstOpenedHandle: THandle;
     FOnThreadFinished: TCOMCheckerThreadEvent;
     FOnThreadPending: TCOMCheckerThreadEvent;
-    FOnCOMReadBuffer: TCOMCheckerReadEvent;
     FTimeout_Read_Msec: DWORD;
     FTimeout_Wait_Msec: DWORD;
     FEnumExecuting: Boolean;
@@ -90,7 +82,6 @@ type
     property Timeout_Read_Msec: DWORD read FTimeout_Read_Msec write FTimeout_Read_Msec;
     property Timeout_Wait_Msec: DWORD read FTimeout_Wait_Msec write FTimeout_Wait_Msec;
 
-    //property OnCOMReadBuffer: TCOMCheckerReadEvent read FOnCOMReadBuffer write FOnCOMReadBuffer;
     property OnThreadFinished: TCOMCheckerThreadEvent read FOnThreadFinished write FOnThreadFinished;
     property OnThreadPending: TCOMCheckerThreadEvent read FOnThreadPending write FOnThreadPending;
   end;
@@ -318,7 +309,6 @@ constructor TCOMCheckerObject.Create;
 begin
   FCOMs:=nil;
   FFirstOpenedHandle:=0;
-  FOnCOMReadBuffer:=nil;
   FOnThreadPending:=nil;
   FOnThreadFinished:=nil;
   FTimeout_Read_Msec:=2000;
@@ -555,7 +545,6 @@ begin
     t.FComName:=cNmea_NT_COM_Prefix+FCOMs[i];
 
     t.FComReadTimeout:=Self.FTimeout_Read_Msec;
-    //t.FCOMReadEvent:=Self.FOnCOMReadBuffer;
     t.FComKeepHandle:=AKeepFirstOpenedHandle;
 
     FCOMs.Objects[i]:=t;

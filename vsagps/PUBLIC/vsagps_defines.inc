@@ -11,10 +11,6 @@
 {.$define USE_NMEA_VTG}
 {.$define USE_NMEA_PROPRIETARY_WITHOUT_TAIL}
 
-{.$define USE_SIMPLE_CLASSES}
-
-{.$define USE_NATIVE_NT_API}
-
 {$IF CompilerVersion >= 23}
 {.$define VSAGPS_USE_UNICODE}
 {$define HAS_ANSISTRINGS_UNIT}

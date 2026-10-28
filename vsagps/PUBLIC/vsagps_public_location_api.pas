@@ -11,9 +11,7 @@ unit vsagps_public_location_api;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
 {$IFDEF VSAGPS_USE_LOCATIONAPI_TLB}
   LocationApiLib_TLB,
 {$ELSE}

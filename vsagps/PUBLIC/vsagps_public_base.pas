@@ -11,9 +11,7 @@ unit vsagps_public_base;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils;
 
 type

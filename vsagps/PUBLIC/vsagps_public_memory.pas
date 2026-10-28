@@ -11,19 +11,20 @@ unit vsagps_public_memory;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils
 {$IFDEF HAS_ANSISTRINGS_UNIT}
   ,AnsiStrings
 {$ENDIF}
   ;
 
-function VSAGPS_GetMem(const dwBytes: DWORD): Pointer; stdcall;
+{$IF CompilerVersion <= 18.5}
+type
+  NativeUInt = Cardinal;
+{$IFEND}
 
-function VSAGPS_GetMemZ(const dwBytes: DWORD): Pointer;
-
+function VSAGPS_GetMem(const dwBytes: NativeUInt): Pointer; stdcall;
+function VSAGPS_GetMemZ(const dwBytes: NativeUInt): Pointer;
 procedure VSAGPS_FreeMem(p: Pointer); stdcall;
 
 procedure VSAGPS_FreeAndNil_PAnsiChar(var p: PAnsiChar);
@@ -46,12 +47,12 @@ implementation
 uses
   vsagps_public_sysutils;
 
-function VSAGPS_GetMem(const dwBytes: DWORD): Pointer;
+function VSAGPS_GetMem(const dwBytes: NativeUInt): Pointer;
 begin
   Result:=HeapAlloc(GetProcessHeap, HEAP_GENERATE_EXCEPTIONS, dwBytes);
 end;
 
-function VSAGPS_GetMemZ(const dwBytes: DWORD): Pointer;
+function VSAGPS_GetMemZ(const dwBytes: NativeUInt): Pointer;
 begin
   Result:=HeapAlloc(GetProcessHeap, (HEAP_GENERATE_EXCEPTIONS or HEAP_ZERO_MEMORY), dwBytes);
 end;

@@ -11,9 +11,7 @@ program garminusb_getinfo;
 {$I vsagps_defines.inc}
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils,
   vsagps_public_base,
   vsagps_public_types,
@@ -27,11 +25,7 @@ uses
   vsagps_public_print,
   vsagps_public_sysutils,
   vsagps_public_version,
-{$if defined(USE_SIMPLE_CLASSES)}
-  vsagps_classes,
-{$else}
   Classes,
-{$ifend}
   DateUtils,
   Math;
 

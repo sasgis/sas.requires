@@ -11,9 +11,7 @@ unit vsagps_public_time;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils;
 
 // NOTE: do not use this file in vsagps.dll

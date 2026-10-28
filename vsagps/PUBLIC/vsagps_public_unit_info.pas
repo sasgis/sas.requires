@@ -11,9 +11,7 @@ unit vsagps_public_unit_info;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils,
   vsagps_public_base;
 
@@ -134,7 +132,7 @@ const
       'Channels', // number of channels
       'BaudRate', // configured value
 
-      'SoureFileName', // name of source file 
+      'SoureFileName', // name of source file
       'DeviceDriverName' // real system name of the device connected to
   );
 
@@ -243,7 +241,7 @@ begin
                        guik_Software_Version,
 
                        guik_SourceFileName,
-                       
+
                        guik_DeviceDriverName]);
 end;
 

@@ -11,9 +11,7 @@ unit vsagps_public_parser;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils,
   vsagps_public_sysutils,
   vsagps_public_classes,

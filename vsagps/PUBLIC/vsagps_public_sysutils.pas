@@ -11,21 +11,12 @@ unit vsagps_public_sysutils;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils,
 {$IFDEF HAS_ANSISTRINGS_UNIT}
   AnsiStrings;
 {$ELSE}
   StrUtils;
-{$ENDIF}
-
-const
-{$IFDEF UNICODE}
-  CIsWide = True;
-{$ELSE}
-  CIsWide = False;
 {$ENDIF}
 
 type

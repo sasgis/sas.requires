@@ -11,9 +11,7 @@ unit vsagps_public_trackpoint;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   vsagps_public_base,
   vsagps_public_types,
   vsagps_public_tracks,

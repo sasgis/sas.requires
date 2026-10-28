@@ -11,9 +11,7 @@ unit vsagps_device_usb_garmin;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
   SysUtils,
   vsagps_public_base,
   vsagps_public_types,
@@ -296,7 +294,7 @@ begin
     s := AnsiChar(cur^.tag) + s;
     FSupportedProtocols.Append(s);
     // goto next
-    cur:=PProtocol_Data_Type(Pointer(DWORD(Pointer(cur)) + sizeof(Protocol_Data_Type)));
+    cur:=PProtocol_Data_Type(PByte(cur) + sizeof(Protocol_Data_Type));
     if (AData_Size<3) then
       AData_Size:=0
     else
@@ -533,41 +531,7 @@ begin
 end;
 
 function Tvsagps_device_usb_garmin.ZwCallIoctl4(AIoControlCode: ULONG; iosb: PIO_STATUS_BLOCK; pData: PDWORD): LongBool;
-{$if defined(USE_NATIVE_NT_API)}
-var
-  hEvent: THandle;
-  ns: NTSTATUS;
-  li: LARGE_INTEGER;
-{$ifend}
 begin
-{$if defined(USE_NATIVE_NT_API)}
-  Result:=FALSE;
-  if (STATUS_SUCCESS=VSAGPS_CreateEvent(@hEvent)) then
-  try
-    // ioctl
-    ns:=NtDeviceIoControlFile(FGPSDeviceHandle,
-                              hEvent,
-                              nil,
-                              iosb,
-                              iosb,
-                              AIoControlCode,
-                              nil,
-                              0,
-                              pData,
-                              sizeof(DWORD));
-    // wait
-    if (STATUS_PENDING=ns) then begin
-      li.QuadPart:=-12000000; // 1.2 msec max
-      ns:=NtWaitForSingleObject(hEvent, FALSE, @li);
-    end;
-    // check
-    if (STATUS_SUCCESS=ns) then begin
-      Result:=TRUE;
-    end;
-  finally
-    NtClose(hEvent);
-  end;
-{$else}
   Result:=DeviceIoControl(FGPSDeviceHandle,
                           AIoControlCode,
                           nil,
@@ -580,48 +544,17 @@ begin
     iosb^.Status:=STATUS_SUCCESS
   else
     iosb^.Status:=GetLastError;
-{$ifend}
 end;
 
 function Tvsagps_device_usb_garmin.ZwRecvIoctlAsync(iosb: PIO_STATUS_BLOCK; AOutputBufferSize: DWORD): PGarminUSB_Custom_Packet;
 var
   p: PGarminUSB_Custom_Packet;
-{$if defined(USE_NATIVE_NT_API)}
-  hEvent: THandle;
-  ns: NTSTATUS;
-  li: LARGE_INTEGER;
-{$ifend}
 begin
   Result:=nil;
   p:=nil;
-{$if defined(USE_NATIVE_NT_API)}
-  if (STATUS_SUCCESS=VSAGPS_CreateEvent(@hEvent)) then
-{$ifend}
   try
     // ioctl
     p:=VSAGPS_GetMem(AOutputBufferSize);
-{$if defined(USE_NATIVE_NT_API)}
-    ns:=NtDeviceIoControlFile(FGPSDeviceHandle,
-                              hEvent,
-                              nil,
-                              iosb,
-                              iosb,
-                              IOCTL_ASYNC_IN,
-                              nil,
-                              0,
-                              p,
-                              AOutputBufferSize);
-    // wait
-    if (STATUS_PENDING=ns) then begin
-      li.QuadPart:=-12000000; // 1.2 msec max
-      ns:=NtWaitForSingleObject(hEvent, FALSE, @li);
-    end;
-    // check
-    if (STATUS_SUCCESS=ns) then begin
-      Result:=p;
-      p:=nil;
-    end;
-{$else}
     if DeviceIoControl(FGPSDeviceHandle, IOCTL_ASYNC_IN, nil, 0, p, AOutputBufferSize, iosb^.Information, nil) then begin
       // ok
       iosb^.Status:=STATUS_SUCCESS;
@@ -631,11 +564,7 @@ begin
       // failed
       iosb^.Status:=GetLastError;
     end;
-{$ifend}
   finally
-{$if defined(USE_NATIVE_NT_API)}
-    NtClose(hEvent);
-{$ifend}
     VSAGPS_FreeMem(p);
   end;
 end;
@@ -643,41 +572,11 @@ end;
 function Tvsagps_device_usb_garmin.ZwRecvReadPacket(iosb: PIO_STATUS_BLOCK): PGarminUSB_Custom_Packet;
 var
   p: PGarminUSB_Custom_Packet;
-{$if defined(USE_NATIVE_NT_API)}
-  hEvent: THandle;
-  ns: NTSTATUS;
-  li: LARGE_INTEGER;
-{$ifend}
 begin
   Result:=nil;
   p:=nil;
-{$if defined(USE_NATIVE_NT_API)}
-  if (STATUS_SUCCESS=VSAGPS_CreateEvent(@hEvent)) then
-{$ifend}
   try
     p:=VSAGPS_GetMem(MAX_BUFFER_SIZE);
-{$if defined(USE_NATIVE_NT_API)}
-    li.QuadPart:=0;
-    ns:=NtReadFile(FGPSDeviceHandle,
-                   hEvent,
-                   nil,
-                   iosb,
-                   iosb,
-                   p,
-                   MAX_BUFFER_SIZE,
-                   @li,
-                   nil);
-    // wait
-    if (STATUS_PENDING=ns) then begin
-      li.QuadPart:=-12000000; // 1.2 msec max
-      ns:=NtWaitForSingleObject(hEvent, FALSE, @li);
-    end;
-    // check
-    if (STATUS_SUCCESS=ns) then begin
-      Result:=p;
-      p:=nil;
-    end;
-{$else}
     if ReadFile(FGPSDeviceHandle, p^, MAX_BUFFER_SIZE, iosb^.Information, nil) then begin
       // ok
       iosb^.Status:=STATUS_SUCCESS;
@@ -687,11 +586,7 @@ begin
       // failed
       iosb^.Status:=GetLastError;
     end;
-{$ifend}
   finally
-{$if defined(USE_NATIVE_NT_API)}
-    NtClose(hEvent);
-{$ifend}
     VSAGPS_FreeMem(p);
   end;
 end;
@@ -699,71 +594,26 @@ end;
 function Tvsagps_device_usb_garmin.ZwSendPacket(pPacket: PGarminUSB_Custom_Packet; iosb: PIO_STATUS_BLOCK): LongBool;
 var
   dwWriteBytes: DWORD;
-{$if defined(USE_NATIVE_NT_API)}
-  hEvent: THandle;
-  ns: NTSTATUS;
-  li: LARGE_INTEGER;
-{$else}
   dwDummy: DWORD;
-{$ifend}
 begin
-{$if defined(USE_NATIVE_NT_API)}
-  Result:=FALSE;
-{$ifend}
-  // create event
-{$if defined(USE_NATIVE_NT_API)}
-  if (STATUS_SUCCESS=VSAGPS_CreateEvent(@hEvent)) then
-  try
-{$ifend}
-    // write buffer
-    dwWriteBytes:=GarminUSB_Custom_Packet_Base_Size+pPacket^.Data_Size;
-{$if defined(USE_NATIVE_NT_API)}
-    li.QuadPart:=0;
-    ns:=NtWriteFile(FGPSDeviceHandle,
-                    hEvent,
-                    nil,
-                    iosb,
-                    iosb,
-                    pPacket,
-                    dwWriteBytes,
-                    @li,
-                    nil);
+  // write buffer
+  dwWriteBytes:=GarminUSB_Custom_Packet_Base_Size+pPacket^.Data_Size;
+  Result:=WriteFile(FGPSDeviceHandle, pPacket^, dwWriteBytes, iosb^.Information, nil);
+  if Result then
+    iosb^.Status:=STATUS_SUCCESS
+  else
+    iosb^.Status:=GetLastError;
 
-    // wait
-    if (STATUS_PENDING=ns) then begin
-      ns:=NtWaitForSingleObject(hEvent, FALSE, nil);
+  if Result then begin
+    // If the packet size was an exact multiple of the USB packet
+    // size, we must make a final write call with no data
+    if (0<FDevicePacketSize) then
+    if (0=(iosb^.Information mod FDevicePacketSize)) then begin
+      // no event
+      // no result
+      WriteFile(FGPSDeviceHandle, nil^, 0, dwDummy, nil);
     end;
-    if (STATUS_SUCCESS=ns) then begin
-      Result:=TRUE;
-    end;
-{$else}
-    Result:=WriteFile(FGPSDeviceHandle, pPacket^, dwWriteBytes, iosb^.Information, nil);
-    if Result then
-      iosb^.Status:=STATUS_SUCCESS
-    else
-      iosb^.Status:=GetLastError;
-{$ifend}
-
-    if Result then begin
-      // If the packet size was an exact multiple of the USB packet
-      // size, we must make a final write call with no data
-      if (0<FDevicePacketSize) then
-      if (0=(iosb^.Information mod FDevicePacketSize)) then begin
-        // no event
-        // no result
-{$if defined(USE_NATIVE_NT_API)}
-        li.QuadPart:=0;
-        NtWriteFile(FGPSDeviceHandle,0,nil,iosb,iosb,nil,0,@li,nil);
-{$else}
-        WriteFile(FGPSDeviceHandle, nil^, 0, dwDummy, nil);
-{$ifend}
-      end;
-    end;
-{$if defined(USE_NATIVE_NT_API)}
-  finally
-    NtClose(hEvent);
   end;
-{$ifend}
 end;
 
 end.

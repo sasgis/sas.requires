@@ -3,6 +3,7 @@
 *.~dsk
 *.dsk
 TEST/*.res
-BIN/VSAGPS.dll
+BIN/*.rsm
 BIN/garminusb_getinfo.exe
 BIN/vsagps_test.exe
+SAMPLES/garminusb_getinfo/garminusb_getinfo.res
