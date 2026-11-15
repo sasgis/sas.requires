@@ -86,6 +86,17 @@ type
   end;
   TALNameValueArrayA = Array of TALNameValuePairA;
 
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  TALThreadQueueCleaner = Class(TThread)
+  protected
+    procedure Execute; override;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure AfterConstruction; override;
+    procedure BeforeDestruction; override;
+  end;
+
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
   TALWorkerThreadRefProc = reference to procedure(var AContext: Tobject);
   TALWorkerThreadObjProc = procedure(var AContext: Tobject) of object;
@@ -473,7 +484,7 @@ type
   TALPointDType = array [0..1] of Double;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported131}
+  {$IFNDEF ALCompilerVersionSupported132}
     {$MESSAGE WARN 'Check if System.Types.TPointf still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   PALPointD = ^TALPointD;
@@ -551,7 +562,7 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported131}
+  {$IFNDEF ALCompilerVersionSupported132}
     {$MESSAGE WARN 'Check if System.Types.TPointf still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   TALPointFHelper = record helper for TPointF
@@ -560,7 +571,7 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported131}
+  {$IFNDEF ALCompilerVersionSupported132}
     {$MESSAGE WARN 'Check if System.Types.TSizef still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   PALSizeD = ^TALSizeD;
@@ -605,7 +616,7 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported131}
+  {$IFNDEF ALCompilerVersionSupported132}
     {$MESSAGE WARN 'Check if System.Types.TSizef still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   TALSizeFHelper = record helper for TSizeF
@@ -613,7 +624,7 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported131}
+  {$IFNDEF ALCompilerVersionSupported132}
     {$MESSAGE WARN 'Check if System.Types.TRectf still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   PALRectD = ^TALRectD;
@@ -765,7 +776,7 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported131}
+  {$IFNDEF ALCompilerVersionSupported132}
     {$MESSAGE WARN 'Check if System.Types.TRectf still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   TALRectFHelper = record helper for TRectF
@@ -774,7 +785,7 @@ type
   end;
 
   {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-  {$IFNDEF ALCompilerVersionSupported131}
+  {$IFNDEF ALCompilerVersionSupported132}
     {$MESSAGE WARN 'Check if System.Types.TRect still having the same implementation and adjust the IFDEF'}
   {$ENDIF}
   TALRectHelper = record helper for TRect
@@ -783,8 +794,8 @@ type
 
 
 {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
-{$IFNDEF ALCompilerVersionSupported131}
-  {$MESSAGE WARN 'Check if functions below implemented in System.Types still having the same implementation and adjust the IFDEF'}
+{$IFNDEF ALCompilerVersionSupported132}
+  {$MESSAGE WARN 'Check if System.Types.xxx functions below still have the same implementations and adjust the IFDEF'}
 {$ENDIF}
 function ALRectWidth(const Rect: TRect): Integer; inline; overload;
 function ALRectWidth(const Rect: TRectF): Single; inline; overload;
@@ -867,7 +878,20 @@ procedure ALLog(Const Tag: AnsiString; const Args: array of const; const &Type: 
 procedure ALLog(Const Tag: AnsiString; const Args: array of const; Const E: Exception; const &Type: TalLogType = TalLogType.ERROR); overload;
 function ALGetLogHistory(const AIgnoreLastLogItemMsg: Boolean = False): String;
 
-{~~}
+type
+
+  {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}
+  TALRefCountObject = Class(TObject)
+  private
+    FRefCount: Integer;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    function GetRefCount: Integer;
+    function IncreaseRefCount: TALRefCountObject; virtual;
+    procedure DecreaseRefCount;
+  End;
+
 type
   TALCustomDelayedFreeObjectProc = procedure(var aObject: Tobject) of object;
 
@@ -919,6 +943,13 @@ function ALElapsedTimeMillisAsInt64: int64;
 function ALElapsedTimeSecondsAsDouble: Double;
 function ALElapsedTimeSecondsAsInt64: int64;
 
+Type
+  TALLatLng = record
+    Latitude: Double;
+    Longitude: Double;
+    class function Create(const ALatitude: Double; const ALongitude: Double): TALLatLng; static; inline;
+  end;
+
 function ALIsValidLatlng(const ALatitude, ALongitude: Double): Boolean;
 function ALGetDistanceBetween2Points(const ALatitude1, ALongitude1, ALatitude2, ALongitude2: Double): Double{meters};
 
@@ -929,7 +960,7 @@ function  ALInt64ToSemanticVersionA(const AVersion: Int64): AnsiString; overload
 function  ALInt64ToSemanticVersionW(const AVersion: Int64): string; overload;
 
 {$IFDEF MSWINDOWS}
-{$IFNDEF ALCompilerVersionSupported131}
+{$IFNDEF ALCompilerVersionSupported132}
   {$MESSAGE WARN 'Check if EnumDynamicTimeZoneInformation/SystemTimeToTzSpecificLocalTimeEx/TzSpecificLocalTimeToSystemTimeEx are still not declared in Winapi.Windows and adjust the IFDEF'}
 {$ENDIF}
 {$WARNINGS OFF}
@@ -952,10 +983,11 @@ Function AlUTCDateTimeToLocal(const aTimeZoneInformation: TDynamicTimeZoneInform
 {$IFDEF IOS}
 function ALNSDateToUTCDateTime(const ADateTime: NSDate): TDateTime;
 {$ENDIF}
+function ALGetIanaTimeZoneId: String;
 function ALUTCNow: TDateTime;
 function ALUnixMsToDateTime(const aValue: Int64): TDateTime;
 function ALDateTimeToUnixMs(const aValue: TDateTime): Int64;
-Function ALInc(var x: integer; Count: integer): Integer;
+Function ALInc(var x: integer; const Count: integer = 1): Integer;
 procedure ALAssignError(Const ASource: TObject; const ADest: Tobject);
 procedure ALMove(const Source; var Dest; Count: NativeInt); inline;
 function ALSameBytes(const ABytes1: TBytes; const ABytes2: TBytes): Boolean;
@@ -1047,6 +1079,8 @@ uses
   Macapi.Mach,
   {$ENDIF}
   {$IF defined(ALMacOS)}
+  Macapi.Foundation,
+  Macapi.Helpers,
   Macapi.Mach,
   {$ENDIF}
   system.DateUtils,
@@ -1191,6 +1225,43 @@ constructor TALNameValuePairA.Create(const AName, AValue: ansiString);
 begin
   Name := AName;
   Value := AValue;
+end;
+
+{***************************************}
+constructor TALThreadQueueCleaner.Create;
+begin
+  {$IF CompilerVersion < 37.0}
+  // Delphi 13 added a parameterless TThread.Create overload; on older
+  // versions we call Create(True) explicitly - the thread never runs,
+  // the instance is used only as an owner for TThread.Queue callbacks
+  inherited Create(True);
+  {$IFEND}
+end;
+
+{***************************************}
+destructor TALThreadQueueCleaner.Destroy;
+begin
+  // Cancel any pending callbacks queued with this thread as their owner.
+  RemoveQueuedEvents(Self);
+end;
+
+{************************************************}
+procedure TALThreadQueueCleaner.AfterConstruction;
+begin
+  // No post-construction processing required.
+end;
+
+{************************************************}
+procedure TALThreadQueueCleaner.BeforeDestruction;
+begin
+  // No pre-destruction processing required.
+end;
+
+{**************************************}
+procedure TALThreadQueueCleaner.Execute;
+begin
+  // No thread execution required. This instance is
+  // used solely to identify queued callbacks.
 end;
 
 {****************************************}
@@ -3404,13 +3475,17 @@ begin
   if ALLogStream <> nil then begin
     If ALPosW(#13#10, LMsg) > 0 then begin
       var LMsgParts := LMsg.Split([#13#10]);
-      for var I := Low(LMsgParts) to High(LMsgParts) do
+      for var I := Low(LMsgParts) to High(LMsgParts) do begin
+        // ternary if-expressions require Delphi 13.2
+        var LMsgTag: String;
+        If I = Low(LMsgParts) then LMsgTag := Tag else LMsgTag := '';
         _ALLog(
-          '',//If I = Low(LMsgParts) then Tag else '', // Const Tag: String;
+          LMsgTag, // Const Tag: String;
           LMsgParts[I], // Const msg: String;
           &Type, // Const &Type: TalLogType;
           ThreadID, // Const ThreadID: TThreadID;
           CanPreserve); // Const CanPreserve: boolean)
+      end;
       exit;
     end;
     if (Tag <> '') and (LMsg <> '') then LMsg := Tag + ' | ' + LMsg
@@ -3801,6 +3876,13 @@ begin
   Result := trunc(ALElapsedTimeNano / ALNanosPerSec);
 end;
 
+{********************************************************************************************}
+class function TALLatLng.Create(const ALatitude: Double; const ALongitude: Double): TALLatLng;
+begin
+  Result.Latitude := ALatitude;
+  Result.Longitude := ALongitude;
+end;
+
 {*********************************************************************}
 function ALIsValidLatlng(const ALatitude, ALongitude: Double): Boolean;
 begin
@@ -4116,6 +4198,20 @@ begin
 end;
 {$ENDIF}
 
+{***********************************}
+function ALGetIanaTimeZoneId: String;
+begin
+  {$IF Defined(ANDROID)}
+  Result := JStringToString(TJTimeZone.JavaClass.getDefault.getID);
+  {$ELSEIF Defined(IOS)}
+  Result := NSStrToStr(TNSTimeZone.OCClass.localTimeZone.name);
+  {$ELSEIF defined(ALMACOS)}
+  Result := NSStrToStr(TNSTimeZone.Wrap(TNSTimeZone.OCClass.localTimeZone).name);
+  {$ELSE}
+  Result := '';
+  {$ENDIF}
+end;
+
 {*************************}
 {The same like Now but used
  UTC-time not local time.}
@@ -4124,8 +4220,8 @@ begin
   result := TTimeZone.Local.ToUniversalTime(NOW);
 end;
 
-{******************************************************}
-Function ALInc(var x: integer; Count: integer): Integer;
+{****************************************************************}
+Function ALInc(var x: integer; const Count: integer = 1): Integer;
 begin
   inc(X, count);
   result := X;
@@ -4413,6 +4509,47 @@ begin
   ALSetConsoleColors(LForegroundColor, LBackgroundColor);
 end;
 {$ENDIF}
+
+{***********************************}
+constructor TALRefCountObject.Create;
+begin
+  inherited;
+  FRefCount := 1;
+end;
+
+{***********************************}
+destructor TALRefCountObject.Destroy;
+begin
+  {$IF defined(debug)}
+  If FRefCount > 0 then
+    ALLog('TALRefCountObject.Destroy', 'Reference count is greater than zero', TALLogType.WARN);
+  {$ENDIF}
+  inherited;
+end;
+
+{**********************************************}
+function TALRefCountObject.GetRefCount: Integer;
+begin
+  Result := AtomicCmpExchange(FRefCount, -1{NewValue}, -1{Comparand});
+end;
+
+{*************************************************************}
+function TALRefCountObject.IncreaseRefCount: TALRefCountObject;
+begin
+  // When calling IncreaseRefCount, it means that we already have
+  // a valid, strong reference to the object.
+  AtomicIncrement(FRefCount);
+  Result := Self;
+end;
+
+{*******************************************}
+procedure TALRefCountObject.DecreaseRefCount;
+begin
+  if AtomicDecrement(FRefCount) = 0 then begin
+    var LSelf := Self;
+    ALFreeAndNil(LSelf, True{ADelayed});
+  end;
+end;
 
 {***********************************}
 {$IF CompilerVersion >= 34} // sydney

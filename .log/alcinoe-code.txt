@@ -1,3 +1,9 @@
+commit f3ad6adebbb0947ec9d87e10e728379faee47b97
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-09 17:45:41 +0300
+
+    Alcinoe 13.2.2 (Delphi 10.4.2 - 13.2 support)
+
 commit 12af6916d951287be897dc44e8c12a4cebc18ad2
 Author: zed <starmen141@gmail.com>
 Date:   2026-09-27 12:10:25 +0300

@@ -33,15 +33,15 @@ interface
 
 {$I Alcinoe.inc}
 
-{$IFNDEF ALCompilerVersionSupported131}
+{$IFNDEF ALCompilerVersionSupported132}
   {$MESSAGE WARN 'Check if System.classes.TStringsEnumerator didn''t change and adjust the IFDEF'}
 {$ENDIF}
 
-{$IFNDEF ALCompilerVersionSupported131}
+{$IFNDEF ALCompilerVersionSupported132}
   {$MESSAGE WARN 'Check if System.classes.TStrings didn''t change and adjust the IFDEF'}
 {$ENDIF}
 
-{$IFNDEF ALCompilerVersionSupported131}
+{$IFNDEF ALCompilerVersionSupported132}
   {$MESSAGE WARN 'Check if System.classes.TStringList didn''t change and adjust the IFDEF'}
 {$ENDIF}
 
@@ -4015,12 +4015,7 @@ begin
   LNode.Val := Value;
   LNode.Nvs := True;
   LNode.Obj := AObject;
-  {$IF CompilerVersion <= 32} // tokyo
-  if not Fdictionary.ContainsKey(Name) then Fdictionary.Add(Name,aNode)
-  else begin
-  {$ELSE}
   if not Fdictionary.TryAdd(Name,LNode) then begin
-  {$ENDIF}
     ALFreeAndNil(LNode);
     case Duplicates of
       dupIgnore: Exit;
@@ -4050,12 +4045,7 @@ begin
   LNode.Val := LValue;
   LNode.Nvs := LNvs;
   LNode.Obj := AObject;
-  {$IF CompilerVersion <= 32} // tokyo
-  if not Fdictionary.ContainsKey(aName) then Fdictionary.Add(aName,aNode)
-  else begin
-  {$ELSE}
   if not Fdictionary.TryAdd(LName,LNode) then begin
-  {$ENDIF}
     ALFreeAndNil(LNode);
     case Duplicates of
       dupIgnore: Exit;
@@ -4089,12 +4079,7 @@ begin
     LNewNode.Val := LNewValue;
     LNewNode.NVS := LNewNvs;
     LNewNode.Obj := LOldNode.Obj;
-    {$IF CompilerVersion <= 32} // tokyo
-    if not Fdictionary.ContainsKey(aNewName) then Fdictionary.Add(aNewName, aNewNode)
-    else begin
-    {$ELSE}
     if not Fdictionary.TryAdd(LNewName, LNewNode) then begin
-    {$ENDIF}
       ALFreeAndNil(LNewNode);
       case Duplicates of
         dupIgnore: Exit;
@@ -4281,7 +4266,7 @@ end;
 type
 
   {*************************************}
-  {$IFNDEF ALCompilerVersionSupported131}
+  {$IFNDEF ALCompilerVersionSupported132}
     {$MESSAGE WARN 'Check if System.Generics.Collections.TObjectDictionary<K,V> was not updated and adjust the IFDEF'}
   {$ENDIF}
   _TObjectDictionaryAccessPrivate<K,V> = class(TObjectDictionary<K,V>)
