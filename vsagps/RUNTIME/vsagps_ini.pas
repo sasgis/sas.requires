@@ -22,9 +22,11 @@ const
   vsagps_garmin_ini_filename = 'vsagps_garmin.ini';
   vsagps_ini_common = 'COMMON'; // root of device options
   vsagps_ini_global = 'GLOBAL'; // root of global options
+  vsagps_ini_tcp = 'TCP'; // options of the tcp nmea device
   vsagps_ini_others = ''; // empty
   vsagps_ini_readonly = 'readonly'; // only in GLOBAL
   vsagps_ini_start = 'start';
+  vsagps_ini_start_query = 'start_query'; // only in TCP - the exact query sent at the session start
   vsagps_ini_resetdgps = 'resetdgps';
   vsagps_ini_fromsection = 'fromsection';
   vsagps_ini_comment = '*'; // like nmea finisher
@@ -60,6 +62,14 @@ function VSAGPS_ini_StartPromParam(
 function Append_Gpms_Subcodes(const ACode: Tgpms_Code; const ASubCodes: Word; sl_prop: TStringsA): Integer;
 
 function VSAGPS_ini_IsReadOnly(sl_Ini: TStringsA): Boolean;
+
+// get the value of the exact key from the section (the key must be followed
+// by '=', the value may be empty - unlike VSAGPS_ini_ForeachSection which
+// skips the empty ones); FALSE - section or key not found
+function VSAGPS_ini_GetSectionValue(sl_Ini: TStringsA;
+                                    const SectionNameUppercased: AnsiString;
+                                    const AKey: AnsiString;
+                                    out AValue: AnsiString): Boolean;
 
 implementation
 
@@ -256,6 +266,42 @@ begin
   if (0=sl_Ini.Count) then
     Exit;
   Result := VSAGPS_ini_ForeachSection(sl_Ini, nil, vsagps_ini_global, vsagps_ini_readonly, FALSE, FALSE);
+end;
+
+function VSAGPS_ini_GetSectionValue(sl_Ini: TStringsA;
+                                    const SectionNameUppercased: AnsiString;
+                                    const AKey: AnsiString;
+                                    out AValue: AnsiString): Boolean;
+var
+  i: Integer;
+  s, s_tail: AnsiString;
+begin
+  // the first exact key match wins: VSAGPS_ini_StartPromParam matches the
+  // prefix, so the '=' right after the key name makes the match exact; the
+  // value may be empty ("key=" is found and differs from the missing key)
+  Result := FALSE;
+  AValue := '';
+  if (nil=sl_Ini) then
+    Exit;
+  if (0=sl_Ini.Count) then
+    Exit;
+  if (not VSAGPS_ini_GetSectionHeader(sl_Ini, SectionNameUppercased, i)) then
+    Exit;
+  Inc(i);
+  while (i<sl_Ini.Count) do begin
+    s := sl_Ini[i];
+    if (0<Length(s)) then begin
+      if (vsagps_ini_sectiona=s[1]) then
+        Break; // next section started
+      if VSAGPS_ini_StartPromParam(s, AKey, s_tail) and
+         (0<Length(s_tail)) and (vsagps_ini_eq=s_tail[1]) then begin
+        AValue := VSAGPS_ini_DelComment(System.Copy(s_tail, 2, Length(s_tail)));
+        Result := TRUE;
+        Exit;
+      end;
+    end;
+    Inc(i);
+  end;
 end;
 
 end.

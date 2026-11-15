@@ -7,11 +7,12 @@ uses
   Classes,
   SysUtils,
   Forms,
+  vsagps_test_watchdog,
   vsagps_public_base,
   vsagps_com_checker;
 
 type
-  Tvsagps_com_checker_test = class(TTestCase)
+  Tvsagps_com_checker_test = class(Tvsagps_test_case)
   private
     procedure OnThreadPending(Sender: TObject; AThread: TObject);
   published

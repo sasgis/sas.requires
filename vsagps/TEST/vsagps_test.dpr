@@ -2,25 +2,29 @@ program vsagps_test;
 
 {.$DEFINE REPORT_MEMORY_LEAK}
 
-{.$DEFINE CONSOLE_TESTRUNNER}
-
 {$IFDEF CONSOLE_TESTRUNNER}
 {$APPTYPE CONSOLE}
 {$ENDIF}
 
 uses
   DUnitTestRunner,
+  vsagps_test_watchdog in 'vsagps_test_watchdog.pas',
   vsagps_com_checker_test in 'vsagps_com_checker_test.pas',
   vsagps_device_com_nmea_test in 'vsagps_device_com_nmea_test.pas',
+  vsagps_device_tcp_nmea_test in 'vsagps_device_tcp_nmea_test.pas',
+  vsagps_tcp_checker_test in 'vsagps_tcp_checker_test.pas',
   vsagps_com_checker in '..\RUNTIME\vsagps_com_checker.pas',
   vsagps_device_base in '..\RUNTIME\vsagps_device_base.pas',
   vsagps_device_com_nmea in '..\Runtime\vsagps_device_com_nmea.pas',
+  vsagps_device_nmea_common in '..\RUNTIME\vsagps_device_nmea_common.pas',
+  vsagps_device_tcp_nmea in '..\RUNTIME\vsagps_device_tcp_nmea.pas',
   vsagps_device_usb_garmin in '..\RUNTIME\vsagps_device_usb_garmin.pas',
   vsagps_ini in '..\RUNTIME\vsagps_ini.pas',
   vsagps_object in '..\RUNTIME\vsagps_object.pas',
   vsagps_parser_nmea in '..\RUNTIME\vsagps_parser_nmea.pas',
   vsagps_queue in '..\RUNTIME\vsagps_queue.pas',
   vsagps_runtime in '..\RUNTIME\vsagps_runtime.pas',
+  vsagps_tcp_checker in '..\RUNTIME\vsagps_tcp_checker.pas',
   vsagps_tools in '..\RUNTIME\vsagps_tools.pas',
   vsagps_track_reader in '..\RUNTIME\vsagps_track_reader.pas',
   vsagps_track_saver in '..\RUNTIME\vsagps_track_saver.pas',
@@ -57,13 +61,11 @@ begin
   {$IFDEF REPORT_MEMORY_LEAK}
   ReportMemoryLeaksOnShutdown := True;
   {$ENDIF}
+  Vsagps_Test_Watchdog_Start;
   try
     DUnitTestRunner.RunRegisteredTests;
   finally
-    {$IFDEF CONSOLE_TESTRUNNER}
-    Writeln('Press ENTER to exit...');
-    Readln;
-    {$ENDIF}
+    Vsagps_Test_Watchdog_Stop;
   end;
 end.
 

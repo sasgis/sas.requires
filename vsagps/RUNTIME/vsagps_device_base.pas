@@ -1054,7 +1054,7 @@ end;
 function Tvsagps_device_with_nmea.FParser_FOnVTG(const p: PNMEA_VTG): DWORD;
 begin
 {$if defined(USE_NMEA_VTG)}
-  if Assign(FALLDeviceParams^.pNMEA_VTG_HANDLER) then
+  if Assigned(FALLDeviceParams^.pNMEA_VTG_HANDLER) then
     Result:=FALLDeviceParams^.pNMEA_VTG_HANDLER(InternalGetUserPointer, FUnitIndex, FDefaultPacketType, p)
   else
 {$ifend}

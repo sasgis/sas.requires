@@ -1,3 +1,9 @@
+commit 208fdb998f7fea1187d430f181d1aa1fe79fcbd3
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-15 17:13:34 +0300
+
+    Новый девайс TCP NMEA
+
 commit bd3bfbe0ee4bf0db60fc02fc1ba3359087280f78
 Author: zed <starmen141@gmail.com>
 Date:   2026-10-28 19:26:22 +0300

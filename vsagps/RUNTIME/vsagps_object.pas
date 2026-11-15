@@ -82,6 +82,7 @@ uses
   vsagps_device_location_api,
   vsagps_device_usb_garmin,
   vsagps_device_com_nmea,
+  vsagps_device_tcp_nmea,
   vsagps_track_reader,
   vsagps_runtime;
 
@@ -510,7 +511,8 @@ begin
           (gdt_USB_Garmin or
            gdt_LocationAPI or
            gdt_FILE_Track or
-           gdt_COM_NMEA0183))) then
+           gdt_COM_NMEA0183 or
+           gdt_TCP_NMEA0183))) then
     Exit;
   if (nil=AUnitIndexOut) then
     Exit;
@@ -580,6 +582,9 @@ begin
         p^.objDevice.ExecuteGPSCommand(gpsc_Set_DCB_Str_Info_A, PAnsiChar(DCBString));
       end;
       *)
+    end else if (gdt_TCP_NMEA0183=(AGPSDevType and gdt_TCP_NMEA0183)) then begin
+      // tcp nmea - the device name is a "host:port" string
+      p^.objDevice:=Tvsagps_device_tcp_nmea.Create;
     end;
 
     if Assigned(p^.objDevice) then begin

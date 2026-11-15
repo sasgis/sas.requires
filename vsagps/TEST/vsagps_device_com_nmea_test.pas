@@ -4,12 +4,14 @@ interface
 
 uses
   TestFramework,
+  vsagps_test_watchdog,
   vsagps_public_device,
   vsagps_public_memory,
+  vsagps_device_nmea_common,
   vsagps_device_com_nmea;
 
 type
-  Tvsagps_device_com_nmea_test = class(TTestCase)
+  Tvsagps_device_com_nmea_test = class(Tvsagps_test_case)
   published
     procedure TestNmeaParsePacket;
   end;
@@ -77,6 +79,19 @@ const
 
 { Tvsagps_device_com_nmea_test }
 
+// the device never owns the packet: the object packet thread frees it right
+// after ParsePacket (VSAGPS_FreeMem - the packet lives in the process heap),
+// so a direct ParsePacket call in a test must free it the same way
+procedure ParseAndFreePacket(const ADevice: Tvsagps_device_com_nmea;
+                             const APacket: Pointer);
+begin
+  try
+    ADevice.ParsePacket(APacket);
+  finally
+    VSAGPS_FreeMem(APacket);
+  end;
+end;
+
 procedure Tvsagps_device_com_nmea_test.TestNmeaParsePacket;
 var
   VSize: Integer;
@@ -106,12 +121,12 @@ begin
     VSize := 10;
     while VPos + VSize < Length(CData) do begin
       VPacket := NmeaPacketCreate(@CData[VPos], VSize);
-      VObj.ParsePacket(VPacket);
+      ParseAndFreePacket(VObj, VPacket);
       Inc(VPos, VSize);
     end;
 
     VPacket := NmeaPacketCreate(@CData[VPos], Length(CData) - VPos);
-    VObj.ParsePacket(VPacket);
+    ParseAndFreePacket(VObj, VPacket);
 
     VPacket := NmeaPacketCreate(
       '$' + #01#02 + #13#10 + '$' + #03 + // binary data
@@ -119,7 +134,7 @@ begin
       '$PGRMZ,2282,f,3' + // proprietary without tail
       '$PGRMZ,2282,f,3*21' + #13#10
     );
-    VObj.ParsePacket(VPacket);
+    ParseAndFreePacket(VObj, VPacket);
   finally
     VObj.Free;
   end;

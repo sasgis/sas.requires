@@ -21,6 +21,7 @@ const
   gdt_COM_NMEA0183    = $00000002; // COM port - transmitting using NMEA0183
   gdt_FILE_Track      = $00000004; // fly-on-track mode (read track from file)
   gdt_LocationAPI     = $00000008; // location sensor API
+  gdt_TCP_NMEA0183    = $00000010; // TCP client - transmitting using NMEA0183
 
   vgpt_Allow_Stats    = $00000001; // allow calc stats with this packet
   vgpt_Auxillary      = $00000002; // auxillary packed (undocumented with same structure)

@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{7017286A-B550-4A51-8FC8-F0131C189D43}</ProjectGuid>
-        <ProjectVersion>20.3</ProjectVersion>
+        <ProjectVersion>20.5</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
@@ -105,15 +105,23 @@
         </DelphiCompile>
         <DCCReference Include="vsagps_com_checker_test.pas"/>
         <DCCReference Include="vsagps_device_com_nmea_test.pas"/>
+        <DCCReference Include="vsagps_device_tcp_nmea_test.pas"/>
+        <DCCReference Include="vsagps_tcp_checker_test.pas"/>
+        <DCCReference Include="vsagps_test_watchdog.pas"/>
+        <DCCReference Include="vsagps_device_tcp_nmea_test.pas"/>
+        <DCCReference Include="vsagps_tcp_checker_test.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_com_checker.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_device_base.pas"/>
         <DCCReference Include="..\Runtime\vsagps_device_com_nmea.pas"/>
+        <DCCReference Include="..\RUNTIME\vsagps_device_nmea_common.pas"/>
+        <DCCReference Include="..\RUNTIME\vsagps_device_tcp_nmea.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_device_usb_garmin.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_ini.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_object.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_parser_nmea.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_queue.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_runtime.pas"/>
+        <DCCReference Include="..\RUNTIME\vsagps_tcp_checker.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_tools.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_track_reader.pas"/>
         <DCCReference Include="..\RUNTIME\vsagps_track_saver.pas"/>

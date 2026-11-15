@@ -4,6 +4,9 @@
 *)
 unit vsagps_device_com_nmea;
 (*
+  15.11.2026 - The code shared with the tcp nmea device (the common packet
+               format, the nmea stream framing and the gps utc date/time
+               applying) is moved to vsagps_device_nmea_common.pas.
 *)
 
 {$I vsagps_defines.inc}
@@ -27,10 +30,8 @@ uses
   vsagps_tools,
   vsagps_device_base,
   vsagps_parser_nmea,
+  vsagps_device_nmea_common,
   vsagps_runtime;
-
-const
-  cNmea_Buffer_Size = 4096; // $00001000 bytes
 
 type
   Tvsagps_device_com_nmea = class(Tvsagps_device_with_nmea)
@@ -65,8 +66,6 @@ type
     function Parse_Proprietary_STI_Data(const AData, ASubCommand: AnsiString): DWORD;
     function Parse_Proprietary_TNL_Data(const AData, ASubCommand: AnsiString): DWORD;
     function Parse_Proprietary_XEM_Data(const AData, ASubCommand: AnsiString): DWORD;
-    // nmea parsers
-    function Internal_Parse_NmeaComm_Packets(const APacket: Pointer): DWORD;
   protected
     procedure InternalResetDeviceConnectionParams; override;
     procedure Internal_Before_Open_Device; override;
@@ -99,11 +98,6 @@ type
                         const AFlags: DWORD): LongBool; override;
   end;
 
-function NmeaPacketCreate(const AData: Pointer; const ASize: DWORD): Pointer; overload; inline;
-function NmeaPacketCreate(const AData: AnsiString): Pointer; overload; inline;
-function NmeaPacketSize(const APacket: Pointer): DWORD; inline;
-function NmeaPacketData(APacket: Pointer): Pointer; inline;
-
 
 implementation
 
@@ -113,41 +107,6 @@ uses
   vsagps_public_debugstring,
   vsagps_com_checker,
   vsagps_ini;
-
-function NmeaPacketCreate(const AData: Pointer; const ASize: DWORD): Pointer;
-var
-  P: PByte;
-  VCount: Integer;
-begin
-  Assert((AData <> nil) and (ASize > 0));
-  VCount := SizeOf(DWORD);
-  Result := VSAGPS_GetMem(DWORD(VCount) + ASize);
-  PDWORD(Result)^ := ASize;
-  P := Result;
-  Inc(P, VCount);
-  Move(AData^, P^, ASize);
-end;
-
-function NmeaPacketCreate(const AData: AnsiString): Pointer;
-begin
-  Assert(AData <> '');
-  Result := NmeaPacketCreate(@AData[1], Length(AData));
-end;
-
-function NmeaPacketSize(const APacket: Pointer): DWORD;
-begin
-  Assert(APacket <> nil);
-  Result := PDWORD(APacket)^;
-end;
-
-function NmeaPacketData(APacket: Pointer): Pointer;
-var
-  P: PByte absolute APacket;
-begin
-  Assert(APacket <> nil);
-  Inc(P, SizeOf(DWORD));
-  Result := P;
-end;
 
 { Tvsagps_device_com_nmea }
 
@@ -197,65 +156,12 @@ begin
 end;
 
 procedure Tvsagps_device_com_nmea.Do_RequestGPSCommand_Apply_UTCDateTime(const ADate: PNMEA_Date; const ATime: PNMEA_Time);
-  function InternalSetSysTime: Boolean;
-  var
-    t: TSystemTime;
-    //dwError: DWORD;
-  begin
-    // date
-    if (ADate<>nil) then begin
-      t.wYear:=Convert_TwoDigitYear_to_FourDigitYear(ADate^.year);
-      t.wMonth:=ADate^.month;
-      t.wDay:=ADate^.day;
-    end else begin
-      t.wYear:=FSavedUTCDateTime.date.year; // 4-Digit!
-      t.wMonth:=FSavedUTCDateTime.date.month;
-      t.wDay:=FSavedUTCDateTime.date.day;
-    end;
-    t.wDayOfWeek:=0;
-    // time
-    t.wHour:=ATime^.hour;
-    t.wMinute:=ATime^.min;
-    t.wSecond:=ATime^.sec;
-    t.wMilliseconds:=ATime^.msec;
-    // set
-    Result:=(SetSystemTime(t)<>FALSE);
-
-    if (not Result) then begin
-      //dwError:=GetLastError;
-      //if (ERROR_INVALID_PARAMETER=dwError) then ;
-      FRequestGPSCommand_Apply_UTCDateTime:=FALSE; // no privileges or other errors (permanent result)
-    end;
-  end;
 begin
-  if (not FRequestGPSCommand_Apply_UTCDateTime) then
-    Exit;
-    
-  // only if date and time are valid (both)
-  if (not NMEA_Date_Valid(ADate)) OR (not NMEA_Time_Valid(ATime)) then
-    Exit;
-
-  // we should set time on very first sentence with NEW time
-  // so we should SAVE datetime on first sentence and wait for next timestamp
-  if NMEA_Date_Time_Valid(@FSavedUTCDateTime) then begin
-    // check for new time
-    if (FSavedUTCDateTime.time.sec<>ATime^.sec) and (FSavedUTCDateTime.time.min=ATime^.min) then begin
-      // new seconds (minutes, hours and date remains the same)
-      if InternalSetSysTime then begin
-        // well done
-        FRequestGPSCommand_Apply_UTCDateTime:=FALSE;
-        Exit;
-      end;
-    end;
-  end;
-
-  // save current to special field - only if with date
-  if (ADate<>nil) then begin
-    FSavedUTCDateTime.date:=ADate^;
-    FSavedUTCDateTime.time:=ATime^;
-    // convert to 4-Digit
-    FSavedUTCDateTime.date.year:=Convert_TwoDigitYear_to_FourDigitYear(FSavedUTCDateTime.date.year);
-  end;
+  // the shared implementation works with the same-named fields of the device
+  NMEA_Apply_UTCDateTime(FRequestGPSCommand_Apply_UTCDateTime,
+                         FSavedUTCDateTime,
+                         ADate,
+                         ATime);
 end;
 
 procedure Tvsagps_device_com_nmea.ExecuteGPSCommand(const ACommand: LongInt;
@@ -456,123 +362,6 @@ begin
 {$ifend}
 end;
 
-function Tvsagps_device_com_nmea.Internal_Parse_NmeaComm_Packets(const APacket: Pointer): DWORD;
-
-  function _IsText(AHead, ATail: Integer): Boolean;
-  var
-    I: Integer;
-    P: PByte;
-  begin
-    Assert(ATail > AHead);
-    // check for the BINARY data inside the packed
-    // (u-blox can send UBX packets interleaved with NMEA sentences)
-    // https://www.sasgis.org/mantis/view.php?id=3596
-    P := Pointer(FGlobalNmeaBuffer);
-    Inc(P, AHead);
-    for I := AHead+1 to ATail-1 do begin
-      // allowed values: $0D, $0A, $21..$7E
-      if (P^ <= $20) or (P^ >= $7F) then begin
-        Result := False;
-        Exit;
-      end;
-      Inc(P);
-    end;
-    Result := True;
-  end;
-
-  function _GetNmeaSentence(var ASentence: AnsiString): Boolean;
-  var
-    I: Integer;
-    VHead, VTail: Integer;
-  begin
-    Result := False;
-    VHead := PosA(cNmea_Starter, FGlobalNmeaBuffer);
-    if VHead = 0 then begin
-      FGlobalNmeaBuffer := '';
-      Exit;
-    end;
-    VTail := PosA(cNmea_Tail, FGlobalNmeaBuffer, VHead + 1);
-    if VTail > 0 then begin
-      repeat
-        // check if there any other Heads between Head and Tail
-        I := PosA(cNmea_Starter, FGlobalNmeaBuffer, VHead + 1);
-        if (I > 0) and (I < VTail) then begin
-          // found another Head before Tail
-          {$if defined(USE_NMEA_PROPRIETARY_WITHOUT_TAIL)}
-          if (FGlobalNmeaBuffer[VHead+1] = cNmea_Proprietary) and _IsText(VHead, I) then begin
-            // ok - return sentence without tail and head
-            ASentence := System.Copy(FGlobalNmeaBuffer, VHead + 1, I - VHead - 1);
-            System.Delete(FGlobalNmeaBuffer, 1, I-1);
-            Result := True;
-            Exit;
-          end else begin
-            VHead := I; // move to the new Head
-          end;
-          {$else}
-          VHead := I; // move to the new Head
-          {$ifend}
-        end else begin
-          Break;
-        end;
-      until False;
-      if not _IsText(VHead, VTail) then begin
-        // remove raw data from the buffer
-        System.Delete(FGlobalNmeaBuffer, 1, VTail + 1);
-        // search recursively for the next sentence
-        Result := _GetNmeaSentence(ASentence);
-        Exit;
-      end;
-      // ok - return sentence with tail but without head
-      ASentence := System.Copy(FGlobalNmeaBuffer, VHead + 1, VTail - VHead + 1);
-      System.Delete(FGlobalNmeaBuffer, 1, VTail + 1);
-      Result := (ASentence <> #13#10) and (Length(ASentence) <= (cNmea_SentenceLenMax - 1));
-      if not Result then begin
-        // search recursively for the next sentence
-        Result := _GetNmeaSentence(ASentence);
-        Exit;
-      end;
-    end;
-  end;
-
-var
-  I: Integer;
-  VSentence: AnsiString;
-  VSize: DWORD;
-  VData: Pointer;
-  VBuffer: PByte;
-begin
-  {$if defined(VSAGPS_USE_DEBUG_STRING)}
-  VSAGPS_DebugAnsiString('Tvsagps_device_com_nmea.Internal_Parse_NmeaComm_Packets:');
-  {$ifend}
-  Result := 0; // not used
-  if APacket = nil then begin
-    Exit;
-  end;
-  VSize := NmeaPacketSize(APacket);
-  {$if defined(VSAGPS_USE_DEBUG_STRING)}
-  VSAGPS_DebugAnsiString('Packet Size: ' + IntToStrA(VSize));
-  {$ifend}
-  if VSize = 0 then begin
-    Exit;
-  end;
-  VData := NmeaPacketData(APacket);
-
-  I := Length(FGlobalNmeaBuffer);
-  SetLength(FGlobalNmeaBuffer, DWORD(I) + VSize);
-
-  VBuffer := Pointer(FGlobalNmeaBuffer);
-  Inc(VBuffer, I);
-
-  Move(VData^, VBuffer^, VSize);
-
-  while _GetNmeaSentence(VSentence) do begin
-    {$if defined(VSAGPS_USE_DEBUG_STRING_NMEA_SENTENCE)}
-    VSAGPS_DebugAnsiString(StringReplaceA(VSentence, #13#10, '\r\n', [rfReplaceAll]);
-    {$ifend}
-    FParser.Parse_Sentence_Without_Starter(VSentence);
-  end;
-end;
-
 procedure Tvsagps_device_com_nmea.Internal_Query_GPSDeviceName;
 begin
   // not implemented yet
@@ -621,7 +410,7 @@ end;
 function Tvsagps_device_com_nmea.ParsePacket(const ABuffer: Pointer): DWORD;
 begin
   // inherited;
-  Result:=Internal_Parse_NmeaComm_Packets(ABuffer)
+  Result:=Nmea_ParsePacket_Locked(FPtrCS_CloseHandle, FGlobalNmeaBuffer, ABuffer, FParser)
 end;
 
 function Tvsagps_device_com_nmea.Parse_Proprietary_CSI_Data(const AData, ASubCommand: AnsiString): DWORD;
