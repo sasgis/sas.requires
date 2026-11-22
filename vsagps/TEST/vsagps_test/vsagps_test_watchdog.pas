@@ -43,11 +43,20 @@ procedure Vsagps_Test_Watchdog_Stop;
 // debug log); used for the test progress and the watchdog report
 procedure Vsagps_Test_Log(const AText: AnsiString);
 
+// drain the queued Synchronize callbacks (until the queue stays empty).
+// NOTE: since 2026-11-20 the library threads are owned by the object and
+// deliver nothing via Synchronize (the finalization runs at the end of the
+// thread Execute, and the owner waits for the real exit), so this helper is
+// a no-op for the library and stays only as a belt-and-suspenders pump for
+// the test code which used to rely on the delivery
+procedure Vsagps_Test_FlushPendingSyncs;
+
 implementation
 
 uses
   Windows,
   SysUtils,
+  Classes,
   Winapi.TlHelp32;
 
 const
@@ -63,6 +72,27 @@ var
   g_TestStartTick: DWORD; // 0 = no test running
   g_SuiteStartTick: DWORD;
   g_WatchdogStopped: Boolean;
+
+{ the sync queue drain }
+
+procedure Vsagps_Test_FlushPendingSyncs;
+var
+  VTicks: DWORD;
+  VIdle: Integer;
+begin
+  // the queue is normally empty (the library does not use Synchronize
+  // anymore); the bounded pump is kept so a stale callback of an older test
+  // binary can not leak into the next test
+  VIdle:=0;
+  VTicks:=GetTickCount;
+  while (VIdle<10) and (GetTickCount-VTicks<300) do begin
+    if CheckSynchronize then
+      VIdle:=0
+    else
+      Inc(VIdle);
+    Sleep(10);
+  end;
+end;
 
 { the log }
 

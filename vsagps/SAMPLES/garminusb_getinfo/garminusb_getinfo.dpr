@@ -289,7 +289,6 @@ begin
       obj.FDevParams.wWorkerThreadTimeoutMSec:=100;
       obj.FDevParams.dwAutodetectFlags:=0;
       obj.FDevParams.dwDeviceFlagsIn:=(dpdfi_SyncUnitInfo or // for VSAGPS_GetUnitInfo
-                                       dpdfi_UnSyncDisconnected or
                                        dpdfi_ConnectingFromConnect);
       obj.FDevParams.dwDeviceFlagsOut:=0;
       obj.FDevParams.iBaudRate:=0;

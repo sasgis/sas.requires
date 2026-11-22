@@ -1,12 +1,12 @@
-object frmTcpNmeaServer: TfrmTcpNmeaServer
+object frmNmeaServer: TfrmNmeaServer
   Left = 200
   Top = 100
-  Caption = 'TCP NMEA Server'
-  ClientHeight = 552
-  ClientWidth = 604
+  Caption = 'NMEA Server (TCP/UDP)'
+  ClientHeight = 609
+  ClientWidth = 760
   Color = clBtnFace
-  Constraints.MinHeight = 470
-  Constraints.MinWidth = 620
+  Constraints.MinHeight = 510
+  Constraints.MinWidth = 700
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -17,55 +17,60 @@ object frmTcpNmeaServer: TfrmTcpNmeaServer
   OnDestroy = FormDestroy
   TextHeight = 13
   object spl1: TSplitter
-    Left = 220
-    Top = 246
+    Left = 212
+    Top = 273
     Width = 6
-    Height = 306
+    Height = 313
     AutoSnap = False
     MinSize = 120
-    ExplicitHeight = 414
+    ExplicitLeft = 220
+    ExplicitTop = 314
+    ExplicitHeight = 278
   end
   object gbClients: TGroupBox
     Left = 0
-    Top = 246
-    Width = 220
-    Height = 306
+    Top = 273
+    Width = 212
+    Height = 313
     Align = alLeft
     Caption = ' Clients '
     TabOrder = 0
-    ExplicitHeight = 414
+    ExplicitLeft = 8
     DesignSize = (
-      220
-      306)
+      212
+      313)
     object lbClients: TListBox
       Left = 8
       Top = 18
-      Width = 204
-      Height = 280
+      Width = 196
+      Height = 310
       Anchors = [akLeft, akTop, akRight, akBottom]
       ItemHeight = 13
       TabOrder = 0
-      ExplicitHeight = 388
+      ExplicitWidth = 204
+      ExplicitHeight = 252
     end
   end
-  object gbTcp: TGroupBox
-    Left = 226
-    Top = 246
-    Width = 378
-    Height = 306
+  object gbLog: TGroupBox
+    Left = 218
+    Top = 273
+    Width = 542
+    Height = 313
     Align = alClient
-    Caption = ' TCP events '
+    Caption = ' Events '
     TabOrder = 1
-    ExplicitWidth = 674
-    ExplicitHeight = 414
+    ExplicitLeft = 226
+    ExplicitTop = 314
+    ExplicitWidth = 534
+    ExplicitHeight = 255
     DesignSize = (
-      378
-      306)
-    object mmTcp: TMemo
+      542
+      313)
+    object mmLog: TMemo
       Left = 8
       Top = 18
-      Width = 362
-      Height = 280
+      Width = 526
+      Height = 310
       Anchors = [akLeft, akTop, akRight, akBottom]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -77,72 +82,106 @@ object frmTcpNmeaServer: TfrmTcpNmeaServer
       ScrollBars = ssBoth
       TabOrder = 0
       WordWrap = False
-      ExplicitWidth = 658
-      ExplicitHeight = 388
+      ExplicitWidth = 518
+      ExplicitHeight = 252
     end
   end
   object panTop: TPanel
     Left = 0
     Top = 0
-    Width = 604
-    Height = 274
+    Width = 760
+    Height = 273
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitWidth = 900
     DesignSize = (
-      604
-      274)
+      760
+      273)
     object lblPort: TLabel
-      Left = 12
+      Left = 100
       Top = 16
       Width = 24
       Height = 13
       Caption = 'Port:'
     end
-    object lblServerState: TLabel
-      Left = 330
+    object lblTarget: TLabel
+      Left = 400
       Top = 16
-      Width = 263
+      Width = 57
       Height = 13
+      Caption = 'UDP target:'
+    end
+    object lblServerState: TLabel
+      Left = 8
+      Top = 50
+      Width = 73
+      Height = 13
+      Anchors = [akLeft, akTop, akRight]
       Caption = 'server stopped'
     end
-    object edPort: TEdit
-      Left = 44
-      Top = 12
-      Width = 60
-      Height = 21
+    object rgTransport: TRadioGroup
+      Left = 0
+      Top = -2
+      Width = 94
+      Height = 39
+      Columns = 2
+      ItemIndex = 0
+      Items.Strings = (
+        'TCP'
+        'UDP')
+      ShowFrame = False
       TabOrder = 0
+      OnClick = TransportChanged
+    end
+    object edPort: TEdit
+      Left = 134
+      Top = 12
+      Width = 56
+      Height = 21
+      TabOrder = 1
       Text = '10110'
     end
     object btnStartServer: TButton
-      Left = 116
+      Left = 196
       Top = 10
       Width = 100
       Height = 25
       Caption = 'Start server'
-      TabOrder = 1
+      TabOrder = 2
       OnClick = btnStartServerClick
     end
     object btnStopServer: TButton
-      Left = 224
+      Left = 302
       Top = 10
       Width = 90
       Height = 25
       Caption = 'Stop server'
       Enabled = False
-      TabOrder = 2
+      TabOrder = 3
       OnClick = btnStopServerClick
+    end
+    object edTarget: TEdit
+      Left = 466
+      Top = 12
+      Width = 160
+      Height = 21
+      Hint = 
+        'The datagrams are sent to this "addr:port" (an unicast address, ' +
+        'a subnet broadcast address or a multicast group) in addition to ' +
+        'the learned subscribers; empty = the subscribers only'
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 4
     end
     object gbTrack: TGroupBox
       Left = 8
-      Top = 44
-      Width = 588
+      Top = 70
+      Width = 744
       Height = 84
       Anchors = [akLeft, akTop, akRight]
       Caption = ' Track playback '
-      TabOrder = 3
-      ExplicitWidth = 884
+      TabOrder = 5
       object lblTrack: TLabel
         Left = 124
         Top = 26
@@ -160,7 +199,7 @@ object frmTcpNmeaServer: TfrmTcpNmeaServer
       object lblPlayState: TLabel
         Left = 458
         Top = 56
-        Width = 127
+        Width = 3
         Height = 13
       end
       object btnOpenGpx: TButton
@@ -213,13 +252,12 @@ object frmTcpNmeaServer: TfrmTcpNmeaServer
     end
     object gbEmulation: TGroupBox
       Left = 8
-      Top = 136
-      Width = 588
-      Height = 88
+      Top = 162
+      Width = 744
+      Height = 63
       Anchors = [akLeft, akTop, akRight]
       Caption = ' Emulation '
-      TabOrder = 4
-      ExplicitWidth = 884
+      TabOrder = 6
       object lblStallFor: TLabel
         Left = 440
         Top = 28
@@ -270,38 +308,22 @@ object frmTcpNmeaServer: TfrmTcpNmeaServer
         Text = '2000'
       end
       object chkGpsd: TCheckBox
-        Left = 12
-        Top = 56
-        Width = 560
+        Left = 576
+        Top = 26
+        Width = 144
         Height = 17
-        Caption =
-          'gpsd server mode: VERSION banner + ?WATCH required before the s' +
-          'tream, JSON reports interleaved (set before starting the server)'
+        Caption = 'GPSD server mode'
         TabOrder = 5
       end
     end
     object gbLogging: TGroupBox
       Left = 8
-      Top = 230
-      Width = 588
+      Top = 231
+      Width = 744
       Height = 40
       Anchors = [akLeft, akTop, akRight]
       Caption = ' Logging '
-      TabOrder = 5
-      ExplicitWidth = 884
-      DesignSize = (
-        588
-        40)
-      object lblLogFiles: TLabel
-        Left = 500
-        Top = 19
-        Width = -293
-        Height = 13
-        Anchors = [akLeft, akTop, akRight]
-        ParentShowHint = False
-        ShowHint = True
-        ExplicitWidth = 3
-      end
+      TabOrder = 7
       object chkLogNmea: TCheckBox
         Left = 12
         Top = 17
@@ -311,32 +333,21 @@ object frmTcpNmeaServer: TfrmTcpNmeaServer
         TabOrder = 0
         OnClick = LogParamChanged
       end
-      object chkLogTcp: TCheckBox
+      object chkLogEvents: TCheckBox
         Left = 226
         Top = 17
         Width = 200
         Height = 17
-        Caption = 'Save TCP events to file'
+        Caption = 'Save events to file'
         TabOrder = 1
         OnClick = LogParamChanged
       end
     end
   end
-  object tmrWork: TTimer
-    Interval = 100
-    OnTimer = tmrWorkTimer
-    Left = 420
-    Top = 12
-  end
-  object dlgOpen: TOpenDialog
-    Filter = 'GPX tracks (*.gpx)|*.gpx|All files (*.*)|*.*'
-    Left = 460
-    Top = 12
-  end
   object sbStatus: TStatusBar
     Left = 0
-    Top = 529
-    Width = 604
+    Top = 586
+    Width = 760
     Height = 23
     Panels = <
       item
@@ -352,8 +363,21 @@ object frmTcpNmeaServer: TfrmTcpNmeaServer
         Width = 120
       end
       item
-        Text = 'tcp err: 0'
+        Text = 'net err: 0'
         Width = 140
       end>
+    ExplicitTop = 569
+  end
+  object tmrWork: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = tmrWorkTimer
+    Left = 508
+    Top = 100
+  end
+  object dlgOpen: TOpenDialog
+    Filter = 'GPX tracks (*.gpx)|*.gpx|All files (*.*)|*.*'
+    Left = 556
+    Top = 100
   end
 end

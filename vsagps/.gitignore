@@ -1,6 +1,8 @@
 /DCU/*
-**/__history/*
+**/__*/*
 
+*.drc
+*.map
 *.dcu
 *.res
 *.gpx
@@ -11,6 +13,5 @@
 *.log
 *.local
 
-BIN/tcp_nmea_server.ini
-BIN/tcp_nmea_client.ini
-**/__*/**
+BIN/nmea_server.ini
+BIN/nmea_client.ini

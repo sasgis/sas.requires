@@ -47,15 +47,15 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <DCC_DcuOutput>..\DCU</DCC_DcuOutput>
-        <DCC_ExeOutput>..\BIN</DCC_ExeOutput>
+        <DCC_DcuOutput>..\..\DCU</DCC_DcuOutput>
+        <DCC_ExeOutput>..\..\BIN</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
         <DCC_S>false</DCC_S>
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <DCC_UnitSearchPath>$(BDS)\Source\DUnit\src;..\PUBLIC;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>$(BDS)\Source\DUnit\src;..\..\PUBLIC;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_Define>CONSOLE_TESTRUNNER;$(DCC_Define)</DCC_Define>
         <SanitizedProjectName>vsagps_test</SanitizedProjectName>
         <VerInfo_Locale>1049</VerInfo_Locale>
@@ -105,54 +105,60 @@
         </DelphiCompile>
         <DCCReference Include="vsagps_com_checker_test.pas"/>
         <DCCReference Include="vsagps_device_com_nmea_test.pas"/>
+        <DCCReference Include="vsagps_device_udp_nmea_test.pas"/>
         <DCCReference Include="vsagps_device_tcp_nmea_test.pas"/>
         <DCCReference Include="vsagps_tcp_checker_test.pas"/>
+        <DCCReference Include="vsagps_units_disconnect_test.pas"/>
+        <DCCReference Include="vsagps_track_reader_test.pas"/>
         <DCCReference Include="vsagps_test_watchdog.pas"/>
         <DCCReference Include="vsagps_device_tcp_nmea_test.pas"/>
         <DCCReference Include="vsagps_tcp_checker_test.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_com_checker.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_device_base.pas"/>
-        <DCCReference Include="..\Runtime\vsagps_device_com_nmea.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_device_nmea_common.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_device_tcp_nmea.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_device_usb_garmin.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_ini.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_object.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_parser_nmea.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_queue.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_runtime.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_tcp_checker.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_tools.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_track_reader.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_track_saver.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_track_writer.pas"/>
-        <DCCReference Include="..\RUNTIME\vsagps_units.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_base.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_classes.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_debugstring.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_device.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_events.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_garmin.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_gpx.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_kml.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_location_api.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_memory.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_nmea.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_parser.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_point.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_position.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_print.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_sats_info.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_sysutils.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_time.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_trackpoint.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_tracks.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_types.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_unicode.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_unit_info.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_version.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_xml_dom.pas"/>
-        <DCCReference Include="..\PUBLIC\vsagps_public_xml_parser.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_com_checker.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_device_base.pas"/>
+        <DCCReference Include="..\..\Runtime\vsagps_device_com_nmea.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_device_nmea_common.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_device_tcp_nmea.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_device_udp_nmea.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_device_usb_garmin.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_ini.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_object.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_parser_nmea.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_queue.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_runtime.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_tcp_checker.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_udp_checker.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_tools.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_track_reader.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_track_saver.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_track_writer.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_units.pas"/>
+        <DCCReference Include="..\..\RUNTIME\vsagps_winsock2_compat.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_base.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_classes.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_debugstring.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_device.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_events.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_garmin.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_gpx.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_kml.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_location_api.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_memory.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_nmea.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_parser.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_point.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_position.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_print.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_sats_info.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_sysutils.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_time.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_trackpoint.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_tracks.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_types.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_unicode.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_unit_info.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_version.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_xml_dom.pas"/>
+        <DCCReference Include="..\..\PUBLIC\vsagps_public_xml_parser.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

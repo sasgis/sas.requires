@@ -62,7 +62,7 @@ Packet Data Type = n/a
 
 3.2.3.3 Session Started Packet
 The Session Started packet indicates that transfers can take place to and from the device. The host should ignore any
-packets it receives before receiving this packet. The data returned with this packet is the device’s unit ID.
+packets it receives before receiving this packet. The data returned with this packet is the device's unit ID.
 Direction =  Device to Host
 Packet ID =  Pid_Session_Started
 Packet Data Type = uint32
@@ -115,9 +115,9 @@ value is the number of bytes written to the output buffer.
 
 
 
-(* 4.2 L001 – Link Protocol 1
+(* 4.2 L001 - Link Protocol 1
 This Link protocol is used for the majority of devices (see section 8.2 on page 60). This protocol is the same as L000
-– Basic Link Protocol, except that the following Packet IDs are used in addition to the Basic Packet IDs: *)
+- Basic Link Protocol, except that the following Packet IDs are used in addition to the Basic Packet IDs: *)
   L001_Pid_Etx_Byte = 3; // UNDOCUMENTED IN L001
   L001_Pid_Ack_Byte = 6; // UNDOCUMENTED IN L001
   L001_Pid_Command_Data = 10;
@@ -174,9 +174,9 @@ This Link protocol is used for the majority of devices (see section 8.2 on page 
   L001_Pid_Course_Trk_Data = 1065;
   L001_Pid_Course_Limits = 1066;
 
-(* 4.3 L002 – Link Protocol 2
+(* 4.3 L002 - Link Protocol 2
 This Link protocol is used mainly for panel-mounted aviation devices (see section 8.2 on page 60). This protocol is the same as L000
- – Basic Link Protocol, except that the following Packet IDs are used in addition to the Basic Packet IDs: *)
+ - Basic Link Protocol, except that the following Packet IDs are used in addition to the Basic Packet IDs: *)
   L002_Pid_Almanac_Data = 4;
   L002_Pid_Command_Data = 11;
   L002_Pid_Xfer_Cmplt = 12;
@@ -195,9 +195,9 @@ This Link protocol is used mainly for panel-mounted aviation devices (see sectio
   Tag_Data_Type_Id = 'D'; // tag for Data Type ID
 
 
-(* A010 – Device Command Protocol 1
+(* A010 - Device Command Protocol 1
 This protocol is implemented by the majority of devices (see section 8.2 on page 60).
-Note: The “Cmnd_Turn_Off_Pwr” command may not be acknowledged by the device.
+Note: The "Cmnd_Turn_Off_Pwr" command may not be acknowledged by the device.
 Note: The PC can send Cmnd_Abort_Transfer in the middle of a transfer of data to the device in order to cancel the transfer.
 The enumerated values for Command_Id_Type are shown below:
 *)
@@ -234,7 +234,7 @@ const
   A010_Cmnd_Transfer_Course_Limits = 565; // transfer fitness course limits
 
 (*
-6.3.2 A011 – Device Command Protocol 2
+6.3.2 A011 - Device Command Protocol 2
 This protocol is implemented mainly by panel-mounted aviation devices (see section 8.2 on page 60). The
 enumerated values for Command_Id_Type are shown below:
 *)
@@ -299,10 +299,10 @@ indicated with negative numbers. *)
   PD700_Position_Type = ^D700_Position_Type;
 
 (* 7.4.23 D301_Trk_Point_Type
-The “time” member indicates the time at which the track log point was recorded.
-The ‘alt’ and ‘dpth’ members may or may not be supported on a given device. A value of 1.0e25 in either of these
+The "time" member indicates the time at which the track log point was recorded.
+The 'alt' and 'dpth' members may or may not be supported on a given device. A value of 1.0e25 in either of these
 fields indicates that this parameter is not supported or is unknown for this track point.
-When true, the “new_trk” member indicates that the track log point marks the beginning of a new track log segment.
+When true, the "new_trk" member indicates that the track log point marks the beginning of a new track log segment.
 temp - Temperature. May not be supported by all devices. A value of 1.0e25 in this field indicates that this parameter is
 not supported or is unknown for this track point.
 *)
@@ -334,8 +334,8 @@ not supported or is unknown for this track point.
   
 (* 7.4.25 D303_Trk_Point_Type
 All fields are defined the same as D301_Trk_Point_Type except as noted below.
-The “posn” member is invalid if both lat and lon are equal to 0x7FFFFFFF.
-The “heart_rate” member is invalid if its value is equal to 0.
+The "posn" member is invalid if both lat and lon are equal to 0x7FFFFFFF.
+The "heart_rate" member is invalid if its value is equal to 0.
 Two consecutive track points with invalid position, invalid altitude, and invalid heart rate indicate a pause in track
 point recording during the time between the two points. *)
   D303_Trk_Point_Type = packed record
@@ -348,9 +348,9 @@ point recording during the time between the two points. *)
 
 (* 7.4.26 D304_Trk_Point_Type
 All fields are defined the same as D303_Track_Point_Type except as noted below.
-The “distance” member is the cumulative distance traveled in the track up to this point in meters as determined by the wheel sensor or from the position, whichever is more accurate.
-If the distance cannot be obtained, the “distance” member has a value of 1.0e25, indicating that it is invalid.
-A value of 0xFF for the “cadence” member indicates that it is invalid.
+The "distance" member is the cumulative distance traveled in the track up to this point in meters as determined by the wheel sensor or from the position, whichever is more accurate.
+If the distance cannot be obtained, the "distance" member has a value of 1.0e25, indicating that it is invalid.
+A value of 0xFF for the "cadence" member indicates that it is invalid.
 Two consecutive track points with invalid position, invalid altitude, invalid heart rate, invalid distance and invalid
 cadence indicate a pause in track point recording during the time between the two points. *)
   D304_Trk_Point_Type = packed record
@@ -365,7 +365,7 @@ cadence indicate a pause in track point recording during the time between the tw
   PD304_Trk_Point_Type = ^D304_Trk_Point_Type;
 
 (* 7.4.27 D310_Trk_Hdr_Type
-The ‘trk_ident’ member has a maximum length of 51 characters including the terminating NULL. *)
+The 'trk_ident' member has a maximum length of 51 characters including the terminating NULL. *)
   D310_Trk_Hdr_Type=packed record
     dspl: Byte; // bool; // display on the map?
     color: uint8; // color (same as D108)
@@ -381,7 +381,7 @@ The ‘trk_ident’ member has a maximum length of 51 characters including the termi
 
 (* 7.4.29 D312_Trk_Hdr_Type
 The 'trk_ident' member has a maximum length of 51 characters including the terminating NULL.
-The “color” member can be one of the following values: D110_clr_* constants + clr_DefaultColor = 255 *)
+The "color" member can be one of the following values: D110_clr_* constants + clr_DefaultColor = 255 *)
   D312_Trk_Hdr_Type = packed record
     dspl: Byte; // bool; // display on the map?
     color: uint8; // color (see below)
@@ -399,14 +399,14 @@ table below except that the device may not accept the requested value. *)
   symbol_type = uint16;
 
 
-(* 6.4 A100 – Waypoint Transfer Protocol
+(* 6.4 A100 - Waypoint Transfer Protocol
 When the host commands the device to send waypoints, the device will send every waypoint stored in its database.
 When the host sends waypoints to the device, the host may selectively transfer any waypoint it chooses.
 7.4.1 D100_Wpt_Type
 7.4.2 D101_Wpt_Type
-The enumerated values for the “smbl” member of the D101_Wpt_Type are the same as those for symbol_type (see section 7.3.15 on page 26).
-However, since the “smbl” member of the D101_Wpt_Type is only 8-bits (instead of 16-bits), all symbol_type values whose upper byte
-is non-zero are disallowed in the D101_Wpt_Type. The “dst” member is valid only during the Proximity Waypoint Transfer Protocol.
+The enumerated values for the "smbl" member of the D101_Wpt_Type are the same as those for symbol_type (see section 7.3.15 on page 26).
+However, since the "smbl" member of the D101_Wpt_Type is only 8-bits (instead of 16-bits), all symbol_type values whose upper byte
+is non-zero are disallowed in the D101_Wpt_Type. The "dst" member is valid only during the Proximity Waypoint Transfer Protocol.
 7.4.3 D102_Wpt_Type
 7.4.4 D103_Wpt_Type
 7.4.5 D104_Wpt_Type
@@ -414,15 +414,15 @@ is non-zero are disallowed in the D101_Wpt_Type. The “dst” member is valid only 
 7.4.7 D106_Wpt_Type
 7.4.8 D107_Wpt_Type
 7.4.9 D108_Wpt_Type
-The enumerated values for the “dspl” member of the D108_Wpt_Type are the same as the “dspl” member of the D103_Wpt_Type.
-The “attr” member should be set to a value of 0x60.
-The “subclass” member of the D108_Wpt_Type is used for map waypoints only, and should be set to 0x0000 0x00000000 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF for other classes of waypoints.
-The “alt” and “dpth” members may or may not be supported on a given device. A value of 1.0e25 in either of these fields indicates that this parameter is not supported or is unknown for this waypoint.
-The “dist” member is used during the Proximity Waypoint Transfer Protocol only, and should be set to 1.0e25 for other cases.
-The “comment” member of the D108_Wpt_Type is used for user waypoints only, and should be an empty string for other waypoint classes.
-The “facility” and “city” members are used only for aviation waypoints, and should be empty strings for other waypoint classes.
-The “addr” member is only valid for MAP_ADRS_WPT class waypoints and will be an empty string otherwise.
-The “cross_road” member is valid only for MAP_INT_WPT class waypoints, and will be an empty string otherwise.
+The enumerated values for the "dspl" member of the D108_Wpt_Type are the same as the "dspl" member of the D103_Wpt_Type.
+The "attr" member should be set to a value of 0x60.
+The "subclass" member of the D108_Wpt_Type is used for map waypoints only, and should be set to 0x0000 0x00000000 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF for other classes of waypoints.
+The "alt" and "dpth" members may or may not be supported on a given device. A value of 1.0e25 in either of these fields indicates that this parameter is not supported or is unknown for this waypoint.
+The "dist" member is used during the Proximity Waypoint Transfer Protocol only, and should be set to 1.0e25 for other cases.
+The "comment" member of the D108_Wpt_Type is used for user waypoints only, and should be an empty string for other waypoint classes.
+The "facility" and "city" members are used only for aviation waypoints, and should be empty strings for other waypoint classes.
+The "addr" member is only valid for MAP_ADRS_WPT class waypoints and will be an empty string otherwise.
+The "cross_road" member is valid only for MAP_INT_WPT class waypoints, and will be an empty string otherwise.
 7.4.10 D109_Wpt_Type
 All fields are defined the same as D108_Wpt_Type except as noted below.
 dtyp - Data packet type, must be 0x01 for D109_Wpt_Type.
@@ -498,9 +498,9 @@ ete - Estimated time en route in seconds to next waypoint. Default value is 0xFF
     lnk_ident: AnsiChar; // null-terminated string
   end;
   PD106_Wpt_Type=^D106_Wpt_Type;
-(* The enumerated values for the “wpt_class” member of the D106_Wpt_Type are as follows:
-Zero: indicates a user waypoint (“subclass” is ignored).
-Non-zero: indicates a non-user waypoint (“subclass” must be valid). *)
+(* The enumerated values for the "wpt_class" member of the D106_Wpt_Type are as follows:
+Zero: indicates a user waypoint ("subclass" is ignored).
+Non-zero: indicates a non-user waypoint ("subclass" must be valid). *)
 
   D107_Wpt_Type = packed record
     ident: packed array [0..5] of AnsiChar; // identifier
@@ -513,7 +513,7 @@ Non-zero: indicates a non-user waypoint (“subclass” must be valid). *)
     color: uint8; // waypoint color
   end;
   PD107_Wpt_Type=^D107_Wpt_Type;
-(* The enumerated values for the “smbl”/“dspl” member of the D107_Wpt_Type are the same as the “smbl”/“dspl” member of the D103_Wpt_Type (respectively). *)
+(* The enumerated values for the "smbl"/"dspl" member of the D107_Wpt_Type are the same as the "smbl"/"dspl" member of the D103_Wpt_Type (respectively). *)
 
   D108_Wpt_Type = packed record
     wpt_class: uint8; // class (see below)
@@ -598,7 +598,7 @@ posn - Position. If a D110 waypoint is received that contains a value in the lat
 *)
 
 const
-(* The enumerated values for the “smbl” member of the D103_Wpt_Type: *)
+(* The enumerated values for the "smbl" member of the D103_Wpt_Type: *)
   D103_smbl_dot = 0; // dot symbol
   D103_smbl_house = 1; // house symbol
   D103_smbl_gas = 2; // gas symbol
@@ -616,24 +616,24 @@ const
   D103_smbl_1st_aid = 14; // first aid symbol
   D103_smbl_back_track = 15; // back track symbol
 
-(* The enumerated values for the “dspl” member of the D103_Wpt_Type: *)
+(* The enumerated values for the "dspl" member of the D103_Wpt_Type: *)
   D103_dspl_name = 0; // Display symbol with waypoint name
   D103_dspl_none = 1; // Display symbol by itself
   D103_dspl_cmnt = 2; // Display symbol with comment
 
-(* The enumerated values for the “dspl” member of the D104_Wpt_Type: *)
+(* The enumerated values for the "dspl" member of the D104_Wpt_Type: *)
   D104_dspl_smbl_none = 0; // Display symbol by itself
   D104_dspl_smbl_only = 1; // Display symbol by itself
   D104_dspl_smbl_name = 3; // Display symbol with waypoint name
   D104_dspl_smbl_cmnt = 5; // Display symbol with comment
 
-(* The enumerated values for the “color” member of the D107_Wpt_Type: *)
+(* The enumerated values for the "color" member of the D107_Wpt_Type: *)
   D107_clr_default = 0; // Default waypoint color
   D107_clr_red = 1; // Red
   D107_clr_green = 2; // Green
   D107_clr_blue = 3; // Blue
 
-(* The enumerated values for the “wpt_class” member of the D108_Wpt_Type: *)
+(* The enumerated values for the "wpt_class" member of the D108_Wpt_Type: *)
   D108_user_wpt = $00; // user waypoint
   D108_avtn_apt_wpt = $40; // aviation airport waypoint
   D108_avtn_int_wpt = $41; // aviation intersection waypoint
@@ -648,7 +648,7 @@ const
   D108_map_adrs_wpt = $83; // map address waypoint
   D108_map_line_wpt = $84; // map line waypoint
 
-(* The “color” member can be one of the following values: *)
+(* The "color" member can be one of the following values: *)
   D108_clr_black = 0;
   D108_clr_dark_red = 1;
   D108_clr_dark_green = 2;
@@ -719,9 +719,9 @@ The route number contained in the D200_Rte_Hdr_Type must be unique for each rout
   PD200_Rte_Hdr_Type = ^D200_Rte_Hdr_Type;
 
 (* 7.4.19 D201_Rte_Hdr_Type
-The “nmbr” member must be unique for each route. Some devices require a unique “cmnt” for each route, and other devices do not.
-There is no mechanism available for the host to determine whether a device requires a unique “cmnt”, and the host
-must be prepared to receive unique or non-unique “cmnt” from the device. *)
+The "nmbr" member must be unique for each route. Some devices require a unique "cmnt" for each route, and other devices do not.
+There is no mechanism available for the host to determine whether a device requires a unique "cmnt", and the host
+must be prepared to receive unique or non-unique "cmnt" from the device. *)
   D201_Rte_Hdr_Type = packed record
     nmbr: uint8; // route number
     cmnt: packed array [0..19] of AnsiChar; // comment
@@ -734,8 +734,8 @@ must be prepared to receive unique or non-unique “cmnt” from the device. *)
   end;
   PD202_Rte_Hdr_Type = ^D202_Rte_Hdr_Type;
 
-(* 7.4.21 D210_Rte_Link_Type . The “ident” member has a maximum length of 51 characters, including the terminating NULL.
-If “class” is set to “direct” or “snap”, subclass should be set to its default value of 0x0000 0x00000000 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF. *)
+(* 7.4.21 D210_Rte_Link_Type . The "ident" member has a maximum length of 51 characters, including the terminating NULL.
+If "class" is set to "direct" or "snap", subclass should be set to its default value of 0x0000 0x00000000 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF. *)
   D210_Rte_Link_Type = packed record
     rte_link_class: uint16; // link class; see below
     subclass: packed array [0..17] of Byte; // uint8; // subclass
@@ -744,7 +744,7 @@ If “class” is set to “direct” or “snap”, subclass should be set to its default v
   PD210_Rte_Link_Type=^D210_Rte_Link_Type;
 
 const
-(* The “class” member can be one of the following values: *)
+(* The "class" member can be one of the following values: *)
   D210_Rte_Link_Type_class_line = 0;
   D210_Rte_Link_Type_class_link = 1;
   D210_Rte_Link_Type_class_net = 2;
@@ -786,8 +786,8 @@ type
   end;
   PD501_Almanac_Type = ^D501_Almanac_Type;
 
-(* 7.4.35 D550_Almanac_Type.     The “svid” member identifies a satellite in the GPS constellation
-as follows: PRN-01 through PRN-32 are indicated by “svid” equal to 0 through 31, respectively. *)
+(* 7.4.35 D550_Almanac_Type.     The "svid" member identifies a satellite in the GPS constellation
+as follows: PRN-01 through PRN-32 are indicated by "svid" equal to 0 through 31, respectively. *)
   D550_Almanac_Type = packed record
     svid: uint8; // satellite id
     wn: uint16; // week number (weeks)
@@ -804,8 +804,8 @@ as follows: PRN-01 through PRN-32 are indicated by “svid” equal to 0 through 31,
   end;
   PD550_Almanac_Type = ^D550_Almanac_Type;
 
-(* 7.4.36 D551_Almanac_Type       The “svid” member identifies a satellite in the GPS constellation
-as follows: PRN-01 through PRN-32 are indicated by “svid” equal to 0 through 31, respectively. *)
+(* 7.4.36 D551_Almanac_Type       The "svid" member identifies a satellite in the GPS constellation
+as follows: PRN-01 through PRN-32 are indicated by "svid" equal to 0 through 31, respectively. *)
   D551_Almanac_Type = packed record
     svid: uint8; // satellite id
     wn: uint16; // week number (weeks)

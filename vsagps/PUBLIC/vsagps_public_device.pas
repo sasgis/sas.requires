@@ -117,6 +117,7 @@ type
     dwAutodetectFlags: DWORD;
     dwSourceFileFlagsIn: DWORD; // see dpsffi_* constants
     dwSourceFileFlagsOut: DWORD;
+    dwSourceFileSpeedMultiplier: DWORD; // the playback speed multiplier of the source tracks, x times the real time (1 = real time, 2 = twice faster, 0 = same as 1)
     dwDeviceFlagsIn: DWORD; // see dpdfi_* constants
     dwDeviceFlagsOut: DWORD; // Reserved - must be 0
     iBaudRate: LongInt;

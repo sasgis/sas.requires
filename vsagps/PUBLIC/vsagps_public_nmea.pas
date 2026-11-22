@@ -14,9 +14,9 @@ const
   // sentence identifiers (always in uppercase!) - in alphabetical order
   // flags
   nmea_si_AAM = 'AAM'; // Waypoint Arrival Alarm
-  nmea_si_BWC = 'BWC'; // Bearing and Distance to Waypoint – Latitude, N/S, Longitude, E/W, UTC, Status
+  nmea_si_BWC = 'BWC'; // Bearing and Distance to Waypoint - Latitude, N/S, Longitude, E/W, UTC, Status
   nmea_si_GGA = 'GGA'; // + Global Positioning System Fix Data. Time, Position and fix related data for a GPS receiver
-  nmea_si_GLL = 'GLL'; // Geographic Position – Latitude/Longitude
+  nmea_si_GLL = 'GLL'; // Geographic Position - Latitude/Longitude
   nmea_si_GSA = 'GSA'; // + GPS DOP and active satellites
   nmea_si_GSV = 'GSV'; // + Satellites in view
   nmea_si_MSS = 'MSS'; // MSK Receiver Signal Status
@@ -25,8 +25,8 @@ const
   nmea_si_RTE = 'RTE'; // Routes
   nmea_si_VTG = 'VTG'; // Track Made Good and Ground Speed
   nmea_si_WPL = 'WPL'; // Waypoint Location
-  nmea_si_XTE = 'XTE'; // Cross-Track Error – Measured
-  nmea_si_ZDA = 'ZDA'; // Time & Date – UTC, Day, Month, Year and Local Time Zone
+  nmea_si_XTE = 'XTE'; // Cross-Track Error - Measured
+  nmea_si_ZDA = 'ZDA'; // Time & Date - UTC, Day, Month, Year and Local Time Zone
 
 (*
 $HCHDG,101.1,,,7.1,W*3C   - electronic compass (magnetic deviation and variation)

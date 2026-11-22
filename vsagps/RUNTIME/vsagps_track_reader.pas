@@ -38,6 +38,18 @@ type
     FCurrentFile: WideString;
     FPX_options: Tvsagps_XML_ParserOptions;
     FFormatSettings: TFormatSettings;
+    // the timestamp of the last played point - the base of the
+    // real time pacing (the pause between the points is scaled
+    // by the playback speed multiplier)
+    FLastPointUTCDateTime: TDateTime;
+    FLastPointUTCDateTimeValid: Boolean;
+    FLastPointUTCDateTimeWithDate: Boolean;
+    // the utc date and time captured from the nmea parser callbacks:
+    // the RMC sentences carry the date, the GGA and GLL carry the time only
+    FParserUTCDate: TNMEA_Date;
+    FParserUTCDateValid: Boolean;
+    FParserUTCTime: TNMEA_Time;
+    FParserUTCTimeValid: Boolean;
   protected
     Fparser_nmea: Tvsagps_parser_nmea;
   protected
@@ -64,7 +76,24 @@ type
     procedure ParseGPX_UserProc(const pPX_options: Pvsagps_XML_ParserOptions;
                                 const pPX_data: Pvsagps_XML_ParserResult;
                                 const pPX_state: Pvsagps_XML_ParserState);
-    procedure SleepInXMLParser;
+    // wait after the point was sent: the pause between the points is taken
+    // from the point timestamps (the real time replay) and is scaled by the
+    // playback speed multiplier; when the timestamp is not available - the
+    // fixed pause is used as a fallback
+    procedure SleepAfterTrackPoint(const AUTCDateTime: TDateTime;
+                                   const AUTCDateTimeValid: Boolean;
+                                   const AUTCDateTimeWithDate: Boolean);
+    // wait in short slices to keep the device stop responsive
+    procedure SleepWaitSlices(const APauseMSec: Int64);
+    // reset the pacing state - called before each source file
+    procedure ResetTrackPacingState;
+    // true when the sources are requested to be replayed in a circle
+    function InternalIsLoopPlayback: Boolean;
+    // nmea parser callback - capture the utc date and time of the sentences
+    procedure Do_TrackReader_ApplyUTCDateTime(const ADate: PNMEA_Date; const ATime: PNMEA_Time);
+    // combine the captured nmea utc date and time into the timestamp
+    function Get_Captured_NMEA_UTCTimeStamp(out AUTCDateTime: TDateTime;
+                                            out AUTCDateTimeWithDate: Boolean): Boolean;
   protected
     procedure Internal_Before_Open_Device; override;
     // start session - operations to establish connection
@@ -84,8 +113,17 @@ type
 
     function SendPacket(const APacketBuffer: Pointer;
                         const APacketSize: DWORD;
-                        const AFlags: DWORD): LongBool; override;
+                        const AFlags: DWORD): LongBool;
   end;
+
+// calc the pause between the two track points in ms at the x1 playback
+// speed; the timestamps without the date part (the time only ones) are
+// allowed - their midnight wrap is handled; returns 0 when the current
+// timestamp is unusable (backward time, the first point, the file change)
+function TrackPoints_Pause_MSec(const APrevUTCDateTime: TDateTime;
+                                const APrevUTCDateTimeWithDate: Boolean;
+                                const ACurUTCDateTime: TDateTime;
+                                const ACurUTCDateTimeWithDate: Boolean): Int64;
 
 implementation
 
@@ -94,6 +132,36 @@ uses
   vsagps_public_location_api,
   vsagps_public_memory,
   DateUtils;
+
+const
+  // the fixed fallback pause between the points without the timestamp is
+  // capped: it should not delay the next timestamped point too much
+  cTrackReader_MaxPause_MSec = 5000;
+
+function TrackPoints_Pause_MSec(const APrevUTCDateTime: TDateTime;
+                                const APrevUTCDateTimeWithDate: Boolean;
+                                const ACurUTCDateTime: TDateTime;
+                                const ACurUTCDateTimeWithDate: Boolean): Int64;
+var
+  nDeltaMSec: Int64;
+begin
+  Result:=0;
+  nDeltaMSec:=Round((ACurUTCDateTime-APrevUTCDateTime)*MSecsPerDay);
+  if (nDeltaMSec>0) then
+    // the usual forward move
+    Result:=nDeltaMSec
+  else if (nDeltaMSec<0) then begin
+    // the negative delta - either the backward time or the midnight wrap
+    // on the timestamps without the date part (the time only ones)
+    if (not APrevUTCDateTimeWithDate) and (not ACurUTCDateTimeWithDate) and
+       (nDeltaMSec<=-(MSecsPerDay div 2)) then
+      // the day changed on the time only timestamps: the delta just
+      // crossed the midnight, so the real gap is about a day smaller
+      Result:=nDeltaMSec+MSecsPerDay;
+    // otherwise the time goes back - restart the pacing from this point
+  end;
+  // the zero delta (the same timestamp) means no pause
+end;
 
 procedure rTVSAGPS_ParseGPX_UserProc(const pUserObjPointer: Pointer;
                                      const pUserAuxPointer: Pointer;
@@ -115,6 +183,7 @@ begin
   FCurrentFile:='';
   FOriginalSourceFiles := SafeSetStringP(APtrSourceFiles);
   VSAGPS_PrepareFormatSettings(FFormatSettings);
+  ResetTrackPacingState;
 end;
 
 destructor Tvsagps_track_reader.Destroy;
@@ -133,6 +202,7 @@ begin
     Fparser_nmea.FOnGSA:=FParser_FOnGSA;
     Fparser_nmea.FOnGSV:=FParser_FOnGSV;
     Fparser_nmea.FOnRMC:=FParser_FOnRMC;
+    Fparser_nmea.FOnApplyUTCDateTime:=Do_TrackReader_ApplyUTCDateTime;
 {$if defined(USE_NMEA_VTG)}
     Fparser_nmea.FOnVTG:=FParser_FOnVTG;
 {$ifend}
@@ -169,8 +239,8 @@ begin
 
       // send to queue
       FExternal_Queue.AppendGPSPacket(pPacket, FUnitIndex);
-      // wait
-      SleepInXMLParser;
+      // wait - the kml coordinates have no timestamp
+      SleepAfterTrackPoint(0, FALSE, FALSE);
     except
       VSAGPS_FreeMem(pPacket);
     end;
@@ -189,7 +259,8 @@ begin
     // send buffer as packet
     Sleep(0);
     Parse_GarminPVT_Packets(Pointer(buf_ptr), 0);
-    SleepInXMLParser;
+    // wait - no timestamp is captured for the garmin packets here
+    SleepAfterTrackPoint(0, FALSE, FALSE);
   finally
     VSAGPS_FreeMem(buf_ptr);
   end;
@@ -206,14 +277,18 @@ begin
     // send buffer as packet
     Sleep(0);
     Parse_LocationAPI_Packets(Pointer(buf_ptr), 0);
-    SleepInXMLParser;
+    // wait - no timestamp is captured for the location api packets here
+    SleepAfterTrackPoint(0, FALSE, FALSE);
   finally
     VSAGPS_FreeMem(buf_ptr);
   end;
 end;
 
 procedure Tvsagps_track_reader.InternalLineParser_NMEA(const ALine: AnsiString; const ASelfAuxPtr: Pointer);
-var S: AnsiString;
+var
+  S: AnsiString;
+  VUTCDateTime: TDateTime;
+  VUTCDateTimeWithDate: Boolean;
 begin
   InternalCreateNmeaParser;
   // del starter and call parser
@@ -223,7 +298,13 @@ begin
       System.Delete(S,1,1);
     Sleep(0);
     Fparser_nmea.Parse_Sentence_Without_Starter(S);
-    SleepInXMLParser;
+    // wait by the captured sentence timestamp; the sentences without
+    // their own timestamp (GSA, GSV and the rest) reuse the timestamp
+    // of the previous sentence - their pause is zero
+    if Get_Captured_NMEA_UTCTimeStamp(VUTCDateTime, VUTCDateTimeWithDate) then
+      SleepAfterTrackPoint(VUTCDateTime, TRUE, VUTCDateTimeWithDate)
+    else
+      SleepAfterTrackPoint(0, FALSE, FALSE);
   end;
 end;
 
@@ -231,11 +312,18 @@ procedure Tvsagps_track_reader.InternalLineParser_PLT(const ALine: AnsiString; c
 var
   pPacket: PSingleTrackPointData;
   tData: TCoordLineData;
+  VUTCDateTime: TDateTime;
+  VUTCDateTimeValid: Boolean;
 begin
   try
     InternalCreateNmeaParser;
     if parse_plt_line(ALine, @tData, Fparser_nmea, FFormatSettings) then begin
       Sleep(0);
+      // the timestamp for the pacing (the plt lines carry the full datetime)
+      VUTCDateTime:=0;
+      VUTCDateTimeValid:=tData.dt_ok;
+      if VUTCDateTimeValid then
+        VUTCDateTime:=tData.dt;
       pPacket:=VSAGPS_GetMemZ(sizeof(pPacket^));
       try
         // coordinates
@@ -271,7 +359,7 @@ begin
 
         // send
         FExternal_Queue.AppendGPSPacket(pPacket, FUnitIndex);
-        SleepInXMLParser;
+        SleepAfterTrackPoint(VUTCDateTime, VUTCDateTimeValid, TRUE);
       except
         VSAGPS_FreeMem(pPacket);
       end;
@@ -342,6 +430,11 @@ begin
   Result:=(dpsffi_SaveToReuse=(FALLDeviceParams^.dwSourceFileFlagsIn and dpsffi_SaveToReuse));
 end;
 
+function Tvsagps_track_reader.InternalIsLoopPlayback: Boolean;
+begin
+  Result:=(dpsffi_LoopPlayback=(FALLDeviceParams^.dwSourceFileFlagsIn and dpsffi_LoopPlayback));
+end;
+
 procedure Tvsagps_track_reader.Internal_Before_Open_Device;
 begin
   inherited;
@@ -366,6 +459,8 @@ var
   begin
     FCurrentFile:=ASource;
     InternalSetUnitInfo(guik_SourceFileName, sFN);
+    // the timestamps of the different files are not related
+    ResetTrackPacingState;
   end;
 
 begin
@@ -477,6 +572,9 @@ procedure Tvsagps_track_reader.ParseGPX_UserProc(const pPX_options: Pvsagps_XML_
 var
   pPacket: PSingleTrackPointData;
   iAllocSize: SmallInt;
+  VUTCDateTime: TDateTime;
+  VUTCDateTimeValid: Boolean;
+  VUTCDateTimeWithDate: Boolean;
 {$ifend}
 begin
   // check exit
@@ -529,9 +627,23 @@ begin
           if (sizeof(TFullTrackPointData)=iAllocSize) then
             DeserializeSatsInfo(pPX_data^.gpx_data.extensions_data.sasx_strs[sasx_sats_info], PFullTrackPointData(pPacket));
 
+          // the timestamp for the pacing - read before the packet goes to
+          // the queue (the queue consumer owns and frees the packet)
+          VUTCDateTime:=0;
+          VUTCDateTimeWithDate:=FALSE;
+          VUTCDateTimeValid:=pPacket^.gps_data.UTCTimeOK;
+          if VUTCDateTimeValid then begin
+            if (pPacket^.gps_data.UTCDateOK) then begin
+              VUTCDateTime:=pPacket^.gps_data.UTCDate+pPacket^.gps_data.UTCTime;
+              VUTCDateTimeWithDate:=TRUE;
+            end else begin
+              VUTCDateTime:=pPacket^.gps_data.UTCTime;
+            end;
+          end;
+
           // send
           FExternal_Queue.AppendGPSPacket(pPacket, FUnitIndex);
-          SleepInXMLParser;
+          SleepAfterTrackPoint(VUTCDateTime, VUTCDateTimeValid, VUTCDateTimeWithDate);
         end;
       end;
       else begin
@@ -576,9 +688,107 @@ begin
   ASerializedSize := 0;
 end;
 
-procedure Tvsagps_track_reader.SleepInXMLParser;
+procedure Tvsagps_track_reader.SleepAfterTrackPoint(const AUTCDateTime: TDateTime;
+                                                    const AUTCDateTimeValid: Boolean;
+                                                    const AUTCDateTimeWithDate: Boolean);
+var
+  nPauseMSec: Int64;
+  dwMultiplier: DWORD;
 begin
-  Sleep(GetDeviceWorkerThreadTimeoutMSec(FALLDeviceParams, FThisDeviceParams) div 16);
+  if AUTCDateTimeValid then begin
+    // the real time pacing: the pause is the time delta between the points
+    if FLastPointUTCDateTimeValid then
+      nPauseMSec:=TrackPoints_Pause_MSec(FLastPointUTCDateTime, FLastPointUTCDateTimeWithDate,
+                                         AUTCDateTime, AUTCDateTimeWithDate)
+    else
+      nPauseMSec:=0;
+    // remember for the next point
+    FLastPointUTCDateTime:=AUTCDateTime;
+    FLastPointUTCDateTimeValid:=TRUE;
+    FLastPointUTCDateTimeWithDate:=AUTCDateTimeWithDate;
+  end else begin
+    // the point has no timestamp - the fixed pause between the points
+    nPauseMSec:=GetDeviceWorkerThreadTimeoutMSec(FALLDeviceParams, FThisDeviceParams) div 16;
+    // the pause is capped
+    if (nPauseMSec>cTrackReader_MaxPause_MSec) then
+      nPauseMSec:=cTrackReader_MaxPause_MSec;
+  end;
+
+  // the playback speed multiplier scales the pause: the bigger multiplier -
+  // the shorter pause (2 - twice faster), 1 and 0 mean the real time
+  dwMultiplier:=FALLDeviceParams^.dwSourceFileSpeedMultiplier;
+  if (dwMultiplier<1) then
+    dwMultiplier:=1;
+  nPauseMSec:=nPauseMSec div dwMultiplier;
+
+  SleepWaitSlices(nPauseMSec);
+end;
+
+procedure Tvsagps_track_reader.SleepWaitSlices(const APauseMSec: Int64);
+const
+  // the wait is sliced to notice the stop request in time
+  cWaitSliceMSec = 250;
+var
+  nLeftMSec: Int64;
+begin
+  nLeftMSec:=APauseMSec;
+  while (nLeftMSec>0) and (not FWT_Params.bAskToExit) do begin
+    if (nLeftMSec>cWaitSliceMSec) then begin
+      Sleep(cWaitSliceMSec);
+      Dec(nLeftMSec,cWaitSliceMSec);
+    end else begin
+      Sleep(nLeftMSec);
+      nLeftMSec:=0;
+    end;
+  end;
+end;
+
+procedure Tvsagps_track_reader.ResetTrackPacingState;
+begin
+  FLastPointUTCDateTime:=0;
+  FLastPointUTCDateTimeValid:=FALSE;
+  FLastPointUTCDateTimeWithDate:=FALSE;
+  FParserUTCDateValid:=FALSE;
+  FParserUTCTimeValid:=FALSE;
+end;
+
+procedure Tvsagps_track_reader.Do_TrackReader_ApplyUTCDateTime(const ADate: PNMEA_Date; const ATime: PNMEA_Time);
+begin
+  if NMEA_Time_Valid(ATime) then begin
+    FParserUTCTime:=ATime^;
+    FParserUTCTimeValid:=TRUE;
+  end;
+  if (nil<>ADate) and NMEA_Date_Valid(ADate) then begin
+    FParserUTCDate:=ADate^;
+    FParserUTCDateValid:=TRUE;
+  end;
+end;
+
+function Tvsagps_track_reader.Get_Captured_NMEA_UTCTimeStamp(out AUTCDateTime: TDateTime;
+                                                             out AUTCDateTimeWithDate: Boolean): Boolean;
+var
+  dtDate, dtTime: TDateTime;
+begin
+  Result:=FALSE;
+  AUTCDateTime:=0;
+  AUTCDateTimeWithDate:=FALSE;
+  if (not FParserUTCTimeValid) then
+    Exit;
+  if (not TryEncodeTime(FParserUTCTime.hour, FParserUTCTime.min, FParserUTCTime.sec, FParserUTCTime.msec, dtTime)) then
+    Exit;
+  // the RMC sentences carry the date, the GGA and GLL carry the time only
+  if FParserUTCDateValid then begin
+    if (not TryEncodeDate(Convert_TwoDigitYear_to_FourDigitYear(FParserUTCDate.year),
+                          FParserUTCDate.month,
+                          FParserUTCDate.day,
+                          dtDate)) then
+      Exit;
+    AUTCDateTime:=dtDate+dtTime;
+    AUTCDateTimeWithDate:=TRUE;
+  end else begin
+    AUTCDateTime:=dtTime;
+  end;
+  Result:=TRUE;
 end;
 
 function Tvsagps_track_reader.WorkingThread_Receive_Packets(const AWorkingThreadPacketFilter: DWORD): Boolean;
@@ -592,7 +802,17 @@ begin
     // TODO: not implemented
   end else begin
     // direct load-parse-send without saving
-    InternalLoadAndParseTracks;
+    if InternalIsLoopPlayback then begin
+      // the loop playback replays the sources again and again; the pacing
+      // state resets per file (in _BeforeFile), so a new lap starts from
+      // the first point at once; the lap ends only by the device stop
+      // request (the pacing waits and the parsers check it)
+      repeat
+        InternalLoadAndParseTracks;
+      until FWT_Params.bAskToExit;
+    end else begin
+      InternalLoadAndParseTracks;
+    end;
   end;
 
   // disconnect

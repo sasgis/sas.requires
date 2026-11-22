@@ -4,6 +4,16 @@
 *)
 unit vsagps_object;
 (*
+  2026-11-20: the packet thread is owned by the object like the dispatcher
+              thread (see vsagps_units): FreeOnTerminate is off, no
+              OnTerminate handlers, the owner releases it (WaitFor + Free)
+              after the termination - at the next connect or at the destroy;
+              after the release the thread is really gone, so the packet
+              queue is freed without any delivery fallbacks. The release
+              runs without the state lock (the packet thread takes it in its
+              loop), and GPSConnect releases the terminated threads before
+              taking the lock, so a reconnect waits for (instead of
+              refusing) the previous teardown
 *)
 
 {$I vsagps_defines.inc}
@@ -36,12 +46,14 @@ type
   private
     FPacketThread: Tvsagps_Packet_Thread; // single thread: parse packets
     FPacketQueue: Tvsagps_queue; // single queue object for all utits
+    // TRUE - some caller is releasing the packet thread (waiting for its
+    // exit and freeing it): the claim serializes the concurrent releasers
+    FReleasingPacketThread: Boolean;
   protected
     procedure InternalThreadRoutine_for_Packets;
-    procedure InternalOnPacketThreadTerminate(Sender: TObject);
     procedure InternalCreateRuntimeObjects; override;
     procedure InternalTerminateRuntimeObjects; override;
-    procedure InternalWaitRuntimeObjects; override;
+    function InternalReleaseTerminatedRuntimeThreads(const ATimeoutMSec: DWORD): Boolean; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -83,6 +95,7 @@ uses
   vsagps_device_usb_garmin,
   vsagps_device_com_nmea,
   vsagps_device_tcp_nmea,
+  vsagps_device_udp_nmea,
   vsagps_track_reader,
   vsagps_runtime;
 
@@ -93,6 +106,7 @@ begin
   inherited Create;
   FDeviceThread:=nil;
   FPacketThread:=nil;
+  FReleasingPacketThread:=FALSE;
   FPacketQueue:=Tvsagps_queue.Create;
 end;
 
@@ -102,7 +116,8 @@ begin
   VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: begin');
 {$ifend}
 
-  // disconnect with wait
+  // disconnect with wait (also terminates the runtime threads; skipped when
+  // the state is already done-disconnected)
   Lock_CS_State;
   try
     InternalGPSDisconnect(FALSE, TRUE);
@@ -114,59 +129,38 @@ begin
   VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: disconnected');
 {$ifend}
 
-  // kill thread
-  if (nil<>FPacketThread) then begin
-    // wait thread
-    InternalPacketThreadLimitedWait(@FPacketThread);
-
-    if (nil<>FPacketThread) then begin
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-      VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: killing');
-{$ifend}
-      try
-        if (FPacketThread<>nil) then begin
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-          VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: prepare to kill');
-{$ifend}
-          //FPacketThread.PrepareToKill;
-        end;
-      except
-      end;
-
-      try
-        if (FPacketThread<>nil) then begin
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-          VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: kill');
-{$ifend}
-          //FreeAndNil(FPacketThread);
-        end;
-      except
-      end;
-
-      FPacketThread := nil;
+  // release both runtime threads unconditionally: the disconnect above skips
+  // the termination when the state is already done-disconnected (a connect
+  // request the dispatcher has not picked up yet leaves that state while the
+  // threads are already running); after the release the threads are really
+  // gone and their finalization (the item cleanup, the final notification)
+  // is complete
+  InternalTerminateRuntimeObjects;
+  InternalWaitRuntimeObjects;
 
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
-      VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: killed');
+  VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: cleanup');
 {$ifend}
-    end;
-  end;
 
-  //Lock_CS_Runtime;
-  //try
+  // safety net: finalize the items left behind (empty after the kill section)
+  InternalCleanupAllItems;
+
+  // both threads are gone - the queue is freed unless a device was detached
+  // with a live working thread (see InternalDetachItem): that thread may
+  // still push packets into the queue
+  if (not FLeakedDevicePresent) then begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
     VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: queue');
 {$ifend}
     FreeAndNil(FPacketQueue);
-  //finally
-    //Unlock_CS_Runtime;
-  //end;
+  end;
 
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: inherited');
 {$ifend}
 
   inherited Destroy;
-  
+
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_object.Destroy: end');
 {$ifend}
@@ -179,12 +173,14 @@ begin
 {$ifend}
 
   inherited;
-  
+
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_object.InternalTerminateRuntimeObjects: packet');
 {$ifend}
 
-  Lock_CS_Runtime;
+  // the packet thread field is read under FCS_State (the same lock
+  // protects the reads of the field by the owner)
+  Lock_CS_State;
   try
     if (nil<>FPacketThread) then begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
@@ -192,16 +188,6 @@ begin
 {$ifend}
       FPacketThread.Terminate;
     end;
-  finally
-    Unlock_CS_Runtime;
-  end;
-  
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-  VSAGPS_DebugAnsiString('Tvsagps_object.InternalTerminateRuntimeObjects: queue');
-{$ifend}
-
-  Lock_CS_Runtime;
-  try
     if (nil<>FPacketQueue) then begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
       VSAGPS_DebugAnsiString('Tvsagps_object.InternalTerminateRuntimeObjects: kill packets');
@@ -209,9 +195,9 @@ begin
       FPacketQueue.FreeAllPackets;
     end;
   finally
-    Unlock_CS_Runtime;
+    Unlock_CS_State;
   end;
-  
+
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_object.InternalTerminateRuntimeObjects: end');
 {$ifend}
@@ -379,55 +365,24 @@ begin
   end;
 
   Sleep(dwDelay);
-  
+
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_object.InternalThreadRoutine_for_Packets: sleeping');
 {$ifend}
   until FALSE;
 
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
-  VSAGPS_DebugAnsiString('Tvsagps_object.InternalThreadRoutine_for_Packets: kill');
-{$ifend}
-
-  // kill thread
-  //Lock_CS_Runtime;
-  //try
-    if (nil<>FPacketThread) then begin
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-      VSAGPS_DebugAnsiString('Tvsagps_object.InternalThreadRoutine_for_Packets: stop');
-{$ifend}
-
-      if (nil<>FPacketThread) then
-        FPacketThread.GPSRunning:=FALSE;
-
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-      VSAGPS_DebugAnsiString('Tvsagps_object.InternalThreadRoutine_for_Packets: terminate');
-{$ifend}
-
-      if (nil<>FPacketThread) then
-        FPacketThread.Terminate;
-    end;
-  //finally
-    //Unlock_CS_Runtime;
-  //end;
-
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_object.InternalThreadRoutine_for_Packets: end');
 {$ifend}
 end;
 
-procedure Tvsagps_object.InternalWaitRuntimeObjects;
+function Tvsagps_object.InternalReleaseTerminatedRuntimeThreads(const ATimeoutMSec: DWORD): Boolean;
 begin
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-  VSAGPS_DebugAnsiString('Tvsagps_object.InternalWaitRuntimeObjects: begin');
-{$ifend}
-
-  inherited;
-  InternalWaitRuntimeThread(@FPacketThread);
-  
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-  VSAGPS_DebugAnsiString('Tvsagps_object.InternalWaitRuntimeObjects: end');
-{$ifend}
+  // the device thread is released by the base, the packet thread is added
+  // here; must be called without the state lock (see the base release)
+  Result:=inherited InternalReleaseTerminatedRuntimeThreads(ATimeoutMSec);
+  if (not InternalReleaseTerminatedThread(@FPacketThread, @FReleasingPacketThread, ATimeoutMSec)) then
+    Result:=FALSE;
 end;
 
 function Tvsagps_object.SendPacket_ToUnit(const AUnitIndex: Byte;
@@ -512,7 +467,8 @@ begin
            gdt_LocationAPI or
            gdt_FILE_Track or
            gdt_COM_NMEA0183 or
-           gdt_TCP_NMEA0183))) then
+           gdt_TCP_NMEA0183 or
+           gdt_UDP_NMEA0183))) then
     Exit;
   if (nil=AUnitIndexOut) then
     Exit;
@@ -520,19 +476,31 @@ begin
     Exit;
   if (sizeof(AALLDevParams^)<>AALLDevParams^.wSize) then
     Exit;
-  if (nil<>FDeviceThread) and (FDeviceThread.Terminated) then
-    Exit;
-  if (nil<>FPacketThread) and (FPacketThread.Terminated) then
-    Exit;
   if (gdt_FILE_Track=(AGPSDevType and gdt_FILE_Track)) and (nil=AFileSource) then
     Exit;
-  
+
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_object.GPSConnect: checked');
 {$ifend}
 
+  // release the terminated runtime threads of the previous session before
+  // taking the state lock: their kill sections take the same lock, waiting
+  // for them under the lock would deadlock; the wait is bounded - a teardown
+  // which is still running after the bound refuses the connect (as the old
+  // scheme did) instead of blocking the caller for the whole teardown
+  InternalReleaseTerminatedRuntimeThreads(cUnits_Release_Timeout_MSec);
+
   Lock_CS_State;
   try
+    // the runtime thread fields are read under FCS_State: the fields are
+    // also claimed and cleared by the release helpers under the same lock -
+    // a terminated thread which is being released by another caller (or the
+    // kill section of which is still running) refuses the connect, as before
+    if (nil<>FDeviceThread) and (FDeviceThread.Terminated) then
+      Exit;
+    if (nil<>FPacketThread) and (FPacketThread.Terminated) then
+      Exit;
+
     // current state
     VOldState:=FALLState;
 
@@ -585,6 +553,10 @@ begin
     end else if (gdt_TCP_NMEA0183=(AGPSDevType and gdt_TCP_NMEA0183)) then begin
       // tcp nmea - the device name is a "host:port" string
       p^.objDevice:=Tvsagps_device_tcp_nmea.Create;
+    end else if (gdt_UDP_NMEA0183=(AGPSDevType and gdt_UDP_NMEA0183)) then begin
+      // udp nmea - the device name is an "address:port" (or a bare "port")
+      // of a local listener - the device binds it and reads the datagrams
+      p^.objDevice:=Tvsagps_device_udp_nmea.Create;
     end;
 
     if Assigned(p^.objDevice) then begin
@@ -626,41 +598,15 @@ end;
 
 procedure Tvsagps_object.InternalCreateRuntimeObjects;
 begin
-  // thread for packets
+  // thread for packets - owned by the object: no self-freeing and no
+  // OnTerminate handlers, the owner releases it after the termination
   if (nil=FPacketThread) then begin
     FPacketThread:=Tvsagps_Packet_Thread.Create(TRUE);
     FPacketThread.GPSObject:=Self;
-    FPacketThread.GPSRunning:=TRUE;
-    FPacketThread.FreeOnTerminate:=TRUE;
-    FPacketThread.OnTerminate:=InternalOnPacketThreadTerminate;
+    FPacketThread.FreeOnTerminate:=FALSE;
     FPacketThread.{$IF CompilerVersion < 23}Resume{$ELSE}Start{$IFEND};
   end;
   inherited;
-end;
-
-procedure Tvsagps_object.InternalOnPacketThreadTerminate(Sender: TObject);
-begin
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-  VSAGPS_DebugAnsiString('Tvsagps_object.InternalOnPacketThreadTerminate: begin');
-{$ifend}
-
-  if (FPacketThread<>nil) then begin
-    Lock_CS_Runtime;
-    try
-      if (FPacketThread<>nil) then begin
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-        VSAGPS_DebugAnsiString('Tvsagps_object.InternalOnPacketThreadTerminate: NIL');
-{$ifend}
-        FPacketThread:=nil;
-      end;
-    finally
-      Unlock_CS_Runtime;
-    end;
-  end;
-
-{$if defined(VSAGPS_USE_DEBUG_STRING)}
-  VSAGPS_DebugAnsiString('Tvsagps_object.InternalOnPacketThreadTerminate: end');
-{$ifend}
 end;
 
 { Tvsagps_Packet_Thread }

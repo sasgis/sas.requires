@@ -1,15 +1,29 @@
-unit tcp_nmea_client_main;
+unit nmea_client_main;
 (*
-  Simple manual testing tool: a TCP client which connects to an NMEA0183
-  server, shows the tcp events and logs the received stream.
+  Simple manual testing tool: an NMEA0183 client over TCP or UDP, which
+  shows the event lines and logs the received stream.
 
-  Command line: "tcp_nmea_client.exe host:port" - fills the fields and
-  connects automatically on start.
-    /r              - enable auto-reconnect
-    /nmealog[=path] - save the raw received nmea stream to the log file
-                      (default: <exe>.nmea.log)
-    /tcplog[=path]  - save the tcp events to the log file
-                      (default: <exe>.tcp.log)
+  TCP mode (the transport of the tcp nmea device of the library): connects
+  to "host:port", the optional gpsd auto-detection sends ?WATCH on the
+  greeting banner.
+
+  UDP mode (the transport of the udp nmea device of the library): the
+  "Local addr" field holds the local listener address by the same grammar
+  as the device ("port" / "0.0.0.0:port" / "addr:port" - the way to receive
+  subnet broadcasts on Windows / "multicast_group:port"); the client binds
+  it and receives the datagrams from anyone. There is no connecting phase.
+  With the auto-reconnect enabled the client re-binds after the given
+  seconds of silence (the same idle-watchdog cycle the udp device runs -
+  the emulated stalls of the server look exactly like this).
+
+  Command line: "nmea_client.exe addr:port" - fills the fields and starts
+  the connection automatically on start.
+    /transport=tcp|udp - the transport (default: tcp)
+    /r                 - enable auto-reconnect
+    /nmealog[=path]    - save the raw received nmea stream to the log file
+                         (default: <exe>.nmea.log)
+    /evlog[=path]      - save the event lines to the log file
+                         (default: <exe>.events.log; /tcplog is an alias)
 *)
 
 {$I vsagps_defines.inc}
@@ -31,12 +45,13 @@ uses
   ComCtrls,
   IniFiles,
   Winsock2,
-  vsagps_winsock2_compat;
+  vsagps_winsock2_compat,
+  nmea_tools_common;
 
 type
   TClientState = (csDisconnected, csConnecting, csConnected);
 
-  TfrmTcpNmeaClient = class(TForm)
+  TfrmNmeaClient = class(TForm)
     lblHost: TLabel;
     lblPort: TLabel;
     lblStatus: TLabel;
@@ -44,13 +59,14 @@ type
     edPort: TEdit;
     btnConnect: TButton;
     btnDisconnect: TButton;
+    rgTransport: TRadioGroup;
     chkGpsdAuto: TCheckBox;
     chkAutoReconnect: TCheckBox;
     edRetrySec: TEdit;
     lblRetrySec: TLabel;
     gbLogging: TGroupBox;
     chkLogNmea: TCheckBox;
-    chkLogTcp: TCheckBox;
+    chkLogEvents: TCheckBox;
     gbLog: TGroupBox;
     mmLog: TMemo;
     sbStatus: TStatusBar;
@@ -61,11 +77,14 @@ type
     procedure btnDisconnectClick(Sender: TObject);
     procedure tmrWorkTimer(Sender: TObject);
     procedure LogParamChanged(Sender: TObject);
+    procedure TransportChanged(Sender: TObject);
   private
+    FLog: TNmeaToolLog; // the paired log (raw nmea + event lines)
     FSocket: TSocket;
     FState: TClientState;
     FConnectDeadline: DWORD;
     FNextRetryTick: DWORD;
+    FIdleDeadline: DWORD; // udp: no data for this long - the session ends (the auto-reconnect re-binds)
     FAutoReconnectPaused: Boolean; // set by the user disconnect, cleared by the next connect
     FDataStarted: Boolean; // the "receiving NMEA data started" line is logged for this connection
     // gpsd auto-detection (armed at the connect when the checkbox is set)
@@ -78,53 +97,40 @@ type
     FTotalNmea: Int64;    // complete nmea sentences with a valid checksum
     FTotalNmeaErr: Int64; // nmea sentences with a broken checksum
     FTotalJson: Int64;    // complete json messages (gpsd reports)
-    FTotalTcpErr: Integer; // connect/timeout/select/recv failures
+    FTotalNetErr: Integer; // connect/timeout/select/recv failures
     FTotalConn: Integer;  // established connections
     FLineBuf: AnsiString; // the received data split into complete lines
-    // file logs (the files are opened on demand)
-    FNmeaBuf: TMemoryStream;  // raw nmea bytes not flushed to the nmea log yet
-    FNmeaFile: TFileStream;
-    FTcpFile: TFileStream;
-    FNmeaLogName: string;
-    FTcpLogName: string;
-    FNmeaLogFresh: Boolean;   // the file is created (not appended) on the next open
-    FTcpLogFresh: Boolean;
     FLastFlushTick: Cardinal;
     FAutoConnect: Boolean; // from the command line
   private
-    procedure AppendMemoLine(const ALine: string);
-    procedure LogTcp(const S: string);
-    procedure LogNmeaRaw(const AData: AnsiString);
-    procedure FlushNmeaFile;
-    procedure WriteNmeaFile(const AData: AnsiString);
-    procedure WriteTcpFile(const S: string);
-    procedure CloseLogFiles;
+    function IsUdp: Boolean;
+    procedure AppendMemoLines(const AList: TStrings);
+    procedure LogEvent(const S: string);   // timestamped pending line (the timer shows it)
+    procedure DrainPendingEvents;          // pending -> memo + file (the timer calls it)
     procedure DoConnect;
     procedure DoDisconnect(const AReason: string; const AIsError: Boolean = FALSE);
     procedure DoTick;
-    procedure ProcessReceived(const AData: AnsiString);
+    procedure ProcessReceived(const AData: AnsiString; const AFrom: PSockAddrIn);
     procedure UpdateCounters;
     procedure UpdateStatus;
     procedure LoadSettings;
     procedure SaveSettings;
+    procedure ApplyCommandLine(out ANmeaLogName, AEventLogName: string);
   end;
 
 var
-  frmTcpNmeaClient: TfrmTcpNmeaClient;
+  frmNmeaClient: TfrmNmeaClient;
 
 implementation
 
 {$R *.dfm}
 
 const
-  cWSA_Version_2_2 = $0202; // (the RTL winsock unit does not declare it)
-
   cConnect_Timeout_MSec = 5000;
-  cLogLines             = 500;   // tcp event memo lines kept
-  cNmeaBufSize          = 65536; // raw nmea bytes buffered before a disk write
-  cFlushIntervalMSec    = 1000;  // the nmea log is written once per second
+  cLogLines             = 500;   // event memo lines kept
   cNmeaLogExt           = '.nmea.log'; // ChangeFileExt() of the exe name
-  cTcpLogExt            = '.tcp.log';
+  cEventLogExt          = '.events.log';
+  cFlushIntervalMSec    = 1000;  // the nmea log is written once per second
   cLineBufMaxSize       = 65536; // an incomplete garbage line is dropped beyond this
 
   // gpsd auto-detection: within this window after the connect the received
@@ -155,33 +161,12 @@ begin
   Result := (v >= 0) and (Byte(v) = cs);
 end;
 
-// open a log file for appending: a fresh file for every run, then the file is
-// reopened with the shared mode so it can be read/tailed while the tool runs
-function OpenLogStream(const AFileName: string; const AFresh: Boolean): TFileStream;
-var
-  VTemp: TFileStream;
-begin
-  if AFresh or (not FileExists(AFileName)) then begin
-    // fmCreate creates the file with the exclusive access
-    VTemp := TFileStream.Create(AFileName, fmCreate);
-    VTemp.Free;
-  end;
-  Result := TFileStream.Create(AFileName, fmOpenReadWrite or fmShareDenyNone);
-  try
-    Result.Seek(0, soEnd);
-  except
-    FreeAndNil(Result);
-    raise;
-  end;
-end;
+{ TfrmNmeaClient }
 
-{ TfrmTcpNmeaClient }
-
-procedure TfrmTcpNmeaClient.FormCreate(Sender: TObject);
+procedure TfrmNmeaClient.FormCreate(Sender: TObject);
 var
   VWSA: TWSAData;
-  i, p: Integer;
-  s, VRest: string;
+  VNmeaLogName, VEventLogName: string;
 begin
   FSocket := INVALID_SOCKET;
   FState := csDisconnected;
@@ -195,49 +180,78 @@ begin
   FTotalNmea := 0;
   FTotalNmeaErr := 0;
   FTotalJson := 0;
-  FTotalTcpErr := 0;
+  FTotalNetErr := 0;
   FTotalConn := 0;
   FLineBuf := '';
-  FNmeaBuf := TMemoryStream.Create;
-  FNmeaFile := nil;
-  FTcpFile := nil;
-  FNmeaLogName := ChangeFileExt(Application.ExeName, cNmeaLogExt);
-  FTcpLogName := ChangeFileExt(Application.ExeName, cTcpLogExt);
-  FNmeaLogFresh := TRUE;
-  FTcpLogFresh := TRUE;
 
-  if (WSAStartup(cWSA_Version_2_2, VWSA) <> 0) then begin
+  if (WSAStartup(cNmeaTool_WSA_Version_2_2, VWSA) <> 0) then begin
     lblStatus.Caption := 'WSAStartup failed!';
     Exit;
   end;
 
+  // the settings and the command line are applied before the log is created:
+  // the command line may redefine the log file paths
+  VNmeaLogName := ChangeFileExt(Application.ExeName, cNmeaLogExt);
+  VEventLogName := ChangeFileExt(Application.ExeName, cEventLogExt);
   LoadSettings;
+  ApplyCommandLine(VNmeaLogName, VEventLogName);
+  chkLogNmea.Hint := 'Saves the raw received NMEA stream to the file:'#13#10 + VNmeaLogName;
+  chkLogEvents.Hint := 'Saves the event lines to the file:'#13#10 + VEventLogName;
+  FLog := TNmeaToolLog.Create(VNmeaLogName, VEventLogName);
+  FLog.SetNmeaEnabled(chkLogNmea.Checked);
+  FLog.SetEventEnabled(chkLogEvents.Checked);
 
-  // command line: "host:port" (and the optional keys)
+  TransportChanged(rgTransport);
+  UpdateStatus;
+  // the work timer is armed last: it must not tick while the form is
+  // being created
+  tmrWork.Enabled := TRUE;
+end;
+
+procedure TfrmNmeaClient.ApplyCommandLine(out ANmeaLogName, AEventLogName: string);
+var
+  i, p: Integer;
+  s, VRest: string;
+begin
+  // headless mode for automated testing (see the unit header); the log path
+  // keys are applied through the out parameters (the log is not created yet)
+  ANmeaLogName := ChangeFileExt(Application.ExeName, cNmeaLogExt);
+  AEventLogName := ChangeFileExt(Application.ExeName, cEventLogExt);
   for i := 1 to ParamCount do begin
     s := ParamStr(i);
     if s.StartsWith('/nmealog', True) then begin
       VRest := Copy(s, Length('/nmealog') + 1, MaxInt);
       if (0 = Length(VRest)) then
-        FNmeaLogName := ChangeFileExt(Application.ExeName, cNmeaLogExt)
+        ANmeaLogName := ChangeFileExt(Application.ExeName, cNmeaLogExt)
       else if (VRest[1] = '=') then
-        FNmeaLogName := Copy(VRest, 2, MaxInt)
+        ANmeaLogName := Copy(VRest, 2, MaxInt)
       else
         Continue;
       chkLogNmea.Checked := TRUE;
-    end else if s.StartsWith('/tcplog', True) then begin
-      VRest := Copy(s, Length('/tcplog') + 1, MaxInt);
+    end else if s.StartsWith('/evlog', True) or s.StartsWith('/tcplog', True) then begin
+      if s.StartsWith('/evlog', True) then
+        VRest := Copy(s, Length('/evlog') + 1, MaxInt)
+      else
+        VRest := Copy(s, Length('/tcplog') + 1, MaxInt);
       if (0 = Length(VRest)) then
-        FTcpLogName := ChangeFileExt(Application.ExeName, cTcpLogExt)
+        AEventLogName := ChangeFileExt(Application.ExeName, cEventLogExt)
       else if (VRest[1] = '=') then
-        FTcpLogName := Copy(VRest, 2, MaxInt)
+        AEventLogName := Copy(VRest, 2, MaxInt)
       else
         Continue;
-      chkLogTcp.Checked := TRUE;
+      chkLogEvents.Checked := TRUE;
     end else if SameText(s, '/r') then begin
       chkAutoReconnect.Checked := True;
+    end else if s.StartsWith('/transport=', True) then begin
+      VRest := AnsiUpperCase(Copy(s, Length('/transport=') + 1, MaxInt));
+      if ('UDP' = VRest) then
+        rgTransport.ItemIndex := 1
+      else if ('TCP' = VRest) then
+        rgTransport.ItemIndex := 0;
     end else begin
-      // "host:port" (a log path with a drive letter never gets here)
+      // "addr:port" (a log path with a drive letter never gets here); it is
+      // the remote server for the tcp transport and the local listener
+      // address for the udp one
       p := Pos(':', s);
       if (p > 1) then begin
         edHost.Text := Trim(Copy(s, 1, p - 1));
@@ -246,25 +260,17 @@ begin
       end;
     end;
   end;
-  // the log file paths are shown in the checkbox hints
-  // (after the command line parsing - the paths may be redefined by the keys)
-  chkLogNmea.Hint := 'Saves the raw received NMEA stream to the file:'#13#10 + FNmeaLogName;
-  chkLogTcp.Hint := 'Saves the tcp events to the file:'#13#10 + FTcpLogName;
-
-  UpdateStatus;
 end;
 
-procedure TfrmTcpNmeaClient.FormDestroy(Sender: TObject);
+procedure TfrmNmeaClient.FormDestroy(Sender: TObject);
 begin
   SaveSettings;
   DoDisconnect('application closed');
-  FlushNmeaFile;
-  CloseLogFiles;
-  FreeAndNil(FNmeaBuf);
+  FreeAndNil(FLog);
   WSACleanup;
 end;
 
-procedure TfrmTcpNmeaClient.LoadSettings;
+procedure TfrmNmeaClient.LoadSettings;
 var
   ini: TIniFile;
 begin
@@ -275,14 +281,16 @@ begin
     chkAutoReconnect.Checked := ini.ReadBool('Connection', 'AutoReconnect', False);
     edRetrySec.Text := ini.ReadString('Connection', 'RetrySec', edRetrySec.Text);
     chkGpsdAuto.Checked := ini.ReadBool('Connection', 'GpsdAuto', False);
+    rgTransport.ItemIndex := ini.ReadInteger('Connection', 'Transport', 0);
+    TransportChanged(rgTransport);
     chkLogNmea.Checked := ini.ReadBool('Logging', 'NmeaToFile', False);
-    chkLogTcp.Checked := ini.ReadBool('Logging', 'TcpToFile', False);
+    chkLogEvents.Checked := ini.ReadBool('Logging', 'EventsToFile', False);
   finally
     ini.Free;
   end;
 end;
 
-procedure TfrmTcpNmeaClient.SaveSettings;
+procedure TfrmNmeaClient.SaveSettings;
 var
   ini: TIniFile;
 begin
@@ -293,18 +301,23 @@ begin
     ini.WriteBool('Connection', 'AutoReconnect', chkAutoReconnect.Checked);
     ini.WriteString('Connection', 'RetrySec', edRetrySec.Text);
     ini.WriteBool('Connection', 'GpsdAuto', chkGpsdAuto.Checked);
+    ini.WriteInteger('Connection', 'Transport', rgTransport.ItemIndex);
     ini.WriteBool('Logging', 'NmeaToFile', chkLogNmea.Checked);
-    ini.WriteBool('Logging', 'TcpToFile', chkLogTcp.Checked);
+    ini.WriteBool('Logging', 'EventsToFile', chkLogEvents.Checked);
   finally
     ini.Free;
   end;
 end;
 
-procedure TfrmTcpNmeaClient.AppendMemoLine(const ALine: string);
+
+procedure TfrmNmeaClient.AppendMemoLines(const AList: TStrings);
+var
+  i: Integer;
 begin
   mmLog.Lines.BeginUpdate;
   try
-    mmLog.Lines.Append(ALine);
+    for i := 0 to AList.Count - 1 do
+      mmLog.Lines.Append(AList[i]);
     while (mmLog.Lines.Count > cLogLines) do
       mmLog.Lines.Delete(0);
   finally
@@ -313,135 +326,113 @@ begin
   SendMessage(mmLog.Handle, EM_LINESCROLL, 0, mmLog.Lines.Count);
 end;
 
-procedure TfrmTcpNmeaClient.LogTcp(const S: string);
+procedure TfrmNmeaClient.LogEvent(const S: string);
+begin
+  // the event line is timestamped by the log class; the timer drains it
+  // into the memo and the file (this tool is single-threaded, the drain
+  // keeps the same order)
+  FLog.LogEvent(S);
+end;
+
+procedure TfrmNmeaClient.DrainPendingEvents;
 var
-  VLine: string;
+  VList: TStringList;
 begin
-  // the tcp event line is timestamped once and goes to the memo and the log file
-  VLine := '[' + FormatDateTime('hh:nn:ss.zzz', Now) + '] ' + S;
-  AppendMemoLine(VLine);
-  if chkLogTcp.Checked then
-    WriteTcpFile(VLine);
-end;
-
-procedure TfrmTcpNmeaClient.LogNmeaRaw(const AData: AnsiString);
-begin
-  // raw nmea data - exactly the bytes received from the server, no formatting
-  // at all; the buffer is flushed by the timer
-  if (0 = Length(AData)) or (not chkLogNmea.Checked) then
-    Exit;
-  FNmeaBuf.WriteBuffer(PAnsiChar(AData)^, Length(AData));
-  if (FNmeaBuf.Size >= cNmeaBufSize) then
-    FlushNmeaFile;
-end;
-
-procedure TfrmTcpNmeaClient.FlushNmeaFile;
-var
-  VData: AnsiString;
-begin
-  if (0 = FNmeaBuf.Size) then
-    Exit;
-  SetLength(VData, Integer(FNmeaBuf.Size));
-  Move(FNmeaBuf.Memory^, PAnsiChar(VData)^, FNmeaBuf.Size);
-  FNmeaBuf.Size := 0;
-  WriteNmeaFile(VData);
-end;
-
-procedure TfrmTcpNmeaClient.WriteNmeaFile(const AData: AnsiString);
-begin
-  // the log must never break the tool: on a file error the logging is
-  // switched off (the checkbox is cleared, no OnClick is fired) and the
-  // reason is reported in the tcp events log
+  VList := TStringList.Create;
   try
-    if (FNmeaFile = nil) then begin
-      FNmeaFile := OpenLogStream(FNmeaLogName, FNmeaLogFresh);
-      FNmeaLogFresh := FALSE;
+    FLog.DrainEvents(VList);
+    if (0 < VList.Count) then begin
+      AppendMemoLines(VList);
+      FLog.WriteEventFile(VList);
     end;
-    FNmeaFile.WriteBuffer(PAnsiChar(AData)^, Length(AData));
-  except
-    on E: Exception do begin
-      FreeAndNil(FNmeaFile);
-      chkLogNmea.Checked := FALSE;
-      LogTcp('nmea log file "' + FNmeaLogName + '" failed, logging disabled: ' + E.Message);
-    end;
+    // a file error may have disabled the logging from inside - sync the
+    // checkboxes back (no OnClick fires on a programmatic change)
+    if chkLogNmea.Checked and (not FLog.GetNmeaEnabled) then
+      chkLogNmea.Checked := False;
+    if chkLogEvents.Checked and (not FLog.GetEventEnabled) then
+      chkLogEvents.Checked := False;
+  finally
+    VList.Free;
   end;
 end;
 
-procedure TfrmTcpNmeaClient.WriteTcpFile(const S: string);
-var
-  VData: UTF8String;
+procedure TfrmNmeaClient.LogParamChanged(Sender: TObject);
 begin
-  VData := UTF8String(S + #13#10);
-  try
-    if (FTcpFile = nil) then begin
-      FTcpFile := OpenLogStream(FTcpLogName, FTcpLogFresh);
-      FTcpLogFresh := FALSE;
-    end;
-    FTcpFile.WriteBuffer(PAnsiChar(VData)^, Length(VData));
-  except
-    on E: Exception do begin
-      FreeAndNil(FTcpFile);
-      chkLogTcp.Checked := FALSE;
-      // the file is not available - the reason goes to the memo only
-      AppendMemoLine('[' + FormatDateTime('hh:nn:ss.zzz', Now) +
-        '] tcp log file "' + FTcpLogName + '" failed, logging disabled: ' + E.Message);
-    end;
+  // the checkboxes mirror the log enable flags (a file error may have
+  // disabled the logging from inside - sync the checkbox back)
+  if (FLog = nil) then
+    Exit; // the log is created after the command line is applied (FormCreate)
+  FLog.SetNmeaEnabled(chkLogNmea.Checked);
+  FLog.SetEventEnabled(chkLogEvents.Checked);
+end;
+
+function TfrmNmeaClient.IsUdp: Boolean;
+begin
+  Result := (rgTransport.ItemIndex = 1);
+end;
+
+procedure TfrmNmeaClient.TransportChanged(Sender: TObject);
+begin
+  // the address field semantics depend on the transport
+  if IsUdp then begin
+    lblHost.Caption := 'Local addr:';
+    edHost.Hint := 'The local listener address (the same grammar as the nmea' +
+      ' udp device): a port, "0.0.0.0:port", "addr:port" (the way to receive' +
+      ' subnet broadcasts on Windows) or "multicast_group:port"';
+    chkGpsdAuto.Enabled := False;
+    chkAutoReconnect.Caption := 'Re-bind after idle (sec):';
+  end else begin
+    lblHost.Caption := 'Host:';
+    edHost.Hint := '';
+    chkGpsdAuto.Enabled := True;
+    chkAutoReconnect.Caption := 'Auto-reconnect every';
   end;
+  UpdateStatus;
 end;
 
-procedure TfrmTcpNmeaClient.CloseLogFiles;
-begin
-  FreeAndNil(FNmeaFile);
-  FreeAndNil(FTcpFile);
-end;
-
-procedure TfrmTcpNmeaClient.LogParamChanged(Sender: TObject);
-begin
-  // flush what is still buffered before the file is closed
-  if (not chkLogNmea.Checked) then begin
-    FlushNmeaFile;
-    FreeAndNil(FNmeaFile);
-  end;
-  if (not chkLogTcp.Checked) then
-    FreeAndNil(FTcpFile);
-end;
-
-procedure TfrmTcpNmeaClient.UpdateStatus;
+procedure TfrmNmeaClient.UpdateStatus;
 begin
   case FState of
     csConnecting:
       lblStatus.Caption := 'connecting to ' + edHost.Text + ':' + edPort.Text + '...';
-    csConnected:
-      lblStatus.Caption := 'connected';
+    csConnected: begin
+      if IsUdp then
+        lblStatus.Caption := 'listening on ' + edHost.Text + ':' + edPort.Text
+      else
+        lblStatus.Caption := 'connected';
+    end;
   else
     lblStatus.Caption := 'disconnected';
   end;
   btnConnect.Enabled := (FState = csDisconnected);
   btnDisconnect.Enabled := (FState <> csDisconnected);
+  // the transport is fixed at the connect - no switching while connected
+  rgTransport.Enabled := (FState = csDisconnected);
 end;
 
-procedure TfrmTcpNmeaClient.btnConnectClick(Sender: TObject);
+procedure TfrmNmeaClient.btnConnectClick(Sender: TObject);
 begin
   DoConnect;
 end;
 
-procedure TfrmTcpNmeaClient.btnDisconnectClick(Sender: TObject);
+procedure TfrmNmeaClient.btnDisconnectClick(Sender: TObject);
 begin
   // the user disconnect pauses the auto-reconnect until the next connect
   // (the checkbox state is kept as is)
   FAutoReconnectPaused := TRUE;
   DoDisconnect('disconnected by user');
   if chkAutoReconnect.Checked then
-    LogTcp('receiving suspended - auto-reconnect paused (the Connect button resumes it)');
+    LogEvent('receiving suspended - auto-reconnect paused (the Connect button resumes it)');
 end;
 
-procedure TfrmTcpNmeaClient.DoConnect;
+procedure TfrmNmeaClient.DoConnect;
 var
   sHost, sPort: AnsiString;
   VHints: TAddrInfoA;
   VAddrList, VAddr: Paddrinfo;
   VSocket: TSocket;
   VNonBlocking: u_long;
+  VErr: Integer;
 begin
   if (FState <> csDisconnected) then
     Exit;
@@ -449,12 +440,48 @@ begin
   // a connect (manual or automatic) resumes the auto-reconnect paused earlier
   FAutoReconnectPaused := FALSE;
 
-  // host and port are taken from the fields
-  // (the command line form "host:port" is split in FormCreate)
+  // the address is taken from the fields
+  // (the command line form "addr:port" is split in FormCreate)
   sHost := AnsiString(Trim(edHost.Text));
   sPort := AnsiString(Trim(edPort.Text));
   if (0 = Length(sHost)) or (0 = Length(sPort)) then begin
-    LogTcp('invalid host/port!');
+    LogEvent('invalid host/port!');
+    Exit;
+  end;
+
+  if IsUdp then begin
+    // the listener bind by the nmea udp device name grammar: there is no
+    // connecting phase at all - the socket is ready (or the bind failed)
+    FSocket := NmeaTool_CreateUdpListener(sHost + AnsiString(':') + sPort, VErr);
+    if (INVALID_SOCKET = FSocket) then begin
+      LogEvent('bind failed (' + string(sHost) + ':' + string(sPort) + '): ' + SysErrorMessage(VErr));
+      Exit;
+    end;
+    // the shared helper returns a blocking socket; the timer-driven receive
+    // loop drains the queue with repeated recvfrom calls (DoTick): the first
+    // call on an already empty queue would park the ui thread until the next
+    // datagram arrives (and the next one, and so on - the window freezes,
+    // then the counters jump by dozens of packets at once). The socket is
+    // switched to the non-blocking mode exactly like the tcp one below, so
+    // the drained queue reports WSAEWOULDBLOCK instead of waiting
+    VNonBlocking := 1;
+    if (0 <> ioctlsocket(FSocket, Longint(FIONBIO), VNonBlocking)) then begin
+      VErr := WSAGetLastError;
+      closesocket(FSocket);
+      FSocket := INVALID_SOCKET;
+      LogEvent('cannot switch the udp listener to the non-blocking mode: ' + SysErrorMessage(VErr));
+      Exit;
+    end;
+    FState := csConnected;
+    FDataStarted := FALSE;
+    Inc(FTotalConn);
+    LogEvent('bound to ' + string(sHost) + ':' + string(sPort) + ' - listening');
+    // the idle deadline is armed with the auto-reconnect: no data for the
+    // given seconds ends the session and the re-bind follows (the same
+    // idle-watchdog cycle the udp device runs)
+    if chkAutoReconnect.Checked then
+      FIdleDeadline := GetTickCount + Cardinal(Max(1, StrToIntDef(edRetrySec.Text, 3))) * 1000;
+    UpdateStatus;
     Exit;
   end;
 
@@ -464,7 +491,7 @@ begin
   VHints.ai_protocol := IPPROTO_TCP;
 
   if (0 <> getaddrinfo(PAnsiChar(sHost), PAnsiChar(sPort), VHints, VAddrList)) then begin
-    LogTcp('getaddrinfo failed for "' + string(sHost) + '": ' + IntToStr(WSAGetLastError));
+    LogEvent('getaddrinfo failed for "' + string(sHost) + '": ' + IntToStr(WSAGetLastError));
     Exit;
   end;
 
@@ -493,52 +520,57 @@ begin
     end;
 
     if (INVALID_SOCKET = VSocket) then begin
-      LogTcp('connect failed: ' + SysErrorMessage(WSAGetLastError));
+      LogEvent('connect failed: ' + SysErrorMessage(WSAGetLastError));
       Exit;
     end;
 
     FSocket := VSocket;
     FState := csConnecting;
     FConnectDeadline := GetTickCount + cConnect_Timeout_MSec;
-    LogTcp('connecting to ' + edHost.Text + ':' + edPort.Text + '...');
+    LogEvent('connecting to ' + edHost.Text + ':' + edPort.Text + '...');
   finally
     freeaddrinfo(VAddrList^);
   end;
   UpdateStatus;
 end;
 
-procedure TfrmTcpNmeaClient.DoDisconnect(const AReason: string; const AIsError: Boolean);
+procedure TfrmNmeaClient.DoDisconnect(const AReason: string; const AIsError: Boolean);
 begin
   if (FSocket <> INVALID_SOCKET) then begin
     closesocket(FSocket);
     FSocket := INVALID_SOCKET;
   end;
   if (FState <> csDisconnected) then begin
-    LogTcp('disconnected (' + AReason + ')');
+    LogEvent('disconnected (' + AReason + ')');
     if AIsError then
-      Inc(FTotalTcpErr);
+      Inc(FTotalNetErr);
     FNextRetryTick := GetTickCount + Cardinal(Max(1, StrToIntDef(edRetrySec.Text, 3))) * 1000;
   end;
   FState := csDisconnected;
   UpdateStatus;
 end;
 
-procedure TfrmTcpNmeaClient.tmrWorkTimer(Sender: TObject);
+procedure TfrmNmeaClient.tmrWorkTimer(Sender: TObject);
 begin
   DoTick;
 end;
 
-procedure TfrmTcpNmeaClient.DoTick;
+procedure TfrmNmeaClient.DoTick;
 var
   VSet: TFDSet;
   VTimeout: TTimeVal;
   VRes, VReceived, VErr, VOptLen, VGuard, VSent: Integer;
   VBuf: array [0..4095] of AnsiChar;
+  VFrom: TSockAddr;    // the RTL recvfrom takes the var TSockAddr
+  VFromLen: Integer;
+  VGotData: Boolean;
 begin
-  // flush the buffered raw nmea data at least once per second
+  // the timer drains the pending event lines into the memo and flushes the
+  // buffered raw nmea data at least once per second
+  DrainPendingEvents;
   if ((GetTickCount - FLastFlushTick) >= cFlushIntervalMSec) then begin
     FLastFlushTick := GetTickCount;
-    FlushNmeaFile;
+    FLog.FlushNmeaFile;
   end;
 
   case FState of
@@ -557,7 +589,7 @@ begin
           FState := csConnected;
           FDataStarted := FALSE;
           Inc(FTotalConn);
-          LogTcp('connected');
+          LogEvent('connected');
           // arm the gpsd detection window (the checkbox state is taken at
           // the connect - toggling it takes effect on the next connection)
           FGpsdProbing := chkGpsdAuto.Checked;
@@ -574,6 +606,7 @@ begin
     end;
 
     csConnected: begin
+      VGotData := FALSE;
       FD_ZERO(VSet);
       _FD_SET(FSocket, VSet);
       VTimeout.tv_sec := 0;
@@ -582,20 +615,44 @@ begin
       if (SOCKET_ERROR = VRes) then begin
         DoDisconnect('select error ' + IntToStr(WSAGetLastError), TRUE);
       end else if (VRes > 0) then begin
-        // drain everything available (bounded - the socket is non-blocking)
+        // drain everything available (bounded - the socket is non-blocking,
+        // and the udp readiness is re-checked before every datagram anyway,
+        // so the ui thread can never be parked inside recvfrom)
         VGuard := 0;
+        VReceived := 0;
         repeat
-          VReceived := recv(FSocket, VBuf[0], sizeof(VBuf), 0);
+          if IsUdp then begin
+            FD_ZERO(VSet);
+            _FD_SET(FSocket, VSet);
+            VTimeout.tv_sec := 0;
+            VTimeout.tv_usec := 0;
+            VRes := select(0, @VSet, nil, nil, @VTimeout);
+            if (0 = VRes) then
+              Break; // the datagram queue is drained
+            if (SOCKET_ERROR = VRes) then begin
+              VReceived := SOCKET_ERROR;
+              VErr := WSAGetLastError;
+              Break;
+            end;
+            VFromLen := sizeof(VFrom);
+            VReceived := recvfrom(FSocket, VBuf[0], sizeof(VBuf), 0, VFrom, VFromLen);
+          end else
+            VReceived := recv(FSocket, VBuf[0], sizeof(VBuf), 0);
           if (VReceived < 0) then
             VErr := WSAGetLastError // read at once - the log calls change it
           else
             VErr := 0;
           if (VReceived > 0) then begin
-            ProcessReceived(Copy(VBuf, 1, VReceived));
+            if IsUdp then
+              ProcessReceived(Copy(VBuf, 1, VReceived), PSockAddrIn(@VFrom))
+            else
+              ProcessReceived(Copy(VBuf, 1, VReceived), nil);
             Inc(VGuard);
+            VGotData := TRUE;
           end;
         until (VReceived <= 0) or (VGuard >= 64);
-        if (VReceived = 0) then begin
+
+        if (not IsUdp) and (VReceived = 0) then begin
           DoDisconnect('closed by peer');
         end else if (VReceived < 0) and (WSAEWOULDBLOCK <> VErr) then begin
           DoDisconnect('recv error ' + IntToStr(VErr), TRUE);
@@ -604,20 +661,32 @@ begin
         end;
       end;
 
-      // gpsd auto-detection: the greeting banner is looked for in the
+      // udp: the idle deadline - a source which is silent for too long ends
+      // the session, the auto-reconnect re-binds (the same cycle the udp
+      // device runs; the emulated stalls of the server look like this)
+      if IsUdp and chkAutoReconnect.Checked and (FState = csConnected) then begin
+        if VGotData then
+          FIdleDeadline := GetTickCount + Cardinal(Max(1, StrToIntDef(edRetrySec.Text, 3))) * 1000
+        else if ((GetTickCount - FIdleDeadline) < $80000000) then begin
+          DoDisconnect('idle timeout - session ended');
+          Exit;
+        end;
+      end;
+
+      // tcp: gpsd auto-detection - the greeting banner is looked for in the
       // accumulated probe data within the short window after the connect
       // (the same protocol the tcp nmea device speaks)
-      if FGpsdProbing and (not FGpsdWatching) and (INVALID_SOCKET <> FSocket) then begin
+      if (not IsUdp) and FGpsdProbing and (not FGpsdWatching) and (INVALID_SOCKET <> FSocket) then begin
         if (0 < Pos(cGpsd_Version_Prefix, FProbeBuf)) then begin
           VSent := send(FSocket, PAnsiChar(cGpsd_Watch_Cmd)^, Length(cGpsd_Watch_Cmd), 0);
           if (VSent = Length(cGpsd_Watch_Cmd)) then begin
             FGpsdWatching := TRUE;
-            LogTcp('gpsd detected - ?WATCH sent');
+            LogEvent('gpsd detected - ?WATCH sent');
           end else begin
             // a partial send or a full send buffer - not retried (the
             // failure is visible in the log, the user reconnects)
             FGpsdProbing := FALSE;
-            LogTcp('gpsd detected but the WATCH send failed: ' + IntToStr(WSAGetLastError));
+            LogEvent('gpsd detected but the WATCH send failed: ' + IntToStr(WSAGetLastError));
           end;
           FProbeBuf := '';
         end else if ((GetTickCount - FGpsdDeadline) < $80000000) then begin
@@ -643,7 +712,7 @@ begin
   UpdateCounters;
 end;
 
-procedure TfrmTcpNmeaClient.ProcessReceived(const AData: AnsiString);
+procedure TfrmNmeaClient.ProcessReceived(const AData: AnsiString; const AFrom: PSockAddrIn);
 var
   p: Integer;
   line: AnsiString;
@@ -652,12 +721,15 @@ begin
   // itself is not shown there - it goes to the nmea log)
   if (not FDataStarted) then begin
     FDataStarted := TRUE;
-    LogTcp('receiving NMEA data started');
+    if (nil <> AFrom) then
+      LogEvent('receiving NMEA data from ' + NmeaTool_PeerOf(AFrom^))
+    else
+      LogEvent('receiving NMEA data started');
   end;
 
-  // the received stream is not shown in the memo (it shows the tcp events only);
+  // the received stream is not shown in the memo (it shows the events only);
   // the raw bytes go to the nmea log
-  LogNmeaRaw(AData);
+  FLog.LogNmeaRaw(AData);
 
   // the status bar counters: complete lines are checked for the nmea
   // checksum, the complete json lines (gpsd reports) are counted; the
@@ -702,13 +774,13 @@ begin
   end;
 end;
 
-procedure TfrmTcpNmeaClient.UpdateCounters;
+procedure TfrmNmeaClient.UpdateCounters;
 begin
   sbStatus.Panels[0].Text := 'in: ' + IntToStr(FTotalBytes) + ' b';
   sbStatus.Panels[1].Text := 'nmea: ' + IntToStr(FTotalNmea) +
     ' (err: ' + IntToStr(FTotalNmeaErr) + ')';
   sbStatus.Panels[2].Text := 'json: ' + IntToStr(FTotalJson);
-  sbStatus.Panels[3].Text := 'tcp err: ' + IntToStr(FTotalTcpErr) +
+  sbStatus.Panels[3].Text := 'net err: ' + IntToStr(FTotalNetErr) +
     ', conn: ' + IntToStr(FTotalConn);
 end;
 

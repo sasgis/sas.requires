@@ -576,9 +576,9 @@ begin
         while (gs_DoneDisconnected<>VObj.GPSState) and
               (GetTickCount-VTicks<cDisconnect_Wait_Timeout_MSec) do begin
           Sleep(50);
-          // the "all disconnected" state is reported from the device thread
-          // OnTerminate handler which is delivered via Synchronize - a
-          // console application has no message pump, so sync it manually
+          // the "all disconnected" state is reported from the kill section of
+          // the dispatcher thread at the end of its Execute - no pump is
+          // needed anymore (the library does not use Synchronize)
           CheckSynchronize;
         end;
         Check(gs_DoneDisconnected=VObj.GPSState, 'device is not disconnected');
@@ -846,12 +846,17 @@ begin
       Check(not VConnectedSeen,
             'the device reported a successful connection before the connect attempt was over');
 
-      // close the device while the connect is still running: the destructor
-      // performs the waited disconnect (the same path as the user disconnect
-      // followed by the shutdown), so the connect must abort through the
-      // exit flag and not after the whole connection timeout. The connect
-      // wait is sliced (250 msec) with the exit check between the slices
+      // close the device while the connect is still running: the disconnect
+      // performs the waited disconnect (the same path as the destructor),
+      // so the connect must abort through the exit flag and not after the
+      // whole connection timeout. The connect wait is sliced (250 msec)
+      // with the exit check between the slices. The async disconnect
+      // terminates the runtime threads; the flush below is a no-op for the
+      // library (the threads are owned by the object and deliver nothing via
+      // Synchronize since 2026-11-20), kept as a pump safety
       VTicks:=GetTickCount;
+      VObj.GPSDisconnect;
+      Vsagps_Test_FlushPendingSyncs;
       FreeAndNil(VObj);
       VCloseElapsed:=GetTickCount-VTicks;
 
@@ -960,6 +965,11 @@ begin
             closesocket(VClient);
           end;
         finally
+          // terminate the library threads and drain their OnTerminate
+          // callbacks while the object is still alive (see the note in
+          // TestTcpDeviceCloseDuringConnect)
+          VObj.GPSDisconnect;
+          Vsagps_Test_FlushPendingSyncs;
           VObj.Free;
         end;
       finally
@@ -1063,6 +1073,11 @@ begin
             closesocket(VClient);
           end;
         finally
+          // terminate the library threads and drain their OnTerminate
+          // callbacks while the object is still alive (see the note in
+          // TestTcpDeviceCloseDuringConnect)
+          VObj.GPSDisconnect;
+          Vsagps_Test_FlushPendingSyncs;
           VObj.Free;
         end;
       finally

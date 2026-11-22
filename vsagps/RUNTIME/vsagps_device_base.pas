@@ -4,6 +4,36 @@
 *)
 unit vsagps_device_base;
 (*
+  2026-11-20: KillNow is bounded and reports the result: it acquires the
+              shared close-handle section with a timeout and, when the
+              working thread does not release it, skips the termination (the
+              caller leaks the device on purpose instead of orphaning the
+              section - the section is shared by all the units of the
+              object). The self-exited flag of the working thread is exposed
+              as the WorkingThreadExited property - the owner finalizes a
+              device only when the thread has passed its close path (or
+              after the bounded KillNow), so the unguarded termination
+              inside the destructor close (VSAGPS_WorkingThread_Kill) can no
+              longer catch a live thread inside the close section
+*)
+(*
+  2026-11-21: the close of the device handle after an unguarded termination
+              of the working thread (the hung device driver is the reason
+              why the termination was needed) is handed to the detached
+              one-shot closer thread (Internal_Close_Device_Handle_Task) -
+              a really poisoned driver never completes the close IRP, and
+              nobody waits for the closer, so the hang of the close leaks
+              that thread and the handle instead of freezing the owner or
+              the shared close-handle section
+*)
+(*
+  The debug emulation of the hung device driver (2026-11-21): the
+  VSAGPS_EMULATE_HUNG_DEVICE_READ define blocks the working thread forever
+  before the next data read, the VSAGPS_EMULATE_HUNG_DEVICE_CLOSE define
+  blocks the thread forever inside the close path while it holds the
+  close-handle section. Both are passed via the environment (DCC_Define)
+  and are never defined by the project files on purpose - the emulation is
+  enabled only for the experiments with a hung device
 *)
 
 {$I vsagps_defines.inc}
@@ -26,6 +56,12 @@ uses
   vsagps_tools,
   vsagps_queue,
   vsagps_runtime;
+
+const
+  // how long KillNow waits for the shared close-handle section: the close
+  // path of the working thread is short, a longer wait means it is stuck
+  // inside it, and terminating it there would orphan the section
+  cKillNow_CloseLock_Timeout_MSec = 1000;
 
 type
   Tvsagps_device_base = class(TObject)
@@ -66,6 +102,8 @@ type
     procedure WorkingThread_Internal_Routine;
     // close internal working thread
     procedure WorkingThread_Internal_Close(const AWaitFor: Boolean);
+    // read the self-exited flag of the internal working thread
+    function GetWorkingThreadExited: Boolean;
   protected
     // real name of the gps device to connect (autodetect!)
     FGPSDeviceInfo_NameToConnectInternalA: PAnsiChar;
@@ -93,12 +131,18 @@ type
     procedure InternalResetDeviceConnectionParams; virtual;
     procedure InternalKillAutodetectObject;
     procedure InternalCloseDevice;
+    // the device handle is handed to the detached one-shot closer thread
+    // (see Internal_Close_Device_Handle_Task) and the handle field is reset:
+    // after an unguarded termination of the working thread the close of the
+    // possibly poisoned driver handle must never run on the owner thread
+    procedure InternalDetachDeviceHandleToCloser;
     procedure Internal_Before_Open_Device; virtual;
     procedure Internal_Before_Close_Device; virtual;
     function Internal_Do_Open_Device: Boolean;
     function InternalGetUserPointer: Pointer;
 
     procedure InternalLockCloseHandle;
+    function InternalTryLockCloseHandle(const ATimeoutMSec: DWORD): Boolean;
     procedure InternalUnlockCloseHandle;
   protected
     // start session - operations to establish connection
@@ -124,7 +168,15 @@ type
     procedure Connect;
     procedure Disconnect;
 
-    procedure KillNow;
+    // terminate the working thread at once; returns FALSE if the thread could
+    // not be terminated safely (the caller must leak the object then)
+    function KillNow: Boolean;
+
+    // TRUE - the internal working thread has passed its close path and holds
+    // no locks anymore (the flag is set by the thread routine after the
+    // device is closed), or it was never started - the device object may be
+    // finalized safely then
+    property WorkingThreadExited: Boolean read GetWorkingThreadExited;
 
     procedure ExecuteGPSCommand(const ACommand: LongInt;
                                 const APointer: Pointer); virtual;
@@ -237,6 +289,29 @@ begin
     if (nil<>lpParameter) then
       Tvsagps_device_base(lpParameter).FWT_Params.bSelfExited:=TRUE;
   except
+  end;
+end;
+
+type
+  PVSAGPS_Close_Device_Handle_Task = ^TVSAGPS_Close_Device_Handle_Task;
+  TVSAGPS_Close_Device_Handle_Task = record
+    hDevice: THandle;
+  end;
+
+function Internal_Close_Device_Handle_Task(Parameter: Pointer): Integer;
+var pTask: PVSAGPS_Close_Device_Handle_Task;
+begin
+  Result:=0;
+  pTask:=Parameter;
+  if (nil<>pTask) then begin
+    // the close of a possibly poisoned device driver handle may never
+    // return (the driver never completes the close IRP) - this detached
+    // thread is the only place where the close is attempted after an
+    // unguarded termination, and nobody waits for it: a really poisoned
+    // driver leaks this thread and the handle instead of freezing the
+    // owner (both are reclaimed by the process termination)
+    CloseHandle(pTask^.hDevice);
+    FreeMem(pTask);
   end;
 end;
 
@@ -390,6 +465,17 @@ begin
 {$ifend}
 end;
 
+function Tvsagps_device_base.GetWorkingThreadExited: Boolean;
+begin
+  // TRUE - the internal working thread has passed its close path (the flag
+  // is set by the thread routine after the device is closed, the close
+  // section is released then) or was never started (no thread to wait for) -
+  // a device with the flag set may be finalized safely; a device without it
+  // may still hold the shared close section and must be killed first (see
+  // KillNow)
+  Result:=(0=FWT_Handle) or (FALSE<>FWT_Params.bSelfExited);
+end;
+
 procedure Tvsagps_device_base.WorkingThread_Internal_Routine;
 begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
@@ -455,6 +541,15 @@ begin
   InternalLockCloseHandle;
   try
     if (0<>FGPSDeviceHandle) then begin
+{$IFDEF VSAGPS_EMULATE_HUNG_DEVICE_CLOSE}
+      // emulation of the driver hang on the device close: the thread blocks
+      // forever inside the close path while it holds the shared close-handle
+      // section (the same way a driver stuck inside the CloseFile IRP never
+      // completes it) - every later attempt to take the section waits for
+      // this thread, and terminating it here would orphan the section, so
+      // the owner has no safe way out except leaking the device (see KillNow)
+      Sleep(INFINITE);
+{$ENDIF}
       Internal_Before_Close_Device;
 
       if (FakeFileHandle<>FGPSDeviceHandle) then begin
@@ -542,9 +637,44 @@ begin
 
   if FPtrCS_CloseHandle<>nil then
     EnterCriticalSection(FPtrCS_CloseHandle^);
-    
+
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_device_base.InternalLockCloseHandle: ok');
+{$ifend}
+end;
+
+function Tvsagps_device_base.InternalTryLockCloseHandle(const ATimeoutMSec: DWORD): Boolean;
+var
+  VTicks: DWORD;
+begin
+{$if defined(VSAGPS_USE_DEBUG_STRING)}
+  VSAGPS_DebugAnsiString('Tvsagps_device_base.InternalTryLockCloseHandle: in');
+{$ifend}
+
+  Result:=TRUE;
+  if (nil<>FPtrCS_CloseHandle) then begin
+    if (0=ATimeoutMSec) then begin
+      if TryEnterCriticalSection(FPtrCS_CloseHandle^) then
+        Result:=TRUE
+      else
+        Result:=FALSE;
+    end else begin
+      VTicks:=GetTickCount;
+      repeat
+        if TryEnterCriticalSection(FPtrCS_CloseHandle^) then begin
+          Result:=TRUE;
+          Break;
+        end;
+        Result:=FALSE;
+        Sleep(1);
+      until (DWORD(GetTickCount-VTicks)>=ATimeoutMSec);
+    end;
+  end;
+
+{$if defined(VSAGPS_USE_DEBUG_STRING)}
+  if not Result then
+    VSAGPS_DebugAnsiString('Tvsagps_device_base.InternalTryLockCloseHandle: timeout');
+  VSAGPS_DebugAnsiString('Tvsagps_device_base.InternalTryLockCloseHandle: out');
 {$ifend}
 end;
 
@@ -844,18 +974,69 @@ begin
   end;
 end;
 
-procedure Tvsagps_device_base.KillNow;
+procedure Tvsagps_device_base.InternalDetachDeviceHandleToCloser;
+var
+  pTask: PVSAGPS_Close_Device_Handle_Task;
+  VTaskThreadID: Cardinal;
+begin
+  if (0<>FGPSDeviceHandle) then begin
+    pTask:=AllocMem(sizeof(TVSAGPS_Close_Device_Handle_Task));
+    pTask^.hDevice:=FGPSDeviceHandle;
+    FGPSDeviceHandle:=0;
+    // detached: the thread id is not kept, nobody waits for the closer
+    BeginThread(nil, 0, @Internal_Close_Device_Handle_Task, pTask, 0, VTaskThreadID);
+  end;
+end;
+
+function Tvsagps_device_base.KillNow: Boolean;
 begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
     VSAGPS_DebugAnsiString('Tvsagps_device_base.KillNow: begin');
 {$ifend}
-  if (0<>FWT_Handle) then begin
-    TerminateThread(FWT_Handle,0);
-    Closehandle(FWT_Handle);
-    FWT_Handle:=0;
+  // the working thread holds FPtrCS_CloseHandle while it closes the device -
+  // a thread terminated inside that block would orphan the critical section
+  // (EnterCriticalSection would wait for the dead owner forever, and the
+  // section is shared by all the units of the object), so the section is
+  // acquired before the termination. The wait is bounded: if the close path
+  // does not finish in time, the thread is stuck inside it and must not be
+  // terminated here - the kill is skipped and the caller leaks the device
+  // (and its thread) on purpose instead of orphaning the section
+  Result:=FALSE;
+  if (not InternalTryLockCloseHandle(cKillNow_CloseLock_Timeout_MSec)) then begin
+{$if defined(VSAGPS_USE_DEBUG_STRING)}
+    VSAGPS_DebugAnsiString('Tvsagps_device_base.KillNow: lock timeout - skipped');
+{$ifend}
+    Exit;
   end;
-  FGPSDeviceSessionStarted:=0;
-  InternalCloseDevice;
+  try
+    if (0<>FWT_Handle) then begin
+      TerminateThread(FWT_Handle,0);
+      Closehandle(FWT_Handle);
+      FWT_Handle:=0;
+    end;
+    FGPSDeviceSessionStarted:=0;
+    if (FALSE<>FWT_Params.bSelfExited) then begin
+      // the thread had passed its close path before the kill: the device
+      // handle was closed by the thread itself, the close below is a no-op
+      InternalCloseDevice;
+      Result:=TRUE;
+    end else begin
+      // the thread was terminated inside its working loop (the hung device
+      // driver is the reason why the kill was needed): the close of such a
+      // driver handle may never return (the driver never completes the
+      // close IRP), so the close is handed to the detached one-shot thread
+      // (nobody waits for it - a really poisoned driver leaks that thread
+      // and the handle instead of freezing this caller or any later one)
+      // and the handle field is reset - the destructor of the freed device
+      // object will not touch the handle again. TRUE lets the caller free
+      // the device object and reuse the unit index - the same as it was
+      // before the unguarded termination became possible
+      InternalDetachDeviceHandleToCloser;
+      Result:=TRUE;
+    end;
+  finally
+    InternalUnlockCloseHandle;
+  end;
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
   VSAGPS_DebugAnsiString('Tvsagps_device_base.KillNow: end');
 {$ifend}
@@ -965,6 +1146,15 @@ begin
     end;
 
     // read packets from device
+{$IFDEF VSAGPS_EMULATE_HUNG_DEVICE_READ}
+    // emulation of the driver hang on the data read: the working thread
+    // blocks forever before the next read call and never sees the exit
+    // flag again (the same way a driver stuck inside ReadFile never
+    // returns to the user mode code of the loop). The thread holds no
+    // shared section here, so the owner can still take the close-handle
+    // section and terminate the thread unguarded
+    Sleep(INFINITE);
+{$ENDIF}
     if WorkingThread_Receive_Packets(AWorkingThreadPacketFilter) then begin
 {$if defined(VSAGPS_USE_DEBUG_STRING)}
       VSAGPS_DebugAnsiString('Tvsagps_device_base.WorkingThread_Process_Packets: exit by packet');

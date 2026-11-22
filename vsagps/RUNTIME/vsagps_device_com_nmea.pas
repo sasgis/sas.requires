@@ -428,14 +428,14 @@ begin
       // 3) S/N SBX-3 receiver serial number
       InternalSetUnitInfoA(guik_Unique_Unit_Number, FParser.Get_NMEAPart_By_Index(2));
       // 4) fff.f Channel 0 current frequency
-      // 5) M Frequency Mode (‘A’ – Auto or ‘M’ – Manual)
+      // 5) M Frequency Mode ('A' - Auto or 'M' - Manual)
       // 6) ddd MSK bit rate
       // 7) R RTCM rate
       // 8) SS Signal strength
       // 9) SNR Signal to noise ratio
       // 10) MTP Message throughput
-      // 11) Q Quality number {0-25} – number of successive good 30 bit RTCM words received
-      // 12) ID Beacon ID to which the receiver’s primary channel is tuned
+      // 11) Q Quality number {0-25} - number of successive good 30 bit RTCM words received
+      // 12) ID Beacon ID to which the receiver's primary channel is tuned
       // 13) vH Health of the tuned beacon [0-7]
       // 14) T $PCSI,1 status output period {0-99}
     end;
@@ -451,7 +451,7 @@ begin
   try
     sType:=FParser.Get_NMEAPart_By_Index(0);
     if ('4'=sType) then begin
-      // $PDME,4,3, GPS_LIBRARY_VERSION GPSLIB_5.4.1.5 GNU – Jun 11 2007 10:05:32
+      // $PDME,4,3, GPS_LIBRARY_VERSION GPSLIB_5.4.1.5 GNU - Jun 11 2007 10:05:32
       sSubType := FParser.Get_NMEAPart_By_Index(1);
       sValue := FParser.Get_NMEAPart_By_Index(2);
       if ('1'=sSubType) then begin
@@ -481,12 +481,12 @@ begin
   try
     sType:=FParser.Get_NMEAPart_By_Index(0); // 1 Message ID = 100 (in sample)
     if (sType = '100') then begin
-      // PEMT 100 – Receiver ID
+      // PEMT 100 - Receiver ID
       // 2 Firmware Version  = 05.03A
       InternalSetUnitInfoA(guik_Firmware_Version, FParser.Get_NMEAPart_By_Index(1));
       // 3 Firmware Release Date 240701 ddmmyy
       InternalSetUnitInfoA(guik_Firmware_Release, FParser.Get_NMEAPart_By_Index(2));
-      // 4 Default Datum ID 082 xxx // 0 ~ 219, see Appendix – A
+      // 4 Default Datum ID 082 xxx // 0 ~ 219, see Appendix - A
       InternalSetUnitInfoA(guik_Datum_Index, FParser.Get_NMEAPart_By_Index(3));
     end;
   except
@@ -576,11 +576,11 @@ begin
       // $PMGNVER,PID,SID,c---c,DBID*hh<CR><LF>
       // This message is used to send the model number of the GPS unit and its software version number.
       // sample: $PMGNVER,015,4.01,GPS3000XL*05
-      // PID is a unique numerical product ID specifying the unit’s model.
+      // PID is a unique numerical product ID specifying the unit's model.
       InternalSetUnitInfoA(guik_Product_ID, FParser.Get_NMEAPart_By_Index(0));
       // SID is the software version number.
       InternalSetUnitInfoA(guik_Software_Version, FParser.Get_NMEAPart_By_Index(1));
-      // Model - The character field contains a text representation of the unit’s model name.
+      // Model - The character field contains a text representation of the unit's model name.
       InternalSetUnitInfoA(guik_Model_Description_Simple, FParser.Get_NMEAPart_By_Index(2));
       // DBID is a set of three strings used to identify the database in certain aviation units.
       InternalSetUnitInfoA(guik_Database_ID, FParser.Get_NMEAPart_By_Index(3));
@@ -715,14 +715,14 @@ begin
       1485 = GPS Week // Extended week number
       147236.3 = GPS Time of Week (seconds) // GPS Time Of Week
       0x43002732 = EPH_REQ_MASK // Mask to indicate the satellites for which new ephemeris is needed.
-      // Eight characters preceded by the following characters, “0x”, are used to show this 32-bit mask (in hex).
+      // Eight characters preceded by the following characters, "0x", are used to show this 32-bit mask (in hex).
       // The MSB is for satellite PRN 32, and the LSB is for satellite PRN 1.
       *)
     end else if ('161'=ASubCommand) then begin
       // NMEA Output message 161, Hardware Status (u-blox)
       // $PSRF161,01,63*6E<CR><LF>
       // Antenna status - numeric - from 0 to 4
-      // AGC - numeric - Range: 0…63
+      // AGC - numeric - Range: 0...63
       FParser.Enable_Proprietaries_SubCode(gpms_SRF, gpms_SRF_sub_U_Blox);
     end;
   except

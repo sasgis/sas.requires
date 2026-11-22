@@ -1,19 +1,34 @@
-unit tcp_nmea_server_main;
+unit nmea_server_main;
 (*
-  Simple manual testing tool: a TCP server which replays a GPX track as an
-  NMEA0183 stream (GGA + RMC sentences per track point). The playback speed
-  is configurable. The tool can emulate transmission stalls (stream pauses)
-  and connection drops to check that the clients automatically reconnect.
+  Simple manual testing tool: an NMEA0183 server which replays a GPX track
+  as an NMEA0183 stream (GGA + RMC sentences per track point) over TCP or
+  UDP. The playback speed is configurable. The tool can emulate transmission
+  stalls (stream pauses) and "connection drops" to check that the clients
+  automatically reconnect.
+
+  TCP mode (the transport of the tcp nmea device of the library): every
+  client gets its own socket, the gpsd server mode is available.
+
+  UDP mode (the transport of the udp nmea device of the library): the server
+  binds 0.0.0.0:port and sends every datagram of the stream
+  - to the fixed target (the "Target" field: an unicast address, a subnet
+    broadcast address or a multicast group - the way the real muxes send);
+  - to the "subscribers" - the endpoints which sent any datagram to this
+    port (learned from the datagram source, expired after 10 sec of
+    silence; the "Drop all clients" emulation forgets them).
+  The received datagrams are drained and counted, the content is ignored.
 
   Command line:
-    /port=N         - start the server on the given port
-    /gpx=path       - load the given gpx file
-    /play           - start the playback after loading
-    /speed=X        - playback speed multiplier
-    /nmealog[=path] - save the raw nmea stream to the log file
-                      (default: <exe>.nmea.log)
-    /tcplog[=path]  - save the tcp events to the log file
-                      (default: <exe>.tcp.log)
+    /port=N            - start the server on the given port
+    /transport=tcp|udp - the transport (default: tcp)
+    /target=addr:port  - the udp send target (the udp transport only)
+    /gpx=path          - load the given gpx file
+    /play              - start the playback after loading
+    /speed=X           - playback speed multiplier
+    /nmealog[=path]    - save the raw nmea stream to the log file
+                         (default: <exe>.nmea.log)
+    /evlog[=path]      - save the event lines to the log file
+                         (default: <exe>.events.log; /tcplog is an alias)
 *)
 
 {$I vsagps_defines.inc}
@@ -38,7 +53,9 @@ uses
   ComCtrls,
   Xml.XMLIntf,
   Xml.XMLDoc,
-  Winapi.Winsock2;
+  Winsock2,
+  vsagps_winsock2_compat,
+  nmea_tools_common;
 
 type
   TNmeaCue = record
@@ -55,20 +72,25 @@ type
   end;
   TNmeaCueArray = array of TNmeaCue;
 
+  TClientKind = (ckTcp, ckUdp);
+
   TClientInfo = record
-    Socket: TSocket;
-    Peer: string; // "ip:port"
-    Watching: Boolean; // gpsd mode: the client sent the ?WATCH command
+    Kind: TClientKind;
+    Socket: TSocket;    // TCP: the connected socket
+    Addr: TSockAddrIn;  // UDP: the subscriber address to send to
+    Peer: string;       // "ip:port"
+    Watching: Boolean;  // TCP, gpsd mode: the client sent the ?WATCH command
+    LastSeen: DWORD;    // UDP: GetTickCount of the last subscriber datagram
   end;
 
   TAcceptThread = class(TThread)
   public
-    Form: TObject; // TfrmTcpNmeaServer (to avoid a circular unit reference)
+    Form: TObject; // TfrmNmeaServer (to avoid a circular unit reference)
     ListenSocket: TSocket;
     procedure Execute; override;
   end;
 
-  TfrmTcpNmeaServer = class(TForm)
+  TfrmNmeaServer = class(TForm)
     dlgOpen: TOpenDialog;
     tmrWork: TTimer;
     panTop: TPanel;
@@ -77,6 +99,9 @@ type
     edPort: TEdit;
     btnStartServer: TButton;
     btnStopServer: TButton;
+    lblTarget: TLabel;
+    edTarget: TEdit;
+    rgTransport: TRadioGroup;
     gbTrack: TGroupBox;
     lblTrack: TLabel;
     lblSpeed: TLabel;
@@ -96,13 +121,12 @@ type
     chkGpsd: TCheckBox;
     gbLogging: TGroupBox;
     chkLogNmea: TCheckBox;
-    chkLogTcp: TCheckBox;
-    lblLogFiles: TLabel;
+    chkLogEvents: TCheckBox;
     gbClients: TGroupBox;
     lbClients: TListBox;
     spl1: TSplitter;
-    gbTcp: TGroupBox;
-    mmTcp: TMemo;
+    gbLog: TGroupBox;
+    mmLog: TMemo;
     sbStatus: TStatusBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -114,22 +138,19 @@ type
     procedure tmrWorkTimer(Sender: TObject);
     procedure EmulParamChanged(Sender: TObject);
     procedure LogParamChanged(Sender: TObject);
+    procedure TransportChanged(Sender: TObject);
   private
     FCS: TRTLCriticalSection;
+
     FClients: TList<TClientInfo>;
-    FConnLog: TStringList; // tcp event lines pending for the memo and the log file
-    // file logs (the files are opened on demand and written by the ui thread)
-    FNmeaBuf: TMemoryStream;  // raw nmea bytes not flushed to the nmea log yet
-    FNmeaFile: TFileStream;
-    FTcpFile: TFileStream;
-    FNmeaLogName: string;
-    FTcpLogName: string;
-    FNmeaLogFresh: Boolean;   // the file is created (not appended) on the next open
-    FTcpLogFresh: Boolean;
+    FLog: TNmeaToolLog; // the paired log (raw nmea + event lines)
     FAcceptThread: TAcceptThread;
     FListenSocket: TSocket;
     FWSAOk: Boolean;
     FGpsdMode: Boolean; // the gpsd server emulation, fixed at the server start
+    FTransportUdp: Boolean; // the transport, fixed at the server start
+    FTargetAddr: TSockAddrIn; // the fixed udp send target (if any)
+    FHasTarget: Boolean;
     // playback state
     FCues: TNmeaCueArray;
     FCueIdx: Integer;
@@ -137,7 +158,7 @@ type
     FLastTick: DWORD;
     FPlaying: Boolean;
     FPausedByServerStop: Boolean; // the playback was paused by StopServer (resumed by StartServer)
-    FLastLogDrainTick: Cardinal; // the logs are drained into the file once per second
+    FLastLogDrainTick: Cardinal; // the logs are drained into the files once per second
     // emulation state
     FDropEnabled: Boolean;
     FNextDropTick: DWORD;
@@ -145,21 +166,15 @@ type
     FStallActive: Boolean;
     FNextStallTick: DWORD;
     FStallUntilTick: DWORD;
-    // counters for the status bar (the tcp error counter is incremented
+    // counters for the status bar (the net error counter is incremented
     // from the accept thread too - hence the interlocked increment)
     FStatSentBytes: Int64;   // the nmea stream produced by the playback
     FStatSentNmea: Int64;    // the nmea sentences produced by the playback
     FStatRecvBytes: Int64;   // the bytes received from the clients
-    FStatTcpErr: Integer;    // send/recv/select/accept failures
+    FStatNetErr: Integer;    // send/recv/select/accept failures
   private
     procedure Lock;
     procedure Unlock;
-    procedure LogTcp(const S: string);
-    procedure LogNmeaRaw(const AData: AnsiString);
-    procedure FlushNmeaFile;
-    procedure WriteNmeaFile(const AData: AnsiString);
-    procedure WriteTcpFile(const ALines: TStrings);
-    procedure CloseLogFiles;
     procedure StartServer;
     procedure StopServer;
     procedure StartPlayback;
@@ -178,11 +193,12 @@ type
     procedure LoadSettings;
     procedure SaveSettings;
     procedure LoadTrackFromFile(const AFileName: string);
-    procedure ApplyCommandLine;
+    procedure ApplyCommandLine(out ANmeaLogName, AEventLogName: string;
+                                            out AAutoStart: Boolean);
   end;
 
 var
-  frmTcpNmeaServer: TfrmTcpNmeaServer;
+  frmNmeaServer: TfrmNmeaServer;
 
 implementation
 
@@ -193,24 +209,20 @@ uses
   vsagps_parser_nmea; // MakeNmeaFullString
 
 const
-  cWSA_Version_2_2 = $0202; // (the RTL winsock unit does not declare it)
-
   cMaxPointDelayMs = 1000;  // clamp huge gaps between the track times
   cMaxTrackPoints  = 200000;
   cMaxSendPerTick  = 200;   // points per timer tick (more - skip instead of catch up)
-  cMaxLogPending   = 400;   // tcp event lines pending for the memo
-  cMaxMemoLines    = 300;   // tcp event memo lines kept
-  cNmeaBufSize     = 65536; // raw nmea bytes buffered before a disk write
+  cMaxMemoLines    = 300;   // event memo lines kept
   cMaxSkipWalk     = 100000; // hard guard for the skip loop
   cMaxElapsedBacklogMs = 10000;
   cDefPointDelayMs = 1000;  // delay per point when the track has no times
   cNmeaLogExt      = '.nmea.log'; // ChangeFileExt() of the exe name
-  cTcpLogExt       = '.tcp.log';
+  cEventLogExt     = '.events.log';
 
   // the gpsd greeting banner (sent to every client right after the accept;
   // the gpsd json lines end with a bare \n)
   cGpsd_Banner: AnsiString =
-    '{"class":"VERSION","release":"tcp_nmea_server","rev":"emul",' +
+    '{"class":"VERSION","release":"nmea_server","rev":"emul",' +
     '"proto_major":3,"proto_minor":0}'#10;
 
 var
@@ -234,17 +246,23 @@ procedure CoordToStr(const AValue: Double; const AIsLat: Boolean; out ACoord, AH
 var
   vd: Integer;
   vm: Double;
+  sMin: string;
 begin
   vm := Abs(AValue);
   vd := Trunc(vm);
   vm := (vm - vd) * 60;
+  // the minutes "mm.mmmmm" are zero-padded to the fixed width (the delphi
+  // Format pads the floats with spaces, not with zeros)
+  sMin := Format('%.5f', [vm], gFS);
+  while (Length(sMin) < 8) do
+    Insert('0', sMin, 1);
   if AIsLat then begin
-    ACoord := Format('%.2d%.5f', [vd, vm], gFS);
+    ACoord := Format('%.2d%s', [vd, sMin], gFS);
     AHemi := 'N';
     if (AValue < 0) then
       AHemi := 'S';
   end else begin
-    ACoord := Format('%.3d%.5f', [vd, vm], gFS);
+    ACoord := Format('%.3d%s', [vd, sMin], gFS);
     AHemi := 'E';
     if (AValue < 0) then
       AHemi := 'W';
@@ -271,7 +289,7 @@ var
 begin
   sIso := FormatDateTime('yyyy-mm-dd"T"hh:nn:ss.zzz', ACue.DTime, gFS) + 'Z';
   Result := AnsiString(
-    '{"class":"TPV","device":"tcp_nmea_server","mode":3,"time":"' + sIso +
+    '{"class":"TPV","device":"nmea_server","mode":3,"time":"' + sIso +
     '","lat":' + F2(ACue.DLat, 6) +
     ',"lon":' + F2(ACue.DLon, 6) +
     ',"alt":' + F2(ACue.DEle, 1) +
@@ -438,26 +456,6 @@ begin
   end;
 end;
 
-// open a log file for appending: a fresh file for every run, then the file is
-// reopened with the shared mode so it can be read/tailed while the tool runs
-function OpenLogStream(const AFileName: string; const AFresh: Boolean): TFileStream;
-var
-  VTemp: TFileStream;
-begin
-  if AFresh or (not FileExists(AFileName)) then begin
-    // fmCreate creates the file with the exclusive access
-    VTemp := TFileStream.Create(AFileName, fmCreate);
-    VTemp.Free;
-  end;
-  Result := TFileStream.Create(AFileName, fmOpenReadWrite or fmShareDenyNone);
-  try
-    Result.Seek(0, soEnd);
-  except
-    FreeAndNil(Result);
-    raise;
-  end;
-end;
-
 { TAcceptThread }
 
 procedure TAcceptThread.Execute;
@@ -481,13 +479,13 @@ begin
       VLen := sizeof(VAddr);
       VClient := accept(ListenSocket, @VAddr, @VLen);
       if (VClient <> INVALID_SOCKET) then
-        TfrmTcpNmeaServer(Form).AddAcceptedClient(VClient, VAddr)
+        TfrmNmeaServer(Form).AddAcceptedClient(VClient, VAddr)
       else begin
         // the failure is logged, not silent: the missing clients are
-        // diagnosable from the tcp event log (called from the accept
-        // thread - the counter is incremented interlocked)
-        InterlockedIncrement(TfrmTcpNmeaServer(Form).FStatTcpErr);
-        TfrmTcpNmeaServer(Form).LogTcp('accept() failed: ' + IntToStr(WSAGetLastError));
+        // diagnosable from the event log (called from the accept thread -
+        // the counter is incremented interlocked)
+        InterlockedIncrement(TfrmNmeaServer(Form).FStatNetErr);
+        TfrmNmeaServer(Form).FLog.LogEvent('accept() failed: ' + IntToStr(WSAGetLastError));
       end;
     end else if (SOCKET_ERROR = VRes) then begin
       // listen socket closed or failed - exit
@@ -496,55 +494,74 @@ begin
   end;
 end;
 
-{ TfrmTcpNmeaServer }
+{ TfrmNmeaServer }
 
-procedure TfrmTcpNmeaServer.FormCreate(Sender: TObject);
+procedure TfrmNmeaServer.FormCreate(Sender: TObject);
 var
   VWSA: TWSAData;
+  VNmeaLogName, VEventLogName: string;
+  VAutoStart: Boolean;
 begin
-  // the invariant format settings: dot decimal separator regardless of the
-  // current locale (the tformat settings "create(locale)" overload is
-  // windows-only, so it makes the unit platform specific)
-  gFS := TFormatSettings.Invariant;
   InitializeCriticalSection(FCS);
   FClients := TList<TClientInfo>.Create;
-  FConnLog := TStringList.Create;
-  FNmeaBuf := TMemoryStream.Create;
-  FNmeaFile := nil;
-  FTcpFile := nil;
-  FNmeaLogName := ChangeFileExt(Application.ExeName, cNmeaLogExt);
-  FTcpLogName := ChangeFileExt(Application.ExeName, cTcpLogExt);
-  FNmeaLogFresh := TRUE;
-  FTcpLogFresh := TRUE;
+  FAcceptThread := nil;
   FListenSocket := INVALID_SOCKET;
-  FWSAOk := (WSAStartup(cWSA_Version_2_2, VWSA) = 0);
+  FWSAOk := (WSAStartup(cNmeaTool_WSA_Version_2_2, VWSA) = 0);
   if (not FWSAOk) then
     lblServerState.Caption := 'WSAStartup failed!';
+
+  // the settings and the command line are applied before the log is created:
+  // the command line may redefine the log file paths, the actions it
+  // requests (the server start) run after the log is created
+  VNmeaLogName := ChangeFileExt(Application.ExeName, cNmeaLogExt);
+  VEventLogName := ChangeFileExt(Application.ExeName, cEventLogExt);
   LoadSettings;
+  // (the command line may toggle the log checkboxes before the log exists -
+  // LogParamChanged skips the nil log, the flags are applied below)
+  ApplyCommandLine(VNmeaLogName, VEventLogName, VAutoStart);
+  chkLogNmea.Hint := VNmeaLogName;
+  chkLogEvents.Hint := VEventLogName;
+  FLog := TNmeaToolLog.Create(VNmeaLogName, VEventLogName);
+  FLog.SetNmeaEnabled(chkLogNmea.Checked);
+  FLog.SetEventEnabled(chkLogEvents.Checked);
+  FLog.LogEvent('command line: ' + GetCommandLineW);
+  if VAutoStart then
+    StartServer;
+
   UpdateButtons;
-  ApplyCommandLine;
+  // the work timer is armed last: it must not tick while the form is
+  // being created (LoadTrackFromFile pumps the messages, and the tick
+  // drains the log - which does not exist yet)
+  tmrWork.Enabled := TRUE;
 end;
 
-procedure TfrmTcpNmeaServer.ApplyCommandLine;
+procedure TfrmNmeaServer.ApplyCommandLine(out ANmeaLogName, AEventLogName: string;
+                                            out AAutoStart: Boolean);
 var
   i: Integer;
   s, VRest: string;
   VPlayRequested: Boolean;
 begin
-  // headless mode for automated testing:
-  //   /port=N         - start the server on the given port
-  //   /gpx=path       - load the given gpx file
-  //   /play           - start the playback after loading
-  //   /speed=X        - playback speed multiplier
-  //   /nmealog[=path] - save the raw nmea stream to the log file
-  //   /tcplog[=path]  - save the tcp events to the log file
+  // headless mode for automated testing (see the unit header); the log path
+  // keys are applied through the out parameters (the log is not created yet)
+  ANmeaLogName := ChangeFileExt(Application.ExeName, cNmeaLogExt);
+  AEventLogName := ChangeFileExt(Application.ExeName, cEventLogExt);
+  AAutoStart := False;
   VPlayRequested := False;
-  LogTcp('command line: ' + GetCommandLineW);
   for i := 1 to ParamCount do begin
     s := ParamStr(i);
     if s.StartsWith('/port=', True) then begin
       edPort.Text := Copy(s, 7, MaxInt);
-      StartServer;
+      AAutoStart := True;
+    end else if s.StartsWith('/transport=', True) then begin
+      VRest := AnsiUpperCase(Copy(s, Length('/transport=') + 1, MaxInt));
+      if ('UDP' = VRest) then
+        rgTransport.ItemIndex := 1
+      else if ('TCP' = VRest) then
+        rgTransport.ItemIndex := 0;
+      TransportChanged(rgTransport);
+    end else if s.StartsWith('/target=', True) then begin
+      edTarget.Text := Copy(s, Length('/target=') + 1, MaxInt);
     end else if s.StartsWith('/gpx=', True) then begin
       LoadTrackFromFile(Copy(s, 6, MaxInt));
     end else if SameText(s, '/play') then begin
@@ -554,38 +571,36 @@ begin
     end else if s.StartsWith('/nmealog', True) then begin
       VRest := Copy(s, Length('/nmealog') + 1, MaxInt);
       if (0 = Length(VRest)) then
-        FNmeaLogName := ChangeFileExt(Application.ExeName, cNmeaLogExt)
+        ANmeaLogName := ChangeFileExt(Application.ExeName, cNmeaLogExt)
       else if (VRest[1] = '=') then
-        FNmeaLogName := Copy(VRest, 2, MaxInt)
+        ANmeaLogName := Copy(VRest, 2, MaxInt)
       else
         Continue;
       chkLogNmea.Checked := TRUE;
-    end else if s.StartsWith('/tcplog', True) then begin
-      VRest := Copy(s, Length('/tcplog') + 1, MaxInt);
+    end else if s.StartsWith('/evlog', True) or s.StartsWith('/tcplog', True) then begin
+      if s.StartsWith('/evlog', True) then
+        VRest := Copy(s, Length('/evlog') + 1, MaxInt)
+      else
+        VRest := Copy(s, Length('/tcplog') + 1, MaxInt);
       if (0 = Length(VRest)) then
-        FTcpLogName := ChangeFileExt(Application.ExeName, cTcpLogExt)
+        AEventLogName := ChangeFileExt(Application.ExeName, cEventLogExt)
       else if (VRest[1] = '=') then
-        FTcpLogName := Copy(VRest, 2, MaxInt)
+        AEventLogName := Copy(VRest, 2, MaxInt)
       else
         Continue;
-      chkLogTcp.Checked := TRUE;
+      chkLogEvents.Checked := TRUE;
     end;
   end;
-  chkLogNmea.Hint := FNmeaLogName;
-  chkLogTcp.Hint := FTcpLogName;
   if VPlayRequested and (0 < Length(FCues)) then
     StartPlayback;
 end;
 
-procedure TfrmTcpNmeaServer.FormDestroy(Sender: TObject);
+procedure TfrmNmeaServer.FormDestroy(Sender: TObject);
 begin
   SaveSettings;
   StopServer;
-  FlushNmeaFile;
-  CloseLogFiles;
-  FreeAndNil(FNmeaBuf);
+  FreeAndNil(FLog);
   FreeAndNil(FClients);
-  FreeAndNil(FConnLog);
   DeleteCriticalSection(FCS);
   if FWSAOk then begin
     FWSAOk := FALSE;
@@ -595,7 +610,7 @@ end;
 
 { settings (ini next to the exe) }
 
-procedure TfrmTcpNmeaServer.LoadSettings;
+procedure TfrmNmeaServer.LoadSettings;
 var
   ini: TIniFile;
   VDir: string;
@@ -621,6 +636,9 @@ begin
     // server
     edPort.Text := ini.ReadString('Server', 'Port', edPort.Text);
     chkGpsd.Checked := ini.ReadBool('Server', 'GpsdMode', False);
+    rgTransport.ItemIndex := ini.ReadInteger('Server', 'Transport', 0);
+    TransportChanged(rgTransport);
+    edTarget.Text := ini.ReadString('Server', 'Target', edTarget.Text);
 
     // playback
     edSpeed.Text := ini.ReadString('Playback', 'Speed', edSpeed.Text);
@@ -631,7 +649,7 @@ begin
 
     // logging
     chkLogNmea.Checked := ini.ReadBool('Logging', 'NmeaToFile', False);
-    chkLogTcp.Checked := ini.ReadBool('Logging', 'TcpToFile', False);
+    chkLogEvents.Checked := ini.ReadBool('Logging', 'EventsToFile', False);
 
     // emulation
     chkDrop.Checked := ini.ReadBool('Emulation', 'DropEnabled', False);
@@ -644,7 +662,7 @@ begin
   end;
 end;
 
-procedure TfrmTcpNmeaServer.SaveSettings;
+procedure TfrmNmeaServer.SaveSettings;
 var
   ini: TIniFile;
   wp: TWindowPlacement;
@@ -667,6 +685,8 @@ begin
     // server
     ini.WriteString('Server', 'Port', edPort.Text);
     ini.WriteBool('Server', 'GpsdMode', chkGpsd.Checked);
+    ini.WriteInteger('Server', 'Transport', rgTransport.ItemIndex);
+    ini.WriteString('Server', 'Target', edTarget.Text);
 
     // playback
     ini.WriteString('Playback', 'Speed', edSpeed.Text);
@@ -676,7 +696,7 @@ begin
 
     // logging
     ini.WriteBool('Logging', 'NmeaToFile', chkLogNmea.Checked);
-    ini.WriteBool('Logging', 'TcpToFile', chkLogTcp.Checked);
+    ini.WriteBool('Logging', 'EventsToFile', chkLogEvents.Checked);
 
     // emulation
     ini.WriteBool('Emulation', 'DropEnabled', chkDrop.Checked);
@@ -689,128 +709,21 @@ begin
   end;
 end;
 
-procedure TfrmTcpNmeaServer.Lock;
+procedure TfrmNmeaServer.Lock;
 begin
   EnterCriticalSection(FCS);
 end;
 
-procedure TfrmTcpNmeaServer.Unlock;
+procedure TfrmNmeaServer.Unlock;
 begin
   LeaveCriticalSection(FCS);
 end;
 
-procedure TfrmTcpNmeaServer.LogTcp(const S: string);
-begin
-  // the tcp event line is timestamped once and kept pending for the memo and
-  // the log file; the file itself is written by the timer (ui thread), the
-  // pending list is shared with the accept thread
-  Lock;
-  try
-    FConnLog.Append('[' + FormatDateTime('hh:nn:ss.zzz', Now) + '] ' + S);
-    if (FConnLog.Count > cMaxLogPending) then
-      FConnLog.Delete(0);
-  finally
-    Unlock;
-  end;
-end;
-
-procedure TfrmTcpNmeaServer.LogNmeaRaw(const AData: AnsiString);
-begin
-  // raw nmea data - exactly the bytes sent to the clients, no formatting at all;
-  // called from the ui thread only, the buffer is flushed by the timer
-  if (0 = Length(AData)) or (not chkLogNmea.Checked) then
-    Exit;
-  FNmeaBuf.WriteBuffer(PAnsiChar(AData)^, Length(AData));
-  if (FNmeaBuf.Size >= cNmeaBufSize) then
-    FlushNmeaFile;
-end;
-
-procedure TfrmTcpNmeaServer.FlushNmeaFile;
-var
-  VData: AnsiString;
-begin
-  if (0 = FNmeaBuf.Size) then
-    Exit;
-  SetLength(VData, Integer(FNmeaBuf.Size));
-  Move(FNmeaBuf.Memory^, PAnsiChar(VData)^, FNmeaBuf.Size);
-  FNmeaBuf.Size := 0;
-  WriteNmeaFile(VData);
-end;
-
-procedure TfrmTcpNmeaServer.WriteNmeaFile(const AData: AnsiString);
-begin
-  // the log must never break the tool: on a file error the logging is
-  // switched off (the checkbox is cleared, no OnClick is fired) and the
-  // reason is reported in the tcp events log
-  try
-    if (FNmeaFile = nil) then begin
-      FNmeaFile := OpenLogStream(FNmeaLogName, FNmeaLogFresh);
-      FNmeaLogFresh := FALSE;
-    end;
-    FNmeaFile.WriteBuffer(PAnsiChar(AData)^, Length(AData));
-  except
-    on E: Exception do begin
-      FreeAndNil(FNmeaFile);
-      chkLogNmea.Checked := FALSE;
-      LogTcp('nmea log file "' + FNmeaLogName + '" failed, logging disabled: ' + E.Message);
-    end;
-  end;
-end;
-
-procedure TfrmTcpNmeaServer.WriteTcpFile(const ALines: TStrings);
-var
-  i: Integer;
-  VData: UTF8String;
-begin
-  if (0 = ALines.Count) then
-    Exit;
-  VData := '';
-  for i := 0 to ALines.Count - 1 do
-    VData := VData + UTF8String(ALines[i] + #13#10);
-  try
-    if (FTcpFile = nil) then begin
-      FTcpFile := OpenLogStream(FTcpLogName, FTcpLogFresh);
-      FTcpLogFresh := FALSE;
-    end;
-    FTcpFile.WriteBuffer(PAnsiChar(VData)^, Length(VData));
-  except
-    on E: Exception do begin
-      FreeAndNil(FTcpFile);
-      chkLogTcp.Checked := FALSE;
-      // the file is not available - the reason goes to the memo list only
-      Lock;
-      try
-        FConnLog.Append('[' + FormatDateTime('hh:nn:ss.zzz', Now) +
-          '] tcp log file "' + FTcpLogName + '" failed, logging disabled: ' + E.Message);
-      finally
-        Unlock;
-      end;
-    end;
-  end;
-end;
-
-procedure TfrmTcpNmeaServer.CloseLogFiles;
-begin
-  FreeAndNil(FNmeaFile);
-  FreeAndNil(FTcpFile);
-end;
-
-procedure TfrmTcpNmeaServer.LogParamChanged(Sender: TObject);
-begin
-  // flush what is still buffered before the file is closed
-  if (not chkLogNmea.Checked) then begin
-    FlushNmeaFile;
-    FreeAndNil(FNmeaFile);
-  end;
-  if (not chkLogTcp.Checked) then
-    FreeAndNil(FTcpFile);
-end;
-
-procedure TfrmTcpNmeaServer.UpdateCounters;
+procedure TfrmNmeaServer.UpdateCounters;
 var
   VClients: Integer;
 begin
-  // the clients count is shared with the accept thread, the tcp error
+  // the clients count is shared with the accept thread, the net error
   // counter is shared too - read both under the lock / interlocked
   Lock;
   try
@@ -822,38 +735,56 @@ begin
   sbStatus.Panels[1].Text := 'out: ' + IntToStr(FStatSentBytes) + ' b / ' +
     IntToStr(FStatSentNmea) + ' nmea';
   sbStatus.Panels[2].Text := 'in: ' + IntToStr(FStatRecvBytes) + ' b';
-  sbStatus.Panels[3].Text := 'tcp err: ' + IntToStr(FStatTcpErr);
+  sbStatus.Panels[3].Text := 'net err: ' + IntToStr(FStatNetErr);
 end;
 
-procedure TfrmTcpNmeaServer.UpdateButtons;
+procedure TfrmNmeaServer.UpdateButtons;
 begin
   btnStartServer.Enabled := (FListenSocket = INVALID_SOCKET) and FWSAOk;
   btnStopServer.Enabled := (FListenSocket <> INVALID_SOCKET);
-  // the gpsd mode is applied at the server start - no toggling while running
-  chkGpsd.Enabled := (FListenSocket = INVALID_SOCKET);
+  // the transport is fixed at the server start (and the gpsd mode is the
+  // tcp-only feature)
+  rgTransport.Enabled := (FListenSocket = INVALID_SOCKET);
+  chkGpsd.Enabled := (FListenSocket = INVALID_SOCKET) and (rgTransport.ItemIndex = 0);
+  edTarget.Enabled := (rgTransport.ItemIndex = 1);
+  lblTarget.Enabled := edTarget.Enabled;
   btnPlay.Enabled := (Length(FCues) > 0) and (not FPlaying);
   btnStopPlay.Enabled := FPlaying;
-  if (FListenSocket <> INVALID_SOCKET) then
-    lblServerState.Caption := 'listening on 0.0.0.0:' + edPort.Text
-  else
+  if (FListenSocket <> INVALID_SOCKET) then begin
+    if FTransportUdp then begin
+      if FHasTarget then
+        lblServerState.Caption := 'udp: 0.0.0.0:' + edPort.Text + ' -> ' + edTarget.Text
+      else
+        lblServerState.Caption := 'udp: 0.0.0.0:' + edPort.Text + ' (subscribers only)';
+    end else
+      lblServerState.Caption := 'listening on 0.0.0.0:' + edPort.Text;
+  end else
     lblServerState.Caption := 'server stopped';
 end;
 
-procedure TfrmTcpNmeaServer.btnStartServerClick(Sender: TObject);
+procedure TfrmNmeaServer.btnStartServerClick(Sender: TObject);
 begin
   StartServer;
 end;
 
-procedure TfrmTcpNmeaServer.btnStopServerClick(Sender: TObject);
+procedure TfrmNmeaServer.btnStopServerClick(Sender: TObject);
 begin
   StopServer;
   UpdateButtons;
 end;
 
-procedure TfrmTcpNmeaServer.StartServer;
+procedure TfrmNmeaServer.TransportChanged(Sender: TObject);
+begin
+  UpdateButtons;
+end;
+
+procedure TfrmNmeaServer.StartServer;
 var
   VPort: Integer;
   VAddr: TSockAddr;
+  VNonBlocking: u_long;
+  VErr: Integer;
+  sTarget: AnsiString;
 begin
   if (FListenSocket <> INVALID_SOCKET) then
     Exit;
@@ -864,46 +795,83 @@ begin
     Exit;
   end;
 
+  FTransportUdp := (rgTransport.ItemIndex = 1);
   // the gpsd mode is fixed at the server start (the checkbox is disabled
-  // while the server is running)
-  FGpsdMode := chkGpsd.Checked;
+  // while the server is running); gpsd speaks tcp only
+  FGpsdMode := chkGpsd.Checked and (not FTransportUdp);
 
-  FListenSocket := socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (FListenSocket = INVALID_SOCKET) then begin
-    ShowMessage('socket() failed: ' + SysErrorMessage(WSAGetLastError));
-    Exit;
+  if FTransportUdp then begin
+    // bind 0.0.0.0:port (the same port receives the subscriber datagrams)
+    FListenSocket := NmeaTool_CreateUdpListener(AnsiString('0.0.0.0:' + IntToStr(VPort)), VErr);
+    if (FListenSocket = INVALID_SOCKET) then begin
+      ShowMessage('bind() failed: ' + SysErrorMessage(VErr));
+      Exit;
+    end;
+    // the timer sweeps the socket - non-blocking
+    VNonBlocking := 1;
+    // (the explicit LONGINT cast keeps FIONBIO ($8004667E) warning-free)
+    ioctlsocket(FListenSocket, Longint(FIONBIO), VNonBlocking);
+
+    // resolve the fixed send target (an empty target = the subscribers only)
+    sTarget := AnsiString(Trim(edTarget.Text));
+    if (0 = Length(sTarget)) then begin
+      FHasTarget := FALSE;
+    end else begin
+      FHasTarget := NmeaTool_ResolveUdpTarget(sTarget, FTargetAddr, VErr);
+      if (not FHasTarget) then begin
+        closesocket(FListenSocket);
+        FListenSocket := INVALID_SOCKET;
+        ShowMessage('resolve target failed (' + string(sTarget) + '): ' + SysErrorMessage(VErr));
+        Exit;
+      end;
+    end;
+
+    if FHasTarget then
+      FLog.LogEvent('udp server started on port ' + IntToStr(VPort) +
+        ' -> ' + NmeaTool_PeerOf(FTargetAddr))
+    else
+      FLog.LogEvent('udp server started on port ' + IntToStr(VPort) + ' (subscribers only)');
+  end else begin
+    FHasTarget := FALSE;
+
+    FListenSocket := socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (FListenSocket = INVALID_SOCKET) then begin
+      ShowMessage('socket() failed: ' + SysErrorMessage(WSAGetLastError));
+      Exit;
+    end;
+
+    // bind to 0.0.0.0:port (the port goes into sa_data in the network byte order)
+    FillChar(VAddr, sizeof(VAddr), 0);
+    VAddr.sa_family := AF_INET;
+    VAddr.sa_data[0] := AnsiChar(Byte(VPort shr 8));
+    VAddr.sa_data[1] := AnsiChar(Byte(VPort and $FF));
+
+    if (0 <> bind(FListenSocket, VAddr, sizeof(VAddr))) then begin
+      ShowMessage('bind() failed: ' + SysErrorMessage(WSAGetLastError));
+      closesocket(FListenSocket);
+      FListenSocket := INVALID_SOCKET;
+      Exit;
+    end;
+
+    if (0 <> listen(FListenSocket, 8)) then begin
+      ShowMessage('listen() failed: ' + SysErrorMessage(WSAGetLastError));
+      closesocket(FListenSocket);
+      FListenSocket := INVALID_SOCKET;
+      Exit;
+    end;
+
+    FAcceptThread := TAcceptThread.Create(TRUE);
+    FAcceptThread.Form := Self;
+    FAcceptThread.ListenSocket := FListenSocket;
+    FAcceptThread.FreeOnTerminate := FALSE;
+    FAcceptThread.Start;
+
+    if FGpsdMode then
+      FLog.LogEvent('server started on port ' + IntToStr(VPort) + ' (gpsd mode)')
+    else
+      FLog.LogEvent('server started on port ' + IntToStr(VPort));
   end;
 
-  // bind to 0.0.0.0:port (the port goes into sa_data in the network byte order)
-  FillChar(VAddr, sizeof(VAddr), 0);
-  VAddr.sa_family := AF_INET;
-  VAddr.sa_data[0] := AnsiChar(Byte(VPort shr 8));
-  VAddr.sa_data[1] := AnsiChar(Byte(VPort and $FF));
-
-  if (0 <> bind(FListenSocket, VAddr, sizeof(VAddr))) then begin
-    ShowMessage('bind() failed: ' + SysErrorMessage(WSAGetLastError));
-    closesocket(FListenSocket);
-    FListenSocket := INVALID_SOCKET;
-    Exit;
-  end;
-
-  if (0 <> listen(FListenSocket, 8)) then begin
-    ShowMessage('listen() failed: ' + SysErrorMessage(WSAGetLastError));
-    closesocket(FListenSocket);
-    FListenSocket := INVALID_SOCKET;
-    Exit;
-  end;
-
-  FAcceptThread := TAcceptThread.Create(TRUE);
-  FAcceptThread.Form := Self;
-  FAcceptThread.ListenSocket := FListenSocket;
-  FAcceptThread.FreeOnTerminate := FALSE;
-  FAcceptThread.Start;
-
-  if FGpsdMode then
-    LogTcp('server started on port ' + IntToStr(VPort) + ' (gpsd mode)')
-  else
-    LogTcp('server started on port ' + IntToStr(VPort));
   // resume the broadcast paused by the previous StopServer (same point)
   if FPausedByServerStop and (0 < Length(FCues)) then begin
     FPausedByServerStop := FALSE;
@@ -913,7 +881,7 @@ begin
   UpdateButtons;
 end;
 
-procedure TfrmTcpNmeaServer.StopServer;
+procedure TfrmNmeaServer.StopServer;
 begin
   // pause the broadcast together with the server: StartServer resumes it
   // from the same point (the explicit play/stop buttons clear the pause)
@@ -931,16 +899,17 @@ begin
     end;
     FAcceptThread.WaitFor;
     FreeAndNil(FAcceptThread);
-    LogTcp('server stopped');
   end;
   RemoveAllClients('server stopped');
+  if FTransportUdp then
+    FLog.LogEvent('server stopped');
   if (FListenSocket <> INVALID_SOCKET) then begin
     closesocket(FListenSocket);
     FListenSocket := INVALID_SOCKET;
   end;
 end;
 
-procedure TfrmTcpNmeaServer.AddAcceptedClient(const AClient: TSocket; const AAddr: TSockAddr);
+procedure TfrmNmeaServer.AddAcceptedClient(const AClient: TSocket; const AAddr: TSockAddr);
 var
   VInfo: TClientInfo;
   VNonBlocking: u_long;
@@ -951,6 +920,7 @@ begin
   ioctlsocket(AClient, Longint(FIONBIO), VNonBlocking);
 
   FillChar(VInfo, sizeof(VInfo), 0);
+  VInfo.Kind := ckTcp;
   VInfo.Socket := AClient;
   VInfo.Peer := Format('%d.%d.%d.%d:%d', [
     Byte(AAddr.sa_data[2]),
@@ -960,7 +930,7 @@ begin
     (Byte(AAddr.sa_data[0]) shl 8) or Byte(AAddr.sa_data[1])]);
   VInfo.Watching := FALSE;
 
-  LogTcp('client ' + VInfo.Peer + ' connected');
+  FLog.LogEvent('client ' + VInfo.Peer + ' connected');
 
   // gpsd sends the greeting banner to every connected client immediately
   // (before any WATCH command from the client)
@@ -975,24 +945,26 @@ begin
   end;
 end;
 
-procedure TfrmTcpNmeaServer.RemoveClientLocked(AIndex: Integer; const AReason: string);
+procedure TfrmNmeaServer.RemoveClientLocked(AIndex: Integer; const AReason: string);
 var
   VPeer: string;
 begin
   // the critical section is already locked
   VPeer := FClients[AIndex].Peer;
-  closesocket(FClients[AIndex].Socket);
+  if (ckTcp = FClients[AIndex].Kind) then
+    closesocket(FClients[AIndex].Socket);
   FClients.Delete(AIndex);
-  LogTcp('client ' + VPeer + ' disconnected (' + AReason + ')');
+  FLog.LogEvent('client ' + VPeer + ' disconnected (' + AReason + ')');
 end;
 
-procedure TfrmTcpNmeaServer.RemoveAllClients(const AReason: string);
+procedure TfrmNmeaServer.RemoveAllClients(const AReason: string);
 begin
   Lock;
   try
     while (FClients.Count > 0) do begin
-      closesocket(FClients[0].Socket);
-      LogTcp('client ' + FClients[0].Peer + ' disconnected (' + AReason + ')');
+      if (ckTcp = FClients[0].Kind) then
+        closesocket(FClients[0].Socket);
+      FLog.LogEvent('client ' + FClients[0].Peer + ' disconnected (' + AReason + ')');
       FClients.Delete(0);
     end;
   finally
@@ -1000,24 +972,48 @@ begin
   end;
 end;
 
-procedure TfrmTcpNmeaServer.SendToAllClients(const AData: AnsiString);
+procedure TfrmNmeaServer.SendToAllClients(const AData: AnsiString);
 var
   i, VSent: Integer;
+  VSin: TSockAddrIn;
 begin
   if (0 = Length(AData)) then
     Exit;
+  // the fixed udp target first (it is not in the clients list)
+  if FTransportUdp and FHasTarget and (FListenSocket <> INVALID_SOCKET) then begin
+    VSent := sendto(FListenSocket, PAnsiChar(AData)^, Length(AData), 0,
+                    PSockAddr(@FTargetAddr), sizeof(FTargetAddr));
+    if (SOCKET_ERROR = VSent) then begin
+      // a persistent send failure (no route, ...) is visible in the errors
+      // counter; the single datagram losses of a busy network are not
+      // worth the log noise - nothing is removed here
+      InterlockedIncrement(FStatNetErr);
+    end;
+  end;
   Lock;
   try
     for i := FClients.Count - 1 downto 0 do begin
       // gpsd streams only to the clients which sent the WATCH command
-      if FGpsdMode and (not FClients[i].Watching) then
+      if FGpsdMode and (ckTcp = FClients[i].Kind) and (not FClients[i].Watching) then
         Continue;
-      VSent := send(FClients[i].Socket, PAnsiChar(AData)^, Length(AData), 0);
-      if (SOCKET_ERROR = VSent) then begin
-        if (WSAEWOULDBLOCK = WSAGetLastError) then
-          Continue; // send buffer is full - skip this chunk
-        InterlockedIncrement(FStatTcpErr);
-        RemoveClientLocked(i, 'send error');
+      if (ckTcp = FClients[i].Kind) then begin
+        VSent := send(FClients[i].Socket, PAnsiChar(AData)^, Length(AData), 0);
+        if (SOCKET_ERROR = VSent) then begin
+          if (WSAEWOULDBLOCK = WSAGetLastError) then
+            Continue; // send buffer is full - skip this chunk
+          InterlockedIncrement(FStatNetErr);
+          RemoveClientLocked(i, 'send error');
+        end;
+      end else begin
+        VSin := FClients[i].Addr;
+        VSent := sendto(FListenSocket, PAnsiChar(AData)^, Length(AData), 0,
+                        PSockAddr(@VSin), sizeof(VSin));
+        if (SOCKET_ERROR = VSent) then begin
+          if (WSAEWOULDBLOCK = WSAGetLastError) then
+            Continue;
+          InterlockedIncrement(FStatNetErr);
+          RemoveClientLocked(i, 'sendto error');
+        end;
       end;
     end;
   finally
@@ -1025,16 +1021,82 @@ begin
   end;
 end;
 
-procedure TfrmTcpNmeaServer.CheckClients;
+procedure TfrmNmeaServer.CheckClients;
 var
   i, VReceived, VRes: Integer;
   VInfo: TClientInfo;
   VSet: TFDSet;
   VTimeout: TTimeVal;
   VBuf: array [0..4095] of AnsiChar;
+  VFrom: TSockAddr;    // the RTL recvfrom takes the var TSockAddr
+  VFromLen: Integer;
+  sPeer: string;
+  VIdx: Integer;
 begin
-  // select() every client with zero timeout, drain the received data
-  // (clients may send queries - just ignore them), remove the disconnected
+  // TCP: select() every client with zero timeout, drain the received data
+  // (clients may send queries - just ignore them), remove the disconnected.
+  // UDP: sweep the bound socket, register the datagram sources as the
+  // subscribers and refresh their keepalive
+  if FTransportUdp then begin
+    if (FListenSocket = INVALID_SOCKET) then
+      Exit;
+    while (TRUE) do begin
+      FD_ZERO(VSet);
+      _FD_SET(FListenSocket, VSet);
+      VTimeout.tv_sec := 0;
+      VTimeout.tv_usec := 0;
+      VRes := select(0, @VSet, nil, nil, @VTimeout);
+      if (VRes <= 0) then
+        Break; // no data (a socket error is handled by the stop path)
+      VFromLen := sizeof(VFrom);
+      VReceived := recvfrom(FListenSocket, VBuf[0], sizeof(VBuf), 0, VFrom, VFromLen);
+      if (VReceived <= 0) then
+        Break;
+      // the datagram content is ignored, the source becomes a subscriber
+      FStatRecvBytes := FStatRecvBytes + VReceived;
+      sPeer := NmeaTool_PeerOf(PSockAddrIn(@VFrom)^);
+      Lock;
+      try
+        VIdx := -1;
+        for i := 0 to FClients.Count - 1 do begin
+          if (ckUdp = FClients[i].Kind) and
+             (FClients[i].Addr.sin_addr.S_addr = PSockAddrIn(@VFrom)^.sin_addr.S_addr) and
+             (FClients[i].Addr.sin_port = PSockAddrIn(@VFrom)^.sin_port) then begin
+            VIdx := i;
+            Break;
+          end;
+        end;
+        if (VIdx < 0) then begin
+          FillChar(VInfo, sizeof(VInfo), 0);
+          VInfo.Kind := ckUdp;
+          VInfo.Addr := PSockAddrIn(@VFrom)^;
+          VInfo.Peer := sPeer;
+          VInfo.LastSeen := GetTickCount;
+          FClients.Add(VInfo);
+          FLog.LogEvent('udp subscriber ' + sPeer + ' registered');
+        end else begin
+          VInfo := FClients[VIdx];
+          VInfo.LastSeen := GetTickCount;
+          FClients[VIdx] := VInfo;
+        end;
+      finally
+        Unlock;
+      end;
+    end;
+    // expire the silent subscribers
+    Lock;
+    try
+      for i := FClients.Count - 1 downto 0 do begin
+        if (ckUdp = FClients[i].Kind) and
+           (cNmeaTool_Subscriber_Timeout_MSec < (GetTickCount - FClients[i].LastSeen)) then
+          RemoveClientLocked(i, 'subscriber expired');
+      end;
+    finally
+      Unlock;
+    end;
+    Exit;
+  end;
+
   Lock;
   try
     for i := FClients.Count - 1 downto 0 do begin
@@ -1044,7 +1106,7 @@ begin
       VTimeout.tv_usec := 0;
       VRes := select(0, @VSet, nil, nil, @VTimeout);
       if (SOCKET_ERROR = VRes) then begin
-        InterlockedIncrement(FStatTcpErr);
+        InterlockedIncrement(FStatNetErr);
         RemoveClientLocked(i, 'select error');
         Continue;
       end;
@@ -1054,7 +1116,7 @@ begin
           // select() can report the data which recv() does not find (a rare
           // winsock race) - the client is alive, keep it
           if (WSAEWOULDBLOCK <> WSAGetLastError) then begin
-            InterlockedIncrement(FStatTcpErr);
+            InterlockedIncrement(FStatNetErr);
             RemoveClientLocked(i, 'recv error');
           end;
         end else if (0 = VReceived) then begin
@@ -1068,7 +1130,7 @@ begin
             VInfo := FClients[i];
             VInfo.Watching := TRUE;
             FClients[i] := VInfo;
-            LogTcp('client ' + FClients[i].Peer + ': WATCH received - streaming');
+            FLog.LogEvent('client ' + FClients[i].Peer + ': WATCH received - streaming');
           end;
         end;
       end;
@@ -1078,7 +1140,7 @@ begin
   end;
 end;
 
-procedure TfrmTcpNmeaServer.LoadTrackFromFile(const AFileName: string);
+procedure TfrmNmeaServer.LoadTrackFromFile(const AFileName: string);
 begin
   StopPlayback;
   FCues := nil;
@@ -1099,24 +1161,24 @@ begin
   UpdateButtons;
 end;
 
-procedure TfrmTcpNmeaServer.btnOpenGpxClick(Sender: TObject);
+procedure TfrmNmeaServer.btnOpenGpxClick(Sender: TObject);
 begin
   if (not dlgOpen.Execute) then
     Exit;
   LoadTrackFromFile(dlgOpen.FileName);
 end;
 
-procedure TfrmTcpNmeaServer.btnPlayClick(Sender: TObject);
+procedure TfrmNmeaServer.btnPlayClick(Sender: TObject);
 begin
   StartPlayback;
 end;
 
-procedure TfrmTcpNmeaServer.btnStopPlayClick(Sender: TObject);
+procedure TfrmNmeaServer.btnStopPlayClick(Sender: TObject);
 begin
   StopPlayback;
 end;
 
-procedure TfrmTcpNmeaServer.StartPlayback;
+procedure TfrmNmeaServer.StartPlayback;
 begin
   if (0 = Length(FCues)) then
     Exit;
@@ -1128,7 +1190,7 @@ begin
   UpdateButtons;
 end;
 
-procedure TfrmTcpNmeaServer.StopPlayback;
+procedure TfrmNmeaServer.StopPlayback;
 begin
   FPausedByServerStop := FALSE; // the explicit stop overrides the pause
   FPlaying := FALSE;
@@ -1136,7 +1198,7 @@ begin
   UpdateButtons;
 end;
 
-procedure TfrmTcpNmeaServer.EmulParamChanged(Sender: TObject);
+procedure TfrmNmeaServer.EmulParamChanged(Sender: TObject);
 begin
   // schedule the next emulation action from the current moment
   if chkDrop.Checked then
@@ -1147,12 +1209,12 @@ begin
   end;
 end;
 
-procedure TfrmTcpNmeaServer.tmrWorkTimer(Sender: TObject);
+procedure TfrmNmeaServer.tmrWorkTimer(Sender: TObject);
 begin
   DoWorkTick;
 end;
 
-procedure TfrmTcpNmeaServer.DoWorkTick;
+procedure TfrmNmeaServer.DoWorkTick;
 const
   CLogDrainIntervalMSec = 1000; // the logs are written once per second
 var
@@ -1166,7 +1228,7 @@ var
   VGuard: Integer;
   sJson: AnsiString;
 begin
-  // 1) write the pending tcp events and the buffered nmea data to the logs
+  // 1) write the pending event lines and the buffered nmea data to the logs
   // (once per second - the ui thread must not do disk i/o on every tick at
   // high playback speeds)
   if ((GetTickCount - FLastLogDrainTick) >= CLogDrainIntervalMSec) then begin
@@ -1186,7 +1248,9 @@ begin
   // stopping the server pauses the emulation together with the playback,
   // starting the server begins a fresh emulation countdown)
   if (FListenSocket <> INVALID_SOCKET) then begin
-    // 4) emulation - connection drops
+    // 4) emulation - drops: the tcp clients are disconnected, the udp
+    // subscribers are forgotten (a client which keeps reporting itself is
+    // re-registered - the same way a real mux restart looks from outside)
     VDropSec := Max(1, StrToIntDef(edDropSec.Text, 10));
     if (chkDrop.Checked) then begin
       if (not FDropEnabled) then begin
@@ -1196,13 +1260,15 @@ begin
       VDue := ((VNow - FNextDropTick) < $80000000);
       if VDue then begin
         FNextDropTick := VNow + Cardinal(VDropSec) * 1000;
-        LogTcp('*** emulated connection drop ***');
+        FLog.LogEvent('*** emulated connection drop ***');
         RemoveAllClients('emulated connection drop');
       end;
     end else
       FDropEnabled := FALSE;
 
-    // 5) emulation - transmission stalls
+    // 5) emulation - transmission stalls (the same for both transports: the
+    // stream just pauses - the udp listeners see the silence exactly like
+    // the tcp clients see a stalled sender)
     VStallSec := Max(1, StrToIntDef(edStallSec.Text, 30));
     VStallMSec := Max(0, StrToIntDef(edStallMs.Text, 2000));
     if (chkStall.Checked) then begin
@@ -1215,14 +1281,14 @@ begin
       // (the wrap-safe tick comparison, like the one below)
       if FStallActive and ((VNow - FStallUntilTick) < $80000000) then begin
         FStallActive := FALSE;
-        LogTcp('--- emulated stall ended ---');
+        FLog.LogEvent('--- emulated stall ended ---');
       end;
       VDue := ((VNow - FNextStallTick) < $80000000);
       if VDue and (not FStallActive) then begin
         FNextStallTick := VNow + Cardinal(VStallSec) * 1000;
         FStallUntilTick := VNow + Cardinal(VStallMSec);
         FStallActive := TRUE;
-        LogTcp('--- emulated stall for ' + IntToStr(VStallMSec) + ' ms ---');
+        FLog.LogEvent('--- emulated stall for ' + IntToStr(VStallMSec) + ' ms ---');
       end;
     end else begin
       FStallEnabled := FALSE;
@@ -1267,13 +1333,13 @@ begin
       // TPV per track point (the nmea clients drop the json lines)
       sJson := TpvJsonOf(FCues[FCueIdx]);
       SendToAllClients(sJson);
-      LogNmeaRaw(sJson);
+      FLog.LogNmeaRaw(sJson);
       FStatSentBytes := FStatSentBytes + Length(sJson);
     end;
     SendToAllClients(FCues[FCueIdx].SGga);
     SendToAllClients(FCues[FCueIdx].SRmc);
-    LogNmeaRaw(FCues[FCueIdx].SGga);
-    LogNmeaRaw(FCues[FCueIdx].SRmc);
+    FLog.LogNmeaRaw(FCues[FCueIdx].SGga);
+    FLog.LogNmeaRaw(FCues[FCueIdx].SRmc);
     // the counters follow the produced stream (the same bytes the nmea log
     // gets) - with a single client it is exactly what was transmitted
     FStatSentBytes := FStatSentBytes +
@@ -1321,41 +1387,34 @@ begin
   UpdateCounters;
 end;
 
-procedure TfrmTcpNmeaServer.DrainLogs;
+procedure TfrmNmeaServer.DrainLogs;
 var
   VConn: TStringList;
 begin
   VConn := TStringList.Create;
   try
-    Lock;
-    try
-      VConn.Assign(FConnLog);
-      FConnLog.Clear;
-    finally
-      Unlock;
-    end;
+    FLog.DrainEvents(VConn);
     if (VConn.Count > 0) then begin
       // the file gets every line, the memo only the last ones
-      if chkLogTcp.Checked then
-        WriteTcpFile(VConn);
-      mmTcp.Lines.BeginUpdate;
+      FLog.WriteEventFile(VConn);
+      mmLog.Lines.BeginUpdate;
       try
-        mmTcp.Lines.AddStrings(VConn);
-        while (mmTcp.Lines.Count > cMaxMemoLines) do
-          mmTcp.Lines.Delete(0);
+        mmLog.Lines.AddStrings(VConn);
+        while (mmLog.Lines.Count > cMaxMemoLines) do
+          mmLog.Lines.Delete(0);
       finally
-        mmTcp.Lines.EndUpdate;
+        mmLog.Lines.EndUpdate;
       end;
-      SendMessage(mmTcp.Handle, EM_LINESCROLL, 0, mmTcp.Lines.Count);
+      SendMessage(mmLog.Handle, EM_LINESCROLL, 0, mmLog.Lines.Count);
     end;
     // flush the buffered raw nmea data at least once per second
-    FlushNmeaFile;
+    FLog.FlushNmeaFile;
   finally
     VConn.Free;
   end;
 end;
 
-procedure TfrmTcpNmeaServer.UpdateClientList;
+procedure TfrmNmeaServer.UpdateClientList;
 var
   i: Integer;
   VItems: TStringList;
@@ -1370,6 +1429,8 @@ begin
     finally
       Unlock;
     end;
+    if FTransportUdp and FHasTarget then
+      VItems.Append('target: ' + edTarget.Text);
     lbClients.Items.BeginUpdate;
     try
       lbClients.Items.Assign(VItems);
@@ -1380,5 +1441,20 @@ begin
     VItems.Free;
   end;
 end;
+
+procedure TfrmNmeaServer.LogParamChanged(Sender: TObject);
+begin
+  // the checkboxes mirror the log enable flags (a file error may have
+  // disabled the logging from inside - sync the checkbox back)
+  if (FLog = nil) then
+    Exit; // the log is created after the command line is applied (FormCreate)
+  FLog.SetNmeaEnabled(chkLogNmea.Checked);
+  FLog.SetEventEnabled(chkLogEvents.Checked);
+end;
+
+initialization
+  // the invariant format settings (dot decimal separator regardless of the
+  // current locale) - used by every Format / StrToFloat call of this unit
+  gFS := TFormatSettings.Invariant;
 
 end.

@@ -22,16 +22,18 @@ const
   gdt_FILE_Track      = $00000004; // fly-on-track mode (read track from file)
   gdt_LocationAPI     = $00000008; // location sensor API
   gdt_TCP_NMEA0183    = $00000010; // TCP client - transmitting using NMEA0183
+  gdt_UDP_NMEA0183    = $00000020; // UDP listener - transmitting using NMEA0183
 
   vgpt_Allow_Stats    = $00000001; // allow calc stats with this packet
   vgpt_Auxillary      = $00000002; // auxillary packed (undocumented with same structure)
 
   dpdfi_SyncUnitInfo          = $00000001; // synchronize access to unit_info (required if use VSAGPS_GetUnitInfo or Tvsagps_device_base.AllocUnitInfo)
-  dpdfi_UnSyncDisconnected    = $00000002; // disconnected event (WorkerThread.OnTerminate) without Synchronize
+  // $00000002 was dpdfi_UnSyncDisconnected (deliver the disconnected event without Synchronize): the runtime threads are owned by the object since 2026-11-20 and no event is delivered via Synchronize anymore, so the flag was removed - the bit is retired and must not be reused
   dpdfi_ConnectingFromConnect = $00000004; // raise ProcessConnecting event from GPSConnect (not from thread)
 
   dpsffi_SaveToReuse  = $00000001; // load, parse and save file internally - COMPLETELY - before sending trackpoints to EXE (if not - just-in-time parse and send trackpoints)
   dpsffi_OnlyPosition = $00000002; // parse only position - for speed and low memory usage
+  dpsffi_LoopPlayback = $00000004; // replay the sources again and again until the device stop (the fly-on-track device)
 
   cWorkingThread_Connection_Timeout_Sec = 30;
   cWorkingThread_Connection_Timeout_Min = 3;
@@ -217,7 +219,7 @@ type
     chTalkerID: TNMEA_TalkerID;
     chCorrectedTalkerID: TNMEA_TalkerID; // for GNSS - defined by actual sat_id or index of record if no sat_id (first for GPS, second for GLONASS)
     // 1) Selection mode // #0 no data
-    sel_mode: AnsiChar; // M - Manual – Forced to operate in 2D or 3D mode, A - 2D Automatic – Allowed to automatically switch 2D/3D
+    sel_mode: AnsiChar; // M - Manual - Forced to operate in 2D or 3D mode, A - 2D Automatic - Allowed to automatically switch 2D/3D
     // 2) Mode // <0 no data
     fix_mode: SInt8; // 1 - Fix not available, 2 - 2D (<4 SVs used), 3 - 3D (>3 SVs used)
     // 3) ID of 1st satellite used for fix

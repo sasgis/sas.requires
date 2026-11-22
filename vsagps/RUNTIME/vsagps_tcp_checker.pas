@@ -81,7 +81,7 @@ var
   VWSA: TWSAData;
   VWSAOk: Boolean;
   VWSAError: Integer;
-  sName, sHost, sPort: AnsiString;
+  sHost, sPort: AnsiString;
   VHints: TAddrInfoA;
   VAddrList, VAddr, VItem: Paddrinfo;
   VSocket: TSocket;

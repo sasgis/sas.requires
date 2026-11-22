@@ -55,7 +55,7 @@ const
   nmea_ti_GLONASS     = 'GL'; // for Russian GLONASS
   nmea_ti_QZSS        = 'QZ'; // for Japanese QZSS
   nmea_ti_GNSS        = 'GN'; // MIXED: GPS + GLONASS ( + QZSS) simultaneously
-  nmea_ti_MagComp     = 'HC'; // Heading – Magnetic Compass
+  nmea_ti_MagComp     = 'HC'; // Heading - Magnetic Compass
   nmea_ti_EchoSounder = 'SD'; // for Echo Sounder (water data)
 
   // glonass satellites from 65 and above
@@ -419,7 +419,8 @@ begin
   gs_DoneDisconnected:
     Result:=(gs_ProcessConnecting=new_state);
   gs_ProcessConnecting:
-    Result:=(gs_DoneConnected=new_state);
+    // the user may abort the connecting phase (the async disconnect)
+    Result:=(gs_DoneConnected=new_state) or (gs_ProcessDisconnecting=new_state);
   gs_DoneConnected:
     Result:=(gs_ProcessDisconnecting=new_state);
   gs_ProcessDisconnecting:

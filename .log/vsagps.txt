@@ -1,4 +1,46 @@
-commit 208fdb998f7fea1187d430f181d1aa1fe79fcbd3
+commit 9221f800e21f5dc307d169d13e558639d729ffd5
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-21 17:40:01 +0000
+
+    The playback speed of the source tracks
+
+commit b37167f5c6645121036bac15f84888954eb3774f
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-21 16:36:54 +0000
+
+    Removed unused flag: the runtime threads are owned by the object and no event is delivered via Synchronize anymore
+
+commit f500b538459d868c61f91a74cd13d457e136dea5
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-21 10:25:22 +0000
+
+    Cleaning and sort Test and Samples projects
+
+commit 70a96ddc580cc53484c16e0506f274a012854bbe
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-21 10:23:53 +0000
+
+    Fix line endings and replace unicode symbols with pure acsii
+
+commit 26acf335354a984a852f5640b5054cfceef4fa9a
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-21 08:19:34 +0000
+
+    The runtime threads are owned by the object instead of freeing themselves
+
+commit 7a126d47e04e40817cabb8d08609c4cb71e7e55c
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-21 08:17:01 +0000
+
+    Fix bug when disconnect requested during the connecting phase
+
+commit 7d892110a60a3c0a78e42101b85c30f4270337f0
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-18 15:38:37 +0300
+
+    Новый девайс UDP NMEA
+
+commit 535854cdb385c136bad465dbf02af8070b7ac2e2
 Author: zed <starmen141@gmail.com>
 Date:   2026-11-15 17:13:34 +0300
 
