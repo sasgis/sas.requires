@@ -1,3 +1,15 @@
+commit ea0e07f930f80ae5c52b19fa4b729d3d348925fc
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-25 21:38:37 +0300
+
+    Simple GPS receiver emulator for manual tests of the COM NMEA device
+
+commit b7bb1ca464e24843c233bbc1017105467121cf6a
+Author: zed <starmen141@gmail.com>
+Date:   2026-11-25 21:25:58 +0300
+
+    Minor fix
+
 commit 9221f800e21f5dc307d169d13e558639d729ffd5
 Author: zed <starmen141@gmail.com>
 Date:   2026-11-21 17:40:01 +0000

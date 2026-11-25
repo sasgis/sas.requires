@@ -113,7 +113,7 @@ type
 
     function SendPacket(const APacketBuffer: Pointer;
                         const APacketSize: DWORD;
-                        const AFlags: DWORD): LongBool;
+                        const AFlags: DWORD): LongBool; override;
   end;
 
 // calc the pause between the two track points in ms at the x1 playback
@@ -219,7 +219,7 @@ begin
     pPacket:=VSAGPS_GetMemZ(sizeof(pPacket^));
     try
       Sleep(0);
-      
+
       // position
       pPacket^.gps_data.PositionOK:=tData.latlon_ok;
       pPacket^.gps_data.PositionLon:=tData.lon1;
@@ -330,7 +330,7 @@ begin
         pPacket^.gps_data.PositionLat:=tData.lat0;
         pPacket^.gps_data.PositionLon:=tData.lon1;
         pPacket^.gps_data.PositionOK:=tData.latlon_ok;
-        
+
         // alt
         if tData.ele_ok then
           pPacket^.gps_data.Altitude:=tData.ele*cFootInMeters
